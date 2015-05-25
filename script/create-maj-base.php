@@ -11,13 +11,14 @@ if(!defined('INC_FROM_DOLIBARR')) {
 }
 
 
-/* uncomment
 
 
-dol_include_once('/mymodule/class/xxx.class.php');
+dol_include_once('/nomenclature/class/nomenclature.class.php');
 
 $PDOdb=new TPDOdb;
 
-$o=new TXXX($db);
+$o=new TNomenclature($db);
 $o->init_db_by_vars($PDOdb);
-*/
+
+$o=new TNomenclatureDet($db);
+$o->init_db_by_vars($PDOdb);
