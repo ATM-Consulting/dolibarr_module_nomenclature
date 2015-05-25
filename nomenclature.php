@@ -7,6 +7,11 @@ dol_include_once('/core/class/html.formother.class.php');
 dol_include_once('/core/lib/product.lib.php');
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
+if($conf->workstation->enabled) {
+    dol_include_once('/workstation/class/workstation.class.php');
+}
+    
+
 
 llxHeader('','Nomenclature');
 
@@ -51,6 +56,16 @@ else if($action==='save_nomenclature') {
         
     }
     
+    if(!empty($_POST['TNomenclatureWorkstation'])) {
+        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
+            
+            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+                    
+        }
+        
+        
+    }
+    
     $fk_new_product = (int)GETPOST('fk_new_product');
     if(GETPOST('add_nomenclature') && $fk_new_product>0) {
         
@@ -60,6 +75,17 @@ else if($action==='save_nomenclature') {
         
         $det->fk_product = $fk_new_product;
         
+    }
+    
+    $fk_new_workstation = GETPOST('fk_new_workstation');
+    if(GETPOST('add_workstation') && $fk_new_workstation>0) {
+        
+        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
+        
+        $det = &$n->TNomenclatureWorkstation[$k];
+        
+        $det->fk_workstation = $fk_new_workstation;
+        $det->rang = $k+1; 
     }
     
     
@@ -130,7 +156,7 @@ foreach($TNomenclature as &$n) {
                            <?
                            
                        }
-                       
+
                        ?>
                    </table>
                    
@@ -142,9 +168,78 @@ foreach($TNomenclature as &$n) {
            </td> 
             
         </tr>
+        <?php
+       if($conf->workstation->enabled) {
+           
+       ?><tr>
+           <td colspan="2"><?php
+               ?>
+               <table class="liste" width="100%">
+               <tr class="liste_titre">
+                   <td class="liste_titre"><?php echo $langs->trans('Worstations'); ?></td>
+                   <td class="liste_titre"><?php echo $langs->trans('QtyPrepare'); ?></td>
+                   <td class="liste_titre"><?php echo $langs->trans('QtyFabrication'); ?></td>
+                   <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
+                   <td class="liste_titre"><?php echo $langs->trans('Rank'); ?></td>
+                   <td class="liste_titre">&nbsp;</td>
+            
+               </tr>
+               <?php
+                       
+               if(!empty($n->TNomenclatureWorkstation)) {
+                  
+                   foreach($n->TNomenclatureWorkstation as $k=>&$ws) {
+                       
+                       $class = ($class == 'impair') ? 'pair' : 'impair';
+                       
+                       ?>
+                       <tr class="<?php echo $class ?>">
+                           <td><?php 
+                                
+                                echo $ws->workstation->getNomUrl(1);
+                                
+                           ?></td>    
+                           <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_prepare]', $ws->nb_hour_prepare, 7,100) ?></td>
+                           <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100) ?></td>
+                           <td><?php echo $ws->nb_hour ?></td>
+                           <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
+                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>                         
+                       </tr>
+                       <?
+                       
+                       
+                   }
+                   
+               }
+               else{
+                        
+                   echo '<tr><td colspan="5">'. $langs->trans('WillUseProductWorkstationIfNotSpecified') .'</td></tr>';
+               }     
+           
+                        
+               ?></table><?php
+                            
+                            
+            ?></td>
+        </tr><?php
+        }  
+        ?>       
         <tr>
             <td align="right" colspan="2">
                 <div class="tabsAction">
+                    <?php
+                    
+                    if($conf->workstation->enabled) {
+                           
+                           echo $formCore->combo('', 'fk_new_workstation', TWorkstation::getWorstations($PDOdb), -1);
+                        ?>
+                        <div class="inline-block divButAction">                        <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
+                        </div>
+                        <?
+                    }
+                    
+                    ?>
+                    
                     <?php
                         print $form->select_produits('', 'fk_new_product', '', 0);
                     ?>

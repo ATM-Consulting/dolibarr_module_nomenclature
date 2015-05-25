@@ -22,3 +22,7 @@ $o->init_db_by_vars($PDOdb);
 
 $o=new TNomenclatureDet($db);
 $o->init_db_by_vars($PDOdb);
+
+
+$o=new TNomenclatureWorkstation($db);
+$o->init_db_by_vars($PDOdb);
