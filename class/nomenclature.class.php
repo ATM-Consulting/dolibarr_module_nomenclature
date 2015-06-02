@@ -18,10 +18,8 @@ class TNomenclature extends TObjetStd
         
     }   
     
-    static function get(&$PDOdb, $fk_product) {
-        
-        
-        
+    static function get(&$PDOdb, $fk_product) 
+    {
         $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE fk_product=".$fk_product);
         
         $TNom=array();

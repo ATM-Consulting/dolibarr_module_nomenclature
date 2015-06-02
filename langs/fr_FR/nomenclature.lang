@@ -5,3 +5,7 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 
 nomenclatureSetup = Configuration du module nomenclature
 nomenclatureAbout = A propos du module nomenclature
+
+AddNomenclature=Ajouter une nomenclature
+AddProductNomenclature=Ajouter le produit
+SaveNomenclature=Enregistrer
