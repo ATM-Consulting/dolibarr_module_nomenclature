@@ -9,3 +9,5 @@ nomenclatureAbout = A propos du module nomenclature
 AddNomenclature=Ajouter une nomenclature
 AddProductNomenclature=Ajouter le produit
 SaveNomenclature=Enregistrer
+nomenclatureIsDefault=Définir par défaut
+nomenclatureQtyReference=Qté de référence

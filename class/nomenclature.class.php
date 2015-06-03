@@ -8,11 +8,13 @@ class TNomenclature extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclature');
         $this->add_champs('title');
         $this->add_champs('fk_product',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('is_default',array('type'=>'integer'));
+        $this->add_champs('qty_reference',array('type'=>'float'));
         
         $this->_init_vars();
         
         $this->start();
-        
+		
         $this->setChild('TNomenclatureDet', 'fk_nomenclature');
         $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');            
         
@@ -20,7 +22,7 @@ class TNomenclature extends TObjetStd
     
     static function get(&$PDOdb, $fk_product) 
     {
-        $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE fk_product=".$fk_product);
+        $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE fk_product=".(int) $fk_product);
         
         $TNom=array();
         
@@ -34,8 +36,39 @@ class TNomenclature extends TObjetStd
         }
         
         return $TNom;
-        
     }
+	
+	/*
+	 * Return the default TNomenclature object of product or the first of list if not default or false
+	 */
+	static function getDefaultNomenclature(&$PDOdb, $fk_product)
+	{
+		$TNomenclature = new TNomenclature;
+		
+		$PDOdb->Execute('SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature WHERE fk_product='.(int) $fk_product.' AND is_default = 1');
+		$res = $PDOdb->Get_line();
+		
+		if ($res)
+		{
+			$TNomenclature->load($PDOdb, $res->rowid);
+			return $TNomenclature;
+		}
+		else 
+		{
+			$Tab = self::get($PDOdb, $fk_product);
+			if (count($Tab) > 0)
+			{
+				return $Tab[0];
+			}
+		}
+		
+		return false;
+	}
+	
+	static function resetDefaultNomenclature(&$PDOdb, $fk_product)
+	{
+		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_product = '.(int) $fk_product);
+	}
     
 }
 

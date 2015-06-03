@@ -16,7 +16,7 @@ if($conf->workstation->enabled) {
 llxHeader('','Nomenclature');
 
 $product = new Product($db);
-$product->fetch(GETPOST('fk_product'));
+$product->fetch(GETPOST('fk_product'), GETPOST('ref'));
 
 $action= GETPOST('action');
 
@@ -46,6 +46,8 @@ else if($action==='save_nomenclature') {
     $n->load($PDOdb, GETPOST('fk_nomenclature'));
     $n->set_values($_POST);
     
+	TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
+	
     if(!empty($_POST['TNomenclature'])) {
         foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
             
@@ -89,10 +91,7 @@ else if($action==='save_nomenclature') {
     }
     
     
-    $n->save($PDOdb);
-    
-    
-    
+    $n->save($PDOdb);    
 }
 
 
@@ -104,6 +103,13 @@ dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
 headerProduct($product);
 
 $form=new Form($db);
+
+echo '<script type="text/javascript">
+	function uncheckOther(obj)
+	{
+		$("input[name=is_default]").not($(obj)).prop("checked", false);	
+	}
+</script>';
 
 $TNomenclature = TNomenclature::get($PDOdb, $product->id);
 
@@ -117,11 +123,13 @@ foreach($TNomenclature as &$n) {
     ?>
     <table class="liste" width="100%">
         <tr class="liste_titre">
-            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId() ?></td>
-            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255) ?></td>
+            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId(); ?></td>
+            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
+            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 10,255); ?></td>
+            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
         </tr>
         <tr>
-           <td colspan="2">
+           <td colspan="4">
                <?php
                
                if(count($n->TNomenclatureDet>0)) {
@@ -225,7 +233,7 @@ foreach($TNomenclature as &$n) {
         }  
         ?>       
         <tr>
-            <td align="right" colspan="2">
+            <td align="right" colspan="4">
                 <div class="tabsAction">
                     <?php
                     
