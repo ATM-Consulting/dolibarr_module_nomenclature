@@ -51,6 +51,7 @@ class TNomenclature extends TObjetStd
 		if ($res)
 		{
 			$TNomenclature->load($PDOdb, $res->rowid);
+			
 			return $TNomenclature;
 		}
 		else 
