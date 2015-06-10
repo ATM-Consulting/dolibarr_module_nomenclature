@@ -180,7 +180,7 @@ foreach($TNomenclature as &$n) {
        if($conf->workstation->enabled) {
            
        ?><tr>
-           <td colspan="2"><?php
+           <td colspan="4"><?php
                ?>
                <table class="liste" width="100%">
                <tr class="liste_titre">

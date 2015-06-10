@@ -11,3 +11,8 @@ AddProductNomenclature=Ajouter le produit
 SaveNomenclature=Enregistrer
 nomenclatureIsDefault=Définir par défaut
 nomenclatureQtyReference=Qté de référence
+
+WillUseProductWorkstationIfNotSpecified=Utilisera la définition globale du produit si non précisée
+QtyPrepare=Temps de préparation
+QtyFabrication=Temps de fabrication
+Worstations=Postes de travail
