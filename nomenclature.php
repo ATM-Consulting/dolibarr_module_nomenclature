@@ -46,7 +46,9 @@ else if($action==='save_nomenclature') {
     $n->load($PDOdb, GETPOST('fk_nomenclature'));
     $n->set_values($_POST);
     
-	TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
+    $n->is_default = (int)GETPOST('is_default');
+    
+	if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
 	
     if(!empty($_POST['TNomenclature'])) {
         foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
