@@ -143,9 +143,10 @@ foreach($TNomenclature as &$n) {
                            <td class="liste_titre"><?php echo $langs->trans('Product'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                            <td class="liste_titre">&nbsp;</td>
+                           <td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td>
                        </tr>
                        <?php
-                       $class='';
+                       $class='';$total_produit = $total_mo  = 0;
                        foreach($n->TNomenclatureDet as $k=>&$det) {
                            
                            $class = ($class == 'impair') ? 'pair' : 'impair';
@@ -161,13 +162,26 @@ foreach($TNomenclature as &$n) {
                                     
                                ?></td>    
                                <td><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
-                               <td><a href="?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>                         
+                               
+                               
+                               <td><a href="?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
+                               <td align="right"><?php 
+                                    $price = $det->getSupplierPrice($PDOdb, $det->qty); 
+                                    $total_produit+=$price;
+                                    echo price($price) ;
+                                ?></td>                         
                            </tr>
                            <?
                            
                        }
 
                        ?>
+                       <tr class="liste_total">
+                           <td ><?php echo $langs->trans('Total'); ?></td>
+                           <td colspan="3">&nbsp;</td>
+                           <td align="right"><?php echo price($total_produit); ?></td>
+                          
+                       </tr>
                    </table>
                    
                    <?php
@@ -192,7 +206,8 @@ foreach($TNomenclature as &$n) {
                    <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('Rank'); ?></td>
                    <td class="liste_titre">&nbsp;</td>
-            
+                 <td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td>
+              
                </tr>
                <?php
                        
@@ -213,12 +228,26 @@ foreach($TNomenclature as &$n) {
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100) ?></td>
                            <td><?php echo $ws->nb_hour ?></td>
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
-                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>                         
+                           
+                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
+                           <td align="right"><?php 
+                                $price = $ws->workstation->thm * $ws->nb_hour; 
+                                $total_mo+=$price;
+                                echo price($price) ;
+                           ?></td>                         
                        </tr>
                        <?
                        
                        
                    }
+
+                    ?><tr class="liste_total">
+                           <td><?php echo $langs->trans('Total'); ?></td>
+                           <td colspan="4">&nbsp;</td>
+                           <td>&nbsp;</td>
+                           <td align="right"><?php echo price($total_mo); ?></td>
+                          
+                    </tr><?php
                    
                }
                else{
@@ -226,14 +255,20 @@ foreach($TNomenclature as &$n) {
                    echo '<tr><td colspan="5">'. $langs->trans('WillUseProductWorkstationIfNotSpecified') .'</td></tr>';
                }     
            
-                        
-               ?></table><?php
+                ?>          
+               </table><?php
                             
                             
             ?></td>
         </tr><?php
         }  
-        ?>       
+        ?>     
+        <tr class="liste_total" >
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('Total'); ?></td>
+                       <td colspan="2">&nbsp;</td>
+                       <td style="font-weight: bolder; text-align: right;"><?php echo price($total_mo+$total_produit); ?></td>
+                     
+                </tr>  
         <tr>
             <td align="right" colspan="4">
                 <div class="tabsAction">

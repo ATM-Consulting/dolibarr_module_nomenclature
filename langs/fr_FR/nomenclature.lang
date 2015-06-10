@@ -16,3 +16,4 @@ WillUseProductWorkstationIfNotSpecified=Utilisera la définition globale du prod
 QtyPrepare=Temps de préparation
 QtyFabrication=Temps de fabrication
 Worstations=Postes de travail
+AmountCost=Coût de revient

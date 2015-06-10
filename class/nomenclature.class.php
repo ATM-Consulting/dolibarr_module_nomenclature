@@ -129,6 +129,23 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->product_type=1;        
     }   
+    
+    function getSupplierPrice(&$PDOdb, $qty = 1) {
+        global $db;
+        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price 
+                WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
+     
+        if($obj = $PDOdb->Get_line()) {
+            $price = $obj->price / $obj->quantity * $qty;
+            
+            return $price;
+            
+        }        
+        
+        return 0;
+        
+        
+    }
 }
 
 
