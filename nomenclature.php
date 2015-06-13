@@ -143,7 +143,7 @@ foreach($TNomenclature as &$n) {
                            <td class="liste_titre"><?php echo $langs->trans('Product'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                            <td class="liste_titre">&nbsp;</td>
-                           <td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td>
+                           <?php if($user->rights->nomenclature->showPrice) { ?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php } ?>
                        </tr>
                        <?php
                        $class='';$total_produit = $total_mo  = 0;
@@ -165,16 +165,24 @@ foreach($TNomenclature as &$n) {
                                
                                
                                <td><a href="?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
-                               <td align="right"><?php 
+                               
+                               <?php
+                               
+	                            if($user->rights->nomenclature->showPrice) {
+	                            	
+									echo '<td align="right">'; 
                                     $price = $det->getSupplierPrice($PDOdb, $det->qty); 
                                     $total_produit+=$price;
                                     echo price($price) ;
-                                ?></td>                         
+                                	echo '</td>'; 
+	                            }
+                               ?>                        
                            </tr>
                            <?
                            
                        }
-
+						
+				       if($user->rights->nomenclature->showPrice) {		
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
@@ -182,6 +190,9 @@ foreach($TNomenclature as &$n) {
                            <td align="right"><?php echo price($total_produit); ?></td>
                           
                        </tr>
+                       <?php
+					   }
+                       ?>
                    </table>
                    
                    <?php
@@ -206,7 +217,7 @@ foreach($TNomenclature as &$n) {
                    <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('Rank'); ?></td>
                    <td class="liste_titre">&nbsp;</td>
-                 <td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td>
+                 <?php if($user->rights->nomenclature->showPrice) {		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php } ?>
               
                </tr>
                <?php
@@ -230,25 +241,31 @@ foreach($TNomenclature as &$n) {
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
                            <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
-                           <td align="right"><?php 
-                                $price = $ws->workstation->thm * $ws->nb_hour; 
-                                $total_mo+=$price;
-                                echo price($price) ;
-                           ?></td>                         
-                       </tr>
-                       <?
+                           <?php
+                           
+                           if($user->rights->nomenclature->showPrice) {		
+                           
+	                           echo '<td align="right">'; 
+                               $price = $ws->workstation->thm * $ws->nb_hour; 
+                               $total_mo+=$price;
+                               echo price($price) ;
+	                           echo '</td>';      
+	                           
+	                      }                   
+                       ?></tr>
+                       <?php
                        
                        
                    }
-
-                    ?><tr class="liste_total">
-                           <td><?php echo $langs->trans('Total'); ?></td>
-                           <td colspan="4">&nbsp;</td>
-                           <td>&nbsp;</td>
-                           <td align="right"><?php echo price($total_mo); ?></td>
-                          
-                    </tr><?php
-                   
+					if($user->rights->nomenclature->showPrice) {		
+	                    ?><tr class="liste_total">
+	                           <td><?php echo $langs->trans('Total'); ?></td>
+	                           <td colspan="4">&nbsp;</td>
+	                           <td>&nbsp;</td>
+	                           <td align="right"><?php echo price($total_mo); ?></td>
+	                          
+	                    </tr><?php
+					}
                }
                else{
                         
@@ -262,14 +279,20 @@ foreach($TNomenclature as &$n) {
             ?></td>
         </tr><?php
         }  
-        ?>     
-        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('Total'); ?></td>
-                       <td colspan="2">&nbsp;</td>
-                       <td style="font-weight: bolder; text-align: right;"><?php echo price($total_mo+$total_produit); ?></td>
-                     
-                </tr>  
-        <tr>
+
+
+		if($user->rights->nomenclature->showPrice) {		
+		        ?>     
+		        <tr class="liste_total" >
+		                       <td style="font-weight: bolder;"><?php echo $langs->trans('Total'); ?></td>
+		                       <td colspan="2">&nbsp;</td>
+		                       <td style="font-weight: bolder; text-align: right;"><?php echo price($total_mo+$total_produit); ?></td>
+		                     
+		        </tr>
+		        <?php
+		}
+		
+		?><tr>
             <td align="right" colspan="4">
                 <div class="tabsAction">
                     <?php
