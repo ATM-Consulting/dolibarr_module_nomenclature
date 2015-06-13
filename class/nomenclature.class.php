@@ -49,8 +49,10 @@ class TNomenclature extends TObjetStd
         return $Tab;
         
     }
-    static function get(&$PDOdb, $fk_product) 
+    static function get(&$PDOdb, $fk_product, $forCombo=false) 
     {
+    	global $langs;
+		
         $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE fk_product=".(int) $fk_product);
         
         $TNom=array();
@@ -60,7 +62,13 @@ class TNomenclature extends TObjetStd
             $n=new TNomenclature;
             $n->load($PDOdb, $row->rowid);
             
-            $TNom[] = $n;
+			if($forCombo) {
+				 $TNom[$n->getId()] = '('.$n->getId().') '. ($n->title ? $n->title : $langs->trans('NoTitle') ) .' : '.$n->qty_reference;
+			}
+			else{
+				 $TNom[] = $n;
+			}
+           
             
         }
         
