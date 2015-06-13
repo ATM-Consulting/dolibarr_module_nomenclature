@@ -23,6 +23,42 @@ class TNomenclature extends TObjetStd
         $this->qty_reference = 1;       
         
     }   
+	function load(&$PDOdb, $id, $loadProductWSifEmpty = false) {
+		global $conf;
+		
+		$res = parent::load($PDOdb, $id);
+		
+		if($loadProductWSifEmpty && $conf->workstation->enabled && empty($this->TNomenclatureWorkstation)) {
+			$this->load_product_ws($PDOdb);	
+		}
+		
+		return $res;
+		
+	}
+	
+	function load_product_ws(&$PDOdb) {
+		
+		$this->TNomenclatureWorkstation=array();
+		
+		$sql = "SELECT fk_workstation, nb_hour,nb_hour_prepare,nb_hour_manufacture";
+		$sql.= " FROM ".MAIN_DB_PREFIX."workstation_product";
+		$sql.= " WHERE fk_product = ".$fk_product;
+		$PDOdb->Execute($sql);
+		
+		while($res = $PDOdb->Get_line()) 
+		{
+			$ws = new TWorkstation;
+			$ws->load($PDOdb, $res->fk_workstation);
+			$k = $this->addChild($PDOdb, 'TNomenclatureWorkstation');
+			
+			$this->TNomenclatureWorkstation[$k]->fk_workstation = $ws->getId();
+			$this->TNomenclatureWorkstation[$k]->nb_hour = $res->nb_hour;
+			$this->TNomenclatureWorkstation[$k]->nb_hour_prepare = $res->nb_hour_prepare;
+			$this->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $res->nb_hour_manufacture;
+			$this->TNomenclatureWorkstation[$k]->workstation = $ws;
+		}
+	}
+	
     function getDetails($qty_ref = 1) {
         
         $Tab = array();
@@ -54,7 +90,6 @@ class TNomenclature extends TObjetStd
     	global $langs;
 		
         $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE fk_product=".(int) $fk_product);
-        
         $TNom=array();
         
         foreach($Tab as $row) {
@@ -88,7 +123,7 @@ class TNomenclature extends TObjetStd
 		          ORDER BY is_default DESC, qty_reference DESC
 		          LIMIT 1');
         $res = $PDOdb->Get_line();
-		
+	
 		if ($res)
 		{
 			$TNomenclature->load($PDOdb, $res->rowid);
@@ -98,6 +133,7 @@ class TNomenclature extends TObjetStd
 		else 
 		{
 			$Tab = self::get($PDOdb, $fk_product);
+			
 			if (count($Tab) > 0)
 			{
 				return $Tab[0];
