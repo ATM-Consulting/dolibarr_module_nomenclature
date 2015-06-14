@@ -23,6 +23,14 @@ class TNomenclature extends TObjetStd
         $this->qty_reference = 1;       
         
     }   
+	
+	function __toString() {
+		global $langs;
+		
+		return '('.$this->getId().') '. ($this->title ? $this->title : $langs->trans('Nomenclature') ) .' : '.$this->qty_reference;
+		
+	}
+	
 	function load(&$PDOdb, $id, $loadProductWSifEmpty = false) {
 		global $conf;
 		
@@ -56,6 +64,7 @@ class TNomenclature extends TObjetStd
 			$this->TNomenclatureWorkstation[$k]->nb_hour_prepare = $res->nb_hour_prepare;
 			$this->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $res->nb_hour_manufacture;
 			$this->TNomenclatureWorkstation[$k]->workstation = $ws;
+			
 		}
 	}
 	
