@@ -70,7 +70,7 @@ else if($action==='save_nomenclature') {
         
     }
     
-    $fk_new_product = (int)GETPOST('fk_new_product');
+    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
     if(GETPOST('add_nomenclature') && $fk_new_product>0) {
         
         $k = $n->addChild($PDOdb, 'TNomenclatureDet');
@@ -115,7 +115,7 @@ echo '<script type="text/javascript">
 
 $TNomenclature = TNomenclature::get($PDOdb, $product->id);
 
-foreach($TNomenclature as &$n) {
+foreach($TNomenclature as $iN => &$n) {
 
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
     echo $formCore->hidden('action', 'save_nomenclature');
@@ -309,7 +309,7 @@ foreach($TNomenclature as &$n) {
                     ?>
                     
                     <?php
-                        print $form->select_produits('', 'fk_new_product', '', 0);
+                        print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0);
                     ?>
                    <div class="inline-block divButAction">
                     <input type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
