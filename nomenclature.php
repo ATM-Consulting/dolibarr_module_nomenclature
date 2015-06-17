@@ -40,6 +40,13 @@ else if($action === 'delete_nomenclature_detail') {
     $n->save($PDOdb);
     
 }
+else if($action === 'delete_ws') {
+	
+	$ws = new TNomenclatureWorkstation;
+	$ws->load($PDOdb, GETPOST('fk_workstation'));
+	$ws->delete($PDOdb);
+	
+}
 else if($action==='save_nomenclature') {
     
     $n=new TNomenclature;
@@ -240,7 +247,7 @@ foreach($TNomenclature as $iN => &$n) {
                            <td><?php echo $ws->nb_hour ?></td>
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
-                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
+                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_workstation=<?php echo $ws->getId() ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {		
