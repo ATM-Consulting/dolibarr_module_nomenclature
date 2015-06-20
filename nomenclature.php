@@ -150,7 +150,11 @@ foreach($TNomenclature as $iN => &$n) {
                            <td class="liste_titre"><?php echo $langs->trans('Product'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                            <td class="liste_titre">&nbsp;</td>
-                           <?php if($user->rights->nomenclature->showPrice) { ?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php } ?>
+                           <?php if($user->rights->nomenclature->showPrice) { 
+                           		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php 
+                           		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php
+                           } 
+                           ?>
                        </tr>
                        <?php
                        $class='';$total_produit = $total_mo  = 0;
@@ -176,11 +180,18 @@ foreach($TNomenclature as $iN => &$n) {
                                <?php
                                
 	                            if($user->rights->nomenclature->showPrice) {
-	                            	
-									echo '<td align="right">'; 
-                                    $price = $det->getSupplierPrice($PDOdb, $det->qty); 
+	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty); 
                                     $total_produit+=$price;
+									
+									$coef = ( $det->product_type == 3) ? $conf->global->NOMENCLATURE_COEF_CONSOMMABLE : $conf->global->NOMENCLATURE_COEF_FOURNITURE;
+									$total_produit_coef+=$price * $coef;
+									
+                                   
+									echo '<td align="right">'; 
                                     echo price($price) ;
+                                	echo '</td>'; 
+									echo '<td align="right">'; 
+                                    echo price(round($price * $coef,2)) ;
                                 	echo '</td>'; 
 	                            }
                                ?>                        
@@ -194,7 +205,8 @@ foreach($TNomenclature as $iN => &$n) {
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td colspan="3">&nbsp;</td>
-                           <td align="right"><?php echo price($total_produit); ?></td>
+                           <td align="right"><?php echo price(round($total_produit,2)); ?></td>
+                           <td align="right"><?php echo price(round($total_produit_coef,2)); ?></td>
                           
                        </tr>
                        <?php
@@ -224,7 +236,10 @@ foreach($TNomenclature as $iN => &$n) {
                    <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('Rank'); ?></td>
                    <td class="liste_titre">&nbsp;</td>
-                 <?php if($user->rights->nomenclature->showPrice) {		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php } ?>
+                 <?php if($user->rights->nomenclature->showPrice) {		
+                 	?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php } 
+                 	
+                 ?>
               
                </tr>
                <?php
@@ -288,13 +303,19 @@ foreach($TNomenclature as $iN => &$n) {
         }  
 
 
-		if($user->rights->nomenclature->showPrice) {		
+		if($user->rights->nomenclature->showPrice) {
+				$PR_coef = $total_mo+$total_produit_coef;
+					
 		        ?>     
 		        <tr class="liste_total" >
-		                       <td style="font-weight: bolder;"><?php echo $langs->trans('Total'); ?></td>
-		                       <td colspan="2">&nbsp;</td>
-		                       <td style="font-weight: bolder; text-align: right;"><?php echo price($total_mo+$total_produit); ?></td>
-		                     
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('AmountCostWithCharge'); ?></td>
+                       <td colspan="2">&nbsp;</td>
+                       <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef,2)); ?></td>
+		        </tr>
+		        <tr class="liste_total" >
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $conf->global->NOMENCLATURE_COEF_MARGE); ?></td>
+                       <td colspan="2">&nbsp;</td>
+                       <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2)); ?></td>
 		        </tr>
 		        <?php
 		}
