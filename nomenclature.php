@@ -99,6 +99,7 @@ else if($action==='save_nomenclature') {
         $det->rang = $k+1; 
     }
     
+	setEventMessage($langs->trans('NomenclatureSaved'));
     
     $n->save($PDOdb);    
 }
