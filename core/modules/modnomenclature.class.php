@@ -110,7 +110,12 @@ class modnomenclature extends DolibarrModules
 		// Example: $this->const=array(0=>array('MYMODULE_MYNEWCONST1','chaine','myvalue','This is a constant to add',1),
 		//                             1=>array('MYMODULE_MYNEWCONST2','chaine','myvalue','This is another constant to add',0, 'current', 1)
 		// );
-		$this->const = array();
+		$this->const = array(
+		
+			array('NOMENCLATURE_COEF_FOURNITURE','chaine','1.1','Coef. de frais généraux (stockage, appro, ...) sur Fourniture',1),
+			array('NOMENCLATURE_COEF_CONSOMMABLE','chaine','1.05','Coef. de frais généraux (stockage, appro, ...) sur consmmable',1),
+			array('NOMENCLATURE_COEF_MARGE','chaine','20','Coef. de marge sur prix de vente (en %)',1),
+		);
 
 		// Array to add new pages in new tabs
 		// Example: $this->tabs = array('objecttype:+tabname1:Title1:mylangfile@nomenclature:$user->rights->nomenclature->read:/nomenclature/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1

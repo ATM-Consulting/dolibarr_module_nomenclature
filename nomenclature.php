@@ -70,7 +70,7 @@ else if($action==='save_nomenclature') {
         
     }
     
-    $fk_new_product = (int)GETPOST('fk_new_product');
+	$fk_new_product = (int)GETPOST('fk_new_product');
     if(GETPOST('add_nomenclature') && $fk_new_product>0) {
         
         $k = $n->addChild($PDOdb, 'TNomenclatureDet');
@@ -93,7 +93,9 @@ else if($action==='save_nomenclature') {
     }
     
     
-    $n->save($PDOdb);    
+    $n->save($PDOdb);
+	
+	setEventMessage($langs->trans('NomenclatureModificationSaved'));    
 }
 
 
@@ -358,7 +360,7 @@ function headerProduct(&$object) {
     print '</tr>';
     
     // Label
-    print '<tr><td>' . $langs->trans("Label") . '</td><td>' . $object->libelle . '</td>';
+    print '<tr><td>' . $langs->trans("Label") . '</td><td>' . ($object->label ? $object->label : $object->libelle) . '</td>';
     
     $isphoto = $object->is_photo_available($conf->product->multidir_output [$object->entity]);
     
