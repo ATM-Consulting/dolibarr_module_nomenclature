@@ -1,5 +1,7 @@
 <?php
 
+dol_include_once('/workstation/class/workstation.class.php');
+
 class TNomenclature extends TObjetStd
 {
     

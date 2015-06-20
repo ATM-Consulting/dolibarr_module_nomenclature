@@ -40,6 +40,13 @@ else if($action === 'delete_nomenclature_detail') {
     $n->save($PDOdb);
     
 }
+else if($action === 'delete_ws') {
+	
+	$ws = new TNomenclatureWorkstation;
+	$ws->load($PDOdb, GETPOST('fk_workstation'));
+	$ws->delete($PDOdb);
+	
+}
 else if($action==='save_nomenclature') {
     
     $n=new TNomenclature;
@@ -70,7 +77,7 @@ else if($action==='save_nomenclature') {
         
     }
     
-	$fk_new_product = (int)GETPOST('fk_new_product');
+    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
     if(GETPOST('add_nomenclature') && $fk_new_product>0) {
         
         $k = $n->addChild($PDOdb, 'TNomenclatureDet');
@@ -93,9 +100,7 @@ else if($action==='save_nomenclature') {
     }
     
     
-    $n->save($PDOdb);
-	
-	setEventMessage($langs->trans('NomenclatureModificationSaved'));    
+    $n->save($PDOdb);    
 }
 
 
@@ -117,7 +122,7 @@ echo '<script type="text/javascript">
 
 $TNomenclature = TNomenclature::get($PDOdb, $product->id);
 
-foreach($TNomenclature as &$n) {
+foreach($TNomenclature as $iN => &$n) {
 
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
     echo $formCore->hidden('action', 'save_nomenclature');
@@ -242,7 +247,7 @@ foreach($TNomenclature as &$n) {
                            <td><?php echo $ws->nb_hour ?></td>
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
-                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
+                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_workstation=<?php echo $ws->getId() ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {		
@@ -303,7 +308,8 @@ foreach($TNomenclature as &$n) {
                            
                            echo $formCore->combo('', 'fk_new_workstation', TWorkstation::getWorstations($PDOdb), -1);
                         ?>
-                        <div class="inline-block divButAction">                        <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
+                        <div class="inline-block divButAction">
+                        <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
                         </div>
                         <?
                     }
@@ -311,7 +317,7 @@ foreach($TNomenclature as &$n) {
                     ?>
                     
                     <?php
-                        print $form->select_produits('', 'fk_new_product', '', 0);
+                        print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0);
                     ?>
                    <div class="inline-block divButAction">
                     <input type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
