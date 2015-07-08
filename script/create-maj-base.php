@@ -26,3 +26,12 @@ $o->init_db_by_vars($PDOdb);
 
 $o=new TNomenclatureWorkstation($db);
 $o->init_db_by_vars($PDOdb);
+
+$o = new TNomenclatureLine($db);
+$o->init_db_by_vars($PDOdb);
+
+$o = new TNomenclatureLineDet($db);
+$o->init_db_by_vars($PDOdb);
+
+$o = new TNomenclatureLineWorkstation($db);
+$o->init_db_by_vars($PDOdb);

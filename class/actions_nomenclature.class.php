@@ -61,28 +61,38 @@ class Actionsnomenclature
 	 */
 	function doActions($parameters, &$object, &$action, $hookmanager)
 	{
-		$error = 0; // Error counter
-		$myvalue = 'test'; // A result value
 
-		print_r($parameters);
-		echo "action: " . $action;
-		print_r($object);
-
-		if (in_array('somecontext', explode(':', $parameters['context'])))
-		{
-		  // do something only for the context 'somecontext'
-		}
-
-		if (! $error)
-		{
-			$this->results = array('myreturn' => $myvalue);
-			$this->resprints = 'A text to show';
-			return 0; // or return 1 to replace standard code
-		}
-		else
-		{
-			$this->errors[] = 'Error message';
-			return -1;
-		}
 	}
+
+	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
+	{
+		global $langs;
+		$TContext = explode(':', $parameters['context']);		
+		
+		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
+		{
+			if($object->status == 0) {
+				print '<script type="text/javascript"> $(document).ready(function() {';
+				
+			  	foreach($object->lines as &$line) {
+			  		
+					if($line->fk_product>0 && $line->product_type == 0) {
+						
+						$lineid = empty($line->id) ? $line->rowid : $line->id;
+						
+						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.',"'.$object->objectname.'")">'.img_picto($langs->trans('Nomenclature','object_list'), $picto).'</a>\');';
+						
+					}
+					 
+			  	}
+				
+				print '});';
+				
+			}
+			
+		}
+
+		return 0; // or return 1 to replace standard code
+	}
+
 }

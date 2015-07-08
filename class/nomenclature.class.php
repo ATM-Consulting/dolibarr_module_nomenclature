@@ -224,7 +224,29 @@ class TNomenclatureLine extends TObjetStd
 		$this->setChild('TNomenclatureLineDet', 'fk_nomenclature_line');
         if($conf->workstation->enabled) $this->setChild('TNomenclatureLineWorkstation', 'fk_nomenclature_line');     
 
+        $this->TNomenclatureDet = $this->TNomenclatureDetOriginal = array();
+        $this->TNomenclatureWorkstation = $this->TNomenclatureWorkstationOriginal = array();
     }   
+    
+    function load(&$PDOdb, $id) {
+    			
+    	$res = parent::load($PDOdb, $id);
+    	$this->load_original($PDOdb);
+    	
+    	return $res;	
+    	
+    }
+	
+	function load_original(&$PDOdb) {
+		
+		$n = new TNomenclature;
+		$n->load($PDOdb, $this->fk_nomenclature);
+		
+		$this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
+		$this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
+		
+		
+	}
 
 }
 class TNomenclatureLineDet extends TObjetStd
