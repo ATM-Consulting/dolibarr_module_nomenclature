@@ -204,6 +204,50 @@ class TNomenclatureDet extends TObjetStd
 }
 
 
+class TNomenclatureLine extends TObjetStd
+{
+    
+    
+    function __construct() 
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_line');
+        $this->add_champs('fk_nomenclature,fk_object,fk_line',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
+        
+        $this->_init_vars();
+        
+        $this->start();
+        
+        $this->qty=1;
+        $this->product_type=1;        
+
+		$this->setChild('TNomenclatureLineDet', 'fk_nomenclature_line');
+        if($conf->workstation->enabled) $this->setChild('TNomenclatureLineWorkstation', 'fk_nomenclature_line');     
+
+    }   
+
+}
+class TNomenclatureLineDet extends TObjetStd
+{
+    
+    function __construct() 
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_line_det');
+        $this->add_champs('fk_product,product_type,fk_nomenclature_line',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('qty',array('type'=>'float'));
+        
+        $this->_init_vars();
+        
+        $this->start();
+        
+        $this->qty=1;
+        $this->product_type=1;
+		
+                
+    }   
+    
+}
+
 class TNomenclatureWorkstation extends TObjetStd
 {
     
@@ -239,3 +283,39 @@ class TNomenclatureWorkstation extends TObjetStd
     }
     
 }
+
+class TNomenclatureLineWorkstation extends TObjetStd
+{
+    
+    
+    function __construct() 
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_line_workstation');
+        $this->add_champs('fk_workstation,fk_nomenclature_line,rang',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
+        
+        $this->_init_vars();
+        
+        $this->start();
+        
+        $this->qty=1;
+        $this->product_type=1;        
+    }   
+    function load(&$PDOdb, $id, $annexe = true) {
+        parent::load($PDOdb, $id);
+        
+        if($annexe) {
+            $this->workstation = new TWorkstation;
+            $this->workstation->load($PDOdb, $this->fk_workstation);    
+        }
+         
+        
+    }
+    function save(&$PDOdb) {
+        $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
+        
+        parent::save($PDOdb);    
+    }
+    
+}
+
