@@ -89,7 +89,7 @@ else if($action==='save_nomenclature') {
     }
     
     $fk_new_workstation = GETPOST('fk_new_workstation');
-    if(GETPOST('add_workstation') && $fk_new_workstation>0) {
+    if(GETPOST('add_workstation') && $fk_new_workstation>0 && !$n->isWorkstationAssociated($fk_new_workstation)) {
         
         $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
         
