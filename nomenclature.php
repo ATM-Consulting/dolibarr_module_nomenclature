@@ -186,12 +186,16 @@ foreach($TNomenclature as $iN => &$n) {
 									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
 									$resql = $db->query($q);
 									$res = $db->fetch_object($resql);
-									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY) && $res->fk_availability > 0)
+									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 									{
-										$form->load_cache_availability();
-										$availability=$form->cache_availability[$res->fk_availability]['label'];
-										echo '<td>'.$availability.'</td>';
-										$availability='';
+										echo '<td>';
+										if($res->fk_availability > 0) {
+											$form->load_cache_availability();
+											$availability=$form->cache_availability[$res->fk_availability]['label'];
+											echo $availability;
+											$availability='';
+										}
+										echo '</td>';
 									}
 									
                                     
@@ -245,11 +249,13 @@ foreach($TNomenclature as $iN => &$n) {
                            
                        }
 						
-				       if($user->rights->nomenclature->showPrice) {		
+				       if($user->rights->nomenclature->showPrice) {
+				       	$colspan = 5;
+						   if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;		
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
-                           <td colspan="5">&nbsp;</td>
+                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price(round($total_produit,2)); ?></td>
                            <td align="right"><?php echo price(round($total_produit_coef,2)); ?></td>
                           
