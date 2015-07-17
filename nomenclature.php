@@ -208,7 +208,10 @@ foreach($TNomenclature as $iN => &$n) {
                                		if($conf->asset->enabled){
                                			
                                			// On récupère les quantités dans les OF
-                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.type FROM '.MAIN_DB_PREFIX.'assetOf of INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid) WHERE of.status NOT IN("DRAFT","CLOSE") AND fk_product = '.$p_nomdet->id;
+                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.type 
+                               					FROM '.MAIN_DB_PREFIX.'assetOf of 
+                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid) 
+                               					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
 	                               		$resql = $db->query($q);
 										
 										// On régule le stock théorique en fonction de ces quantités
@@ -319,7 +322,7 @@ foreach($TNomenclature as $iN => &$n) {
                            if($user->rights->nomenclature->showPrice) {		
                            
 	                           echo '<td align="right">'; 
-                               $price = $ws->workstation->thm * $ws->nb_hour; 
+                               $price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour; 
                                $total_mo+=$price;
                                echo price($price) ;
 	                           echo '</td>';      
