@@ -149,6 +149,13 @@ foreach($TNomenclature as $iN => &$n) {
                        <tr class="liste_titre">
                            <td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Product'); ?></td>
+                           <?php   
+		                        if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
+								{
+									print '<td class="liste_titre">'.$langs->trans('Availability').'</td>';
+								}
+							?>
+                           
                            <td class="liste_titre"><?php echo $langs->trans('PhysicalStock'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('VirtualStock'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
@@ -174,6 +181,19 @@ foreach($TNomenclature as $iN => &$n) {
                                     
                                     echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
 									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock();
+									
+									// On récupère le dernier tarif fournisseur pour ce produit
+									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
+									$resql = $db->query($q);
+									$res = $db->fetch_object($resql);
+									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY) && $res->fk_availability > 0)
+									{
+										$form->load_cache_availability();
+										$availability=$form->cache_availability[$res->fk_availability]['label'];
+										echo '<td>'.$availability.'</td>';
+										$availability='';
+									}
+									
                                     
                                ?></td>
                                <td>
