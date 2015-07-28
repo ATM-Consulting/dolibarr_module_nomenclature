@@ -19,9 +19,7 @@ function _get(&$PDOdb, $case) {
     switch ($case) {
         case 'nomenclature-line':
             
-            $n=new TNomenclatureLine;
-            $n->load($PDOdb,(int)GETPOST('lineid'), (float)GETPOST('qty'));
-            __out((array)$n);
+            __out(_get_nomenclature_line());
             
             break;
         
@@ -37,4 +35,9 @@ function _put(&$PDOdb, $case) {
         
     }
     
+}
+function _get_nomenclature_line() {
+	
+	
+	
 }

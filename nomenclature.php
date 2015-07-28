@@ -13,14 +13,16 @@ if($conf->workstation->enabled) {
     
 $langs->load("stocks");
 
-llxHeader('','Nomenclature');
-
 $product = new Product($db);
 $product->fetch(GETPOST('fk_product'), GETPOST('ref'));
 
 $action= GETPOST('action');
 
 $PDOdb=new TPDOdb;
+
+$fk_line=(int)GETPOST('fk_line');
+$object_type = GETPOST('object_type');
+$qty_ref = (float)GETPOST('qty');
 
 if($action==='add_nomenclature') {
     
@@ -32,20 +34,71 @@ if($action==='add_nomenclature') {
 }
 else if($action === 'delete_nomenclature_detail') {
     
-    $n=new TNomenclature;
+	if($fk_line>0)$n=new TNomenclatureLine;
+	else $n=new TNomenclature;
+	
     $n->load($PDOdb, GETPOST('fk_nomenclature'));
     
-    $n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
+	if($fk_line>0) $n->TNomenclatureLineDet[GETPOST('k')]->to_delete = true;
+	else  $n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
     
     $n->save($PDOdb);
     
 }
 else if($action === 'delete_ws') {
 	
-	$ws = new TNomenclatureWorkstation;
+	if($fk_line>0) $ws = new TNomenclatureLineWorkstation;
+	else $ws = new TNomenclatureWorkstation;
+	
 	$ws->load($PDOdb, GETPOST('fk_workstation'));
 	$ws->delete($PDOdb);
 	
+}
+else if($action==='save_nomenclature' && $fk_line>0) {
+    $n=new TNomenclatureLine;
+    $n->loadByLineId($PDOdb, $fk_line, $object_type, $product->id, $qty_ref);
+	$n->set_values($_POST);
+	
+    if(!empty($_POST['TNomenclature'])) {
+        foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
+            
+            $n->TNomenclatureLineDet[$k]->set_values($TDetValues);
+                    
+        }
+    }
+    
+    if(!empty($_POST['TNomenclatureWorkstation'])) {
+        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
+            
+            $n->TNomenclatureLineWorkstation[$k]->set_values($TDetValues);
+                    
+        }
+    }
+    
+    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
+    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
+        
+        $k = $n->addChild($PDOdb, 'TNomenclatureLineDet');
+        
+        $det = &$n->TNomenclatureLineDet[$k];
+        
+        $det->fk_product = $fk_new_product;
+        
+    }
+    
+    $fk_new_workstation = GETPOST('fk_new_workstation');
+    if(GETPOST('add_workstation') && $fk_new_workstation>0) {
+        
+        $k = $n->addChild($PDOdb, 'TNomenclatureLineWorkstation');
+        
+        $det = &$n->TNomenclatureLineWorkstation[$k];
+        
+        $det->fk_workstation = $fk_new_workstation;
+        $det->rang = $k+1; 
+    }
+    
+    $n->save($PDOdb);    
+
 }
 else if($action==='save_nomenclature') {
     
@@ -104,45 +157,97 @@ else if($action==='save_nomenclature') {
     $n->save($PDOdb);    
 }
 
+if($fk_line>0) {
+	
+	$n=new TNomenclatureLine;
+    $n->loadByLineId($PDOdb,$fk_line, $object_type, $product->id, $qty_ref);
+    
+	_fiche_nomenclature($PDOdb, $n, $product, $fk_line, $object_type, $qty_ref);
+}
+else{
+	_show_product_nomenclature($PDOdb, $product);	
+}
 
-$head=product_prepare_head($product, $user);
-$titre=$langs->trans('Nomenclature');
-$picto=($product->type==1?'service':'product');
-dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
 
-headerProduct($product);
 
-$form=new Form($db);
+$db->close();
+function _show_product_nomenclature(&$PDOdb, &$product) {
+	global $user, $langs, $db, $conf;
+	
+	llxHeader('','Nomenclature');
 
-echo '<script type="text/javascript">
-	function uncheckOther(obj)
-	{
-		$("input[name=is_default]").not($(obj)).prop("checked", false);	
+		
+	$head=product_prepare_head($product, $user);
+	$titre=$langs->trans('Nomenclature');
+	$picto=($product->type==1?'service':'product');
+	dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
+	
+	headerProduct($product);
+	
+	?><script type="text/javascript">
+		function uncheckOther(obj)
+		{
+			$("input[name=is_default]").not($(obj)).prop("checked", false);	
+		}
+	</script><?php
+	
+	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
+	
+	foreach($TNomenclature as $iN => &$n) {
+	
+	    _fiche_nomenclature($PDOdb, $n, $product);
+		        
 	}
-</script>';
+	
+	
+	?>
+	<div class="tabsAction">
+	<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
+	</div>
+	<?php
+	
+	dol_fiche_end();
+	
+	  
+	
+	llxFooter();
+		
+	
+}
+function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type='', $qty_ref=1) {
+	global $langs, $conf, $db;
 
-$TNomenclature = TNomenclature::get($PDOdb, $product->id);
-
-foreach($TNomenclature as $iN => &$n) {
-
+	$form=new Form($db);
+	
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
     echo $formCore->hidden('action', 'save_nomenclature');
     echo $formCore->hidden('fk_nomenclature', $n->getId());
     echo $formCore->hidden('fk_product', $product->id);
-    
-    ?>
-    <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>">
-        <tr class="liste_titre">
-            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId(); ?></td>
-            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
-            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
-            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
-        </tr>
-        <tr>
+    echo $formCore->hidden('fk_line', $fk_line);
+    echo $formCore->hidden('object_type', $object_type);
+    echo $formCore->hidden('qty_ref', $qty_ref);
+	
+	$line_object = ($fk_line>0);
+	
+	?>
+    <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
+    	if(!$line_object) {
+	        ?><tr class="liste_titre">
+	            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId(); ?></td>
+	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
+	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
+	            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
+	        </tr><?php
+        }
+        
+        ?><tr>
            <td colspan="4">
                <?php
                
-               if(count($n->TNomenclatureDet>0)) {
+               if($line_object)$TNomenclatureDet = &$n->TNomenclatureLineDet;
+			   else $TNomenclatureDet = &$n->TNomenclatureDet;
+               
+               if(count($TNomenclatureDet>0)) {
                    
                    ?>
                    <table width="100%" class="liste">
@@ -168,7 +273,7 @@ foreach($TNomenclature as $iN => &$n) {
                        </tr>
                        <?php
                        $class='';$total_produit = $total_mo  = 0;
-                       foreach($n->TNomenclatureDet as $k=>&$det) {
+                       foreach($TNomenclatureDet as $k=>&$det) {
                            
                            $class = ($class == 'impair') ? 'pair' : 'impair';
                            
@@ -227,7 +332,10 @@ foreach($TNomenclature as $iN => &$n) {
                                <td><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
                                
                                
-                               <td><a href="?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php echo $n->getId() ?>&fk_product=<?php echo $product->id ?>"><?php echo img_delete() ?></a></td>
+                               <td><a href="?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
+                               echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_line=<?php 
+                               echo $fk_line ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php 
+                               echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
                                
                                <?php
                                
@@ -253,8 +361,8 @@ foreach($TNomenclature as $iN => &$n) {
                        }
 						
 				       if($user->rights->nomenclature->showPrice) {
-				       	$colspan = 5;
-						   if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;		
+				       		$colspan = 5;
+							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;		
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
@@ -298,9 +406,12 @@ foreach($TNomenclature as $iN => &$n) {
                </tr>
                <?php
                        
-               if(!empty($n->TNomenclatureWorkstation)) {
+               if($line_object) $TNomenclatureWorkstation = &$n->TNomenclatureLineWorkstation;
+			   else $TNomenclatureWorkstation = &$n->TNomenclatureWorkstation;
+                       
+               if(!empty($TNomenclatureWorkstation)) {
                   
-                   foreach($n->TNomenclatureWorkstation as $k=>&$ws) {
+                   foreach($TNomenclatureWorkstation as $k=>&$ws) {
                        
                        $class = ($class == 'impair') ? 'pair' : 'impair';
                        
@@ -316,7 +427,9 @@ foreach($TNomenclature as $iN => &$n) {
                            <td><?php echo $ws->nb_hour ?></td>
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
-                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_workstation=<?php echo $ws->getId() ?>"><?php echo img_delete() ?></a></td>
+                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_workstation=<?php 
+                           echo $ws->getId() ?>&fk_line=<?php echo $fk_line ?>&object_type=<?php 
+                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {		
@@ -405,25 +518,10 @@ foreach($TNomenclature as $iN => &$n) {
         </tr>
     </table>
     <?php
-    
+	
     $formCore->end();
-    
+	
 }
-
-
-?>
-<div class="tabsAction">
-<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
-</div>
-<?php
-
-dol_fiche_end();
-
-  
-
-llxFooter();
-$db->close();
-
 
 function headerProduct(&$object) {
    global $langs, $conf, $db; 

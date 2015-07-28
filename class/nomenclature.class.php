@@ -248,36 +248,34 @@ class TNomenclatureLine extends TObjetStd
         
     }   
     
+	function loadByLineId(&$PDOdb, $lineid, $object_type, $fk_product = 0, $qty = 1) {
+		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." 
+			WHERE fk_line=".(int)$lineid." AND object_type='".$object_type."'");
+			
+		$res = false;
+		if($obj = $PDOdb->Get_line()) $res = $this->load($PDOdb, $obj->rowid, $fk_product, $qty);
+		else $this->load_original($PDOdb, $fk_product, $qty);
+		
+		return $res; 
+			
+	}
+	
     function load(&$PDOdb, $id, $fk_product = 0, $qty = 1) {
     			
     	$res = parent::load($PDOdb, $id);
+    	
     	$this->load_original($PDOdb, $fk_product, $qty);
     	
-        if(empty($this->TNomenclatureLineDet) && !empty($this->TNomenclatureDetOriginal)) {
-            
-            foreach($this->TNomenclatureDetOriginal as $k => &$det) {
-                $this->TNomenclatureLineDet[$k] = new TNomenclatureLineDet;
-                $this->TNomenclatureLineDet[$k]->set_values((array)$det);
-            }
-            foreach($this->TNomenclatureWorkstationOriginal as $k => &$det) {
-                $this->TNomenclatureLineWorkstation[$k] = new TNomenclatureLineWorkstation;
-                $this->TNomenclatureLineWorkstation[$k]->set_values((array)$det);
-            }
-        }
-        else{
-            $this->iExist = true;
-        }
-        
     	return $res;	
     	
     }
 	
 	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
 		
-        
-        
         if($this->fk_nomenclature == 0) {
             $n = TNomenclature::getDefaultNomenclature($PDOdb, $fk_product, $qty);
+            if($n === false) return false;
+            
             $this->fk_nomenclature = $n->getId();
         }
         else {
@@ -288,6 +286,23 @@ class TNomenclatureLine extends TObjetStd
 		$this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
 		$this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
 		
+		if(empty($this->TNomenclatureLineDet) && !empty($this->TNomenclatureDetOriginal)) {
+            
+            foreach($this->TNomenclatureDetOriginal as $k => &$det) {
+                $this->TNomenclatureLineDet[$k] = new TNomenclatureLineDet;
+                $this->TNomenclatureLineDet[$k]->set_values((array)$det);
+            }
+            foreach($this->TNomenclatureWorkstationOriginal as $k => &$det) {
+                $this->TNomenclatureLineWorkstation[$k] = new TNomenclatureLineWorkstation;
+                $this->TNomenclatureLineWorkstation[$k]->set_values((array)$det);
+				$this->TNomenclatureLineWorkstation[$k]->workstation = $det->workstation;
+            }
+        }
+        else{
+            $this->iExist = true;
+        }
+		
+		return true;
 	}
 
 }
