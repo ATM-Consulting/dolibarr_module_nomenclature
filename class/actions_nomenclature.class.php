@@ -72,7 +72,11 @@ class Actionsnomenclature
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
 			if($object->status == 0) {
-				print '<script type="text/javascript"> $(document).ready(function() {';
+				?>
+				<script type="text/javascript" src="<?php echo dol_buildpath('/nomenclature/js/nomenclature.js.php',1); ?>"></script>
+				<script type="text/javascript"> 
+				$(document).ready(function() {
+				    <?php
 				
 			  	foreach($object->lines as &$line) {
 			  		
@@ -80,13 +84,14 @@ class Actionsnomenclature
 						
 						$lineid = empty($line->id) ? $line->rowid : $line->id;
 						
-						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.',"'.$object->objectname.'")">'.img_picto($langs->trans('Nomenclature','object_list'), $picto).'</a>\');';
+						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.','.$line->qty.','.$line->fk_product.',\\\''.$object->element.'\\\')">'.img_picto($langs->trans('Nomenclature'),'object_list').'</a>\');';
 						
 					}
 					 
 			  	}
 				
-				print '});';
+				?> });
+				</script><?php
 				
 			}
 			

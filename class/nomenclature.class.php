@@ -241,27 +241,52 @@ class TNomenclatureLine extends TObjetStd
 		$this->setChild('TNomenclatureLineDet', 'fk_nomenclature_line');
         if($conf->workstation->enabled) $this->setChild('TNomenclatureLineWorkstation', 'fk_nomenclature_line');     
 
-        $this->TNomenclatureDet = $this->TNomenclatureDetOriginal = array();
-        $this->TNomenclatureWorkstation = $this->TNomenclatureWorkstationOriginal = array();
+        $this->TNomenclatureLineDet = $this->TNomenclatureDetOriginal = array();
+        $this->TNomenclatureLineWorkstation = $this->TNomenclatureWorkstationOriginal = array();
+        
+        $this->iExist = false;
+        
     }   
     
-    function load(&$PDOdb, $id) {
+    function load(&$PDOdb, $id, $fk_product = 0, $qty = 1) {
     			
     	$res = parent::load($PDOdb, $id);
-    	$this->load_original($PDOdb);
+    	$this->load_original($PDOdb, $fk_product, $qty);
     	
+        if(empty($this->TNomenclatureLineDet) && !empty($this->TNomenclatureDetOriginal)) {
+            
+            foreach($this->TNomenclatureDetOriginal as $k => &$det) {
+                $this->TNomenclatureLineDet[$k] = new TNomenclatureLineDet;
+                $this->TNomenclatureLineDet[$k]->set_values((array)$det);
+            }
+            foreach($this->TNomenclatureWorkstationOriginal as $k => &$det) {
+                $this->TNomenclatureLineWorkstation[$k] = new TNomenclatureLineWorkstation;
+                $this->TNomenclatureLineWorkstation[$k]->set_values((array)$det);
+            }
+        }
+        else{
+            $this->iExist = true;
+        }
+        
     	return $res;	
     	
     }
 	
-	function load_original(&$PDOdb) {
+	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
 		
-		$n = new TNomenclature;
-		$n->load($PDOdb, $this->fk_nomenclature);
-		
+        
+        
+        if($this->fk_nomenclature == 0) {
+            $n = TNomenclature::getDefaultNomenclature($PDOdb, $fk_product, $qty);
+            $this->fk_nomenclature = $n->getId();
+        }
+        else {
+            $n = new TNomenclature;
+            $n->load($PDOdb, $this->fk_nomenclature);
+        }
+        
 		$this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
 		$this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
-		
 		
 	}
 

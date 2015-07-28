@@ -89,7 +89,6 @@ class modnomenclature extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'hooks'=>array('propalcard','ordercard')
-		
 		);
 
 		// Data directories to create when module is enabled.

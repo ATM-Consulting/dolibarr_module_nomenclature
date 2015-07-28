@@ -131,7 +131,7 @@ foreach($TNomenclature as $iN => &$n) {
     echo $formCore->hidden('fk_product', $product->id);
     
     ?>
-    <table class="liste" width="100%">
+    <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>">
         <tr class="liste_titre">
             <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId(); ?></td>
             <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
