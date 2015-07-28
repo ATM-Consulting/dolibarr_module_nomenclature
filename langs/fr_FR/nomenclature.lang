@@ -19,3 +19,6 @@ Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
 PriceConseil=Prix de vente conseillé (Marge %s %%)
+
+NomenclatureSaved=Nomenclature enregistrée
+WorkstationAlreadyAssociated=Ce poste de charge est déjà associé à cette nomenclature

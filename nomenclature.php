@@ -11,7 +11,7 @@ if($conf->workstation->enabled) {
     dol_include_once('/workstation/class/workstation.class.php');
 }
     
-
+$langs->load("stocks");
 
 llxHeader('','Nomenclature');
 
@@ -89,7 +89,7 @@ else if($action==='save_nomenclature') {
     }
     
     $fk_new_workstation = GETPOST('fk_new_workstation');
-    if(GETPOST('add_workstation') && $fk_new_workstation>0) {
+    if(GETPOST('add_workstation') && $fk_new_workstation>0 && !$n->isWorkstationAssociated($fk_new_workstation)) {
         
         $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
         
@@ -149,6 +149,15 @@ foreach($TNomenclature as $iN => &$n) {
                        <tr class="liste_titre">
                            <td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Product'); ?></td>
+                           <?php   
+		                        if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
+								{
+									print '<td class="liste_titre">'.$langs->trans('Availability').'</td>';
+								}
+							?>
+                           
+                           <td class="liste_titre"><?php echo $langs->trans('PhysicalStock'); ?></td>
+                           <td class="liste_titre"><?php echo $langs->trans('VirtualStock'); ?></td>
                            <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                            <td class="liste_titre">&nbsp;</td>
                            <?php if($user->rights->nomenclature->showPrice) { 
@@ -171,8 +180,50 @@ foreach($TNomenclature as $iN => &$n) {
                                     $p_nomdet->fetch($det->fk_product);
                                     
                                     echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
+									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock();
+									
+									// On récupère le dernier tarif fournisseur pour ce produit
+									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
+									$resql = $db->query($q);
+									$res = $db->fetch_object($resql);
+									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
+									{
+										echo '<td>';
+										if($res->fk_availability > 0) {
+											$form->load_cache_availability();
+											$availability=$form->cache_availability[$res->fk_availability]['label'];
+											echo $availability;
+											$availability='';
+										}
+										echo '</td>';
+									}
+									
                                     
-                               ?></td>    
+                               ?></td>
+                               <td>
+                               	<?php echo $p_nomdet->stock_reel; ?>
+                               </td>    
+                               <td>
+                               	<?php
+                               		if($conf->asset->enabled){
+                               			
+                               			// On récupère les quantités dans les OF
+                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.type 
+                               					FROM '.MAIN_DB_PREFIX.'assetOf of 
+                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid) 
+                               					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
+	                               		$resql = $db->query($q);
+										
+										// On régule le stock théorique en fonction de ces quantités
+										while($res = $db->fetch_object($resql)) {
+											if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
+											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= $res->qty_needed;
+										}
+										
+									}
+                               		echo $p_nomdet->stock_theorique; 
+                               	?>
+                               </td>    
                                <td><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
                                
                                
@@ -201,11 +252,13 @@ foreach($TNomenclature as $iN => &$n) {
                            
                        }
 						
-				       if($user->rights->nomenclature->showPrice) {		
+				       if($user->rights->nomenclature->showPrice) {
+				       	$colspan = 5;
+						   if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;		
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
-                           <td colspan="3">&nbsp;</td>
+                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price(round($total_produit,2)); ?></td>
                            <td align="right"><?php echo price(round($total_produit_coef,2)); ?></td>
                           
@@ -269,7 +322,7 @@ foreach($TNomenclature as $iN => &$n) {
                            if($user->rights->nomenclature->showPrice) {		
                            
 	                           echo '<td align="right">'; 
-                               $price = $ws->workstation->thm * $ws->nb_hour; 
+                               $price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour; 
                                $total_mo+=$price;
                                echo price($price) ;
 	                           echo '</td>';      

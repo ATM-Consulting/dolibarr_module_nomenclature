@@ -158,6 +158,23 @@ class TNomenclature extends TObjetStd
 	{
 		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_product = '.(int) $fk_product);
 	}
+	
+	function isWorkstationAssociated($fk_new_workstation) {
+		
+		global $langs;
+		
+		if(empty($this->TNomenclatureWorkstation)) return false;
+		
+		foreach ($this->TNomenclatureWorkstation as $ws) {
+			if($ws->fk_workstation == $fk_new_workstation) {
+				setEventMessage($langs->trans('WorkstationAlreadyAssociated'), 'errors');
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
     
 }
 
