@@ -11,9 +11,10 @@ class TNomenclature extends TObjetStd
         
         $this->set_table(MAIN_DB_PREFIX.'nomenclature');
         $this->add_champs('title');
-        $this->add_champs('fk_product',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_object,fk_nomenclature_parent',array('type'=>'integer', 'index'=>true));
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty_reference',array('type'=>'float','index'=>true));
+        $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
         
         $this->_init_vars();
         
@@ -23,9 +24,49 @@ class TNomenclature extends TObjetStd
         if($conf->workstation->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');     
         
         $this->qty_reference = 1;       
+        $this->object_type = 'product';
         
+        $this->TNomenclatureDet = $this->TNomenclatureDetOriginal = array();
+        $this->TNomenclatureWorkstation = $this->TNomenclatureWorkstationOriginal = array();       
+        
+        $this->iExist = false;
     }   
-	
+    
+	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
+        
+        if($this->fk_nomenclature_parent == 0) {
+            $n = TNomenclature::getDefaultNomenclature($PDOdb, $fk_product, $qty);
+            if($n === false) return false;
+            
+            $this->fk_nomenclature_parent = $n->getId();
+        }
+        else {
+            $n = new TNomenclature;
+            $n->load($PDOdb, $this->fk_nomenclature_parent);
+        }
+        
+        $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
+        $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
+        
+        if(empty($this->TNomenclatureDet) && !empty($this->TNomenclatureDetOriginal)) {
+            
+            foreach($this->TNomenclatureDetOriginal as $k => &$det) {
+                $this->TNomenclatureDet[$k] = new TNomenclatureDet;
+                $this->TNomenclatureDet[$k]->set_values((array)$det);
+            }
+            foreach($this->TNomenclatureWorkstationOriginal as $k => &$det) {
+                $this->TNomenclatureWorkstation[$k] = new TNomenclatureWorkstation;
+                $this->TNomenclatureWorkstation[$k]->set_values((array)$det);
+                $this->TNomenclatureWorkstation[$k]->workstation = $det->workstation;
+            }
+        }
+        else{
+            $this->iExist = true;
+        }
+        
+        return true;
+    }
+
 	function __toString() {
 		global $langs;
 		
@@ -33,7 +74,7 @@ class TNomenclature extends TObjetStd
 		
 	}
 	
-	function load(&$PDOdb, $id, $loadProductWSifEmpty = false) {
+	function load(&$PDOdb, $id, $loadProductWSifEmpty = false, $fk_product= 0 , $qty = 1) {
 		global $conf;
 		
 		$res = parent::load($PDOdb, $id);
@@ -45,7 +86,23 @@ class TNomenclature extends TObjetStd
 		return $res;
 		
 	}
-	
+	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1) {
+	    $sql = "SELECT rowid FROM ".$this->get_table()." 
+            WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
+          
+        $PDOdb->Execute($sql);
+            
+        $res = false;
+        if($obj = $PDOdb->Get_line()) {
+            $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
+            if($res) $this->iExist = true;
+        }
+        
+        $this->load_original($PDOdb, $fk_product, $qty);
+        
+        return $res; 
+            
+    }
 	function load_product_ws(&$PDOdb) {
 		
 		$this->TNomenclatureWorkstation=array();
@@ -96,11 +153,12 @@ class TNomenclature extends TObjetStd
         return $Tab;
         
     }
-    static function get(&$PDOdb, $fk_product, $forCombo=false) 
+    static function get(&$PDOdb, $fk_object, $forCombo=false, $object_type= 'product') 
     {
     	global $langs;
 		
-        $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE fk_product=".(int) $fk_product);
+        $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature 
+                WHERE fk_object=".(int) $fk_object." AND object_type='".$object_type."'");
         $TNom=array();
         
         foreach($Tab as $row) {
@@ -221,112 +279,6 @@ class TNomenclatureDet extends TObjetStd
 }
 
 
-class TNomenclatureLine extends TObjetStd
-{
-    
-    
-    function __construct() 
-    {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_line');
-        $this->add_champs('fk_nomenclature,fk_object,fk_line',array('type'=>'integer', 'index'=>true));
-        $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
-        
-        $this->_init_vars();
-        
-        $this->start();
-        
-        $this->qty=1;
-        $this->product_type=1;        
-
-		$this->setChild('TNomenclatureLineDet', 'fk_nomenclature_line');
-        if($conf->workstation->enabled) $this->setChild('TNomenclatureLineWorkstation', 'fk_nomenclature_line');     
-
-        $this->TNomenclatureLineDet = $this->TNomenclatureDetOriginal = array();
-        $this->TNomenclatureLineWorkstation = $this->TNomenclatureWorkstationOriginal = array();
-        
-        $this->iExist = false;
-        
-    }   
-    
-	function loadByLineId(&$PDOdb, $lineid, $object_type, $fk_product = 0, $qty = 1) {
-		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." 
-			WHERE fk_line=".(int)$lineid." AND object_type='".$object_type."'");
-			
-		$res = false;
-		if($obj = $PDOdb->Get_line()) $res = $this->load($PDOdb, $obj->rowid, $fk_product, $qty);
-		else $this->load_original($PDOdb, $fk_product, $qty);
-		
-		return $res; 
-			
-	}
-	
-    function load(&$PDOdb, $id, $fk_product = 0, $qty = 1) {
-    			
-    	$res = parent::load($PDOdb, $id);
-    	
-    	$this->load_original($PDOdb, $fk_product, $qty);
-    	
-    	return $res;	
-    	
-    }
-	
-	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
-		
-        if($this->fk_nomenclature == 0) {
-            $n = TNomenclature::getDefaultNomenclature($PDOdb, $fk_product, $qty);
-            if($n === false) return false;
-            
-            $this->fk_nomenclature = $n->getId();
-        }
-        else {
-            $n = new TNomenclature;
-            $n->load($PDOdb, $this->fk_nomenclature);
-        }
-        
-		$this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
-		$this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
-		
-		if(empty($this->TNomenclatureLineDet) && !empty($this->TNomenclatureDetOriginal)) {
-            
-            foreach($this->TNomenclatureDetOriginal as $k => &$det) {
-                $this->TNomenclatureLineDet[$k] = new TNomenclatureLineDet;
-                $this->TNomenclatureLineDet[$k]->set_values((array)$det);
-            }
-            foreach($this->TNomenclatureWorkstationOriginal as $k => &$det) {
-                $this->TNomenclatureLineWorkstation[$k] = new TNomenclatureLineWorkstation;
-                $this->TNomenclatureLineWorkstation[$k]->set_values((array)$det);
-				$this->TNomenclatureLineWorkstation[$k]->workstation = $det->workstation;
-            }
-        }
-        else{
-            $this->iExist = true;
-        }
-		
-		return true;
-	}
-
-}
-class TNomenclatureLineDet extends TObjetStd
-{
-    
-    function __construct() 
-    {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_line_det');
-        $this->add_champs('fk_product,product_type,fk_nomenclature_line',array('type'=>'integer', 'index'=>true));
-        $this->add_champs('qty',array('type'=>'float'));
-        
-        $this->_init_vars();
-        
-        $this->start();
-        
-        $this->qty=1;
-        $this->product_type=1;
-		
-                
-    }   
-    
-}
-
 class TNomenclatureWorkstation extends TObjetStd
 {
     
@@ -363,38 +315,4 @@ class TNomenclatureWorkstation extends TObjetStd
     
 }
 
-class TNomenclatureLineWorkstation extends TObjetStd
-{
-    
-    
-    function __construct() 
-    {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_line_workstation');
-        $this->add_champs('fk_workstation,fk_nomenclature_line,rang',array('type'=>'integer', 'index'=>true));
-        $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
-        
-        $this->_init_vars();
-        
-        $this->start();
-        
-        $this->qty=1;
-        $this->product_type=1;        
-    }   
-    function load(&$PDOdb, $id, $annexe = true) {
-        parent::load($PDOdb, $id);
-        
-        if($annexe) {
-            $this->workstation = new TWorkstation;
-            $this->workstation->load($PDOdb, $this->fk_workstation);    
-        }
-         
-        
-    }
-    function save(&$PDOdb) {
-        $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
-        
-        parent::save($PDOdb);    
-    }
-    
-}
 

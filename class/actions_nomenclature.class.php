@@ -71,7 +71,7 @@ class Actionsnomenclature
 		
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
-			if($object->status == 0) {
+			if($object->fk_statut == 0) {
 				?>
 				<script type="text/javascript" src="<?php echo dol_buildpath('/nomenclature/js/nomenclature.js.php',1); ?>"></script>
 				<script type="text/javascript"> 

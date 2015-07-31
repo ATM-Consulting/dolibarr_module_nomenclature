@@ -20,9 +20,16 @@ $action= GETPOST('action');
 
 $PDOdb=new TPDOdb;
 
-$fk_line=(int)GETPOST('fk_line');
+$fk_object=(int)GETPOST('fk_object');
+$fk_nomenclature=(int)GETPOST('fk_nomenclature');
 $object_type = GETPOST('object_type');
-$qty_ref = (float)GETPOST('qty');
+
+if(empty($object_type)) {
+    $object_type='product';
+    $fk_object = $product->id;
+}
+
+$qty_ref = (float)GETPOST('qty_ref');
 
 if($action==='add_nomenclature') {
     
@@ -34,76 +41,30 @@ if($action==='add_nomenclature') {
 }
 else if($action === 'delete_nomenclature_detail') {
     
-	if($fk_line>0)$n=new TNomenclatureLine;
-	else $n=new TNomenclature;
+	$n=new TNomenclature;
 	
-    $n->load($PDOdb, GETPOST('fk_nomenclature'));
+    $n->load($PDOdb, $fk_nomenclature);
     
-	if($fk_line>0) $n->TNomenclatureLineDet[GETPOST('k')]->to_delete = true;
-	else  $n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
+	$n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
     
     $n->save($PDOdb);
     
 }
 else if($action === 'delete_ws') {
-	
-	if($fk_line>0) $ws = new TNomenclatureLineWorkstation;
-	else $ws = new TNomenclatureWorkstation;
-	
-	$ws->load($PDOdb, GETPOST('fk_workstation'));
-	$ws->delete($PDOdb);
-	
-}
-else if($action==='save_nomenclature' && $fk_line>0) {
-    $n=new TNomenclatureLine;
-    $n->loadByLineId($PDOdb, $fk_line, $object_type, $product->id, $qty_ref);
-	$n->set_values($_POST);
-	
-    if(!empty($_POST['TNomenclature'])) {
-        foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
-            
-            $n->TNomenclatureLineDet[$k]->set_values($TDetValues);
-                    
-        }
-    }
+	$n=new TNomenclature;
     
-    if(!empty($_POST['TNomenclatureWorkstation'])) {
-        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
-            
-            $n->TNomenclatureLineWorkstation[$k]->set_values($TDetValues);
-                    
-        }
-    }
+    $n->load($PDOdb, $fk_nomenclature);
+    $n->TNomenclatureWorkstation[GETPOST('k')]->to_delete = true;
+    $n->save($PDOdb);
     
-    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
-    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-        
-        $k = $n->addChild($PDOdb, 'TNomenclatureLineDet');
-        
-        $det = &$n->TNomenclatureLineDet[$k];
-        
-        $det->fk_product = $fk_new_product;
-        
-    }
-    
-    $fk_new_workstation = GETPOST('fk_new_workstation');
-    if(GETPOST('add_workstation') && $fk_new_workstation>0) {
-        
-        $k = $n->addChild($PDOdb, 'TNomenclatureLineWorkstation');
-        
-        $det = &$n->TNomenclatureLineWorkstation[$k];
-        
-        $det->fk_workstation = $fk_new_workstation;
-        $det->rang = $k+1; 
-    }
-    
-    $n->save($PDOdb);    
-
 }
 else if($action==='save_nomenclature') {
     
     $n=new TNomenclature;
-    $n->load($PDOdb, GETPOST('fk_nomenclature'));
+    
+    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
+    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
+    
     $n->set_values($_POST);
     
     $n->is_default = (int)GETPOST('is_default');
@@ -142,7 +103,7 @@ else if($action==='save_nomenclature') {
     }
     
     $fk_new_workstation = GETPOST('fk_new_workstation');
-    if(GETPOST('add_workstation') && $fk_new_workstation>0 && !$n->isWorkstationAssociated($fk_new_workstation)) {
+    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
         
         $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
         
@@ -157,12 +118,14 @@ else if($action==='save_nomenclature') {
     $n->save($PDOdb);    
 }
 
-if($fk_line>0) {
+if($object_type != 'product') {
 	
-	$n=new TNomenclatureLine;
-    $n->loadByLineId($PDOdb,$fk_line, $object_type, $product->id, $qty_ref);
+    $langs->load('nomenclature@nomenclature');
     
-	_fiche_nomenclature($PDOdb, $n, $product, $fk_line, $object_type, $qty_ref);
+	$n=new TNomenclature;
+    $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref);
+    
+	_fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
 }
 else{
 	_show_product_nomenclature($PDOdb, $product);	
@@ -176,8 +139,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 	llxHeader('','Nomenclature');
 
-		
-	$head=product_prepare_head($product, $user);
+    $head=product_prepare_head($product, $user);
 	$titre=$langs->trans('Nomenclature');
 	$picto=($product->type==1?'service':'product');
 	dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
@@ -195,7 +157,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 	foreach($TNomenclature as $iN => &$n) {
 	
-	    _fiche_nomenclature($PDOdb, $n, $product);
+	    _fiche_nomenclature($PDOdb, $n, $product, $product->id, 'product');
 		        
 	}
 	
@@ -214,7 +176,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		
 	
 }
-function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type='', $qty_ref=1) {
+function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db;
 
 	$form=new Form($db);
@@ -223,15 +185,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type=''
     echo $formCore->hidden('action', 'save_nomenclature');
     echo $formCore->hidden('fk_nomenclature', $n->getId());
     echo $formCore->hidden('fk_product', $product->id);
-    echo $formCore->hidden('fk_line', $fk_line);
+    echo $formCore->hidden('fk_object', $fk_object);
     echo $formCore->hidden('object_type', $object_type);
     echo $formCore->hidden('qty_ref', $qty_ref);
 	
-	$line_object = ($fk_line>0);
-	
 	?>
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
-    	if(!$line_object) {
+    	if($object_type == 'product') {
 	        ?><tr class="liste_titre">
 	            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId(); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
@@ -244,8 +204,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type=''
            <td colspan="4">
                <?php
                
-               if($line_object)$TNomenclatureDet = &$n->TNomenclatureLineDet;
-			   else $TNomenclatureDet = &$n->TNomenclatureDet;
+               $TNomenclatureDet = &$n->TNomenclatureDet;
                
                if(count($TNomenclatureDet>0)) {
                    
@@ -332,9 +291,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type=''
                                <td><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
                                
                                
-                               <td><a href="?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
-                               echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_line=<?php 
-                               echo $fk_line ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php 
+                               <td><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
+                               echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_object=<?php 
+                               echo $fk_object ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php 
                                echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
                                
                                <?php
@@ -406,8 +365,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type=''
                </tr>
                <?php
                        
-               if($line_object) $TNomenclatureWorkstation = &$n->TNomenclatureLineWorkstation;
-			   else $TNomenclatureWorkstation = &$n->TNomenclatureWorkstation;
+               $TNomenclatureWorkstation = &$n->TNomenclatureWorkstation;
                        
                if(!empty($TNomenclatureWorkstation)) {
                   
@@ -427,8 +385,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_line=0, $object_type=''
                            <td><?php echo $ws->nb_hour ?></td>
                            <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
-                           <td><a href="?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_workstation=<?php 
-                           echo $ws->getId() ?>&fk_line=<?php echo $fk_line ?>&object_type=<?php 
+                           <td><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
+                           echo $n->getId() ?>&fk_object=<?php echo $fk_object ?>&object_type=<?php 
                            echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
