@@ -124,8 +124,8 @@ if($object_type != 'product') {
     
 	$n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref);
-    
-	_fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
+   
+    _fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
 }
 else{
 	_show_product_nomenclature($PDOdb, $product);	
