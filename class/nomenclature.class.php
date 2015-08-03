@@ -159,6 +159,22 @@ class TNomenclature extends TObjetStd
 		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_product = '.(int) $fk_product);
 	}
 	
+	/**
+	 * @return array : retourne un tableau contenant en clef le fk_product et en valeur le type de ce produit dans la nomenclature
+	 */
+	function getArrayTypesProducts() {
+		
+		$TTypesProducts = array();
+		$types = TNomenclatureDet::$TType;
+		
+		foreach ($this->TNomenclatureDet as $key => $value) {
+			$TTypesProducts[$value->fk_product] = $types[$value->product_type];
+		}
+
+		return $TTypesProducts;
+		
+	}
+	
 	function isWorkstationAssociated($fk_new_workstation) {
 		
 		global $langs;
