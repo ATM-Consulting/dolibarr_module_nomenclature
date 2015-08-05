@@ -164,7 +164,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 	?>
 	<div class="tabsAction">
-	<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
+	<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>&fk_object=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
 	</div>
 	<?php
 	
