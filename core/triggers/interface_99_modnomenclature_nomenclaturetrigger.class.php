@@ -117,10 +117,74 @@ class Interfacenomenclaturetrigger
         // Data and type of action are stored into $object and $action
         // Users
         
-        // Customer orders
-        if ($action == 'LINEORDER_INSERT') {
+        global $db;
+        
+        $PDOdb = new TPDOdb;
+		
+        if ($action == 'ORDER_CREATE') {
+			dol_syslog(
+                "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
+            );
+        } elseif ($action == 'LINEORDER_INSERT') {
             
+			dol_include_once('/nomenclature/class/nomenclature.class.php');
+			
+            // Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
+            $origin = GETPOST('origin');
+			$origin_id = GETPOST('originid'); // id de la ligne propal
             
+			if($origin === 'propal' && !empty($origin_id)) {
+				
+				if($object->product_type == 0 && $object->fk_product > 0) {
+					$sql = 'SELECT rowid
+							FROM '.MAIN_DB_PREFIX.'nomenclature
+							WHERE object_type = "propal"
+							AND fk_nomenclature_parent IN (
+								SELECT rowid
+								FROM '.MAIN_DB_PREFIX.'nomenclature
+								WHERE object_type = "product"
+								AND fk_object = '.$object->fk_product.'
+							)
+							LIMIT 1';
+					
+					$resql = $db->query($sql);
+					$TIDNomenclature = array();
+					$res = $db->fetch_object($resql);
+					if(!empty($res->rowid)){
+						// On charge la nomenclature
+						$n = new TNomenclature;
+						$n->load($PDOdb, $res->rowid);
+						if($n->rowid > 0) {
+							// On en crée une nouvelle pour la commande en récupérant toutes les données de l'ancienne
+							$n_commande = new TNomenclature;
+							$n_commande->fk_nomenclature_parent = $n->rowid;
+							$n_commande->object_type = 'commande';
+							$n_commande->fk_object = $object->rowid;
+							
+						    if(!empty($n->TNomenclatureDet)) {
+						        foreach($n->TNomenclatureDet as $TDetValues) {
+						        	$k = $n_commande->addChild($PDOdb, 'TNomenclatureDet');
+						            $n_commande->TNomenclatureDet[$k]->set_values($TDetValues);
+						        }
+						    }
+							if(!empty($n->TNomenclatureWorkstation)) {
+							    foreach($n->TNomenclatureWorkstation as $TDetValues) {
+							    	
+							    	$k = $n_commande->addChild($PDOdb, 'TNomenclatureWorkstation');
+							        $n_commande->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+							    }
+							}
+							
+							
+							$n_commande->save($PDOdb);
+							
+						}
+					}
+	
+				}
+
+				
+			}
             dol_syslog(
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
