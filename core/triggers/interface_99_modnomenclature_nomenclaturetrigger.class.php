@@ -138,6 +138,7 @@ class Interfacenomenclaturetrigger
 			if($origin === 'propal' && !empty($origin_id)) {
 				
 				if($object->product_type == 0 && $object->fk_product > 0) {
+					// On cherche la nomenclature de type propal, ayant pour parent une nomenclature du produit de la ligne de propal
 					$sql = 'SELECT rowid
 							FROM '.MAIN_DB_PREFIX.'nomenclature
 							WHERE object_type = "propal"
@@ -146,6 +147,12 @@ class Interfacenomenclaturetrigger
 								FROM '.MAIN_DB_PREFIX.'nomenclature
 								WHERE object_type = "product"
 								AND fk_object = '.$object->fk_product.'
+								ORDER BY rowid ASC
+							)
+							AND fk_object IN(
+								SELECT rowid
+								FROM '.MAIN_DB_PREFIX.'propaldet
+								WHERE fk_propal = '.$origin_id.'
 							)
 							LIMIT 1';
 					
@@ -176,7 +183,6 @@ class Interfacenomenclaturetrigger
 							        $n_commande->TNomenclatureWorkstation[$k]->set_values($TDetValues);
 							    }
 							}
-							
 							
 							$n_commande->save($PDOdb);
 							
