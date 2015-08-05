@@ -117,7 +117,7 @@ class Interfacenomenclaturetrigger
         // Data and type of action are stored into $object and $action
         // Users
         
-        global $db;
+        global $db, $conf;
         
         $PDOdb = new TPDOdb;
 		
@@ -126,6 +126,8 @@ class Interfacenomenclaturetrigger
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
         } elseif ($action == 'LINEORDER_INSERT') {
+        	
+			if(!$conf->nomenclature->enabled) return 0;
             
 			dol_include_once('/nomenclature/class/nomenclature.class.php');
 			
@@ -157,7 +159,7 @@ class Interfacenomenclaturetrigger
 						if($n->rowid > 0) {
 							// On en crée une nouvelle pour la commande en récupérant toutes les données de l'ancienne
 							$n_commande = new TNomenclature;
-							$n_commande->fk_nomenclature_parent = $n->rowid;
+							$n_commande->fk_nomenclature_parent = $res->rowid;
 							$n_commande->object_type = 'commande';
 							$n_commande->fk_object = $object->rowid;
 							
