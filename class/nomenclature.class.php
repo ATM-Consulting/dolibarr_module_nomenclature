@@ -83,9 +83,20 @@ class TNomenclature extends TObjetStd
 			$this->load_product_ws($PDOdb);	
 		}
 		
+		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		
 		return $res;
 		
 	}
+	
+	function sortTNomenclatureWorkstation(&$objA, &$objB)
+	{
+		$r = $objA->rang > $objB->rang;
+		
+		if ($r == 1) return 1;
+		else return -1;
+	}
+	
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()." 
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
