@@ -196,23 +196,27 @@ class Interfacenomenclaturetrigger
             dol_syslog(
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
-        } elseif ($action == 'PROPAL_CLONE') {
-        	// $object = La nouvelle propal clonée.
+        } elseif ($action === 'PROPAL_CLONE' || $action === 'ORDER_CLONE') {
         	
-        	// On load la propal initiale :
-        	$p = new Propal($db);
-			$p->fetch(GETPOST('id'));
-			$object->fetch($object->id); // Pour recharger les bonnes lignes qui sinon sont celles de la propal de départ
+        	if($action === 'PROPAL_CLONE') $origin = 'propal';
+			else $origin = 'commande';
+        	
+			$classname = ucfirst($origin);
 			
-			if(!empty($p->lines)) {
-				foreach ($p->lines as $i => $line) {
+        	// On load l'objet initial :
+        	$o = new $classname($db);
+			$o->fetch(GETPOST('id'));
+			$object->fetch($object->id); // Pour recharger les bonnes lignes qui sinon sont celles de l'objet de départ
+			
+			if(!empty($o->lines)) {
+				foreach ($o->lines as $i => $line) {
 					$n = new TNomenclature;
-					$n->loadByObjectId($PDOdb, $line->rowid, 'propal');
+					$n->loadByObjectId($PDOdb, $line->rowid, $origin);
 					
 					if($n->rowid > 0) {
 						$n_new = new TNomenclature;
 						$n_new->fk_nomenclature_parent = $n->fk_nomenclature_parent;
-						$n_new->object_type = 'propal';
+						$n_new->object_type = $origin;
 						$n_new->fk_object = $object->lines[$i]->rowid;
 						
 					    if(!empty($n->TNomenclatureDet)) {
