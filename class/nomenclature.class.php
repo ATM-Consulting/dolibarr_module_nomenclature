@@ -141,22 +141,31 @@ class TNomenclature extends TObjetStd
     function getDetails($qty_ref = 1) {
         
         $Tab = array();
+		
+        $PDOdb = new TPDOdb;
         
         $coef = 1;
         if($qty_ref != $this->qty_reference) {
             $coef = $qty_ref / $this->qty_reference;
         }
-        
-        foreach($this->TNomenclatureDet as &$d) {
-            
+		
+        foreach($this->TNomenclatureDet as &$d) 
+        {
             $qty = $d->qty * $coef;
             $fk_product = $d->fk_product;
-            
+			
+            $childs = array();
+			
+			$nomenclature = TNomenclatureDet::getArboNomenclatureDet($PDOdb, $d, $qty);
+			
+			if(!empty($nomenclature)) $childs = $nomenclature->getDetails($qty);
+			
             $Tab[]=array(
                 0=>$fk_product
                 ,1=>$qty
                 ,'fk_product'=>$fk_product
                 ,'qty'=>$qty
+                ,'childs'=>$childs
             );
             
         }
@@ -303,6 +312,13 @@ class TNomenclatureDet extends TObjetStd
         
         
     }
+	
+	//renvoi la nomenclature par defaut du produit de la ligne
+	static function getArboNomenclatureDet(&$PDOdb, &$nomenclatureDet, $qty_to_make, $recursive = false) 
+	{
+		//$defaultNomenclature = self::getDefaultNomenclature($PDOdb, $nomenclatureDet->fk_product, $qty_to_make);
+		return TNomenclature::getDefaultNomenclature($PDOdb, $nomenclatureDet->fk_product, $qty_to_make);
+	}
 }
 
 
