@@ -31,7 +31,16 @@ if(empty($object_type)) {
 
 $qty_ref = (float)GETPOST('qty_ref');
 
-if($action==='add_nomenclature') {
+
+if($action==='delete_nomenclature') {
+    $n=new TNomenclature;
+    $n->load($PDOdb, GETPOST('fk_nomenclature'));
+    $n->delete($PDOdb);
+    
+    setEventMessage('NomenclatureDeleted');
+    
+}
+else if($action==='add_nomenclature') {
     
     $n=new TNomenclature;
     $n->set_values($_REQUEST);
@@ -151,6 +160,16 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		{
 			$("input[name=is_default]").not($(obj)).prop("checked", false);	
 		}
+		function deleteNomenc(fk_nomenclature) {
+		    
+		    if(window.confirm('Vous-êtes sûr ?')) {
+		        
+		        document.location.href="?action=delete_nomenclature&fk_product=<?php echo $product->id; ?>&fk_nomenclature="+fk_nomenclature;
+		        
+		    }
+		    
+		    
+		}
 	</script><?php
 	
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
@@ -177,7 +196,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 }
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
-	global $langs, $conf, $db;
+	global $langs, $conf, $db, $user;
 
 	$form=new Form($db);
 	
@@ -197,11 +216,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
 	            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
+                <td align="right" class="liste_titre"><a href="javascript:deleteNomenc(<?php echo $n->getId(); ?>)"><?php echo img_delete($langs->trans('DeleteThisNomenclature')) ?></a></td>
 	        </tr><?php
         }
         
         ?><tr>
-           <td colspan="4">
+           <td colspan="5">
                <?php
                
                $TNomenclatureDet = &$n->TNomenclatureDet;
@@ -347,7 +367,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
        if($conf->workstation->enabled) {
            
        ?><tr>
-           <td colspan="4"><?php
+           <td colspan="5"><?php
                ?>
                <table class="liste" width="100%">
                <tr class="liste_titre">
@@ -434,19 +454,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		        ?>     
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('AmountCostWithCharge'); ?></td>
-                       <td colspan="2">&nbsp;</td>
+                       <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef,2)); ?></td>
 		        </tr>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $conf->global->NOMENCLATURE_COEF_MARGE); ?></td>
-                       <td colspan="2">&nbsp;</td>
+                       <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2)); ?></td>
 		        </tr>
 		        <?php
 		}
 		
 		?><tr>
-            <td align="right" colspan="4">
+            <td align="right" colspan="5">
                 <div class="tabsAction">
                     <?php
                     
