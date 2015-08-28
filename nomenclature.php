@@ -42,7 +42,15 @@ if($action==='delete_nomenclature') {
 }
 else if($action==='clone_nomenclature') {
     
-    //TODO finish
+    $TNomen = TNomenclature::get($PDOdb, GETPOST('fk_product_clone'),false, 'product');
+    foreach($TNomen as &$n) {
+        
+        $n->reinit();
+        $n->fk_object = $fk_object;
+        $n->object_type = $object_type;
+        $n->save($PDOdb);
+    }
+    
     
     setEventMessage('NomenclatureCloned');
     
@@ -177,9 +185,11 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		    
 		    
 		}
-		
-		$("input[name=clone_nomenclature]").click(function() {
-		    document.location.href="?action=clone_nomenclature&fk_product=<?php echo $product->id; ?>&fk_product_clone="+$("#fk_clone_from_product").val();
+		$(document).ready(function() {
+            $("input[name=clone_nomenclature]").click(function() {
+                document.location.href="?action=clone_nomenclature&fk_product=<?php echo $product->id; ?>&fk_product_clone="+$("#fk_clone_from_product").val();
+            });
+		    
 		});
 		
 	</script><?php

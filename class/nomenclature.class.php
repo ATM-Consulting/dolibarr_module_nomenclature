@@ -33,6 +33,20 @@ class TNomenclature extends TObjetStd
         $this->iExist = false;
     }   
     
+    function reinit() {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+        foreach($this->TNomenclatureDet as &$det) {
+            $det->reinit();
+        }
+        
+        foreach($this->TNomenclatureWorkstation as &$det) {
+            $det->reinit();
+        }
+    }
+    
 	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
         
         if($this->fk_nomenclature_parent == 0) {
@@ -278,6 +292,12 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->product_type=1;        
     }   
+    function reinit() {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+    }
     
     function getSupplierPrice(&$PDOdb, $qty = 1) {
         global $db;
@@ -316,6 +336,12 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->qty=1;
         $this->product_type=1;        
     }   
+    function reinit() {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+    }
     function load(&$PDOdb, $id, $annexe = true) {
         parent::load($PDOdb, $id);
         
