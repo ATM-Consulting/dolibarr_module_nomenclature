@@ -15,6 +15,7 @@ class TNomenclature extends TObjetStd
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty_reference',array('type'=>'float','index'=>true));
         $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
+        $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
         
@@ -31,6 +32,20 @@ class TNomenclature extends TObjetStd
         
         $this->iExist = false;
     }   
+    
+    function reinit() {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+        foreach($this->TNomenclatureDet as &$det) {
+            $det->reinit();
+        }
+        
+        foreach($this->TNomenclatureWorkstation as &$det) {
+            $det->reinit();
+        }
+    }
     
 	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
         
@@ -157,6 +172,7 @@ class TNomenclature extends TObjetStd
                 ,1=>$qty
                 ,'fk_product'=>$fk_product
                 ,'qty'=>$qty
+                ,'note_private'=>$d->note_private
             );
             
         }
@@ -278,6 +294,7 @@ class TNomenclatureDet extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
         $this->add_champs('fk_product,product_type,fk_nomenclature',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty',array('type'=>'float'));
+        $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
         
@@ -286,6 +303,12 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->product_type=1;        
     }   
+    function reinit() {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+    }
     
     function getSupplierPrice(&$PDOdb, $qty = 1) {
         global $db;
@@ -309,12 +332,13 @@ class TNomenclatureDet extends TObjetStd
 class TNomenclatureWorkstation extends TObjetStd
 {
     
-    
     function __construct() 
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation');
-        $this->add_champs('fk_workstation,fk_nomenclature,rang',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_workstation,fk_nomenclature',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
+        $this->add_champs('rang',array('type'=>'float', 'index'=>true));
+        $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
         
@@ -323,6 +347,12 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->qty=1;
         $this->product_type=1;        
     }   
+    function reinit() {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+    }
     function load(&$PDOdb, $id, $annexe = true) {
         parent::load($PDOdb, $id);
         

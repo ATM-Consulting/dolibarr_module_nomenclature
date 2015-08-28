@@ -31,7 +31,31 @@ if(empty($object_type)) {
 
 $qty_ref = (float)GETPOST('qty_ref');
 
-if($action==='add_nomenclature') {
+
+if($action==='delete_nomenclature') {
+    $n=new TNomenclature;
+    $n->load($PDOdb, GETPOST('fk_nomenclature'));
+    $n->delete($PDOdb);
+    
+    setEventMessage('NomenclatureDeleted');
+    
+}
+else if($action==='clone_nomenclature') {
+    
+    $TNomen = TNomenclature::get($PDOdb, GETPOST('fk_product_clone'),false, 'product');
+    foreach($TNomen as &$n) {
+        
+        $n->reinit();
+        $n->fk_object = $fk_object;
+        $n->object_type = $object_type;
+        $n->save($PDOdb);
+    }
+    
+    
+    setEventMessage('NomenclatureCloned');
+    
+}
+else if($action==='add_nomenclature') {
     
     $n=new TNomenclature;
     $n->set_values($_REQUEST);
@@ -151,6 +175,23 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		{
 			$("input[name=is_default]").not($(obj)).prop("checked", false);	
 		}
+		function deleteNomenc(fk_nomenclature) {
+		    
+		    if(window.confirm('Vous-êtes sûr ?')) {
+		        
+		        document.location.href="?action=delete_nomenclature&fk_product=<?php echo $product->id; ?>&fk_nomenclature="+fk_nomenclature;
+		        
+		    }
+		    
+		    
+		}
+		$(document).ready(function() {
+            $("input[name=clone_nomenclature]").click(function() {
+                document.location.href="?action=clone_nomenclature&fk_product=<?php echo $product->id; ?>&fk_product_clone="+$("#fk_clone_from_product").val();
+            });
+		    
+		});
+		
 	</script><?php
 	
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
@@ -165,6 +206,15 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	?>
 	<div class="tabsAction">
 	<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>&fk_object=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
+	
+	<?php
+	   $form=new Form($db);
+       print $form->select_produits('', 'fk_clone_from_product', '', 0);
+    ?>
+    <div class="inline-block divButAction">
+        <input type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+    </div>
+
 	</div>
 	<?php
 	
@@ -177,7 +227,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 }
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
-	global $langs, $conf, $db;
+	global $langs, $conf, $db, $user;
 
 	$form=new Form($db);
 	
@@ -197,11 +247,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
 	            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
+                <td align="right" class="liste_titre"><a href="javascript:deleteNomenc(<?php echo $n->getId(); ?>)"><?php echo img_delete($langs->trans('DeleteThisNomenclature')) ?></a></td>
 	        </tr><?php
         }
         
         ?><tr>
-           <td colspan="4">
+           <td colspan="5">
                <?php
                
                $TNomenclatureDet = &$n->TNomenclatureDet;
@@ -244,8 +295,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     $p_nomdet->fetch($det->fk_product);
                                     
                                     echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
-									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock();
+                                    
+									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
 									
+                                    
+                                    
 									// On récupère le dernier tarif fournisseur pour ce produit
 									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
 									$resql = $db->query($q);
@@ -264,15 +318,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									
                                     
                                ?></td>
-                               <td>
+                               <td rowspan="2">
                                	<?php echo $p_nomdet->stock_reel; ?>
                                </td>    
-                               <td>
+                               <td rowspan="2">
                                	<?php
                                		if($conf->asset->enabled){
                                			
                                			// On récupère les quantités dans les OF
-                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.type 
+                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type 
                                					FROM '.MAIN_DB_PREFIX.'assetOf of 
                                					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid) 
                                					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
@@ -281,17 +335,17 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 										// On régule le stock théorique en fonction de ces quantités
 										while($res = $db->fetch_object($resql)) {
 											if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
-											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= $res->qty_needed;
+											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
 										}
 										
 									}
                                		echo $p_nomdet->stock_theorique; 
                                	?>
                                </td>    
-                               <td><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
+                               <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
                                
                                
-                               <td><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
+                               <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
                                echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_object=<?php 
                                echo $fk_object ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php 
                                echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
@@ -306,14 +360,21 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									$total_produit_coef+=$price * $coef;
 									
                                    
-									echo '<td align="right">'; 
+									echo '<td align="right"  rowspan="2">'; 
                                     echo price($price) ;
                                 	echo '</td>'; 
-									echo '<td align="right">'; 
+									echo '<td align="right"  rowspan="2">'; 
                                     echo price(round($price * $coef,2)) ;
                                 	echo '</td>'; 
 	                            }
                                ?>                        
+                           </tr>
+                           <tr class="<?php echo $class ?>">
+                               <td colspan="2">
+                                <?php
+                                       echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1);
+                                ?>
+                               </td>
                            </tr>
                            <?
                            
@@ -347,7 +408,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
        if($conf->workstation->enabled) {
            
        ?><tr>
-           <td colspan="4"><?php
+           <td colspan="5"><?php
                ?>
                <table class="liste" width="100%">
                <tr class="liste_titre">
@@ -380,19 +441,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 echo $ws->workstation->getNomUrl(1);
                                 
                            ?></td>    
-                           <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_prepare]', $ws->nb_hour_prepare, 7,100) ?></td>
-                           <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100) ?></td>
-                           <td><?php echo $ws->nb_hour ?></td>
-                           <td><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
+                           <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_prepare]', $ws->nb_hour_prepare, 7,100) ?></td>
+                           <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100) ?></td>
+                           <td rowspan="2"><?php echo $ws->nb_hour ?></td>
+                           <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
-                           <td><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
+                           <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
                            echo $n->getId() ?>&fk_object=<?php echo $fk_object ?>&object_type=<?php 
                            echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {		
                            
-	                           echo '<td align="right">'; 
+	                           echo '<td align="right" rowspan="2">'; 
                                $price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour; 
                                $total_mo+=$price;
                                echo price($price) ;
@@ -400,6 +461,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                           
 	                      }                   
                        ?></tr>
+                       <tr class="<?php echo $class ?>">
+                               <td >
+                                <?php
+                                       echo $formCore->zonetexte('', 'TNomenclatureWorkstation['.$k.'][note_private]', $ws->note_private, 80, 1);
+                                ?>
+                               </td>
+                       </tr>
+                       
                        <?php
                        
                        
@@ -434,19 +503,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		        ?>     
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('AmountCostWithCharge'); ?></td>
-                       <td colspan="2">&nbsp;</td>
+                       <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef,2)); ?></td>
 		        </tr>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $conf->global->NOMENCLATURE_COEF_MARGE); ?></td>
-                       <td colspan="2">&nbsp;</td>
+                       <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2)); ?></td>
 		        </tr>
 		        <?php
 		}
 		
 		?><tr>
-            <td align="right" colspan="4">
+            <td align="right" colspan="5">
                 <div class="tabsAction">
                     <?php
                     
