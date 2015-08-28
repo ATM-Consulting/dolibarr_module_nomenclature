@@ -15,6 +15,7 @@ class TNomenclature extends TObjetStd
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty_reference',array('type'=>'float','index'=>true));
         $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
+        $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
         
@@ -267,6 +268,7 @@ class TNomenclatureDet extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
         $this->add_champs('fk_product,product_type,fk_nomenclature',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty',array('type'=>'float'));
+        $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
         
@@ -298,12 +300,13 @@ class TNomenclatureDet extends TObjetStd
 class TNomenclatureWorkstation extends TObjetStd
 {
     
-    
     function __construct() 
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation');
-        $this->add_champs('fk_workstation,fk_nomenclature,rang',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_workstation,fk_nomenclature',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
+        $this->add_champs('rang',array('type'=>'float', 'index'=>true));
+        $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
         
