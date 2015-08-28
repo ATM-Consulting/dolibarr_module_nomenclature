@@ -40,6 +40,13 @@ if($action==='delete_nomenclature') {
     setEventMessage('NomenclatureDeleted');
     
 }
+else if($action==='clone_nomenclature') {
+    
+    //TODO finish
+    
+    setEventMessage('NomenclatureCloned');
+    
+}
 else if($action==='add_nomenclature') {
     
     $n=new TNomenclature;
@@ -170,6 +177,11 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		    
 		    
 		}
+		
+		$("input[name=clone_nomenclature]").click(function() {
+		    document.location.href="?action=clone_nomenclature&fk_product=<?php echo $product->id; ?>&fk_product_clone="+$("#fk_clone_from_product").val();
+		});
+		
 	</script><?php
 	
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
@@ -184,6 +196,14 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	?>
 	<div class="tabsAction">
 	<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
+	
+	<?php
+	   $form=new Form($db);
+       print $form->select_produits('', 'fk_clone_from_product', '', 0);
+    ?>
+    <div class="inline-block divButAction">
+        <input type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+    </div>
 	</div>
 	<?php
 	

@@ -147,6 +147,7 @@ class TNomenclature extends TObjetStd
                 ,1=>$qty
                 ,'fk_product'=>$fk_product
                 ,'qty'=>$qty
+                ,'note_private'=>$d->note_private
             );
             
         }

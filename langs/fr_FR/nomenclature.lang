@@ -27,3 +27,5 @@ NomenclatureLineSaved=Nomenclature spécifique sauvegardée
 DeleteThisNomenclature=Supprimer cette nomenclature
 NomenclatureDeleted=Nomenclature supprimée
 addWorkstation=Ajouter un poste de charge
+
+CloneNomenclatureFromProduct=Importer 
