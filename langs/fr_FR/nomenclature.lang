@@ -30,3 +30,5 @@ addWorkstation=Ajouter un poste de charge
 
 CloneNomenclatureFromProduct=Importer 
 NomenclatureCloned=Nomenclature(s) importée(s)
+
+ListUseNomenclaure=Liste des nomenclatures utilisant ce produit

@@ -221,11 +221,11 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 	$liste = new TListviewTBS('listeUse');
 	
-	$sql="SELECT d.fk_object, dt.qty
+	$sql="SELECT n.fk_object as 'Id Nomenclature', n.fk_object, nd.qty
 		
 	FROM ".MAIN_DB_PREFIX."nomenclaturedet nd 
 		LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (n.rowid=nd.fk_nomenclature)
-	WHERE dt.fk_product=".$product->id." AND d.object_type='product'";
+	WHERE nd.fk_product=".$product->id." AND n.object_type='product'";
 	
 	echo $liste->render($PDOdb, $sql, array(
 		'limit'=>array(
@@ -233,6 +233,9 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		)
 		,'type'=>array(
 			'qty'=>'number'
+		)
+		,'link'=>array(
+			'Id Nomenclature'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' Nomenclature</a>'
 		)
 		,'liste'=>array(
 			'titre'=>$langs->trans('ListUseNomenclaure')
@@ -243,29 +246,15 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 			,'picto_search'=>img_picto('','search.png', '', 0)
 		)
 		,'title'=>array(
-			'numero'=>'Numéro'
-			,'ordre'=>'Priorité'
-			,'date_lancement'=>'Date du lancement'
-			,'date_besoin'=>'Date du besoin'
-			,'status'=>'Status'
-			,'login'=>'Utilisateur en charge'
-			,'product'=>'Produit'
-			,'client'=>'Client'
-			,'nb_product_to_make'=>'Nb produits à fabriquer'
-			,'total_cost'=>'Coût'
+			'fk_object'=>'Produit'
+			,'qty'=>'Quantité'
 		)
 		,'eval'=>array(
-			'ordre'=>'TAssetOF::ordre(@val@)'
-			,'status'=>'TAssetOF::status(@val@)'
-			,'product' => 'get_format_libelle_produit(@fk_product@)'
-			,'client' => 'get_format_libelle_societe(@fk_soc@)'
+			'fk_object' => 'get_format_libelle_produit(@fk_object@)'
+			
+        )
 		)
-        ,'search'=>array(
-            'numero'=>array('recherche'=>true, 'table'=>'ofe')
-            ,'date_lancement'=>array('recherche'=>'calendars', 'table'=>'ofe')
-            ,'date_besoin'=>array('recherche'=>'calendars', 'table'=>'ofe')
-            ,'status'=>array('recherche'=>TAssetOF::$TStatus, 'table'=>'ofe')
-        )));
+	);
 	
 	dol_fiche_end();
 	
@@ -275,6 +264,23 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		
 	
 }
+
+
+function get_format_libelle_produit($fk_product = null) {
+	global $db;
+
+	if (!empty($fk_product)) {
+		$product = new Product($db);
+		$product->fetch($fk_product);
+	
+		$product->ref.=' '.$product->label;
+	
+		return  $product->getNomUrl(1);
+	} else {
+		return 'Produit non défini.';
+	}
+}
+
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user;
 
