@@ -218,6 +218,55 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	</div>
 	<?php
 	
+	
+	$liste = new TListviewTBS('listeUse');
+	
+	$sql="SELECT d.fk_object, dt.qty
+		
+	FROM ".MAIN_DB_PREFIX."nomenclaturedet nd 
+		LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (n.rowid=nd.fk_nomenclature)
+	WHERE dt.fk_product=".$product->id." AND d.object_type='product'";
+	
+	echo $liste->render($PDOdb, $sql, array(
+		'limit'=>array(
+			'nbLine'=>'30'
+		)
+		,'type'=>array(
+			'qty'=>'number'
+		)
+		,'liste'=>array(
+			'titre'=>$langs->trans('ListUseNomenclaure')
+			,'image'=>img_picto('','title.png', '', 0)
+			,'picto_precedent'=>img_picto('','back.png', '', 0)
+			,'picto_suivant'=>img_picto('','next.png', '', 0)
+			,'messa geNothing'=>$langs->trans('NoUseInNomenclature')
+			,'picto_search'=>img_picto('','search.png', '', 0)
+		)
+		,'title'=>array(
+			'numero'=>'Numéro'
+			,'ordre'=>'Priorité'
+			,'date_lancement'=>'Date du lancement'
+			,'date_besoin'=>'Date du besoin'
+			,'status'=>'Status'
+			,'login'=>'Utilisateur en charge'
+			,'product'=>'Produit'
+			,'client'=>'Client'
+			,'nb_product_to_make'=>'Nb produits à fabriquer'
+			,'total_cost'=>'Coût'
+		)
+		,'eval'=>array(
+			'ordre'=>'TAssetOF::ordre(@val@)'
+			,'status'=>'TAssetOF::status(@val@)'
+			,'product' => 'get_format_libelle_produit(@fk_product@)'
+			,'client' => 'get_format_libelle_societe(@fk_soc@)'
+		)
+        ,'search'=>array(
+            'numero'=>array('recherche'=>true, 'table'=>'ofe')
+            ,'date_lancement'=>array('recherche'=>'calendars', 'table'=>'ofe')
+            ,'date_besoin'=>array('recherche'=>'calendars', 'table'=>'ofe')
+            ,'status'=>array('recherche'=>TAssetOF::$TStatus, 'table'=>'ofe')
+        )));
+	
 	dol_fiche_end();
 	
 	  
@@ -306,7 +355,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									$res = $db->fetch_object($resql);
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 									{
-										echo '<td>';
+										echo '<td rowspan="2">';
 										if($res->fk_availability > 0) {
 											$form->load_cache_availability();
 											$availability=$form->cache_availability[$res->fk_availability]['label'];
@@ -521,7 +570,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                     
                     if($conf->workstation->enabled) {
                            
-                           echo $formCore->combo('', 'fk_new_workstation', TWorkstation::getWorstations($PDOdb), -1);
+                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, true), -1);
                         ?>
                         <div class="inline-block divButAction">
                         <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
@@ -547,6 +596,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
     <?php
 	
     $formCore->end();
+	
+	
+	
 	
 }
 
