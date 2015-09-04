@@ -410,7 +410,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                <?php
                                
 	                            if($user->rights->nomenclature->showPrice) {
-	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty); 
+	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty,true); 
                                     $total_produit+=$price;
 									
 									$coef = ( $det->product_type == 3) ? $conf->global->NOMENCLATURE_COEF_CONSOMMABLE : $conf->global->NOMENCLATURE_COEF_FOURNITURE;

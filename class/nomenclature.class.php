@@ -322,7 +322,7 @@ class TNomenclatureDet extends TObjetStd
         
     }
     
-    function getSupplierPrice(&$PDOdb, $qty = 1) {
+    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false) {
         global $db;
         $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price 
                 WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
@@ -331,6 +331,18 @@ class TNomenclatureDet extends TObjetStd
             $price = $obj->price / $obj->quantity * $qty;
             
             return $price;
+            
+        }
+        elseif($searchforhigherqtyifnone) {
+            
+            $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price 
+                    WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
+         
+            if($obj = $PDOdb->Get_line()) {
+                $price = $obj->price / $obj->quantity * $qty;
+                
+                return $price;
+            }            
             
         }
         
