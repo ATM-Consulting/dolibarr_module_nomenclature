@@ -49,6 +49,9 @@ class TNomenclature extends TObjetStd
     
 	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
         
+        if(empty($fk_product)) return false;
+        
+        
         if($this->fk_nomenclature_parent == 0) {
             $n = TNomenclature::getDefaultNomenclature($PDOdb, $fk_product, $qty);
             if($n === false) return false;
@@ -329,7 +332,7 @@ class TNomenclatureDet extends TObjetStd
             
             return $price;
             
-        }        
+        }
         
         return 0;
         

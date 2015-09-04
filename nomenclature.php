@@ -353,7 +353,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     
 									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
 									
-                                    
+									_draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
+									
+                                ?></td><?php    
                                     
 									// On récupère le dernier tarif fournisseur pour ce produit
 									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
@@ -372,7 +374,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									}
 									
                                     
-                               ?></td>
+                               ?>
                                <td rowspan="2">
                                	<?php echo $p_nomdet->stock_reel; ?>
                                </td>    
@@ -651,5 +653,24 @@ function headerProduct(&$object) {
    
        
         
+    
+}
+
+function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
+global $db;        
+        
+    $n = new TNomenclature;
+    $n->loadByObjectId($PDOdb, $id_product, 'product', false);
+    
+    foreach($n->TNomenclatureDet as &$det) {
+                    
+        $p_child = new Product($db);
+        $p_child->fetch($det->fk_product);
+        
+        echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$p_child->getNomUrl(1).' '.$p_child->label.' x '.($det->qty * $qty).' ';
+        
+        _draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
+        
+    }
     
 }
