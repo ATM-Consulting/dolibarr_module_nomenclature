@@ -118,7 +118,9 @@ class Interfacenomenclaturetrigger
         // Users
         
         global $db, $conf;
-            
+        
+		define('INC_FROM_DOLIBARR', true);
+		dol_include_once('/nomenclature/config.php');
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
         
         $PDOdb = new TPDOdb;
