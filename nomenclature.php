@@ -14,7 +14,9 @@ if($conf->workstation->enabled) {
 $langs->load("stocks");
 
 $product = new Product($db);
-$product->fetch(GETPOST('fk_product'), GETPOST('ref'));
+$fk_product = GETPOST('fk_product', 'int');
+$product_ref = GETPOST('ref', 'alpha');
+if ($fk_product || $product_ref) $product->fetch($fk_product, $product_ref);
 
 $action= GETPOST('action');
 
@@ -587,16 +589,23 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                     }
                     
                     ?>
-                    
-                    <?php
-                        print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0);
-                    ?>
-                   <div class="inline-block divButAction">
-                    <input type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+                    <div>
+	                    <?php
+	                        print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0);
+	                    ?>
+		                <div class="inline-block divButAction">
+		                    <input type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+		                </div>
+		                <div class="inline-block divButAction">
+		                    <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
+		                </div>
                    </div>
-                   <div class="inline-block divButAction">
-                    <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
+                   
+                   <div>
+                   		<input type="text" name="search_fk_nomenclature" />
+                   
                    </div>
+                   
                 </div>
             </td>
         </tr>

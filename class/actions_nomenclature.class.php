@@ -66,7 +66,7 @@ class Actionsnomenclature
 
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs;
+		global $langs,$conf;
 		$TContext = explode(':', $parameters['context']);		
 		
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
@@ -79,21 +79,27 @@ class Actionsnomenclature
 				$(document).ready(function() {
 				    <?php
 				
-			  	foreach($object->lines as &$line) {
-			  		
-					if($line->fk_product>0 && $line->product_type == 0) {
-						
+			  	foreach($object->lines as &$line) 
+			  	{
+			  		if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
+					
+					if(($line->fk_product>0 && $line->product_type == 0) || ($conf->global->NOMENCLATURE_ALLOW_FREELINE)) 
+					{
 						$lineid = empty($line->id) ? $line->rowid : $line->id;
 						
-						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.','.$line->qty.','.$line->fk_product.',\\\''.$object->element.'\\\')">'.img_picto($langs->trans('Nomenclature'),'object_list').'</a>\');';
-						
+						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.','.$line->qty.','.(int) $line->fk_product.',\\\''.$object->element.'\\\')">'.img_picto($langs->trans('Nomenclature'),'object_list').'</a>\');';
 					}
-					 
 			  	}
 				
 				?> });
-				</script><?php
+				</script>
+				<style type="text/css">
+					.ui-autocomplete {
+						z-index: 150;
+					}
+				</style>
 				
+				<?php
 			}
 			
 		}
