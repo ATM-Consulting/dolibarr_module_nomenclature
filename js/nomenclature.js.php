@@ -36,6 +36,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type) {
                $div.find('form').submit(function() {
                    var data = $(this).serialize();
                    data+='&'+ButtonWhoSubmit+'=1';
+                   console.log(data);
                    $.post($(this).attr('action'), data, function() {
                         $div.dialog('option','title',"<?php echo $langs->trans('NomenclatureLineSaved'); ?>");
                    }).done(function(data) {

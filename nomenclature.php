@@ -346,7 +346,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            
                            ?>
                            <tr class="<?php echo $class ?>">
-                               <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][product_type]', TNomenclatureDet::$TType, $det->product_type) ?></td>
+                               <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][product_type]', TNomenclatureDet::getTType($PDOdb), $det->fk_coef); ?></td>
                                <td><?php 
                                     $p_nomdet = new Product($db);
                                     $p_nomdet->fetch($det->fk_product);
@@ -415,7 +415,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty,true); 
                                     $total_produit+=$price;
 									
+									//TODO revoir le systeme pour récupérer le bon tx soit de la propal soit du tiers soit le tx standard
 									$coef = ( $det->product_type == 3) ? $conf->global->NOMENCLATURE_COEF_CONSOMMABLE : $conf->global->NOMENCLATURE_COEF_FOURNITURE;
+									
 									$total_produit_coef+=$price * $coef;
 									
                                    

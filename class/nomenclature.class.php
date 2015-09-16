@@ -294,17 +294,41 @@ class TNomenclature extends TObjetStd
 
 class TNomenclatureDet extends TObjetStd
 {
-    
+    /*
     static $TType=array(
         1=>'Principal'
         ,2=>'Secondaire'
         ,3=>'Consommable'
     );
+    */
     
-    function __construct() 
+    static function getTType(&$PDOdb, $blankRow = false)
+	{
+		$res = array();
+		if ($blankRow) $res = array('' => '');
+		
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
+		$resql = $PDOdb->Execute($sql);
+		
+		if ($resql && $PDOdb->Get_Recordcount() > 0)
+		{
+			while ($row = $PDOdb->Get_line())
+			{
+				$res[$row->rowid] = $row->label;
+			}
+		}
+		
+		return $res;
+	}
+    
+	/**
+	 * product_type == fk_coef (rowid de la table nomenclature_coef)
+	 */
+    function __construct()
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
         $this->add_champs('fk_product,product_type,fk_nomenclature',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_coef',array('type'=>'integer'));
         $this->add_champs('qty',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
         
@@ -313,8 +337,16 @@ class TNomenclatureDet extends TObjetStd
         $this->start();
         
         $this->qty=1;
-        $this->product_type=1;        
+        $this->fk_coef = TNomenclatureCoef::getFirstRowId();
+		$this->product_type = $this->fk_coef; //product_type => obsolète
     }   
+
+	function save(&$PDOdb)
+	{
+		$this->fk_coef = $this->product_type;
+		parent::save($PDOdb);
+	}
+
     function reinit() {
         $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
         $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
@@ -429,6 +461,20 @@ class TNomenclatureCoef extends TObjetStd
 		}
 		
 		return $TResult;
+	}
+	
+	static function getFirstRowId(&$PDOdb = false)
+	{
+		if (!$PDOdb) $PDOdb = new TPDOdb;
+		
+		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef');
+		if ($resql && $PDOdb->Get_Recordcount() > 0)
+		{
+			$row = $PDOdb->Get_line();
+			return $row->rowid;
+		}
+		
+		return null;
 	}
 	
     function save(&$PDOdb) 
