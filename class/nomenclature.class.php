@@ -493,7 +493,10 @@ class TNomenclatureCoef extends TObjetStd
     
 	function delete(&$PDOdb)
 	{
-		$sql = 'SELECT nc.rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef nc INNER JOIN '.MAIN_DB_PREFIX.'nomenclaturedet nd ON (nc.rowid = nd.product_type) WHERE nc.rowid = '.$this->getId();
+		//Vérification que le coef ne soit pas utilisé - si utilisé alors on interdit la suppression	
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE product_type = '.$this->getId().' 
+				UNION
+				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_coef = '.$this->getId();
 		$res = $PDOdb->ExecuteAsArray($sql);
 		
 		if (count($res) > 0)
@@ -505,4 +508,44 @@ class TNomenclatureCoef extends TObjetStd
 		return 1;
 	}
 	
+}
+
+class TNomenclatureCoefObject extends TObjetStd
+{
+	function __construct() 
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef_object');
+		
+		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('type_object',array('type'=>'varchar', 'length'=>255, 'index'=>true));
+		$this->add_champs('fk_coef',array('type'=>'integer'));
+        $this->add_champs('tx_object',array('type'=>'float'));
+        
+        $this->_init_vars();
+        
+        $this->start();
+    }
+
+	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
+	{
+		$res = array();
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "'.$type_object.'"';
+		$PDOdb->Execute($sql);
+		$TRes = $PDOdb->Get_All();
+		
+		switch ($type_object) {
+			case 'propal':
+				$res = self::loadCoefObject($PDOdb, $object->thirdparty, 'tiers', $object->id); // Récup des coefs du parent (exemple avec propal -> je charge les coef du tiers associé)
+				break;
+		}
+		
+		//while ($row = $PDOdb->Get_line())
+		foreach ($TRes as $row)
+		{
+			$row->fk_origin = $fk_origin;
+			$res[$row->fk_coef] = $row;
+		}
+		
+		return $res;
+	}
 }

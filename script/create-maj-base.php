@@ -60,3 +60,8 @@ if (isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
 /*
  * Fin récup
  */
+ 
+ 
+ 
+$o=new TNomenclatureCoefObject($db);
+$o->init_db_by_vars($PDOdb);

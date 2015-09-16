@@ -73,7 +73,7 @@ if ($action == 'add' || $action == 'edit')
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
 			
 			$nomenclatureCoef->label = $label;
-			$nomenclatureCoef->desc = $desc;
+			$nomenclatureCoef->description = $desc;
 			$nomenclatureCoef->code_type = $code;
 			$nomenclatureCoef->tx = $tx;
 			
@@ -193,7 +193,7 @@ foreach ($TCoef as $coef)
 	$var=!$var;
 	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 	print '<tr '.$bc[$var].'>';
-	print '<td><input type="text" name="label" value="'.$coef->label.'"  size="25" /></td>';
+	print '<td><input type="text" name="label" value="'.$coef->label.'"  size="25" />&nbsp;<input type="text" name="desc" value="'.$coef->description.'" size="60" /></td>';
 	print '<td align="center" width="20">&nbsp;</td>';
 	print '<td align="right" width="650">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
