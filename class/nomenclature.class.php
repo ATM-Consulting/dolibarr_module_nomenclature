@@ -404,4 +404,59 @@ class TNomenclatureWorkstation extends TObjetStd
     
 }
 
-
+class TNomenclatureCoef extends TObjetStd
+{
+    function __construct() 
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef');
+        $this->add_champs('label,code_type,description',array('type'=>'varchar', 'length'=>255));
+        $this->add_champs('tx',array('type'=>'float'));
+        
+        $this->_init_vars();
+        
+        $this->start();
+    }  
+	
+	static function loadCoef(&$PDOdb) 
+	{
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
+		$TRes = $PDOdb->ExecuteAsArray($sql);
+		$TResult = array();
+		
+		foreach ($TRes as $res)
+		{
+			$TResult[] = $res;
+		}
+		
+		return $TResult;
+	}
+	
+    function save(&$PDOdb) 
+    {
+    	$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int) $this->getId();
+		$res = $PDOdb->Execute($sql);
+		
+		if ($res && $PDOdb->Get_Recordcount() > 0)
+		{
+			return 0;
+		}
+        
+		$rowid = parent::save($PDOdb);
+		return $rowid;
+    }
+    
+	function delete(&$PDOdb)
+	{
+		$sql = 'SELECT nc.rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef nc INNER JOIN '.MAIN_DB_PREFIX.'nomenclaturedet nd ON (nc.rowid = nd.product_type) WHERE nc.rowid = '.$this->getId();
+		$res = $PDOdb->ExecuteAsArray($sql);
+		
+		if (count($res) > 0)
+		{
+			return 0;
+		}
+		
+		parent::delete($PDOdb);
+		return 1;
+	}
+	
+}

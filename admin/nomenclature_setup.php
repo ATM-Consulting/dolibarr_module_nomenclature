@@ -23,18 +23,21 @@
  * 				Put some comments here
  */
 // Dolibarr environment
-$res = @include("../../main.inc.php"); // From htdocs directory
-if (! $res) {
-    $res = @include("../../../main.inc.php"); // From "custom" directory
-}
+//$res = @include("../../main.inc.php"); // From htdocs directory
+//if (! $res) {
+//    $res = @include("../../../main.inc.php"); // From "custom" directory
+//}
 
 // Libraries
-require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-require_once '../lib/nomenclature.lib.php';
+require '../config.php';
+dol_include_once('/core/lib/admin.lib.php');
+dol_include_once('/nomenclature/lib/nomenclature.lib.php');
+dol_include_once('/nomenclature/class/nomenclature.class.php');
 
 // Translations
 $langs->load("nomenclature@nomenclature");
-
+$PDOdb = new TPDOdb;
+		
 // Access control
 if (! $user->admin) {
     accessforbidden();
@@ -42,6 +45,52 @@ if (! $user->admin) {
 
 // Parameters
 $action = GETPOST('action', 'alpha');
+
+if ($action == 'add' || $action == 'edit')
+{
+	$id = GETPOST('rowid', 'int');
+	
+	if (GETPOST('delete')) 
+	{
+		$nomenclatureCoef = new TNomenclatureCoef;
+		$nomenclatureCoef->load($PDOdb, $id);
+		$res = $nomenclatureCoef->delete($PDOdb);
+		
+		if ($res > 0) setEventMessages($langs->trans('NomenclatureDeleteSuccess'), null);
+		else setEventMessages($langs->trans('NomenclatureErrorCantDelete'), null, 'errors');
+	}
+	else 
+	{
+		$label = GETPOST('label', 'alpha');
+		$desc = GETPOST('desc', 'alpha');
+		$code = GETPOST('code_type', 'alpha');
+		$tx = GETPOST('tx', 'alpha');
+		
+		if ($label && $code && $tx)
+		{
+			$nomenclatureCoef = new TNomenclatureCoef;
+			
+			if ($id) $nomenclatureCoef->load($PDOdb, $id);
+			
+			$nomenclatureCoef->label = $label;
+			$nomenclatureCoef->desc = $desc;
+			$nomenclatureCoef->code_type = $code;
+			$nomenclatureCoef->tx = $tx;
+			
+			$rowid = $nomenclatureCoef->save($PDOdb);
+			
+			if ($rowid) setEventMessages($langs->trans('NomenclatureSuccessAddCoef'), null);
+			else setEventMessages($langs->trans('NomenclatureErrorAddCoefDoublon'), null, 'errors');
+		}
+		else
+		{
+			setEventMessages($langs->trans('NomenclatureErrorAddCoef'), null, 'errors');
+		}
+	}
+
+}
+
+$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 
 /*
  * Actions
@@ -100,6 +149,76 @@ dol_fiche_head(
 
 // Setup page goes here
 $form=new Form($db);
+
+
+
+$var=false;
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("AddCoef").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("CreateCoef").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="right" width="650">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="add">';
+print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
+print '<input type="text" name="label" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" />&nbsp;&nbsp;';
+print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
+print '<input type="text" name="code_type" value="'.($action == 'add' && !empty($code) ? $code : '').'"  size="15" />&nbsp;&nbsp;'; 
+print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
+print '<input type="text" name="tx" value="'.($action == 'add' && !empty($tx) ? $tx : '').'"  size="5" />&nbsp;&nbsp;'; 
+print '<input type="submit" class="button" value="'.$langs->trans("Add").'">';
+print '</form>';
+print '</td></tr>';
+
+print '</table>';
+
+
+
+$var=false;
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("ModifyCoef").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+
+foreach ($TCoef as $coef)
+{
+	$var=!$var;
+	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+	print '<tr '.$bc[$var].'>';
+	print '<td><input type="text" name="label" value="'.$coef->label.'"  size="25" /></td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="right" width="650">';
+	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="action" value="edit">';
+	print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
+	print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
+	print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;'; 
+	print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
+	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;'; 
+	print '<input type="submit" class="button" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
+	print '<input type="submit" class="button" name="delete" value="'.$langs->trans("Delete").'">';
+	print '</td></tr>';	
+	print '</form>';
+}
+
+print '</table>';
+
+
+
+
+
+
+
+
+
 $var=false;
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -107,7 +226,7 @@ print '<td>'.$langs->trans("Parameters").'</td>'."\n";
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
-
+/*
 // Example with a yes / no select
 $var=!$var;
 print '<tr '.$bc[$var].'>';
@@ -134,7 +253,7 @@ print '<input type="text" name="NOMENCLATURE_COEF_CONSOMMABLE" value="'.$conf->g
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
-
+*/
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("CoefMarge").'</td>';
@@ -143,12 +262,13 @@ print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_COEF_MARGE">';
-print '<input type="text" name="NOMENCLATURE_COEF_MARGE" value="'.$conf->global->NOMENCLATURE_COEF_MARGE.'" size="5" />'; 
+print '<input type="text" name="NOMENCLATURE_COEF_MARGE" value="'.$conf->global->NOMENCLATURE_COEF_MARGE.'" size="5" />&nbsp;%&nbsp;'; 
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
 
 print '</table>';
+
 
 llxFooter();
 

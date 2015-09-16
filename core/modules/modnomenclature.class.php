@@ -115,8 +115,8 @@ class modnomenclature extends DolibarrModules
 		// );
 		$this->const = array(
 		
-			array('NOMENCLATURE_COEF_FOURNITURE','chaine','1.1','Coef. de frais généraux (stockage, appro, ...) sur Fourniture',1),
-			array('NOMENCLATURE_COEF_CONSOMMABLE','chaine','1.05','Coef. de frais généraux (stockage, appro, ...) sur consmmable',1),
+			//array('NOMENCLATURE_COEF_FOURNITURE','chaine','1.1','Coef. de frais généraux (stockage, appro, ...) sur Fourniture',1),
+			//array('NOMENCLATURE_COEF_CONSOMMABLE','chaine','1.05','Coef. de frais généraux (stockage, appro, ...) sur consmmable',1),
 			array('NOMENCLATURE_COEF_MARGE','chaine','20','Coef. de marge sur prix de vente (en %)',1),
 		);
 
