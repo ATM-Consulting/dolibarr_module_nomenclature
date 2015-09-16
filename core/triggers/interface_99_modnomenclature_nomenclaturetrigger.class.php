@@ -244,7 +244,17 @@ class Interfacenomenclaturetrigger
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
         } 
-        
+		elseif ($action == 'COMPANY_DELETE')
+		{
+			$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "tiers"';
+			$db->query($sql);
+		}
+		elseif ($action == 'PROPAL_DELETE')
+		{
+			$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "propal"';
+			$db->query($sql);
+		}
+
         return 0;
     }
 }
