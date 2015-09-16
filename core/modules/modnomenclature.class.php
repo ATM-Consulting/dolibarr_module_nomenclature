@@ -146,6 +146,8 @@ class modnomenclature extends DolibarrModules
 		// 'user'             to add a tab in user view
         $this->tabs = array(
             'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
+            ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->tiers->updatecoef:/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
+            ,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
         );
 
         // Dictionaries
@@ -200,6 +202,22 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][1] = 'ShowPrice';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
         $this->rights[$r][4] = 'showPrice';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $r++;
+		
+		
+        $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Personnaliser les coefficients d\'un tiers';  // Permission label
+        $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
+        $this->rights[$r][4] = 'tiers';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][5] = 'updatecoef';
+        $r++;
+		
+		
+        $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Personnaliser les coefficients d\'une propal';  // Permission label
+        $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
+        $this->rights[$r][4] = 'propal';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][5] = 'updatecoef';
         $r++;
 
 
