@@ -108,16 +108,15 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoef, &$TCoefObje
     // List of coef
     echo '<tr style="background:#f2f2f2;"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
     
-
 	if ($TCoef)
 	{
 		foreach ($TCoef as $coef)
 		{
-			$name = !empty($TCoefObject[$coef->rowid]) && !$TCoefObject[$coef->rowid]->fk_origin ? 'TNomenclatureCoefObject_update['.$TCoefObject[$coef->rowid]->rowid.']' : 'TNomenclatureCoefObject_create['.$coef->rowid.']';
+			$name = !empty($TCoefObject[$coef->code_type]) && !$TCoefObject[$coef->code_type]->fk_origin ? 'TNomenclatureCoefObject_update['.$TCoefObject[$coef->code_type]->rowid.']' : 'TNomenclatureCoefObject_create['.$coef->code_type.']';
 			echo '<tr>';
 			echo '<td>&nbsp;'.$coef->label.'</td>';
 			echo '<td>'.$coef->description.'</td>';
-			echo '<td><input name="'.$name.'" value="'.(!empty($TCoefObject[$coef->rowid]) ? $TCoefObject[$coef->rowid]->tx_object : $coef->tx).'" size="5" /></td>';
+			echo '<td><input name="'.$name.'" value="'.(!empty($TCoefObject[$coef->code_type]) ? $TCoefObject[$coef->code_type]->tx_object : $coef->tx).'" size="5" /></td>';
 			echo '</tr>';
 		}
 	}
@@ -146,12 +145,12 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	
 	if ($Post_TNomenclatureCoefObject_create) 
 	{
-		foreach ($Post_TNomenclatureCoefObject_create as $fk_coef => $tx_value)
+		foreach ($Post_TNomenclatureCoefObject_create as $code_type => $tx_value)
 		{
 			$obj = new TNomenclatureCoefObject;
 			$obj->fk_object = $fk_object;
 			$obj->type_object = $type_object;
-			$obj->fk_coef = $fk_coef;
+			$obj->code_type = $code_type;
 			$obj->tx_object = (float) price2num($tx_value);
 			$obj->save($PDOdb);
 		}

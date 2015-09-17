@@ -314,7 +314,7 @@ class TNomenclatureDet extends TObjetStd
 		{
 			while ($row = $PDOdb->Get_line())
 			{
-				$res[$row->rowid] = $row->label;
+				$res[$row->code_type] = $row->label;
 			}
 		}
 		
@@ -327,8 +327,8 @@ class TNomenclatureDet extends TObjetStd
     function __construct()
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
-        $this->add_champs('fk_product,product_type,fk_nomenclature',array('type'=>'integer', 'index'=>true));
-        $this->add_champs('fk_coef',array('type'=>'integer'));
+        $this->add_champs('fk_product,fk_nomenclature',array('type'=>'integer', 'index'=>true));
+		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
         $this->add_champs('qty',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
         
@@ -337,7 +337,7 @@ class TNomenclatureDet extends TObjetStd
         $this->start();
         
         $this->qty=1;
-        $this->fk_coef = TNomenclatureCoef::getFirstRowId();
+        $this->code_type = TNomenclatureCoef::getFirstCodeType();
 		$this->product_type = $this->fk_coef; //product_type => obsolète
     }   
 
@@ -447,7 +447,8 @@ class TNomenclatureCoef extends TObjetStd
     function __construct() 
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef');
-        $this->add_champs('label,code_type,description',array('type'=>'varchar', 'length'=>255));
+        $this->add_champs('label,description',array('type'=>'varchar', 'length'=>255));
+		$this->add_champs('code_type',array('type'=>'varchar', 'length'=>30, 'index'=>true));
         $this->add_champs('tx',array('type'=>'float'));
         
         $this->_init_vars();
@@ -469,15 +470,15 @@ class TNomenclatureCoef extends TObjetStd
 		return $TResult;
 	}
 	
-	static function getFirstRowId(&$PDOdb = false)
+	static function getFirstCodeType(&$PDOdb = false)
 	{
 		if (!$PDOdb) $PDOdb = new TPDOdb;
 		
-		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef');
+		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef');
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			$row = $PDOdb->Get_line();
-			return $row->rowid;
+			return $row->code_type;
 		}
 		
 		return null;
@@ -500,9 +501,9 @@ class TNomenclatureCoef extends TObjetStd
 	function delete(&$PDOdb)
 	{
 		//Vérification que le coef ne soit pas utilisé - si utilisé alors on interdit la suppression	
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE product_type = '.$this->getId().' 
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE code_type = '.$this->code_type.' 
 				UNION
-				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_coef = '.$this->getId();
+				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE code_type = '.$this->code_type;
 		$res = $PDOdb->ExecuteAsArray($sql);
 		
 		if (count($res) > 0)
@@ -523,8 +524,8 @@ class TNomenclatureCoefObject extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef_object');
 		
 		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true));
-        $this->add_champs('type_object',array('type'=>'varchar', 'length'=>255, 'index'=>true));
-		$this->add_champs('fk_coef',array('type'=>'integer'));
+        $this->add_champs('type_object',array('type'=>'varchar', 'length'=>50, 'index'=>true));
+		$this->add_champs('code_type',array('type'=>'vachar', 'length'=>30, 'index'=>true));
         $this->add_champs('tx_object',array('type'=>'float'));
         
         $this->_init_vars();
@@ -549,7 +550,7 @@ class TNomenclatureCoefObject extends TObjetStd
 		foreach ($TRes as $row)
 		{
 			$row->fk_origin = $fk_origin;
-			$res[$row->fk_coef] = $row;
+			$res[$row->code_type] = $row;
 		}
 		
 		return $res;

@@ -368,7 +368,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            
                            ?>
                            <tr class="<?php echo $class ?>">
-                               <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][product_type]', TNomenclatureDet::getTType($PDOdb), $det->fk_coef); ?></td>
+                               <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
                                <td><?php 
                                     $p_nomdet = new Product($db);
                                     $p_nomdet->fetch($det->fk_product);
@@ -429,7 +429,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
                                echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_object=<?php 
                                echo $fk_object ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php 
-                               echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
+                               echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>"><?php echo img_delete() ?></a></td>
                                
                                <?php
                                
@@ -437,8 +437,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty,true); 
                                     $total_produit+=$price;
 									
-									if (!empty($TCoefObject[$det->fk_coef])) $coef = $TCoefObject[$det->fk_coef]->tx_object;
-									elseif (!empty($TCoefStandard[$det->fk_coef])) $coef = $TCoefStandard[$det->fk_coef]->tx;
+									if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
+									elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
 									else $coef = 1;
 									
 									$total_produit_coef+=$price * $coef;
@@ -531,7 +531,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            
                            <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
                            echo $n->getId() ?>&fk_object=<?php echo $fk_object ?>&object_type=<?php 
-                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>"><?php echo img_delete() ?></a></td>
+                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {		
