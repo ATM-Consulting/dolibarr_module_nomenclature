@@ -329,7 +329,7 @@ class TNomenclatureDet extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
         $this->add_champs('fk_product,fk_nomenclature',array('type'=>'integer', 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
-        $this->add_champs('qty',array('type'=>'float'));
+        $this->add_champs('qty,price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
         
         $this->_init_vars();
@@ -338,21 +338,8 @@ class TNomenclatureDet extends TObjetStd
         
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
-		$this->product_type = $this->fk_coef; //product_type => obsolète
-    }   
-
-	function save(&$PDOdb)
-	{
-		$this->fk_coef = $this->product_type;
-		parent::save($PDOdb);
-	}
-
-	function load(&$PDOdb, $id, $loadChild=true)
-	{
-		parent::load($PDOdb, $id, $loadChild);
-		$this->fk_coef = $this->product_type;
-	}
-
+    }
+	
     function reinit() {
         $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
         $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi

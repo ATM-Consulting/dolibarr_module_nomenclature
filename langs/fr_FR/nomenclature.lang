@@ -18,6 +18,7 @@ QtyFabrication=Temps de fabrication
 Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
+AmountCostWithChargeCustom=Coût final
 PriceConseil=Prix de vente conseillé (Marge %s %%)
 
 NomenclatureSaved=Nomenclature enregistrée
@@ -28,6 +29,7 @@ DeleteThisNomenclature=Supprimer cette nomenclature
 NomenclatureDeleted=Nomenclature supprimée
 addWorkstation=Ajouter un poste de charge
 
+ApplyNomenclaturePrice=Appliquer le prix de vente
 CloneNomenclatureFromProduct=Importer 
 NomenclatureCloned=Nomenclature(s) importée(s)
 

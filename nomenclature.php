@@ -86,62 +86,76 @@ else if($action === 'delete_ws') {
 }
 else if($action==='save_nomenclature') {
     
-    $n=new TNomenclature;
+	if (GETPOST('apply_nomenclature_price'))
+	{
+		$price_to_sell = GETPOST('price_to_sell');
+		
+		switch ($object_type) {
+			case 'propal':
+				dol_include_once('/comm/propal/class/propal.class.php');
+				$n=new TNomenclature;
+				$n->load($PDOdb, $fk_nomenclature);
+
+				$propal = new Propal($db);
+				$propal->fetch(GETPOST('fk_origin', 'int'));
+
+				foreach ($propal->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $line->pa_ht, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);		
+					}
+				}
+				
+				break;
+		}
+		
+	}
+	else 
+	{
+		$n=new TNomenclature;
     
-    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
-    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
-    
-    $n->set_values($_POST);
-    
-    $n->is_default = (int)GETPOST('is_default');
-    
-	if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
+	    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
+	    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
+	    
+	    $n->set_values($_POST);
+	    
+	    $n->is_default = (int)GETPOST('is_default');
+	    
+		if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
+		
+	    if(!empty($_POST['TNomenclature'])) {
+	        foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
+	            $n->TNomenclatureDet[$k]->set_values($TDetValues);
+	        }
+	    }
+	    
+	    if(!empty($_POST['TNomenclatureWorkstation'])) {
+	        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
+	            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+	        }
+	    }
+	    
+	    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
+	    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
+	        $k = $n->addChild($PDOdb, 'TNomenclatureDet');
+	        $det = &$n->TNomenclatureDet[$k];
+	        $det->fk_product = $fk_new_product;
+	    }
+	    
+	    $fk_new_workstation = GETPOST('fk_new_workstation');
+	    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
+	        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
+	        $det = &$n->TNomenclatureWorkstation[$k];
+	        $det->fk_workstation = $fk_new_workstation;
+	        $det->rang = $k+1; 
+	    }
+	    
+		setEventMessage($langs->trans('NomenclatureSaved'));
+	    
+	    $n->save($PDOdb);
+	}
 	
-    if(!empty($_POST['TNomenclature'])) {
-        foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
-            
-            $n->TNomenclatureDet[$k]->set_values($TDetValues);
-                    
-        }
-        
-        
-    }
-    
-    if(!empty($_POST['TNomenclatureWorkstation'])) {
-        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
-            
-            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
-                    
-        }
-        
-        
-    }
-    
-    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
-    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-        
-        $k = $n->addChild($PDOdb, 'TNomenclatureDet');
-        
-        $det = &$n->TNomenclatureDet[$k];
-        
-        $det->fk_product = $fk_new_product;
-        
-    }
-    
-    $fk_new_workstation = GETPOST('fk_new_workstation');
-    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
-        
-        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
-        
-        $det = &$n->TNomenclatureWorkstation[$k];
-        
-        $det->fk_workstation = $fk_new_workstation;
-        $det->rang = $k+1; 
-    }
-    
-	setEventMessage($langs->trans('NomenclatureSaved'));
-    
-    $n->save($PDOdb);    
 }
 
 if($object_type != 'product') {
@@ -286,10 +300,12 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user;
 
+	$json = GETPOST('json', 'int');
 	$form=new Form($db);
 	
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
     echo $formCore->hidden('action', 'save_nomenclature');
+	echo $formCore->hidden('json', $json);
     echo $formCore->hidden('fk_nomenclature', $n->getId());
     echo $formCore->hidden('fk_product', $product->id);
     echo $formCore->hidden('fk_object', $fk_object);
@@ -336,6 +352,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            <?php if($user->rights->nomenclature->showPrice) { 
                            		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php 
                            		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php
+                           		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></td><?php
                            } 
                            ?>
                        </tr>
@@ -435,19 +452,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                
 	                            if($user->rights->nomenclature->showPrice) {
 	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty,true); 
-                                    $total_produit+=$price;
-									
+                                    
 									if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
 									elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
 									else $coef = 1;
 									
-									$total_produit_coef+=$price * $coef;
+									$price_charge = $price * $coef;
+									$price_final = ($det->price) ? $det->price : $price_charge;
+									
+									$total_produit+=$price;
+									$total_produit_coef+=$price_charge;
+									$total_produit_coef_final+=$price_final;
 									
 									echo '<td align="right"  rowspan="2">'; 
                                     echo price($price) ;
                                 	echo '</td>'; 
 									echo '<td align="right"  rowspan="2">'; 
-                                    echo price(round($price * $coef,2)) ;
+                                    echo price(round($price_charge,2)) ;
+                                	echo '</td>';
+									echo '<td align="right"  rowspan="2">'; 
+                                    echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($price_final).'" size="5" />';
                                 	echo '</td>'; 
 	                            }
                                ?>                        
@@ -472,6 +496,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price(round($total_produit,2)); ?></td>
                            <td align="right"><?php echo price(round($total_produit_coef,2)); ?></td>
+                           <td align="right"><?php echo price(round($total_produit_coef_final,2)); ?></td>
                           
                        </tr>
                        <?php
@@ -582,7 +607,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 		if($user->rights->nomenclature->showPrice) {
 				$PR_coef = $total_mo+$total_produit_coef;
-					
+				$price_to_sell = price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2));
 		        ?>     
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('AmountCostWithCharge'); ?></td>
@@ -592,7 +617,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $conf->global->NOMENCLATURE_COEF_MARGE); ?></td>
                        <td colspan="3">&nbsp;</td>
-                       <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2)); ?></td>
+                       <td style="font-weight: bolder; text-align: right;">
+                       	<?php echo $price_to_sell; ?>
+                       	<?php echo $formCore->hidden('price_to_sell', price2num($price_to_sell)); ?>
+                       </td>
 		        </tr>
 		        <?php
 		}
@@ -625,6 +653,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		                </div>
                    </div>
                    
+                   <?php if ($json) { ?>
+                   <div>
+                   		<div class="inline-block divButAction">
+		                    <input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
+		                </div>
+                   </div>
+                   <?php } ?>
                    <div>
                    		<input type="text" name="search_fk_nomenclature" />
                    
@@ -637,9 +672,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
     <?php
 	
     $formCore->end();
-	
-	
-	
 	
 }
 
