@@ -8,7 +8,7 @@
 ?>
 var ButtonWhoSubmit;
 
-function showLineNomenclature(fk_line, qty, fk_product, object_type) {
+function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) {
 
        var bindItem = function () {
            
@@ -81,6 +81,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type) {
                 , qty_ref: qty
                 , fk_product: fk_product  
                 , object_type: object_type
+                , fk_origin: fk_origin
                 , json : 1
            } 
            ,dataType:'html'

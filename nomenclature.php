@@ -294,6 +294,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
     echo $formCore->hidden('fk_product', $product->id);
     echo $formCore->hidden('fk_object', $fk_object);
     echo $formCore->hidden('object_type', $object_type);
+    echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
     echo $formCore->hidden('qty_ref', $qty_ref);
 	
 	?>
@@ -339,6 +340,27 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            ?>
                        </tr>
                        <?php
+                       
+                       switch ($object_type) 
+                       {
+                           case 'propal':
+                               	dol_include_once('/comm/propal/class/propal.class.php');
+                               	dol_include_once('/societe/class/societe.class.php');
+								$object = new Propal($db);
+					  		 	$object->fetch(GETPOST('fk_origin', 'int'));
+								$object->fetch_thirdparty();
+								$object_type_string = 'propal';
+                               	break;
+                           
+                       }
+					   
+					   if (!empty($object)) 
+					   {
+					   		//Chaque tableau de coef a pour key le rowid du coef
+						   	$TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
+						   	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type_string);
+					   }
+					   
                        $class='';$total_produit = $total_mo  = 0;
                        foreach($TNomenclatureDet as $k=>&$det) {
                            
@@ -415,12 +437,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty,true); 
                                     $total_produit+=$price;
 									
-									//TODO revoir le systeme pour récupérer le bon tx soit de la propal soit du tiers soit le tx standard
-									$coef = ( $det->product_type == 3) ? $conf->global->NOMENCLATURE_COEF_CONSOMMABLE : $conf->global->NOMENCLATURE_COEF_FOURNITURE;
+									if (!empty($TCoefObject[$det->fk_coef])) $coef = $TCoefObject[$det->fk_coef]->tx_object;
+									elseif (!empty($TCoefStandard[$det->fk_coef])) $coef = $TCoefStandard[$det->fk_coef]->tx;
+									else $coef = 1;
 									
 									$total_produit_coef+=$price * $coef;
 									
-                                   
 									echo '<td align="right"  rowspan="2">'; 
                                     echo price($price) ;
                                 	echo '</td>'; 

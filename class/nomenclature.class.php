@@ -347,6 +347,12 @@ class TNomenclatureDet extends TObjetStd
 		parent::save($PDOdb);
 	}
 
+	function load(&$PDOdb, $id, $loadChild=true)
+	{
+		parent::load($PDOdb, $id, $loadChild);
+		$this->fk_coef = $this->product_type;
+	}
+
     function reinit() {
         $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
         $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
