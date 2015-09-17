@@ -30,6 +30,7 @@ NomenclatureDeleted=Nomenclature supprimée
 addWorkstation=Ajouter un poste de charge
 
 ApplyNomenclaturePrice=Appliquer le prix de vente
+ApplyNewCoefToObjectLine=Appliquer les coefficients aux lignes
 CloneNomenclatureFromProduct=Importer 
 NomenclatureCloned=Nomenclature(s) importée(s)
 

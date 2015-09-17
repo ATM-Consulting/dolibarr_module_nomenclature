@@ -28,6 +28,9 @@ switch ($fiche) {
 		if ($action == 'updatecoef')
 		{
 			_updateCoef($PDOdb, $db, $conf, $langs, $user);
+			
+			if (GETPOST('update_line_price')) _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
+			
 			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?id='.GETPOST('id', 'int').'&fiche=propal', 2));
 			exit;
 		}
@@ -101,7 +104,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoef, &$TCoefObje
     // Name
     echo '<tr>';
     echo '<td width="15%">' . $label . '</td><td colspan="2">';
-    echo $form->showrefnav($object, $paramid, '', 1, 'rowid', $fieldname);
+    echo $form->showrefnav($object, $paramid, '', 0, 'rowid', $fieldname);
     echo '</td>';
     echo '</tr>';
     
@@ -124,11 +127,15 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoef, &$TCoefObje
 	
     echo "</table>\n";
 	
-	echo '<div class="tabsAction"><div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div></div>';
+	echo '<div class="tabsAction">';
+	echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
+
+	if ($fiche == 'propal') echo '<br /><div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
+				
+	echo '</div>';
 	
 	
     echo '</form>';
-  	echo '<br />';
 	
 	llxFooter();
 }
@@ -171,4 +178,52 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	}
 	
 	setEventMessages($langs->trans('nomenclatureCoefUpdated'), null);
+}
+
+function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_type)
+{
+	$id = GETPOST('id', 'int');
+	
+	switch ($object_type) {
+		case 'propal':
+			$object = new Propal($db);
+			$object->fetch($id);
+			break;
+		
+		default:
+			return false;
+			break;
+	}
+	
+	//Etape 1 => récupérer les coefs
+	$TCoef = array();
+	$TCoefObject = array();
+	
+	//Etape 2 => mettre à jour le price de chaque ligne de nomenclature
+	foreach ($object->lines as $line)
+	{
+		$nomenclature = new TNomenclature;
+		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal');
+		
+		$total_price = 0;
+		foreach ($nomenclature->TNomenclatureDet as $k => $det)
+		{
+			$price = $det->getSupplierPrice($PDOdb, $nomenclaturedet->qty,true);
+			
+			if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
+			elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
+			else $coef = 1;
+			
+			$det->price = $price * $coef;
+			$det->save($PDOdb);
+			
+			$total_price += $det->price;
+		}
+		
+		//Etape 3 => prendre en compte le cout de revient des postes de travails (Non pris en compte pour le moment)
+		
+		//Puis mettre à jour son prix
+		$object->updateline($fk_object, $total_price, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $line->pa_ht, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);		
+	}
+	
 }
