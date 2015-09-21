@@ -130,71 +130,76 @@ class Interfacenomenclaturetrigger
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
         } elseif ($action == 'LINEORDER_INSERT') {
-        	
-			if(!$conf->nomenclature->enabled) return 0;
 			
+			if(!$conf->nomenclature->enabled) return 0;
+			if ($object->product_type == 9) return 0;
+
             // Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
             $origin = GETPOST('origin');
-			$origin_id = GETPOST('originid'); // id de la ligne propal
+			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
             
-			if($origin === 'propal' && !empty($origin_id)) {
-				
-				if($object->product_type == 0 && $object->fk_product > 0) {
-					// On cherche la nomenclature de type propal, ayant pour parent une nomenclature du produit de la ligne de propal
-					$sql = 'SELECT rowid
-							FROM '.MAIN_DB_PREFIX.'nomenclature
-							WHERE object_type = "propal"
-							AND fk_nomenclature_parent IN (
-								SELECT rowid
-								FROM '.MAIN_DB_PREFIX.'nomenclature
-								WHERE object_type = "product"
-								AND fk_object = '.$object->fk_product.'
-								ORDER BY rowid ASC
-							)
-							AND fk_object IN(
-								SELECT rowid
-								FROM '.MAIN_DB_PREFIX.'propaldet
-								WHERE fk_propal = '.$origin_id.'
-							)
-							LIMIT 1';
-					
-					$resql = $db->query($sql);
-					$TIDNomenclature = array();
-					$res = $db->fetch_object($resql);
-					if(!empty($res->rowid)){
-						// On charge la nomenclature
-						$n = new TNomenclature;
-						$n->load($PDOdb, $res->rowid);
-						if($n->rowid > 0) {
-							// On en crée une nouvelle pour la commande en récupérant toutes les données de l'ancienne
-							$n_commande = new TNomenclature;
-							$n_commande->fk_nomenclature_parent = $res->rowid;
-							$n_commande->object_type = 'commande';
-							$n_commande->fk_object = $object->rowid;
-							
-						    if(!empty($n->TNomenclatureDet)) {
-						        foreach($n->TNomenclatureDet as $TDetValues) {
-						        	$k = $n_commande->addChild($PDOdb, 'TNomenclatureDet');
-						            $n_commande->TNomenclatureDet[$k]->set_values($TDetValues);
-						        }
-						    }
-							if(!empty($n->TNomenclatureWorkstation)) {
-							    foreach($n->TNomenclatureWorkstation as $TDetValues) {
-							    	
-							    	$k = $n_commande->addChild($PDOdb, 'TNomenclatureWorkstation');
-							        $n_commande->TNomenclatureWorkstation[$k]->set_values($TDetValues);
-							    }
-							}
-							
-							$n_commande->save($PDOdb);
-							
-						}
-					}
-	
+            if($origin !== 'propal' || empty($origin_id)) return 0;
+			
+			$propal = new Propal($db);
+			$propal->fetch($origin_id);
+			$fk_line_origin = 0;
+			
+			foreach ($propal->lines as $line)
+			{
+				if ($line->product_type == $object->product_type && $line->qty == $object->qty && $line->desc == $object->desc && $line->fk_product == $object->fk_product && $line->tva_tx == $object->tva_tx && $line->total_ttc == $object->total_ttc) 
+				{
+					$fk_line_origin = $line->id;
+					break;
 				}
-
-				
 			}
+			
+			// On cherche la nomenclature de type propal, ayant pour parent une nomenclature du produit de la ligne de propal
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature 
+				WHERE (
+					object_type = "propal" 
+					AND fk_object = '.$fk_line_origin.' 
+			  	) 
+				OR fk_nomenclature_parent IN ( 
+						SELECT rowid
+						FROM '.MAIN_DB_PREFIX.'nomenclature
+						WHERE object_type = "product"
+						AND fk_object = '.(int) $object->fk_product.'
+						ORDER BY rowid ASC
+				)';
+
+			$resql = $db->query($sql);
+			$TIDNomenclature = array();
+			$res = $db->fetch_object($resql);
+			if(!empty($res->rowid)){
+				// On charge la nomenclature
+				$n = new TNomenclature;
+				$n->load($PDOdb, $res->rowid);
+				if($n->rowid > 0) {
+					// On en crée une nouvelle pour la commande en récupérant toutes les données de l'ancienne
+					$n_commande = new TNomenclature;
+					$n_commande->fk_nomenclature_parent = $res->rowid;
+					$n_commande->object_type = 'commande';
+					$n_commande->fk_object = $object->rowid;
+					
+				    if(!empty($n->TNomenclatureDet)) {
+				        foreach($n->TNomenclatureDet as $TDetValues) {
+				        	$k = $n_commande->addChild($PDOdb, 'TNomenclatureDet');
+				            $n_commande->TNomenclatureDet[$k]->set_values($TDetValues);
+				        }
+				    }
+					if(!empty($n->TNomenclatureWorkstation)) {
+					    foreach($n->TNomenclatureWorkstation as $TDetValues) {
+					    	
+					    	$k = $n_commande->addChild($PDOdb, 'TNomenclatureWorkstation');
+					        $n_commande->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+					    }
+					}
+					
+					$n_commande->save($PDOdb);
+				
+				}
+			}
+			
             dol_syslog(
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
@@ -253,8 +258,35 @@ class Interfacenomenclaturetrigger
 		{
 			$sql = 'DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "propal"';
 			$db->query($sql);
+			
+			$this->_deleteNomenclature($PDOdb, $db, $object, 'propal');
+		}
+		elseif ($action == 'ORDER_DELETE')
+		{
+			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
 		}
 
         return 0;
     }
+
+	private function _deleteNomenclature(&$PDOdb, &$db, &$object, $object_type)
+	{
+		foreach ($object->lines as $line)
+		{
+			if ($line->product_type == 9) continue;
+			
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature WHERE object_type = "'.$object_type.'" AND fk_object = '.$line->id;
+			$PDOdb->Execute($sql);
+			
+			if ($PDOdb->Get_Recordcount() > 0)
+			{
+				$obj = $PDOdb->Get_line();
+				
+				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
+				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
+			}	
+		}
+		
+	}
+
 }
