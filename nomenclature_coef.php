@@ -188,6 +188,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		case 'propal':
 			$object = new Propal($db);
 			$object->fetch($id);
+			$object->fetch_thirdparty();
 			break;
 		
 		default:
@@ -196,8 +197,8 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	}
 	
 	//Etape 1 => récupérer les coefs
-	$TCoef = array();
-	$TCoefObject = array();
+	$TCoef = TNomenclatureCoef::loadCoef($PDOdb); //Coef standard
+	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal'); //Coef de l'objet
 	
 	//Etape 2 => mettre à jour le price de chaque ligne de nomenclature
 	foreach ($object->lines as $line)
@@ -208,8 +209,8 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		$total_price = 0;
 		foreach ($nomenclature->TNomenclatureDet as $k => $det)
 		{
-			$price = $det->getSupplierPrice($PDOdb, $nomenclaturedet->qty,true);
-			
+			$price = $det->getSupplierPrice($PDOdb, $det->qty,true);
+
 			if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
@@ -221,9 +222,11 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		}
 		
 		//Etape 3 => prendre en compte le cout de revient des postes de travails (Non pris en compte pour le moment)
+		//...
+
+		//Puis mettre à jour son prix (le updateline met à jour le prix de la propal)
+		$object->updateline($line->id, $total_price, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $line->pa_ht, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
 		
-		//Puis mettre à jour son prix
-		$object->updateline($fk_object, $total_price, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $line->pa_ht, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);		
 	}
 	
 }
