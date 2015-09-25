@@ -59,17 +59,17 @@ function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$object = new Societe($db);
 	$object->fetch($id);
 
-	llxHeader('','Coefficient');
+	llxHeader('','Coefficients');
 
     $head = societe_prepare_head($object, $user);
 	$titre = $langs->trans('ThirdParty');
 	$picto = 'company';
 	dol_fiche_head($head, 'nomenclaturecoef', $titre, 0, $picto);
 	
-	$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+	
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'tiers');
 	
-	_print_list_coef($PDOdb, $db, $langs, $object, $TCoef, $TCoefObject, $langs->trans("ThirdPartyName"), 'socid', 'nom', 'tiers', $id);
+	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("ThirdPartyName"), 'socid', 'nom', 'tiers', $id);
 }
 
 function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user)
@@ -92,7 +92,7 @@ function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	_print_list_coef($PDOdb, $db, $langs, $object, $TCoef, $TCoefObject, $langs->trans("Ref"), 'id', 'ref', 'propal', $id);
 }
 
-function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoef, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id)
+function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id)
 {
 	$form = new Form($db);
     echo '<form action="'.$_SERVER['PHP_SELF'].'" method="POST">';
@@ -111,15 +111,16 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoef, &$TCoefObje
     // List of coef
     echo '<tr style="background:#f2f2f2;"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
     
-	if ($TCoef)
+	if (!empty($TCoefObject))
 	{
-		foreach ($TCoef as $coef)
+		foreach ($TCoefObject as $type=>&$coef)
 		{
-			$name = !empty($TCoefObject[$coef->code_type]) && !$TCoefObject[$coef->code_type]->fk_origin ? 'TNomenclatureCoefObject_update['.$TCoefObject[$coef->code_type]->rowid.']' : 'TNomenclatureCoefObject_create['.$coef->code_type.']';
-			echo '<tr>';
+			$name ='TNomenclatureCoefObject['.$type.'][tx_object]';
+			
+			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : '#eeeeff'  ).'">';
 			echo '<td>&nbsp;'.$coef->label.'</td>';
 			echo '<td>'.$coef->description.'</td>';
-			echo '<td><input name="'.$name.'" value="'.(!empty($TCoefObject[$coef->code_type]) ? $TCoefObject[$coef->code_type]->tx_object : $coef->tx).'" size="5" /></td>';
+			echo '<td><input name="'.$name.'" value="'.$coef->tx_object.'" size="5" /></td>';
 			echo '</tr>';
 		}
 	}
@@ -147,36 +148,26 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$fk_object = GETPOST('id', 'int');
 	$type_object = GETPOST('fiche', 'alpha');
 	
-	$Post_TNomenclatureCoefObject_create = GETPOST('TNomenclatureCoefObject_create');
-	$Post_TNomenclatureCoefObject_update = GETPOST('TNomenclatureCoefObject_update');
+	$TNomenclatureCoefObject = GETPOST('TNomenclatureCoefObject');
 	
-	if ($Post_TNomenclatureCoefObject_create) 
+	if (!empty($TNomenclatureCoefObject)) 
 	{
-		foreach ($Post_TNomenclatureCoefObject_create as $code_type => $tx_value)
+		foreach ($TNomenclatureCoefObject as $code_type => &$coef)
 		{
 			$obj = new TNomenclatureCoefObject;
+			$obj->loadByTypeByCoef($PDOdb, $code_type, $fk_object, $type_object);
+			$obj->set_values($coef);
+			
+			
 			$obj->fk_object = $fk_object;
 			$obj->type_object = $type_object;
 			$obj->code_type = $code_type;
-			$obj->tx_object = (float) price2num($tx_value);
+			
+			
 			$obj->save($PDOdb);
 		}
 	}
-	
-	if ($Post_TNomenclatureCoefObject_update)
-	{
-		foreach ($Post_TNomenclatureCoefObject_update as $id_coef_object => $tx_value)
-		{
-			$obj = new TNomenclatureCoefObject;
-			if ($obj->load($PDOdb, $id_coef_object))
-			{
-				$obj->tx_object = (float) price2num($tx_value);
-				$obj->save($PDOdb);
-			}
-			
-		}	
-	}
-	
+		
 	setEventMessages($langs->trans('nomenclatureCoefUpdated'), null);
 }
 

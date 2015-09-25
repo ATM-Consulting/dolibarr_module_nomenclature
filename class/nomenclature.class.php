@@ -445,13 +445,16 @@ class TNomenclatureCoef extends TObjetStd
 	
 	static function loadCoef(&$PDOdb) 
 	{
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
 		$TRes = $PDOdb->ExecuteAsArray($sql);
 		$TResult = array();
 		
 		foreach ($TRes as $res)
 		{
-			$TResult[] = $res;
+			$o=new TNomenclatureCoef;
+			$o->load($PDOdb, $res->rowid);
+			
+			$TResult[$o->code_type] = $o;
 		}
 		
 		return $TResult;
@@ -519,27 +522,63 @@ class TNomenclatureCoefObject extends TObjetStd
         
         $this->start();
     }
+	
+	function loadByTypeByCoef(&$PDOdb, $code_type, $fk_object, $type_object) {
+		
+		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." WHERE code_type=? AND fk_object=? AND type_object=? ", array(1=>$code_type, 2=>$fk_object, 3=>$type_object));
+		if($obj = $PDOdb->Get_line()) {
+			
+			return $this->load($PDOdb, $obj->rowid);
+			
+		}
+
+		return false;
+		
+	}
 
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
-		$res = array();
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "'.$type_object.'"';
+		$Tab = array();
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "'.$type_object.'"';
 		$PDOdb->Execute($sql);
 		$TRes = $PDOdb->Get_All();
 		
 		switch ($type_object) {
 			case 'propal':
-				$res = self::loadCoefObject($PDOdb, $object->thirdparty, 'tiers', $object->id); // Récup des coefs du parent (exemple avec propal -> je charge les coef du tiers associé)
+				$TCoef = self::loadCoefObject($PDOdb, $object->thirdparty, 'tiers', $object->id); // Récup des coefs du parent (exemple avec propal -> je charge les coef du tiers associé)
+				break;
+			default:
+				$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 				break;
 		}
+		
 		
 		//while ($row = $PDOdb->Get_line())
 		foreach ($TRes as $row)
 		{
-			$row->fk_origin = $fk_origin;
-			$res[$row->code_type] = $row;
+			$o = new TNomenclatureCoefObject;
+			$o->load($PDOdb, $row->rowid);
+			$o->fk_origin = $fk_origin;
+			
+			$Tab[$o->code_type] = $o;
 		}
 		
-		return $res;
+		
+		foreach($TCoef as $k=> &$coef) {
+			
+			$coef->rowid = 0;
+			$coef->tx_object = $coef->tx;
+			
+			if(!isset($Tab[$k])) $Tab[$k] = $coef;
+			else {
+				$Tab[$k]->label = $coef->label;
+				$Tab[$k]->description = $coef->description;
+				
+		 	}
+		}
+		
+		
+		
+		return $Tab;
 	}
 }
