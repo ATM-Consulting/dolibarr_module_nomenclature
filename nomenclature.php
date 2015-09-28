@@ -623,8 +623,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 
 		if($user->rights->nomenclature->showPrice) {
-				$PR_coef = $total_mo+$total_produit_coef;
-				$price_buy = $total_mo+$total_produit_coef;
+				$PR_coef = $total_mo+$total_produit_coef_final;
+				$price_buy = $total_mo+$total_produit_coef_final;
 				$price_to_sell = price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2));
 		        ?>     
 		        <tr class="liste_total" >
