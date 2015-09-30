@@ -559,6 +559,7 @@ class TNomenclatureCoefObject extends TObjetStd
 			$o = new TNomenclatureCoefObject;
 			$o->load($PDOdb, $row->rowid);
 			$o->fk_origin = $fk_origin;
+			$o->tx = $o->tx_object;
 			
 			$Tab[$o->code_type] = $o;
 		}
