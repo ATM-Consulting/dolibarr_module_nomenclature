@@ -66,7 +66,6 @@ function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$picto = 'company';
 	dol_fiche_head($head, 'nomenclaturecoef', $titre, 0, $picto);
 	
-	
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'tiers');
 	
 	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("ThirdPartyName"), 'socid', 'nom', 'tiers', $id);
@@ -86,10 +85,9 @@ function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$picto = 'propal';
 	dol_fiche_head($head, 'nomenclaturecoef', $titre, 0, $picto);
 	
-	$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal');
-	//var_dump($TCoefObject);
-	_print_list_coef($PDOdb, $db, $langs, $object, $TCoef, $TCoefObject, $langs->trans("Ref"), 'id', 'ref', 'propal', $id);
+	
+	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("Ref"), 'id', 'ref', 'propal', $id);
 }
 
 function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id)
