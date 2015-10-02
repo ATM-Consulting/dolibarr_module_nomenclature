@@ -178,6 +178,12 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 			$object = new Propal($db);
 			$object->fetch($id);
 			$object->fetch_thirdparty();
+			
+			if ($object->status != Propal::STATUS_DRAFT)
+			{
+				setEventMessages($langs->trans('nomenclatureApplyAllCoefOnPriceError'), null, 'errors');
+				return;
+			}
 			break;
 		
 		default:
