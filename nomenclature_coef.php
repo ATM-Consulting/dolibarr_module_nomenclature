@@ -192,10 +192,13 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	//Etape 2 => mettre à jour le price de chaque ligne de nomenclature
 	foreach ($object->lines as $line)
 	{
+		if ($line->product_type == 9) continue;
+		
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal');
 		
 		$total_price = 0;
+		$total_mo = 0;
 		foreach ($nomenclature->TNomenclatureDet as $k => $det)
 		{
 			$price = $det->getSupplierPrice($PDOdb, $det->qty,true);
@@ -211,10 +214,17 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		}
 		
 		//Etape 3 => prendre en compte le cout de revient des postes de travails (Non pris en compte pour le moment)
-		//...
+		foreach ($nomenclature->TNomenclatureWorkstation as $k => $ws)
+		{
+			$price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour; 
+			$total_mo+=$price;
+		}
 
-		//Puis mettre à jour son prix (le updateline met à jour le prix de la propal)
-		$object->updateline($line->id, $total_price, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $line->pa_ht, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+		$price_buy = $total_mo+$total_price;
+		$price_to_sell = $price_buy * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE));
+		
+		//Puis mettre à jour son prix
+		if ($object->element == 'propal') $object->updateline($line->id, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
 		
 	}
 	
