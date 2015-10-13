@@ -53,3 +53,18 @@ function nomenclatureAdminPrepareHead()
 
     return $head;
 }
+
+
+function cloneNomenclatureFromProduct(&$PDOdb, $fk_product, $fk_object, $object_type, $json = false)
+{
+	$TNomen = TNomenclature::get($PDOdb, $fk_product,false, 'product');
+    foreach($TNomen as &$n) {
+        
+        $n->reinit();
+        $n->fk_object = $fk_object;
+        $n->object_type = $object_type;
+        $n->save($PDOdb);
+    }
+    
+    if (!$json) setEventMessage('NomenclatureCloned');
+}

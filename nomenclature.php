@@ -7,6 +7,8 @@ dol_include_once('/core/class/html.formother.class.php');
 dol_include_once('/core/lib/product.lib.php');
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
+dol_include_once('/nomenclature/lib/nomenclature.lib.php');
+
 if($conf->workstation->enabled) {
     dol_include_once('/workstation/class/workstation.class.php');
 }
@@ -44,18 +46,7 @@ if($action==='delete_nomenclature') {
 }
 else if($action==='clone_nomenclature') {
     
-    $TNomen = TNomenclature::get($PDOdb, GETPOST('fk_product_clone'),false, 'product');
-    foreach($TNomen as &$n) {
-        
-        $n->reinit();
-        $n->fk_object = $fk_object;
-        $n->object_type = $object_type;
-        $n->save($PDOdb);
-    }
-    
-    
-    setEventMessage('NomenclatureCloned');
-    
+	cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_product_clone', 'int'), $fk_object, $object_type);
 }
 else if($action==='add_nomenclature') {
     
@@ -64,6 +55,10 @@ else if($action==='add_nomenclature') {
     $n->save($PDOdb);
     
     
+}
+else if($action==='add_fk_nomenclature') {
+	//TODO ajouter les enfants de la nomenclature passé en post à la nomenclature courrante
+	
 }
 else if($action === 'delete_nomenclature_detail') {
     
@@ -127,6 +122,14 @@ else if($action==='save_nomenclature') {
 				break;
 		}
 		
+	}
+	elseif (GETPOST('clone_nomenclature'))
+	{
+		$n=new TNomenclature;
+		$n->load($PDOdb, $fk_nomenclature);
+		$n->delete($PDOdb);
+		
+		cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
 	}
 	else 
 	{
@@ -238,16 +241,17 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 	?>
 	<div class="tabsAction">
-	<div class="inline-block divButAction"><a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>&fk_object=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a></div>
+		<div class="inline-block divButAction">
+			<a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>&fk_object=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a>
+		</div>
 	
-	<?php
-	   $form=new Form($db);
-       print $form->select_produits('', 'fk_clone_from_product', '', 0);
-    ?>
-    <div class="inline-block divButAction">
-        <input type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
-    </div>
-
+		<?php
+		   $form=new Form($db);
+	       print $form->select_produits('', 'fk_clone_from_product', '', 0);
+	    ?>
+	    <div class="inline-block divButAction">
+	        <input type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+	    </div>
 	</div>
 	<?php
 	
@@ -573,7 +577,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            
                            <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
                            echo $n->getId() ?>&fk_object=<?php echo $fk_object ?>&object_type=<?php 
-                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=1"><?php echo img_delete() ?></a></td>
+                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {		
@@ -670,12 +674,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		                
                    </div>
                    
-                   <div>
-                   		<input type="text" name="search_fk_nomenclature" />
-               			<div class="inline-block divButAction">
-		                    <input type="submit" name="add_fk_nomenclature" class="butAction" value="<?php echo $langs->trans('AddFkNomenclature'); ?>" />
-		                </div>
-                   </div>
+                   <?php if ($json == 1) { ?>
+	                   <div>
+							<?php
+							   $form=new Form($db);
+						       print $form->select_produits('', 'fk_clone_from_product', '', 0);
+						    ?>
+						    <div class="inline-block divButAction">
+						        <input type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+						    </div>
+						</div>
+	                   
+                   <?php } ?>
                    
                    <div class="inline-block divButAction">
 	                   <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />

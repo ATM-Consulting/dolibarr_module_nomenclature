@@ -32,7 +32,7 @@ AddWorkstation=Ajouter un poste de charge
 
 ApplyNomenclaturePrice=Appliquer le prix de vente
 ApplyNewCoefToObjectLine=Appliquer les coefficients aux lignes
-CloneNomenclatureFromProduct=Importer 
+CloneNomenclatureFromProduct=Importer nomenclature 
 NomenclatureCloned=Nomenclature(s) importée(s)
 
 ListUseNomenclaure=Liste des nomenclatures utilisant ce produit
