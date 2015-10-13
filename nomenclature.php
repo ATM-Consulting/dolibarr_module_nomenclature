@@ -667,11 +667,20 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		                <div class="inline-block divButAction">
 		                    <input type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
 		                </div>
-		                <div class="inline-block divButAction">
-		                    <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
+		                
+                   </div>
+                   
+                   <div>
+                   		<input type="text" name="search_fk_nomenclature" />
+               			<div class="inline-block divButAction">
+		                    <input type="submit" name="add_fk_nomenclature" class="butAction" value="<?php echo $langs->trans('AddFkNomenclature'); ?>" />
 		                </div>
                    </div>
                    
+                   <div class="inline-block divButAction">
+	                   <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
+	               </div>
+	               
                    <?php if ($json) { ?>
                    <div>
                    		<div class="inline-block divButAction">
@@ -679,10 +688,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		                </div>
                    </div>
                    <?php } ?>
-                   <div>
-                   		<input type="text" name="search_fk_nomenclature" />
-                   
-                   </div>
                    
                 </div>
             </td>
