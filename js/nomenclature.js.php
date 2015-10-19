@@ -64,13 +64,13 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                $("#dialog-nomenclature").dialog({
                   resizable: true,
                   modal: true,
+                  dialogClass: "dialogSouldBeZindexed",
                   width:'90%',
                   title:"<?php echo $langs->trans('Nomenclature'); ?>",
                   buttons: {
                     
                   }
-                });
-                
+                })
        };
        
 /* nomenclature/nomenclature.php?fk_product=2&lineid=4&object_type=commande&qty=1 */

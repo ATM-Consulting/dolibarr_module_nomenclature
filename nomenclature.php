@@ -675,14 +675,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    </div>
                    
                    <?php if ($json == 1) { ?>
-	                   <div>
+                   		<style type="text/css">
+                   			.dialogSouldBeZindexed {
+                   				z-index:101 !important;
+                   			}
+                   		</style>
+						<div>
 							<?php
 							   $form=new Form($db);
-						       print $form->select_produits('', 'fk_clone_from_product', '', 0);
-						    ?>
-						    <div class="inline-block divButAction">
-						        <input type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
-						    </div>
+							   print $form->select_produits('', 'fk_clone_from_product', '', 0);
+							?>
+							<div class="inline-block divButAction">
+								<input type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+							</div>
 						</div>
 	                   
                    <?php } ?>
