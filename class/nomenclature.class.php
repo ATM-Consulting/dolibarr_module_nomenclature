@@ -327,6 +327,7 @@ class TNomenclatureDet extends TObjetStd
     function __construct()
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
+		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature',array('type'=>'integer', 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
         $this->add_champs('qty,price',array('type'=>'float'));

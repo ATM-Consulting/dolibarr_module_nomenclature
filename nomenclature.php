@@ -418,7 +418,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									}
 									else 
 									{
-										echo "Ligne libre";
+										echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
 									}
 									
 									_draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
@@ -445,7 +445,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     
                                ?>
                                <td rowspan="2">
-                               	<?php echo $p_nomdet->stock_reel; ?>
+                               	<?php echo !empty($det->fk_product) ? $p_nomdet->stock_reel : '-'; ?>
                                </td>    
                                <td rowspan="2">
                                	<?php
@@ -465,7 +465,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 										}
 										
 									}
-                               		echo $p_nomdet->stock_theorique; 
+                               		echo !empty($det->fk_product) ? $p_nomdet->stock_theorique : '-'; 
                                	?>
                                </td>    
                                <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
@@ -785,7 +785,7 @@ global $db;
 		}
 		else 
 		{
-			echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L Ligne libre '.$p_child->label.' x '.($det->qty * $qty).' ';
+			echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$det->title.' x '.($det->qty * $qty).' ';
 			_draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
 		}
     }
