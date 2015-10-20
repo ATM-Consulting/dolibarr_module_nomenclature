@@ -409,19 +409,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
                                <td><?php 
                                     $p_nomdet = new Product($db);
-                                    $p_nomdet->fetch($det->fk_product);
+                                    if ($det->fk_product) 
+                                    {
+                                    	$p_nomdet->fetch($det->fk_product);
+										echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
                                     
-                                    echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
-                                    
-									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
+										if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
+									}
+									else 
+									{
+										echo "Ligne libre";
+									}
 									
 									_draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 									
                                 ?></td><?php    
                                     
 									// On récupère le dernier tarif fournisseur pour ce produit
-									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
+									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.(int) $p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
 									$resql = $db->query($q);
+									
 									$res = $db->fetch_object($resql);
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 									{
@@ -769,12 +776,18 @@ global $db;
     foreach($n->TNomenclatureDet as &$det) {
                     
         $p_child = new Product($db);
-        $p_child->fetch($det->fk_product);
+        if ($det->fk_product)
+        {
+        	$p_child->fetch($det->fk_product);
         
-        echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$p_child->getNomUrl(1).' '.$p_child->label.' x '.($det->qty * $qty).' ';
-        
-        _draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
-        
+	        echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$p_child->getNomUrl(1).' '.$p_child->label.' x '.($det->qty * $qty).' ';
+	        _draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
+		}
+		else 
+		{
+			echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L Ligne libre '.$p_child->label.' x '.($det->qty * $qty).' ';
+			_draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
+		}
     }
     
 }
