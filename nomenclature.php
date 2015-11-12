@@ -246,8 +246,13 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 		</div>
 	
 		<?php
-		   $form=new Form($db);
-	       print $form->select_produits('', 'fk_clone_from_product', '', 0);
+		   //$form=new Form($db);
+	       //print $form->select_produits('', 'fk_clone_from_product', '', 0);
+			$htmlname = 'fk_clone_from_product';
+			$urloption='htmlname='.$htmlname.'&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
+			print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
+			print $langs->trans("RefOrLabel").' : ';
+			print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" autofocus />';
 	    ?>
 	    <div class="inline-block divButAction">
 	        <input type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
@@ -682,8 +687,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    		</style>
 						<div>
 							<?php
-							   $form=new Form($db);
-							   print $form->select_produits('', 'fk_clone_from_product', '', 0);
+							   //$form=new Form($db);
+							  //print $form->select_produits('', 'fk_clone_from_product', $sql, 0);*/
+							  
+							  $htmlname = 'fk_clone_from_product';
+							  $urloption='htmlname='.$htmlname.'&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
+							  print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
+							  print $langs->trans("RefOrLabel").' : ';
+							  print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" autofocus />';
+							  
 							?>
 							<div class="inline-block divButAction">
 								<input type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
