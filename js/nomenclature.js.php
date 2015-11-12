@@ -43,6 +43,30 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                        $div.closest('.ui-dialog').effect( "shake", { direction : 'up', times : 1 } );
                        $div.html(data);
                        bindItem();
+                       
+                       if (ButtonWhoSubmit == 'apply_nomenclature_price')
+                       {
+                       		var url = false;
+                       		switch(object_type) {
+							    case 'propal':
+							        url = "<?php echo dol_buildpath('/comm/propal.php?id=', 2); ?>"+fk_origin;
+							        break;
+							    case 'commande':
+							        url = "<?php echo dol_buildpath('/commande/card.php?id=', 2); ?>"+fk_origin;
+							        break;
+							} 
+							
+							if (url)
+							{
+								$.ajax({
+									url: url
+									,success: function(html) {
+										$('#id-right > .fiche').replaceWith($(html).find('#id-right > .fiche'));
+									}
+								});
+							}
+							
+                       }
                    });
             
                     return false;
