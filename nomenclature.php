@@ -414,26 +414,43 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
                                <td><?php 
                                     $p_nomdet = new Product($db);
-                                    $p_nomdet->fetch($det->fk_product);
+                                    if ($det->fk_product>0) 
+                                    {
+                                    	$p_nomdet->fetch($det->fk_product);
+										echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
                                     
-                                    echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
-                                    
-									if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
+										if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
+									}
+									else 
+									{
+										echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
+									}
 									
 									_draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 									
                                 ?></td><?php    
                                     
-									// On récupère le dernier tarif fournisseur pour ce produit
-									$q = 'SELECT fk_availability FROM '.MAIN_DB_PREFIX.'product_fournisseur_price WHERE fk_product = '.$p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
-									$resql = $db->query($q);
-									$res = $db->fetch_object($resql);
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 									{
+										// On récupère le dernier tarif fournisseur pour ce produit
+										if( $p_nomdet->id>0) {
+											$q = 'SELECT fk_availability 
+												FROM '.MAIN_DB_PREFIX.'product_fournisseur_price 
+												WHERE fk_product = '.(int) $p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
+										
+											$resql = $db->query($q);
+									
+											$res = $db->fetch_object($resql);
+											$fk_availability = $res->fk_availability;
+										}
+										else {
+											$fk_availability=0;
+										}
+
 										echo '<td rowspan="2">';
-										if($res->fk_availability > 0) {
+										if($fk_availability > 0) {
 											$form->load_cache_availability();
-											$availability=$form->cache_availability[$res->fk_availability]['label'];
+											$availability=$form->cache_availability[$fk_availability]['label'];
 											echo $availability;
 											$availability='';
 										}
@@ -443,11 +460,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     
                                ?>
                                <td rowspan="2">
-                               	<?php echo $p_nomdet->stock_reel; ?>
+                               	<?php echo $det->fk_product>0 ? $p_nomdet->stock_reel : '-'; ?>
                                </td>    
                                <td rowspan="2">
                                	<?php
-                               		if($conf->asset->enabled){
+                               		if($conf->asset->enabled && $p_nomdet->id>0){
                                			
                                			// On récupère les quantités dans les OF
                                			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type 
@@ -457,13 +474,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                               		$resql = $db->query($q);
 										
 										// On régule le stock théorique en fonction de ces quantités
-										while($res = $db->fetch_object($resql)) {
-											if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
-											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
-										}
-										
-									}
-                               		echo $p_nomdet->stock_theorique; 
+						while($res = $db->fetch_object($resql)) {
+							if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
+							elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
+						}
+									
+					}
+                               		echo !empty($det->fk_product) ? $p_nomdet->stock_theorique : '-'; 
                                	?>
                                </td>    
                                <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
@@ -781,12 +798,18 @@ global $db;
     foreach($n->TNomenclatureDet as &$det) {
                     
         $p_child = new Product($db);
-        $p_child->fetch($det->fk_product);
+        if ($det->fk_product)
+        {
+        	$p_child->fetch($det->fk_product);
         
-        echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$p_child->getNomUrl(1).' '.$p_child->label.' x '.($det->qty * $qty).' ';
-        
-        _draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
-        
+	        echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$p_child->getNomUrl(1).' '.$p_child->label.' x '.($det->qty * $qty).' ';
+	        _draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
+		}
+		else 
+		{
+			echo '<br />'.str_repeat('&nbsp;&nbsp;&nbsp;',$level).'L '.$det->title.' x '.($det->qty * $qty).' ';
+			_draw_child_arbo($PDOdb, $p_child->id, $det->qty * $qty, $level+1 );
+		}
     }
     
 }
