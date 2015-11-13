@@ -194,6 +194,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	//Etape 1 => récupérer les coefs
 	$TCoef = TNomenclatureCoef::loadCoef($PDOdb); //Coef standard
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal'); //Coef de l'objet
+	$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 	
 	//Etape 2 => mettre à jour le price de chaque ligne de nomenclature
 	foreach ($object->lines as $line)
@@ -227,7 +228,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		}
 
 		$price_buy = $total_mo+$total_price;
-		$price_to_sell = $price_buy * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE));
+		$price_to_sell = $price_buy * (1 + ($marge->tx_object / 100));
 		
 		//Puis mettre à jour son prix
 		if ($object->element == 'propal') $object->updateline($line->id, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);

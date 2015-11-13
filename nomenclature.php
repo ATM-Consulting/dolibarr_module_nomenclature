@@ -474,12 +474,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                               		$resql = $db->query($q);
 										
 										// On régule le stock théorique en fonction de ces quantités
-						while($res = $db->fetch_object($resql)) {
-							if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
-							elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
-						}
-									
-					}
+										while($res = $db->fetch_object($resql)) {
+											if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
+											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
+										}
+													
+									}
                                		echo !empty($det->fk_product) ? $p_nomdet->stock_theorique : '-'; 
                                	?>
                                </td>    
@@ -519,7 +519,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                            }
                                ?>                        
                            </tr>
-                           <tr class="<?php echo $class ?>">
+                           <tr class="<?php echo $class; ?>">
                                <td colspan="2">
                                 <?php
                                        echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1);
@@ -563,6 +563,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                ?>
                <table class="liste" width="100%">
                <tr class="liste_titre">
+                   <td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('Worstations'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('QtyPrepare'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('QtyFabrication'); ?></td>
@@ -587,6 +588,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        
                        ?>
                        <tr class="<?php echo $class ?>">
+                       		<td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
                            <td><?php 
                                 
                                 echo $ws->workstation->getNomUrl(1);
@@ -611,9 +613,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                           echo '</td>';      
 	                           
 	                      }                   
-                       ?></tr>
+                       ?>
+                       </tr>
                        <tr class="<?php echo $class ?>">
-                               <td >
+                               <td colspan="2">
                                 <?php
                                        echo $formCore->zonetexte('', 'TNomenclatureWorkstation['.$k.'][note_private]', $ws->note_private, 80, 1);
                                 ?>
@@ -649,9 +652,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 
 		if($user->rights->nomenclature->showPrice) {
+				$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 				$PR_coef = $total_mo+$total_produit_coef_final;
 				$price_buy = $total_mo+$total_produit_coef_final;
-				$price_to_sell = price(round($PR_coef * (100 / (100 - $conf->global->NOMENCLATURE_COEF_MARGE)) ,2));
+				$price_to_sell = price(round($PR_coef * (1 + ($marge->tx_object / 100)) ,2));
 		        ?>     
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('AmountCostWithCharge'); ?></td>
@@ -660,7 +664,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        	<?php echo $formCore->hidden('price_buy', price2num($price_buy)); ?>
 		        </tr>
 		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $conf->global->NOMENCLATURE_COEF_MARGE); ?></td>
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $marge->tx_object); ?></td>
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;">
                        	<?php echo $price_to_sell; ?>

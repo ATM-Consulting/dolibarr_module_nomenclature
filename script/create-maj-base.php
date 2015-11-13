@@ -68,11 +68,39 @@ if (isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
 	$sql = 'UPDATE '.MAIN_DB_PREFIX.'nomenclaturedet SET code_type = "coef_consommable" WHERE code_type = "3"';
 	$db->query($sql);
 }
+
+if (isset($conf->global->NOMENCLATURE_COEF_MARGE))
+{
+	$o=new TNomenclatureCoef;
+	$o->label = 'Marge';
+	$o->description = "Coef. de marge";
+	$o->code_type = "coef_marge";
+	$o->tx = $conf->global->NOMENCLATURE_COEF_MARGE;
+	$o->save($PDOdb);
+	
+	dolibarr_del_const($db, 'NOMENCLATURE_COEF_MARGE', $conf->entity);
+}
+else 
+{
+	$o=new TNomenclatureCoef($db);
+	$o->loadBy($PDOdb, 'coef_marge', 'code_type');
+	
+	if ($o->getId() > 0) null; //OK le coef exist donc on ne fait rien
+	else
+	{
+		//Il faut créer le coef_marge car il s'agit d'un coef obligatoire pour des calculs donc le mettre au moins à 0
+		$o=new TNomenclatureCoef;
+		$o->label = 'Marge';
+		$o->description = "Coef. de marge";
+		$o->code_type = "coef_marge";
+		$o->tx = 10;
+		$o->save($PDOdb);
+	}
+}
 /*
  * Fin récup
  */
- 
- 
+
  
 $o=new TNomenclatureCoefObject($db);
 $o->init_db_by_vars($PDOdb);

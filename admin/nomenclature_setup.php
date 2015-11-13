@@ -217,7 +217,7 @@ print '</table>';
 
 
 
-
+/*
 
 $var=false;
 print '<table class="noborder" width="100%">';
@@ -226,7 +226,7 @@ print '<td>'.$langs->trans("Parameters").'</td>'."\n";
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
-/*
+
 // Example with a yes / no select
 $var=!$var;
 print '<tr '.$bc[$var].'>';
@@ -253,7 +253,7 @@ print '<input type="text" name="NOMENCLATURE_COEF_CONSOMMABLE" value="'.$conf->g
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
-*/
+
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("CoefMarge").'</td>';
@@ -268,7 +268,7 @@ print '</form>';
 print '</td></tr>';
 
 print '</table>';
-
+*/
 
 llxFooter();
 

@@ -314,7 +314,7 @@ class TNomenclatureDet extends TObjetStd
 		{
 			while ($row = $PDOdb->Get_line())
 			{
-				$res[$row->code_type] = $row->label;
+				if ($row->code_type != 'coef_marge') $res[$row->code_type] = $row->label;
 			}
 		}
 		
@@ -444,6 +444,12 @@ class TNomenclatureCoef extends TObjetStd
         $this->start();
     }  
 	
+	function load(&$PDOdb, $id)
+	{
+		parent::load($PDOdb, $id);
+		$this->tx_object = $this->tx;
+	}
+	
 	static function loadCoef(&$PDOdb) 
 	{
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
@@ -491,10 +497,13 @@ class TNomenclatureCoef extends TObjetStd
     
 	function delete(&$PDOdb)
 	{
+		if ($this->code_type == 'coef_marge') return false;
+		
 		//Vérification que le coef ne soit pas utilisé - si utilisé alors on interdit la suppression	
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE code_type = '.$this->code_type.' 
 				UNION
 				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE code_type = '.$this->code_type;
+		
 		$res = $PDOdb->ExecuteAsArray($sql);
 		
 		if (count($res) > 0)
@@ -535,6 +544,12 @@ class TNomenclatureCoefObject extends TObjetStd
 
 		return false;
 		
+	}
+
+	static function getMarge(&$PDOdb, $object, $type_object)
+	{
+		$TCoef = self::loadCoefObject($PDOdb, $object, $type_object);
+		return $TCoef['coef_marge'];
 	}
 
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
