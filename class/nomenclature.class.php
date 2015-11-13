@@ -388,8 +388,7 @@ class TNomenclatureDet extends TObjetStd
 
 class TNomenclatureWorkstation extends TObjetStd
 {
-    
-    
+	
     function __construct() 
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation');
@@ -403,28 +402,30 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->start();
         
         $this->qty=1;
-        $this->product_type=1;        
-    }   
-    function reinit() {
+        $this->product_type=1;
+    }  
+	 
+    function reinit() 
+    {
         $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def   
         $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
         $this->{OBJETSTD_DATEUPDATE}=time();
         
     }
-    function load(&$PDOdb, $id, $annexe = true) {
+	
+    function load(&$PDOdb, $id, $annexe = true) 
+    {
         parent::load($PDOdb, $id);
         
         if($annexe) {
             $this->workstation = new TWorkstation;
             $this->workstation->load($PDOdb, $this->fk_workstation);    
         }
-         
-        
     }
-    function save(&$PDOdb) {
-        
+	
+    function save(&$PDOdb) 
+    {
         $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
-        
         parent::save($PDOdb);    
     }
     
@@ -533,17 +534,16 @@ class TNomenclatureCoefObject extends TObjetStd
         $this->start();
     }
 	
-	function loadByTypeByCoef(&$PDOdb, $code_type, $fk_object, $type_object) {
+	function loadByTypeByCoef(&$PDOdb, $code_type, $fk_object, $type_object) 
+	{
+		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." WHERE code_type='".$code_type."' AND fk_object=".$fk_object." AND type_object='".$type_object."'");
 		
-		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." WHERE code_type=? AND fk_object=? AND type_object=? ", array(1=>$code_type, 2=>$fk_object, 3=>$type_object));
-		if($obj = $PDOdb->Get_line()) {
-			
+		if($obj = $PDOdb->Get_line()) 
+		{
 			return $this->load($PDOdb, $obj->rowid);
-			
 		}
 
 		return false;
-		
 	}
 
 	static function getMarge(&$PDOdb, $object, $type_object)
@@ -568,8 +568,6 @@ class TNomenclatureCoefObject extends TObjetStd
 				break;
 		}
 		
-		
-		//while ($row = $PDOdb->Get_line())
 		foreach ($TRes as $row)
 		{
 			$o = new TNomenclatureCoefObject;
@@ -579,7 +577,6 @@ class TNomenclatureCoefObject extends TObjetStd
 			
 			$Tab[$o->code_type] = $o;
 		}
-		
 		
 		foreach($TCoef as $k=> &$coef) {
 			
@@ -594,8 +591,7 @@ class TNomenclatureCoefObject extends TObjetStd
 		 	}
 		}
 		
-		
-		
+		ksort($Tab);
 		return $Tab;
 	}
 }

@@ -192,7 +192,6 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	}
 	
 	//Etape 1 => récupérer les coefs
-	$TCoef = TNomenclatureCoef::loadCoef($PDOdb); //Coef standard
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal'); //Coef de l'objet
 	$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 	
@@ -211,7 +210,6 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 			$price = $det->getSupplierPrice($PDOdb, $det->qty,true);
 
 			if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
-			elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
 			
 			$det->price = $price * $coef;
