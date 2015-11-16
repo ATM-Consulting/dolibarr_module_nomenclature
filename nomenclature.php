@@ -588,7 +588,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        
                        ?>
                        <tr class="<?php echo $class ?>">
-                       		<td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
+                       		<td><?php echo $formCore->combo('', 'TNomenclatureWorkstation['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $ws->code_type); ?></td>
                            <td><?php 
                                 
                                 echo $ws->workstation->getNomUrl(1);
@@ -604,14 +604,21 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a></td>
                            <?php
                            
-                           if($user->rights->nomenclature->showPrice) {		
-                           
-	                           echo '<td align="right" rowspan="2">'; 
-                               $price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour; 
-                               $total_mo+=$price;
-                               echo price($price) ;
-	                           echo '</td>';      
-	                           
+                           if($user->rights->nomenclature->showPrice) {
+                           	
+								$price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour;
+							   
+								if (!empty($TCoefObject[$ws->code_type])) $coef = $TCoefObject[$ws->code_type]->tx_object;
+								else $coef = 1;
+								
+								$price_charge = $price * $coef;
+								$price_final = ($ws->price) ? $ws->price : $price_charge; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
+								
+								$total_mo+=$price_charge;
+						   
+	                           echo '<td align="right" rowspan="2">';
+                               echo price($price_charge) ;
+	                           echo '</td>';
 	                      }                   
                        ?>
                        </tr>

@@ -396,6 +396,7 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
         $this->add_champs('rang',array('type'=>'float', 'index'=>true));
         $this->add_champs('note_private',array('type'=>'text'));
+		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
         
         $this->_init_vars();
         
