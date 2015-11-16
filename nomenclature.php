@@ -630,7 +630,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					if($user->rights->nomenclature->showPrice) {		
 	                    ?><tr class="liste_total">
 	                           <td><?php echo $langs->trans('Total'); ?></td>
-	                           <td colspan="4">&nbsp;</td>
+	                           <td colspan="5">&nbsp;</td>
 	                           <td>&nbsp;</td>
 	                           <td align="right"><?php echo price($total_mo); ?></td>
 	                          
