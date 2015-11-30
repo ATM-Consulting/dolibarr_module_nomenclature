@@ -402,6 +402,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					   $TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
 					   $TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type_string);
 					   
+					   $total_charge = 0;
                        $class='';$total_produit = $total_mo  = 0;
                        foreach($TNomenclatureDet as $k=>&$det) {
                            
@@ -504,6 +505,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									$total_produit+=$price;
 									$total_produit_coef+=$price_charge;
 									$total_produit_coef_final+=$price_final;
+									
+									if ($price_final != 0) $total_charge += $price_final;
+									else $total_charge += $price_charge; 
 									
 									echo '<td align="right"  rowspan="2">'; 
                                     echo price($price) ;
@@ -658,7 +662,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 		if($user->rights->nomenclature->showPrice) {
 				$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
-				$PR_coef = $total_mo+$total_produit_coef_final;
+				$PR_coef = $total_mo+$total_charge;
 				$price_buy = $total_mo+$total_produit_coef_final;
 				$price_to_sell = price(round($PR_coef * (1 + ($marge->tx_object / 100)) ,2));
 		        ?>     
