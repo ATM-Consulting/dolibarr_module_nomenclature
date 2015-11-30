@@ -396,13 +396,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                	break;
                            
                        }
-					   
-					   if (!empty($object)) 
-					   {
-					   		//Chaque tableau de coef a pour key le rowid du coef
-						   	$TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
-						   	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type_string);
-					   }
+					 	
+					  
+						//Chaque tableau de coef a pour key le rowid du coef
+					   $TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
+					   $TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type_string);
 					   
                        $class='';$total_produit = $total_mo  = 0;
                        foreach($TNomenclatureDet as $k=>&$det) {
@@ -499,7 +497,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
 									elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
 									else $coef = 1;
-									
+								
 									$price_charge = $price * $coef;
 									$price_final = ($det->price) ? $det->price : $price_charge;
 									
