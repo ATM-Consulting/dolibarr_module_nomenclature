@@ -18,7 +18,7 @@ QtyFabrication=Temps de fabrication
 Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
-AmountCostWithChargeCustom=Coût final
+AmountCostWithChargeCustom=Coût perso
 PriceConseil=Prix de vente conseillé (Marge %s %%)
 
 NomenclatureSaved=Nomenclature enregistrée
