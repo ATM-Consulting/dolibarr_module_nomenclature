@@ -499,7 +499,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									else $coef = 1;
 								
 									$price_charge = $price * $coef;
-									$price_final = ($det->price) ? $det->price : $price_charge;
+									$price_final = ($det->price) ? $det->price : 0;
 									
 									$total_produit+=$price;
 									$total_produit_coef+=$price_charge;
