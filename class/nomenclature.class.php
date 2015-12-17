@@ -294,32 +294,7 @@ class TNomenclature extends TObjetStd
 
 class TNomenclatureDet extends TObjetStd
 {
-    /*
-    static $TType=array(
-        1=>'Principal'
-        ,2=>'Secondaire'
-        ,3=>'Consommable'
-    );
-    */
     
-    static function getTType(&$PDOdb, $blankRow = false)
-	{
-		$res = array();
-		if ($blankRow) $res = array('' => '');
-		
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
-		$resql = $PDOdb->Execute($sql);
-		
-		if ($resql && $PDOdb->Get_Recordcount() > 0)
-		{
-			while ($row = $PDOdb->Get_line())
-			{
-				if ($row->code_type != 'coef_marge') $res[$row->code_type] = $row->label;
-			}
-		}
-		
-		return $res;
-	}
     
 	/**
 	 * product_type == fk_coef (rowid de la table nomenclature_coef)
@@ -382,6 +357,26 @@ class TNomenclatureDet extends TObjetStd
 	{
 		//$defaultNomenclature = self::getDefaultNomenclature($PDOdb, $nomenclatureDet->fk_product, $qty_to_make);
 		return TNomenclature::getDefaultNomenclature($PDOdb, $nomenclatureDet->fk_product, $qty_to_make);
+	}
+	
+	
+    static function getTType(&$PDOdb, $blankRow = false)
+	{
+		$res = array();
+		if ($blankRow) $res = array('' => '');
+		
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
+		$resql = $PDOdb->Execute($sql);
+		
+		if ($resql && $PDOdb->Get_Recordcount() > 0)
+		{
+			while ($row = $PDOdb->Get_line())
+			{
+				if ($row->code_type != 'coef_marge') $res[$row->code_type] = $row->label;
+			}
+		}
+		
+		return $res;
 	}
 }
 

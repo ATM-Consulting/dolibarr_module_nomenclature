@@ -1,0 +1,34 @@
+#speednomenclature {
+	border:1px dashed #eee;
+	border-radius: 5px;
+	padding: 3px 3px 100px 3px;
+}
+#speednomenclature li,#sortableListsBase li { 
+	padding: 10px 0 10px 10px;
+	background-color: #3f3f3f;
+    border: 1px solid #ccc;
+    margin: 5px;
+    color:white;
+    font-size:14px;
+    border-radius: 5px;
+    list-style: none;
+}
+#speednomenclature a {
+	color:#eee;
+	font-weight: bold;
+}
+
+#speednomenclature .placeholderClass {
+	background-color:yellow;
+}
+#speednomenclature .hintClass {
+	background-color:green;
+	border:1px dashed white
+}
+#speednomenclature .currElemClass {
+	background-color:#0000FF;
+	color:#fff;
+}
+#speednomenclature li.product {
+	background-color: #8f8f8f;
+}

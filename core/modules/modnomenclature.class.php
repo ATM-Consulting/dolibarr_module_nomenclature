@@ -148,6 +148,7 @@ class modnomenclature extends DolibarrModules
             'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
             ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->tiers->updatecoef:/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
             ,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
+            ,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
         );
 
         // Dictionaries
