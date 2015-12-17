@@ -528,7 +528,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 ?>
                                </td>
                            </tr>
-                           <?
+                           <?php
                            
                        }
 						
@@ -695,7 +695,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                         <div class="inline-block divButAction">
                         <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
                         </div>
-                        <?
+                        <?php
                     }
                     
                     ?>
