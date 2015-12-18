@@ -34,6 +34,10 @@ function _drawlines(&$object) {
 		
 		echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, true), -1);
 		echo $formCore->bt($langs->trans('AddWorkstation'), 'AddWorkstation');
+		
+		echo '<hr />';
+		echo $formCore->bt($langs->trans('SaveAll'), 'SaveAll');
+		
 	echo '</div>';
 	
 	echo '<ul id="speednomenclature" class="lines '.$object->element.'">';
