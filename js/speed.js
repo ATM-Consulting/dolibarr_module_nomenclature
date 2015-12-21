@@ -20,9 +20,7 @@ var options = {
 			}
 		},
 		onChange:function(cEl) {
-		  console.log( $('#speednomenclature').sortableListsToArray());
-		  console.log( $('#speednomenclature').sortableListsToHierarchy());
-		  $('div.logme').html( );	
+		 	
 		}
 	};
 
@@ -42,10 +40,53 @@ $(document).ready(function() {
 	});
 	
 	$('input[name=AddProductNomenclature]').click(function() {
-		addProduct($('select#fk_product').val(),$('select#fk_product option:selected').text());
+		
+		label = $('#fk_product option:selected').text();
+		if(label == '') label = $('#search_fk_product').val();
+		addProduct($('#addto #fk_product').val(),label);
+	});
+	
+	
+	$('input[name=SaveAll]').click(function() {
+		var THierarchie = $('#speednomenclature').sortableListsToHierarchy();
+		
+		THierarchie = parseHierarchie(THierarchie);
+		console.log(THierarchie);
+		$.ajax({
+			url:"script/interface.php"
+			,data : {
+				put:'nomenclatures'
+				,THierarchie:THierarchie
+			}
+		});
 	});
 	
 });
+
+function parseHierarchie(THierarchie) {
+	
+	for(x in THierarchie) {
+		
+		$li = $('li#'+THierarchie[x].id);
+		
+		//if($li.attr('line-type') == 'nomenclature' || $li.attr('line-type') == 'workstation') {
+		THierarchie[x].fk_product = $li.attr('fk_product');  
+		THierarchie[x].fk_original_nomenclature = $li.closest('ul').attr('fk_original_nomenclature');
+		THierarchie[x].fk_nomenclature = $li.closest('ul').attr('fk_nomenclature');
+		
+		THierarchie[x].fk_object = $li.attr('fk_object');
+		THierarchie[x].object_type = $li.attr('object_type');
+		THierarchie[x].k = $li.attr('k');
+		//}
+		
+		if(THierarchie[x].children && THierarchie[x].children.length>0) {
+			THierarchie[x].children = parseHierarchie(THierarchie[x].children);
+		}	
+		
+	}
+	
+	return THierarchie;
+}
 
 function addProduct(fk_product,label) {
 	console.log('addProduct',fk_product,label);

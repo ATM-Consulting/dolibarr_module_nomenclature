@@ -19,6 +19,10 @@
 	font-weight: bold;
 }
 
+#speednomenclature ul.notanomenclature {
+	border:1px dashed #fff;
+}
+
 #speednomenclature li.workstation {
 	background-color: #3f5f3f;
 }
@@ -46,7 +50,7 @@ div#addto {
 	background-color: #3f3f3f;
     border: 1px solid #ccc;
     border-radius: 5px 0 0 5px;
-    z-index: 999;
+   
 }
 #speednomenclature li.selectedElement {
 	background-color: #ccccff;
