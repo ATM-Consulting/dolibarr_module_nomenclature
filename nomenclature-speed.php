@@ -17,14 +17,21 @@
 	
 	if(empty($object))exit;
 	$PDOdb=new TPDOdb;
-	_drawlines($object);
+	_drawlines($object, $object_type);
 	
 	
 	
-function _drawlines(&$object) {
+function _drawlines(&$object, $object_type) {
 	global $db,$langs,$conf,$PDOdb;
 	
 	llxHeader('', 'Nomenclatures', '', '', 0, 0, array('/nomenclature/js/speed.js','/nomenclature/js/jquery-sortable-lists.min.js'), array('/nomenclature/css/speed.css'));
+	
+	if($object_type == 'propal') {
+		dol_include_once('/core/lib/propal.lib.php');
+		$head = propal_prepare_head($object);
+		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), 0, 'propal');
+		
+	}
 	
 	$formDoli=new Form($db);
 	$formCore=new TFormCore;
@@ -65,6 +72,7 @@ function _drawlines(&$object) {
 	?>
 	<div class="logme"></div>
 	<?php
+	dol_fiche_end();
 	llxFooter();
 } 
 function _drawnomenclature($fk_object, $object_type,$fk_product,$qty) {
