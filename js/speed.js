@@ -10,7 +10,11 @@ var options = {
 			null;
 		},
 		isAllowed: function( cEl, hint, target ) {
-			if(cEl.hasClass('product') || target.hasClass('workstation') /*|| target.closest('li').length==0*/ ) {
+			if( cEl.hasClass('lineObject') && hint.parent().attr('id') == 'speednomenclature' ) {
+				hint.css('background-color', '#9999ff');
+				return true;
+			}
+			else if( target.hasClass('lineObject') || target.hasClass('workstation') /*|| target.closest('li').length==0*/ ) {
 				hint.css('background-color', '#ff9999');
 				return false;
 			}

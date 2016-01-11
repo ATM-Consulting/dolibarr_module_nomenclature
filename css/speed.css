@@ -14,6 +14,20 @@
     border-radius: 5px;
     list-style: none;
 }
+#speednomenclature li div.title {
+	color:#000;
+	font-weight: bold;
+	
+}
+#speednomenclature li div.total {
+	color:#000;
+	font-weight: bold;
+	text-align: right;
+}
+#speednomenclature li div.free {
+	color:#0000ff;
+}
+
 #speednomenclature a {
 	color:#eee;
 	font-weight: bold;
@@ -38,7 +52,7 @@
 	background-color:#0000FF;
 	color:#fff;
 }
-#speednomenclature li.product {
+#speednomenclature li.lineObject {
 	background-color: #8f8f8f;
 }
 

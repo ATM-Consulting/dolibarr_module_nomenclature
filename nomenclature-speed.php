@@ -19,19 +19,45 @@
 	$PDOdb=new TPDOdb;
 	_drawlines($object, $object_type);
 	
+function _drawHeader($object, $object_type) {
+global $db,$langs,$conf,$PDOdb;
 	
+	if($object_type == 'propal') {
+		dol_include_once('/core/lib/propal.lib.php');
+		$head = propal_prepare_head($object);
+		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), 0, 'propal');
+
+		/*
+		 * Propal synthese pour rappel
+		 */
+		print '<table class="border" width="100%">';
+	
+		// Ref
+		print '<tr><td width="25%">'.$langs->trans('Ref').'</td><td colspan="3">';
+		print $object->ref;
+		print '</td></tr>';
+		
+		// Ref client
+		print '<tr><td>';
+		print '<table class="nobordernopadding" width="100%"><tr><td class="nowrap">';
+		print $langs->trans('RefCustomer').'</td><td align="left">';
+		print '</td>';
+		print '</tr></table>';
+		print '</td><td colspan="3">';
+		print $object->ref_client;
+		print '</td>';
+		print '</tr>';
+		print '</table>';
+	}
+	
+}
 	
 function _drawlines(&$object, $object_type) {
 	global $db,$langs,$conf,$PDOdb;
 	
 	llxHeader('', 'Nomenclatures', '', '', 0, 0, array('/nomenclature/js/speed.js','/nomenclature/js/jquery-sortable-lists.min.js'), array('/nomenclature/css/speed.css'));
 	
-	if($object_type == 'propal') {
-		dol_include_once('/core/lib/propal.lib.php');
-		$head = propal_prepare_head($object);
-		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), 0, 'propal');
-		
-	}
+	_drawHeader($object, $object_type);
 	
 	$formDoli=new Form($db);
 	$formCore=new TFormCore;
@@ -51,19 +77,38 @@ function _drawlines(&$object, $object_type) {
 	
 	foreach($object->lines as $k=>&$line) {
 		
-		if($line->fk_product_type == 0 && $line->fk_product>0) {
-			
+		echo '<li k="'.$k.'" class="lineObject" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
+		
+		$label = !empty($line->label) ? $line->label : (empty($line->libelle) ? $line->desc : $line->libelle);
+		
+		if($line->fk_product>0) {
 			$product = new Product($db);
 			$product->fetch($line->fk_product);
 			
-			echo '<li k="'.$k.'" class="product" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'"><div>'.$product->getNomUrl(1).' '.$product->label;
+			echo '<div>'.$product->getNomUrl(1).' '.$product->label.'</div>';
+			if($line->product_type == 0 ) {
+				_drawnomenclature($line->id, $object->element,$line->fk_product,$line->qty);	
+			}
 			
-			echo '</div>';
-			
-			_drawnomenclature($line->id, $object->element,$line->fk_product,$line->qty);
-			
-			echo '</li>';	
 		}
+		else if($line->product_type == 9 ) {
+			/* ligne titre */
+			if($line->qty>=90) {
+				echo '<div class="total">'.$label.'</div>';
+			//	var_dump($line);exit;
+			}
+			else {
+				echo '<div class="title">'.$label.'</div>';	
+			}
+			
+			
+		}
+		else {
+			/* ligne libre */
+			echo '<div class="free">'.$label.'</div>';
+		}
+		
+		echo '</li>';	
 		
 			
 	}
