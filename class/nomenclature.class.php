@@ -107,6 +107,49 @@ class TNomenclature extends TObjetStd
 		
 	}
 	
+	function addProduct($PDOdb, $fk_new_product) {
+		
+		
+		$k = $this->addChild($PDOdb, 'TNomenclatureDet');
+        $det = &$this->TNomenclatureDet[$k];
+        $det->fk_product = $fk_new_product;
+		
+		$this->save($PDOdb);
+		
+		if(!$this->infinitLoop($PDOdb)) {			
+			return true;
+		}
+		else {
+			
+			$det->to_delete = true;
+			$this->save($PDOdb);
+			
+			return false;
+		}
+	}
+	
+	function infinitLoop(&$PDOdb, $level = 1) {
+		global $conf;
+		
+		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+		if($level > $max_level) return true;
+		
+		foreach($this->TNomenclatureDet as &$det) {
+			
+			$fk_product = $det->fk_product;
+			
+			$n=new TNomenclature;
+			$n->loadByObjectId($PDOdb, $fk_product, 'product');
+			
+			$res = $n->infinitLoop($PDOdb, $level + 1 );
+			
+			if($res) return true;
+			
+		}
+		
+		return false;
+	}
+	
 	function sortTNomenclatureWorkstation(&$objA, &$objB)
 	{
 		$r = $objA->rang > $objB->rang;
@@ -551,7 +594,7 @@ class TNomenclatureCoefObject extends TObjetStd
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.$object->id.' AND type_object = "'.$type_object.'"';
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.(int)$object->id.' AND type_object = "'.$type_object.'"';
 		$PDOdb->Execute($sql);
 		$TRes = $PDOdb->Get_All();
 		

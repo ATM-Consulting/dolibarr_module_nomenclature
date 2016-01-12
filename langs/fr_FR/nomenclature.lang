@@ -60,3 +60,4 @@ PseudoNomenclature=Nomenclature virtuelle du produit
 PseudoNomenclatureInfo=Le premier niveau sera rattachée à la ligne à sauvegarde, les niveaux inférieurs seront des nomenclatures commune de produits
 
 EditLine=Editer la ligne
+ThisProductCreateAnInfinitLoop=Ce produit ne peut être ajouté car il créé une boucle infinie

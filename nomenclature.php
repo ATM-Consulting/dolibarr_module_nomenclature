@@ -14,6 +14,7 @@ if($conf->workstation->enabled) {
 }
     
 $langs->load("stocks");
+$langs->load("nomenclature@nomenclature");
 
 $product = new Product($db);
 $fk_product = GETPOST('fk_product', 'int');
@@ -158,9 +159,13 @@ else if($action==='save_nomenclature') {
 	    
 	    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
 	    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-	        $k = $n->addChild($PDOdb, 'TNomenclatureDet');
-	        $det = &$n->TNomenclatureDet[$k];
-	        $det->fk_product = $fk_new_product;
+	    	if(!$n->addProduct($PDOdb, $fk_new_product)) {
+				$p_err= new Product($db);
+				$p_err->fetch($fk_new_product);
+
+				setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
+	    	}
+	        
 	    }
 	    
 	    $fk_new_workstation = GETPOST('fk_new_workstation');
