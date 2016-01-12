@@ -172,9 +172,14 @@ function _drawlines(&$object, $object_type) {
 	dol_fiche_end();
 	llxFooter();
 } 
-function _drawnomenclature($fk_object, $object_type,$fk_product,$qty) {
+function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1) {
 	global $db,$langs,$conf,$PDOdb;
 	
+	$max_nested_aff_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL) ? 7 : $conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL;
+	if($level > $max_nested_aff_level) {
+		echo '<div class="error">'.$langs->trans('ThereIsTooLevelHere').'</div>';
+		return false;
+	}
 	
 	$nomenclature=new TNomenclature;
 	$nomenclature->loadByObjectId($PDOdb, $fk_object, $object_type, true,$fk_product,$qty);
@@ -188,7 +193,6 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty) {
 			echo '<ul class="lines notanomenclature" fk_nomenclature="0" fk_original_nomenclature="'.$nomenclature->fk_nomenclature_parent.'">';
 			echo '<div>'.$langs->trans('PseudoNomenclature') .img_help('',$langs->trans('PseudoNomenclatureInfo')  ).'</div>';
 		}
-				
 		
 		foreach($nomenclature->TNomenclatureDet as $k=>&$line) {
 			$product = new Product($db);
@@ -197,7 +201,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty) {
 			
 			
 			echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'"><div>'.$product->getNomUrl(1).' '.$product->label.'</div>';
-				_drawnomenclature($product->id, 'product',$product->id,$line->qty * $qty);		
+				_drawnomenclature($product->id, 'product',$product->id,$line->qty * $qty,$level+1);		
 			echo '</li>';
 		}
 		
@@ -208,5 +212,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty) {
 		
 		echo '</ul>';
 	}
+
+	return true;
 	
 }

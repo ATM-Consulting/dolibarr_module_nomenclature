@@ -130,7 +130,7 @@ class TNomenclature extends TObjetStd
 	
 	function infinitLoop(&$PDOdb, $level = 1) {
 		global $conf;
-		
+		return false;
 		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($level > $max_level) return true;
 		

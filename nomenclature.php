@@ -808,8 +808,21 @@ function headerProduct(&$object) {
 }
 
 function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
-global $db;        
+global $db,$langs;        
         
+	$max_nested_aff_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL) ? 7 : $conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL;
+	if($level > $max_nested_aff_level) {
+		echo '<div class="error">'.$langs->trans('ThereIsTooLevelHere').'</div>';
+		return false;
+	}		
+	
+		
+	$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+	if($level > $max_level) {
+		echo $langs->trans('ThisIsAnInfinitLoop');
+		return false;
+	}		
+
     $n = new TNomenclature;
     $n->loadByObjectId($PDOdb, $id_product, 'product', false);
     
@@ -830,4 +843,5 @@ global $db;
 		}
     }
     
+	return true;
 }

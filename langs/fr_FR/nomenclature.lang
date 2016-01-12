@@ -61,3 +61,5 @@ PseudoNomenclatureInfo=Le premier niveau sera rattachée à la ligne à sauvegar
 
 EditLine=Editer la ligne
 ThisProductCreateAnInfinitLoop=Ce produit ne peut être ajouté car il créé une boucle infinie
+ThisIsAnInfinitLoop=Il y a une boucle infinie dans ce produit, merci de corriger l'appel erroné
+ThereIsTooLevelHere=Trop de niveau a afficher (boucle infinie ?)
