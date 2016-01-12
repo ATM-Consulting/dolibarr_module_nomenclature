@@ -128,7 +128,10 @@ function _putHierarchie(&$PDOdb, $THierarchie,$fk_object=0,$object_type='') {
 
 			if($l->id == $fk_line) {
 				$o->updateRangOfLine($fk_line, $order);
-				//$o->updateline($rowid, $desc, $pu, $qty, $remise_percent, $txtva) TODO price					
+				// propal, TODO commande
+				$o->updateline($fk_line, $l->subprice, $line['qty'], $l->remise_percent, $l->tva_tx, $l->localtax1_tx, $l->localtax2_tx, $l->desc, 'HT'
+				, $l->info_bits, $l->special_code, $l->fk_parent_line, 0, $l->fk_fournprice, $l->pa_ht, $l->label, $l->product_type, $l->date_start
+				, $l->date_end, $l->array_options, $l->fk_unit);					
 			}			
 			
 		}

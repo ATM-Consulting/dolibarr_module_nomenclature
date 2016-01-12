@@ -129,6 +129,8 @@ function _drawlines(&$object, $object_type) {
 		
 		echo '<li k="'.$k.'" class="lineObject" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
 		
+		echo '<div>';
+		
 		if($line->product_type == 0 || $line->product_type == 1) echo '<a href="javascript:editLine('.$line->id.');" class="editline">'.img_edit($langs->trans('EditLine')).'</a>';
 		
 		$label = !empty($line->label) ? $line->label : (empty($line->libelle) ? $line->desc : $line->libelle);
@@ -137,27 +139,31 @@ function _drawlines(&$object, $object_type) {
 			$product = new Product($db);
 			$product->fetch($line->fk_product);
 			
-			echo '<div>'.$product->getNomUrl(1).' '.$product->label.'</div>';
-			if($line->product_type == 0 ) {
-				_drawnomenclature($line->id, $object->element,$line->fk_product,$line->qty);	
-			}
-			
+			echo '<div class="label">'.$product->getNomUrl(1).' '.$product->label.'</div>';
 		}
 		else if($line->product_type == 9 ) {
 			/* ligne titre */
 			if($line->qty>=90) {
-				echo '<div class="total">'.$label.'</div>';
+				echo '<div class="total label">'.(100-$line->qty).'. '.$label.'</div>';
 			//	var_dump($line);exit;
 			}
 			else {
-				echo '<div class="title">'.$label.'</div>';	
+				echo '<div class="title label">'.$line->qty.'. '.$label.'</div>';	
 			}
 			
 			
 		}
 		else {
 			/* ligne libre */
-			echo '<div class="free">'.$label.'</div>';
+			echo '<div class="free label">'.$label.'</div>';
+		}
+		
+		if($line->product_type == 0 || $line->product_type == 1) echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" /></div>';
+
+		echo '</div>';
+
+		if($line->product_type == 0 && $line->fk_product>0) {
+				_drawnomenclature($line->id, $object->element,$line->fk_product,$line->qty);	
 		}
 		
 		echo '</li>';	
@@ -200,7 +206,11 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 			$id = $line->getId() > 0 ? $line->getId() : $nomenclature->fk_nomenclature_parent.'-'.$k;
 			
 			
-			echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'"><div>'.$product->getNomUrl(1).' '.$product->label.'</div>';
+			echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'">';
+			echo '<div>';
+			echo '<div class="label">'.$product->getNomUrl(1).' '.$product->label.'</div>';
+			echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" /></div>';
+			echo '</div>';
 				_drawnomenclature($product->id, 'product',$product->id,$line->qty * $qty,$level+1);		
 			echo '</li>';
 		}

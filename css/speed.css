@@ -14,17 +14,30 @@
     border-radius: 5px;
     list-style: none;
 }
+#speednomenclature li div.label {
+	display:inline-block;
+	width:70%;
+}
+#speednomenclature li div.qty {
+	display:inline-block;
+	width:10%;
+}
+
+li.currElemClass div.qty {
+	display:none;
+}
+
 #speednomenclature li div.title {
 	color:#000;
 	font-weight: bold;
 	
 }
-#speednomenclature li>a.editline {
+#speednomenclature li>div>a.editline {
 	visibility: hidden;
 	float:left;
 	margin-right:5px;
 }
-#speednomenclature li:hover>a.editline {
+#speednomenclature li:hover>div>a.editline {
 	visibility: visible;
 }
 
