@@ -19,6 +19,15 @@
 	font-weight: bold;
 	
 }
+#speednomenclature li>a.editline {
+	visibility: hidden;
+	float:left;
+	margin-right:5px;
+}
+#speednomenclature li:hover>a.editline {
+	visibility: visible;
+}
+
 #speednomenclature li div.total {
 	color:#000;
 	font-weight: bold;

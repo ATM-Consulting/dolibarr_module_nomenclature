@@ -54,6 +54,50 @@ global $db,$langs,$conf,$PDOdb;
 	?><script type="text/javascript">
 		var fk_object=<?php echo $object->id; ?>;
 		var object_type="<?php echo $object_type; ?>";
+		
+		function editLine(fk_line) {
+	
+			url="<?php 
+				if($object_type=='propal') echo dol_buildpath('/comm/propal.php?id='.$object->id,1);
+				else if($object_type=='commande')echo dol_buildpath('/commande/card.php?id='.$object->id,1);
+			?>&action=editline&lineid="+fk_line;	
+			
+			$('div#dialog-edit-line').remove();
+			$('body').append('<div id="dialog-edit-line"></div>');
+			$('div#dialog-edit-line').dialog({
+				title: "<?php echo $langs->trans('EditLine') ?>"
+				,width:"80%"
+				,modal:true
+			});
+				
+			$.ajax({
+				url:url
+			}).done(function(data) {
+				
+				$form = $(data).find('form#addproduct');
+				$form.find('input[name=cancel]').remove();
+				$form.find('tr[id]').not('#row-'+fk_line).remove();
+				
+				$form.submit(function() {
+					if (typeof CKEDITOR == "object" && typeof CKEDITOR.instances != "undefined" && CKEDITOR.instances['product_desc'] != "undefined") {
+						$form.find('textarea#product_desc').val(CKEDITOR.instances['product_desc'].getData());
+					}
+					
+					$.post($(this).attr('action'), $(this).serialize()+'&save=1', function() {
+						
+					});
+				
+					$('div#dialog-edit-line').dialog('close');			
+					
+					return false;
+			
+					
+				});
+				
+				$('div#dialog-edit-line').html($form);
+			});
+						
+		}
 	</script><?php
 	
 }
@@ -84,6 +128,8 @@ function _drawlines(&$object, $object_type) {
 	foreach($object->lines as $k=>&$line) {
 		
 		echo '<li k="'.$k.'" class="lineObject" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
+		
+		if($line->product_type == 0 || $line->product_type == 1) echo '<a href="javascript:editLine('.$line->id.');" class="editline">'.img_edit($langs->trans('EditLine')).'</a>';
 		
 		$label = !empty($line->label) ? $line->label : (empty($line->libelle) ? $line->desc : $line->libelle);
 		

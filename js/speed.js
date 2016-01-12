@@ -143,3 +143,4 @@ function addProduct(fk_product,label) {
 	$to.append($li);
 	
 }
+
