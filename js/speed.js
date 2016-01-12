@@ -82,7 +82,10 @@ $(document).ready(function() {
 			,data : {
 				put:'nomenclatures'
 				,THierarchie:THierarchie
+				,fk_object:fk_object
+				,object_type:object_type
 			}
+			,method:'post'
 		});
 	});
 	

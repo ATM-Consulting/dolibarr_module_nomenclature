@@ -48,7 +48,13 @@ global $db,$langs,$conf,$PDOdb;
 		print '</td>';
 		print '</tr>';
 		print '</table>';
+		
 	}
+
+	?><script type="text/javascript">
+		var fk_object=<?php echo $object->id; ?>;
+		var object_type="<?php echo $object_type; ?>";
+	</script><?php
 	
 }
 	
