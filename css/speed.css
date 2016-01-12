@@ -23,7 +23,7 @@
 	width:10%;
 }
 
-li.currElemClass div.qty {
+li.currElemClass div.qty, li.currElemClass ul {
 	display:none;
 }
 

@@ -105,7 +105,7 @@ function parseHierarchie(THierarchie) {
 		THierarchie[x].fk_original_nomenclature = $li.closest('ul').attr('fk_original_nomenclature');
 		THierarchie[x].fk_nomenclature = $li.closest('ul').attr('fk_nomenclature');
 		
-		THierarchie[x].qty = $li.find('input[rel=qty]').val();
+		if($li.find('input[rel=qty]')) THierarchie[x].qty = $li.find('input[rel=qty]').val();
 		//THierarchie[x].k = $li.attr('k');
 		//}
 		

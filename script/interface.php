@@ -77,6 +77,8 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			$nomenclature->TNomenclatureDet[$k]->to_delete = false;
 			$nomenclature->TNomenclatureDet[$k]->fk_product = $line['fk_object'];
 			
+			if(isset($line['qty'])) $nomenclature->TNomenclatureDet[$k]->qty = $line['qty'];
+			
 		}
 		else if($line['object_type'] == 'workstation') {
 			if(empty($nomenclature->TNomenclatureWorkstation[$k])) {
@@ -84,6 +86,8 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			}
 			$nomenclature->TNomenclatureWorkstation[$k]->to_delete = false;
 			$nomenclature->TNomenclatureWorkstation[$k]->fk_workstation = $line['fk_object'];
+			
+			if(isset($line['qty'])) $nomenclature->TNomenclatureDet[$k]->qty = $line['qty'];
 			
 		}
 
