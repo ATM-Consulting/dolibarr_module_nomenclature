@@ -4,7 +4,7 @@ var options = {
 		ignoreClass: 'clicable',
 		currElClass: 'currElemClass',
 		
-		insertZone: 30,
+		insertZone: 100,
 		onDragStart: function(e, el)
 		{
 			null;
@@ -25,7 +25,22 @@ var options = {
 		},
 		onChange:function(cEl) {
 		 	
-		}
+		}/*,
+		opener: {
+			active: true,
+			close: './img/add.png',
+			open: './img/remove.png',
+			css: {
+				'display': 'inline-block', // Default value
+				'float': 'left', // Default value
+				'width': '18px',
+				'height': '18px',
+				'margin-left': '5px',
+				'margin-right': '5px',
+				'background-position': 'center center', // Default value
+				'background-repeat': 'no-repeat' // Default value
+			}
+		}*/
 	};
 
 $(document).ready(function() {
@@ -40,7 +55,9 @@ $(document).ready(function() {
 	
 	$('#speednomenclature li').mouseenter(function(e) {
 		$('#speednomenclature li').removeClass('selectedElement');
-		$(this).addClass('selectedElement');
+		if(!$(this).hasClass('workstation')) {
+			$(this).addClass('selectedElement');	
+		}
 	});
 	
 	$('input[name=AddProductNomenclature]').click(function() {
@@ -50,6 +67,10 @@ $(document).ready(function() {
 		addProduct($('#addto #fk_product').val(),label);
 	});
 	
+	$('input[name=AddWorkstation]').click(function() {
+		label = $('#fk_new_workstation option:selected').text();
+		addWorkstation($('#addto #fk_new_workstation').val(),label);
+	});
 	
 	$('input[name=SaveAll]').click(function() {
 		var THierarchie = $('#speednomenclature').sortableListsToHierarchy();
@@ -92,7 +113,23 @@ function parseHierarchie(THierarchie) {
 	return THierarchie;
 }
 
+function addWorkstation(fk_ws, label) {
+	if($('li.selectedElement').length!=1) return false;
+	console.log('addProduct',fk_ws,label);
+	
+	if($('li.selectedElement>ul').length == 0)$('li.selectedElement').append('<ul />');
+	$to = $('li.selectedElement>ul');
+	
+	if(label == '')label='...';
+	$li = $('<li id="new-ws-'+Math.floor(Math.random()*100000)+'" object_type="workstation" fk_object="'+fk_ws+'" class="newElement">'+label+'</li>');
+	
+	$to.append($li);
+}
+
 function addProduct(fk_product,label) {
+	
+	if($('li.selectedElement').length!=1) return false;
+	
 	console.log('addProduct',fk_product,label);
 	if($('li.selectedElement>ul').length == 0)$('li.selectedElement').append('<ul />');
 	$to = $('li.selectedElement>ul');
