@@ -38,7 +38,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                    data+='&'+ButtonWhoSubmit+'=1';
                    /*console.log(data);*/
                    $.post($(this).attr('action'), data, function() {
-                        $div.dialog('option','title',"<?php echo $langs->trans('NomenclatureLineSaved'); ?>");
+                        $div.dialog('option','title',"<?php echo $langs->transnoentities('NomenclatureLineSaved'); ?>");
                    }).done(function(data) {
                        $div.closest('.ui-dialog').effect( "shake", { direction : 'up', times : 1 } );
                        $div.html(data);
