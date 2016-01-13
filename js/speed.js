@@ -94,10 +94,12 @@ $(document).ready(function() {
 		var qty = $(this).val();
 		
 		$li = $(this).closest('li');
+		var fk_nomenclature = $li.closest('ul').attr('fk_nomenclature');
+		
 		var fk_object = $li.attr('fk_object');
 		var object_type = $li.attr('object_type');
-		
-		$('li[fk_object='+fk_object+'][object_type='+object_type+']>div>div.qty>input[rel=qty]').val(qty).css({ 'background-color':'#00ff00' }).animate({'background-color':'#ffffff'},'slow');
+		fk_nomenclature
+		$('ul[fk_nomenclature='+fk_nomenclature+']>li[fk_object='+fk_object+'][object_type='+object_type+']>div>div.qty>input[rel=qty]').val(qty).css({ 'background-color':'#00ff00' }).animate({'background-color':'#ffffff'},'slow');
 		
 	});
 	
