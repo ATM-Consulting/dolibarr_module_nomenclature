@@ -94,7 +94,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                   buttons: {
                     
                   }
-                })
+               });
        };
        
 /* nomenclature/nomenclature.php?fk_product=2&lineid=4&object_type=commande&qty=1 */
