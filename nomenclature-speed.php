@@ -123,11 +123,11 @@ function _drawlines(&$object, $object_type) {
 		
 	echo '</div>';
 	
-	echo '<ul id="speednomenclature" class="lines '.$object->element.'">';
+	echo '<ul id="speednomenclature" container-type="main" class="lines '.$object->element.'">';
 	
 	foreach($object->lines as $k=>&$line) {
 		
-		echo '<li k="'.$k.'" class="lineObject" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
+		echo '<li k="'.$k.'" class="lineObject" line-type="line" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
 		
 		echo '<div>';
 		
@@ -193,10 +193,10 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 	if(!empty($nomenclature->TNomenclatureDet) || !empty($nomenclature->TNomenclatureWorkstation)) {
 		
 		if($nomenclature->iExist) {
-			echo '<ul class="lines nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';
+			echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';
 		}
 		else {
-			echo '<ul class="lines notanomenclature" fk_nomenclature="0" fk_original_nomenclature="'.$nomenclature->fk_nomenclature_parent.'">';
+			echo '<ul class="lines notanomenclature" container-type="nomenclature" fk_nomenclature="0" fk_original_nomenclature="'.$nomenclature->fk_nomenclature_parent.'">';
 			echo '<div>'.$langs->trans('PseudoNomenclature') .img_help('',$langs->trans('PseudoNomenclatureInfo')  ).'</div>';
 		}
 		
@@ -216,7 +216,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 		}
 		
 		foreach($nomenclature->TNomenclatureWorkstation as $k=>&$ws) {
-			echo '<li class="nomenclature workstation"  k="'.$k.'" object_type="workstation" id="nomenclature-ws-'.$ws->getId().'" fk_object="'.$ws->workstation->getId().'"><div>'.$ws->workstation->name.'</div>';
+			echo '<li class="nomenclature workstation" line-type="workstation"  k="'.$k.'" object_type="workstation" id="nomenclature-ws-'.$ws->getId().'" fk_object="'.$ws->workstation->getId().'"><div>'.$ws->workstation->name.'</div>';
 			echo '</li>';
 		}
 		

@@ -10,12 +10,15 @@ var options = {
 			null;
 		},
 		isAllowed: function( cEl, hint, target ) {
-			if( cEl.hasClass('lineObject') && hint.parent().attr('id') == 'speednomenclature' ) {
+			if( cEl.attr('line-type') == 'line' && hint.parent().attr('container-type') == 'main' ) {
+			// type ligne à réordonner
 				hint.css('background-color', '#9999ff');
 				return true;
 			}
-			else if( target.hasClass('lineObject') || target.hasClass('workstation') /*|| target.closest('li').length==0*/ ) {
-				hint.css('background-color', '#ff9999');
+			else if( cEl.attr('line-type') == 'nomenclature'
+			 && (target.attr('line-type') == 'line' || target.attr('line-type') == 'nomenclature')  
+			) {
+			 	hint.css('background-color', '#ff9999');
 				return false;
 			}
 			else {
@@ -136,7 +139,7 @@ function addWorkstation(fk_ws, label) {
 	if($('li.selectedElement').length!=1) return false;
 	console.log('addProduct',fk_ws,label);
 	
-	if($('li.selectedElement>ul').length == 0)$('li.selectedElement').append('<ul />');
+	if($('li.selectedElement>ul').length == 0)$('li.selectedElement').append('<ul container-type="nomenclature" />');
 	$to = $('li.selectedElement>ul');
 	
 	if(label == '')label='...';
@@ -150,7 +153,7 @@ function addProduct(fk_product,label) {
 	if($('li.selectedElement').length!=1) return false;
 	
 	console.log('addProduct',fk_product,label);
-	if($('li.selectedElement>ul').length == 0)$('li.selectedElement').append('<ul />');
+	if($('li.selectedElement>ul').length == 0)$('li.selectedElement').append('<ul container-type="nomenclature" />');
 	$to = $('li.selectedElement>ul');
 	
 	if(label == '')label='...';
