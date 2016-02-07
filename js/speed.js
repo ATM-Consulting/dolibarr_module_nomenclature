@@ -10,17 +10,21 @@ var options = {
 			null;
 		},
 		isAllowed: function( cEl, hint, target ) {
-			if( cEl.attr('line-type') == 'line' && hint.parent().attr('container-type') == 'main' ) {
+			if ( 
+			 	 ((cEl.attr('line-type') == 'line' || cEl.attr('line-type') == 'special') && hint.parent().attr('container-type') != 'main')
+			 	|| (( cEl.attr('line-type') == 'workstation'|| cEl.attr('line-type') == 'nomenclature') && (hint.parent().attr('container-type') == 'main' || hint.closest('li[line-type]').attr('line-type') == 'workstation' ) || hint.closest('li[line-type]').attr('line-type') == 'special')
+				 
+			 	)
+			 {
+			 	hint.css('background-color', '#ff9999');
+				return false;
+			}
+			else if( cEl.attr('line-type') == 'line' && hint.parent().attr('container-type') == 'main' ) {
 			// type ligne à réordonner
 				hint.css('background-color', '#9999ff');
 				return true;
 			}
-			else if( cEl.attr('line-type') == 'nomenclature'
-			 && (target.attr('line-type') == 'line' || target.attr('line-type') == 'nomenclature')  
-			) {
-			 	hint.css('background-color', '#ff9999');
-				return false;
-			}
+
 			else {
 				hint.css('background-color', '#99ff99');
 				return true;
@@ -57,8 +61,8 @@ $(document).ready(function() {
     });
 	
 	$('#speednomenclature li').mouseenter(function(e) {
-		$('#speednomenclature li').removeClass('selectedElement');
-		if(!$(this).hasClass('workstation')) {
+		if($(this).attr('line-type') == 'line' || $(this).attr('line-type')=='nomenclature') {
+			$('#speednomenclature li').removeClass('selectedElement');
 			$(this).addClass('selectedElement');	
 		}
 	});
@@ -123,6 +127,8 @@ function parseHierarchie(THierarchie) {
 		THierarchie[x].fk_nomenclature = $li.closest('ul').attr('fk_nomenclature');
 		
 		if($li.find('input[rel=qty]')) THierarchie[x].qty = $li.find('input[rel=qty]').val();
+		if($li.find('input[rel=nb_hour_manufacture]')) THierarchie[x].nb_hour_manufacture = $li.find('input[rel=nb_hour_manufacture]').val();
+		if($li.find('input[rel=nb_hour_prepare]')) THierarchie[x].nb_hour_prepare = $li.find('input[rel=nb_hour_prepare]').val();
 		//THierarchie[x].k = $li.attr('k');
 		//}
 		
@@ -143,7 +149,7 @@ function addWorkstation(fk_ws, label) {
 	$to = $('li.selectedElement>ul');
 	
 	if(label == '')label='...';
-	$li = $('<li id="new-ws-'+Math.floor(Math.random()*100000)+'" object_type="workstation" fk_object="'+fk_ws+'" class="newElement">'+label+'</li>');
+	$li = $('<li id="new-ws-'+Math.floor(Math.random()*100000)+'" line-type="workstation" object_type="workstation" fk_object="'+fk_ws+'" class="newElement">'+label+'</li>');
 	
 	$to.append($li);
 }
@@ -157,7 +163,7 @@ function addProduct(fk_product,label) {
 	$to = $('li.selectedElement>ul');
 	
 	if(label == '')label='...';
-	$li = $('<li id="new-product-'+Math.floor(Math.random()*100000)+'" object_type="product" fk_object="'+fk_product+'" class="newElement">'+label+'</li>');
+	$li = $('<li id="new-product-'+Math.floor(Math.random()*100000)+'" line-type="nomenclature" object_type="product" fk_object="'+fk_product+'" class="newElement">'+label+'</li>');
 	
 	$to.append($li);
 	

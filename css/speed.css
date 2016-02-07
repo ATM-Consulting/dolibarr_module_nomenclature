@@ -20,6 +20,10 @@
 	display:inline-block;
 	width:10%;
 }
+#speednomenclature li div.qtyws {
+	display:inline-block;
+	width:30%;
+}
 
 li.currElemClass div.qty, li.currElemClass ul {
 	display:none;
@@ -58,7 +62,7 @@ li.currElemClass div.qty, li.currElemClass ul {
 }
 
 #speednomenclature li.workstation {
-	background-color: #df691a;
+	background-color: #df1a69;
 }
 
 #speednomenclature .placeholderClass {
