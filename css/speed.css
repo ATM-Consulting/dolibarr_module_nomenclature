@@ -26,7 +26,7 @@ li.currElemClass div.qty, li.currElemClass ul {
 }
 
 #speednomenclature li div.title {
-	color:#fff;
+	color:#666;
 	font-weight: bold;
 	
 }
@@ -45,7 +45,7 @@ li.currElemClass div.qty, li.currElemClass ul {
 	text-align: right;
 }
 #speednomenclature li div.free {
-	color:#9999ff;
+	color:#000;
 }
 
 #speednomenclature a {
@@ -65,15 +65,19 @@ li.currElemClass div.qty, li.currElemClass ul {
 	background-color:yellow;
 }
 #speednomenclature .hintClass {
-	background-color:green;
+	background-color:#E0E4CC;
 	border:1px dashed white
 }
 #speednomenclature .currElemClass {
-	background-color:#0000FF;
+	background-color:#A7DBD8;
 	color:#fff;
 }
 #speednomenclature li.lineObject {
-	background-color: #2b3e50;
+	background-color: #69D2E7;
+	color:#fff;
+}
+#speednomenclature li.special {
+	background-color: #FA6900;
 	color:#fff;
 }
 
@@ -82,12 +86,12 @@ div#addto {
 	top:0;
 	right:-1px;
 	padding: 10px 20px 10px 10px;
-	background-color: #3f3f3f;
+	background-color: #A7DBD8;
     border: 1px solid #ccc;
     color:#fff;
 }
 #speednomenclature li.selectedElement {
-	background-color: #ccccff;
+	background-color: #A7DBD8;
 }
 #speednomenclature li.newElement {
 	background-color: #6666ff;

@@ -127,7 +127,14 @@ function _drawlines(&$object, $object_type) {
 	
 	foreach($object->lines as $k=>&$line) {
 		
-		echo '<li k="'.$k.'" class="lineObject" line-type="line" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
+		if($line->product_type == 9) {
+			$class="lineObject special";
+		}
+		else {
+			$class="lineObject";	
+		}
+		
+		echo '<li k="'.$k.'" class="'.$class.'" line-type="line" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
 		
 		echo '<div>';
 		
