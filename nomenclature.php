@@ -21,6 +21,8 @@ $fk_product = GETPOST('fk_product', 'int');
 $product_ref = GETPOST('ref', 'alpha');
 if ($fk_product || $product_ref) $product->fetch($fk_product, $product_ref);
 
+$qty_ref = (float)GETPOST('qty_ref');
+
 $action= GETPOST('action');
 
 $PDOdb=new TPDOdb;
@@ -33,9 +35,6 @@ if(empty($object_type)) {
     $object_type='product';
     $fk_object = $product->id;
 }
-
-$qty_ref = (float)GETPOST('qty_ref');
-
 
 if($action==='delete_nomenclature') {
     $n=new TNomenclature;
@@ -84,8 +83,8 @@ else if($action==='save_nomenclature') {
     
 	if (GETPOST('apply_nomenclature_price'))
 	{
-		$price_buy = GETPOST('price_buy');
-		$price_to_sell = GETPOST('price_to_sell');
+		$price_buy_init = GETPOST('price_buy');
+		$price_to_sell_init = GETPOST('price_to_sell');
 		
 		switch ($object_type) {
 			case 'propal':
@@ -100,6 +99,9 @@ else if($action==='save_nomenclature') {
 				{
 					if ($line->id == $fk_object)
 					{
+						$price_buy = $price_buy_init / $line->qty;
+						$price_to_sell = $price_to_sell_init / $line->qty;
+						
 						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);		
 					}
 				}
@@ -117,6 +119,9 @@ else if($action==='save_nomenclature') {
 				{
 					if ($line->id == $fk_object)
 					{
+						$price_buy = $price_buy_init / $line->qty;
+						$price_to_sell = $price_to_sell_init / $line->qty;
+
 						$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);		
 					}
 				}
@@ -139,7 +144,7 @@ else if($action==='save_nomenclature') {
 	    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
 	    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
 	    
-	    $n->set_values($_POST);
+		$n->set_values($_POST);
 	    
 	    $n->is_default = (int)GETPOST('is_default');
 	    
@@ -189,17 +194,17 @@ if($object_type != 'product') {
     
 	$n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref);
-   
+	
     _fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
 }
 else{
-	_show_product_nomenclature($PDOdb, $product);	
+	_show_product_nomenclature($PDOdb, $product, $qty_ref);	
 }
 
 
 
 $db->close();
-function _show_product_nomenclature(&$PDOdb, &$product) {
+function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 	global $user, $langs, $db, $conf;
 	
 	llxHeader('','Nomenclature');
@@ -239,7 +244,7 @@ function _show_product_nomenclature(&$PDOdb, &$product) {
 	
 	foreach($TNomenclature as $iN => &$n) {
 	
-	    _fiche_nomenclature($PDOdb, $n, $product, $product->id, 'product');
+	    _fiche_nomenclature($PDOdb, $n, $product, $product->id, 'product',$qty_ref);
 		        
 	}
 	
@@ -331,6 +336,8 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user;
 
+	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type);
+
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
 	
@@ -343,6 +350,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
     echo $formCore->hidden('object_type', $object_type);
     echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
     echo $formCore->hidden('qty_ref', $qty_ref);
+    echo $formCore->hidden('qty_price', $qty_price);
 	
 	?>
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
@@ -389,23 +397,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        </tr>
                        <?php
                        
-                       switch ($object_type) 
-                       {
-                           case 'propal':
-                               	dol_include_once('/comm/propal/class/propal.class.php');
-                               	dol_include_once('/societe/class/societe.class.php');
-								$object = new Propal($db);
-					  		 	$object->fetch(GETPOST('fk_origin', 'int'));
-								$object->fetch_thirdparty();
-								$object_type_string = 'propal';
-                               	break;
-                           
-                       }
-					 	
-					  
+                       
 						//Chaque tableau de coef a pour key le rowid du coef
-					   $TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
-					   $TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type_string);
 					   
 					   $total_charge = 0;
                        $class='';$total_produit = $total_mo  = 0;
@@ -487,7 +480,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                		echo !empty($det->fk_product) ? $p_nomdet->stock_theorique : '-'; 
                                	?>
                                </td>    
-                               <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100) ?></td>
+                               <td rowspan="2"><?php 
+                               		echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
+							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
+							    ?></td>
                                
                                
                                <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
@@ -498,21 +494,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                <?php
                                
 	                            if($user->rights->nomenclature->showPrice) {
-	                            	$price = $det->getSupplierPrice($PDOdb, $det->qty,true); 
-                                    
-									if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
-									elseif (!empty($TCoefStandard[$det->code_type])) $coef = $TCoefStandard[$det->code_type]->tx;
-									else $coef = 1;
-								
-									$price_charge = $price * $coef;
-									$price_final = ($det->price) ? $det->price : 0;
-									
-									$total_produit+=$price;
-									$total_produit_coef+=$price_charge;
-									$total_produit_coef_final+=$price_final;
-									
-									if ($price_final != 0) $total_charge += $price_final;
-									else $total_charge += $price_charge; 
+	                            		
+	                            	$price = $det->calculate_price; 
+	                            	
+									$price_charge = $det->charged_price;
 									
 									echo '<td align="right"  rowspan="2">'; 
                                     echo price($price) ;
@@ -521,7 +506,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     echo price(round($price_charge,2)) ;
                                 	echo '</td>';
 									echo '<td align="right"  rowspan="2">'; 
-                                    echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($price_final).'" size="5" />';
+                                    echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($det->price).'" size="5" />';
                                 	echo '</td>'; 
 	                            }
                                ?>                        
@@ -544,9 +529,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
-                           <td align="right"><?php echo price(round($total_produit,2)); ?></td>
-                           <td align="right"><?php echo price(round($total_produit_coef,2)); ?></td>
-                           <td align="right"><?php echo price(round($total_produit_coef_final,2)); ?></td>
+                           <td align="right"><?php echo price(round($n->totalPR,2)); ?></td>
+                           <td align="right"><?php echo price(round($n->totalPRC,2)); ?></td>
+                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
                           
                        </tr>
                        <?php
@@ -570,8 +555,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                ?>
                <table class="liste" width="100%">
                <tr class="liste_titre">
-                   <td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>
-                   <td class="liste_titre"><?php echo $langs->trans('Worstations'); ?></td>
+                   <!--<td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>-->
+                   <td class="liste_titre" colspan="2"><?php echo $langs->trans('Worstations'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('QtyPrepare'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('QtyFabrication'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
@@ -592,18 +577,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    foreach($TNomenclatureWorkstation as $k=>&$ws) {
                        
                        $class = ($class == 'impair') ? 'pair' : 'impair';
-                       
+                       /*
+					    * <!-- Pas sur la MO	<td><?php 
+                       		echo $formCore->combo('', 'TNomenclatureWorkstation['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $ws->code_type); 
+                       	?></td> -->
+                        */
                        ?>
                        <tr class="<?php echo $class ?>">
-                       		<td><?php echo $formCore->combo('', 'TNomenclatureWorkstation['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $ws->code_type); ?></td>
-                           <td><?php 
+                       	   <td colspan="2"><?php 
                                 
                                 echo $ws->workstation->getNomUrl(1);
                                 
                            ?></td>    
                            <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_prepare]', $ws->nb_hour_prepare, 7,100) ?></td>
-                           <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100) ?></td>
-                           <td rowspan="2"><?php echo $ws->nb_hour ?></td>
+                           <td rowspan="2"><?php 
+                           		echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100); 
+                           		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
+                           	?></td>
+                           <td rowspan="2"><?php 
+                           		echo $ws->nb_hour_calculate.'h';
+						   ?></td>
                            <td rowspan="2"><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][rang]', $ws->rang, 3,3) ?></td>
                            
                            <td rowspan="2"><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
@@ -613,14 +606,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            
                            if($user->rights->nomenclature->showPrice) {
                            	
-								$price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour;
-							   
-								if (!empty($TCoefObject[$ws->code_type])) $coef = $TCoefObject[$ws->code_type]->tx_object;
-								else $coef = 1;
-								
-								$price_charge = $price * $coef;
-								$price_final = ($ws->price) ? $ws->price : $price_charge; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
-								
+								$price_charge = ($ws->price) ? $ws->price : $ws->calculate_price; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
 								$total_mo+=$price_charge;
 						   
 	                           echo '<td align="right" rowspan="2">';
@@ -646,7 +632,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                           <td><?php echo $langs->trans('Total'); ?></td>
 	                           <td colspan="5">&nbsp;</td>
 	                           <td>&nbsp;</td>
-	                           <td align="right"><?php echo price($total_mo); ?></td>
+	                           <td align="right"><?php echo price($n->totalMO); ?></td>
 	                          
 	                    </tr><?php
 					}
@@ -667,22 +653,22 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 		if($user->rights->nomenclature->showPrice) {
 				$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
-				$PR_coef = $total_mo+$total_charge;
-				$price_buy = $total_mo+$total_produit_coef_final;
-				$price_to_sell = price(round($PR_coef * (1 + ($marge->tx_object / 100)) ,2));
+				$PR_coef = $n->totalMO+$n->totalPRC;
+				$price_buy = $n->totalMO+$n->totalPRC;
+				$price_to_sell = $n->totalPV;
 		        ?>     
 		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('AmountCostWithCharge'); ?></td>
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef,2)); ?></td>
-                       	<?php echo $formCore->hidden('price_buy', price2num($price_buy)); ?>
+                       	<?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
 		        </tr>
 		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $marge->tx_object); ?></td>
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $marge->tx_object, $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;">
-                       	<?php echo $price_to_sell; ?>
-                       	<?php echo $formCore->hidden('price_to_sell', price2num($price_to_sell)); ?>
+                       	<?php echo price(round($price_to_sell,2)); ?>
+                       	<?php echo $formCore->hidden('price_to_sell', round($price_to_sell,2)); ?>
                        </td>
 		        </tr>
 		        <?php

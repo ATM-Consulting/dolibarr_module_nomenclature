@@ -47,6 +47,9 @@ function _get_nomenclature_line() {
 }
 
 function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_type='') {
+	
+	print 'HIERARCHIE ('.$fk_object.','.$object_type.')<br />';
+	
 	if($object_type!='') {
 		$nomenclature=new TNomenclature;
 		if(!$nomenclature->loadByObjectId($PDOdb, $fk_object, $object_type)) {
@@ -87,7 +90,10 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			$nomenclature->TNomenclatureWorkstation[$k]->to_delete = false;
 			$nomenclature->TNomenclatureWorkstation[$k]->fk_workstation = $line['fk_object'];
 			
-			if(isset($line['qty'])) $nomenclature->TNomenclatureDet[$k]->qty = $line['qty'];
+			if(isset($line['nb_hour_manufacture'])) {
+				$nomenclature->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $line['nb_hour_manufacture'];
+				$nomenclature->TNomenclatureWorkstation[$k]->nb_hour_prepare = $line['nb_hour_prepare'];
+			} 
 			
 		}
 
@@ -132,10 +138,17 @@ function _putHierarchie(&$PDOdb, $THierarchie,$fk_object=0,$object_type='') {
 
 			if($l->id == $fk_line) {
 				$o->updateRangOfLine($fk_line, $order);
+				print 'UPDATE line-rank('.$fk_line.') : '.$order.'</br >';
 				// propal, TODO commande
-				$o->updateline($fk_line, $l->subprice, $line['qty'], $l->remise_percent, $l->tva_tx, $l->localtax1_tx, $l->localtax2_tx, $l->desc, 'HT'
-				, $l->info_bits, $l->special_code, $l->fk_parent_line, 0, $l->fk_fournprice, $l->pa_ht, $l->label, $l->product_type, $l->date_start
-				, $l->date_end, $l->array_options, $l->fk_unit);					
+				if($l->product_type == 9) {
+					null;					
+				}
+				else {
+					$o->updateline($fk_line, $l->subprice, $line['qty'], $l->remise_percent, $l->tva_tx, $l->localtax1_tx, $l->localtax2_tx, $l->desc, 'HT'
+					, $l->info_bits, $l->special_code, $l->fk_parent_line, 0, $l->fk_fournprice, $l->pa_ht, $l->label, $l->product_type, $l->date_start
+					, $l->date_end, $l->array_options, $l->fk_unit);					
+					
+				}
 			}			
 			
 		}

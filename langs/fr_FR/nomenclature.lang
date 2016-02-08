@@ -18,8 +18,9 @@ QtyFabrication=Temps de fabrication
 Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
+TotalAmountCostWithCharge=Coût de revient chargé pour %s exemplaire(s)
 AmountCostWithChargeCustom=Coût perso
-PriceConseil=Prix de vente conseillé (Marge %s %%)
+PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 
 NomenclatureSaved=Nomenclature enregistrée
 WorkstationAlreadyAssociated=Ce poste de charge est déjà associé à cette nomenclature

@@ -207,7 +207,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		$total_mo = 0;
 		foreach ($nomenclature->TNomenclatureDet as $k => $det)
 		{
-			$price = $det->getSupplierPrice($PDOdb, $det->qty,true);
+			$price = $det->getSupplierPrice($PDOdb, 1,true) * $det->qty;
 
 			if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
 			else $coef = 1;

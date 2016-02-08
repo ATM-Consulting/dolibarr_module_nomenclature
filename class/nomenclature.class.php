@@ -47,15 +47,70 @@ class TNomenclature extends TObjetStd
         }
     }
     
+	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type) {
+		
+		global $db,$langs,$conf;
+		
+		if(empty($qty_ref))$coef_qty_price = 1;
+		else $coef_qty_price = $qty_ref / $this->qty_reference;
+		
+	    switch ($object_type) 
+        {
+           case 'propal':
+               	dol_include_once('/comm/propal/class/propal.class.php');
+               	dol_include_once('/societe/class/societe.class.php');
+				$object = new Propal($db);
+	  		 	$object->fetch($fk_object);
+				$object->fetch_thirdparty();
+				$object_type_string = 'propal';
+               	break;
+           
+        }
+		
+		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
+		if(!empty($object)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
+				
+		$totalPR = $totalPRC = 0;
+		foreach($this->TNomenclatureDet as &$det) {
+			
+			$det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
+			$totalPR+= $det->calculate_price ;
+			
+			if (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
+			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
+			else $coef = 1;
+
+			$det->charged_price = empty($det->price) ? $det->calculate_price * $coef : $det->price * $coef_qty_price;
+			$totalPRC+= $det->charged_price;
+		}
+		$this->totalPR = $totalPR;
+		$this->totalPRC = $totalPRC;
+		
+		$total_mo = 0;
+		foreach($this->TNomenclatureWorkstation as &$ws) {
+			$ws->nb_hour_calculate = $ws->nb_hour_prepare + ($ws->nb_hour_manufacture * $coef_qty_price);
+			$ws->calculate_price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour_calculate;
+			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
+						   	 				
+		}
+		$this->totalMO = $total_mo;
+		
+		$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
+		$this->marge = $marge->tx_object;
+		
+		$this->totalPV = ($this->totalMO + $this->totalPRC) * (1 + ($marge->tx_object / 100)); 
+		
+		
+		return $coef_qty_price;
+	}
+	
 	function load_original(&$PDOdb, $fk_product=0, $qty=1) {
         
         if(empty($fk_product)) return false;
         
-        
         if($this->fk_nomenclature_parent == 0) {
             $n = TNomenclature::getDefaultNomenclature($PDOdb, $fk_product, $qty);
             if($n === false) return false;
-            
             $this->fk_nomenclature_parent = $n->getId();
         }
         else {
@@ -355,6 +410,8 @@ class TNomenclatureDet extends TObjetStd
         
         $this->start();
         
+		$this->calculate_price = 0;
+		
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
     }
@@ -366,13 +423,16 @@ class TNomenclatureDet extends TObjetStd
         
     }
     
+	/*
+	 * Retourne le prix unitaire en fonction de la quantité commandé
+	 */
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false) {
         global $db;
         $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price 
                 WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
      
         if($obj = $PDOdb->Get_line()) {
-            $price = $obj->price / $obj->quantity * $qty;
+            $price = $obj->price / $obj->quantity;
             
             return $price;
             
@@ -383,7 +443,7 @@ class TNomenclatureDet extends TObjetStd
                     WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
          
             if($obj = $PDOdb->Get_line()) {
-                $price = $obj->price / $obj->quantity * $qty;
+                $price = $obj->price / $obj->quantity;
                 
                 return $price;
             }            
