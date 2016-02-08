@@ -14,6 +14,15 @@
 		$object->fetch($id);
 
 	}
+        else if($object_type =='commande') {
+                dol_include_once('/commande/class/commande.class.php');
+                $object = new Commande($db);
+                $object->fetch($id);
+
+        }
+	else {
+		exit('? object type ?');
+	}
 	
 	if(empty($object))exit;
 	$PDOdb=new TPDOdb;
@@ -50,6 +59,34 @@ global $db,$langs,$conf,$PDOdb;
 		print '</table>';
 		
 	}
+	else if($object_type == 'commande') {
+                dol_include_once('/core/lib/order.lib.php');
+                $head = commande_prepare_head($object);
+                dol_fiche_head($head, 'nomenclature', $langs->trans('CustomerOrder'), 0, 'order');
+
+                /*
+                 * Propal synthese pour rappel
+                 */
+                print '<table class="border" width="100%">';
+
+                // Ref
+                print '<tr><td width="25%">'.$langs->trans('Ref').'</td><td colspan="3">';
+                print $object->ref;
+                print '</td></tr>';
+
+                // Ref client
+                print '<tr><td>';
+                print '<table class="nobordernopadding" width="100%"><tr><td class="nowrap">';
+                print $langs->trans('RefCustomer').'</td><td align="left">';
+                print '</td>';
+                print '</tr></table>';
+                print '</td><td colspan="3">';
+                print $object->ref_client;
+                print '</td>';
+                print '</tr>';
+                print '</table>';
+
+        }
 
 	?><script type="text/javascript">
 		var fk_object=<?php echo $object->id; ?>;
