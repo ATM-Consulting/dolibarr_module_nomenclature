@@ -251,6 +251,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 			
 			
 			echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'">';
+			echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
 			echo '<div>';
 			echo '<div class="label">'.$product->getNomUrl(1).' '.$product->label.'</div>';
 			echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" /></div>';
@@ -261,6 +262,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 		
 		foreach($nomenclature->TNomenclatureWorkstation as $k=>&$ws) {
 			echo '<li class="nomenclature workstation" line-type="workstation"  k="'.$k.'" object_type="workstation" id="nomenclature-ws-'.$ws->getId().'" fk_object="'.$ws->workstation->getId().'">';
+			echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
 			echo '<div>';
 			echo '<div class="label">'.$ws->workstation->name.'</div>';
 			echo '<div class="qtyws" >
