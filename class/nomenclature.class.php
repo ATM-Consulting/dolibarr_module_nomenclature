@@ -113,16 +113,16 @@ class TNomenclature extends TObjetStd
             if($n === false) return false;
             $this->fk_nomenclature_parent = $n->getId();
         }
-        else {
+	else if($this->fk_nomenclature_parent>0) {
             $n = new TNomenclature;
             $n->load($PDOdb, $this->fk_nomenclature_parent);
         }
-        
+//var_dump($n);        
         $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
-        
-        if(empty($this->TNomenclatureDet) && !empty($this->TNomenclatureDetOriginal)) {
-            
+
+        if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
+	 {
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
                 $this->TNomenclatureDet[$k] = new TNomenclatureDet;
                 $this->TNomenclatureDet[$k]->set_values((array)$det);
@@ -324,11 +324,11 @@ class TNomenclature extends TObjetStd
 		$TNomenclature = new TNomenclature;
 		
 		$PDOdb->Execute('SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature 
-		          WHERE fk_product='.(int) $fk_product.' 
+		          WHERE (fk_object='.(int)$fk_product.' AND object_type=\'product\')
 		          AND qty_reference<='.$qty_ref.'
 		          ORDER BY is_default DESC, qty_reference DESC
 		          LIMIT 1');
-        $res = $PDOdb->Get_line();
+	        $res = $PDOdb->Get_line();
 	
 		if ($res)
 		{
