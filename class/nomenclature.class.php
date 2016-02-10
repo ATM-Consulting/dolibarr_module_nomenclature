@@ -358,12 +358,13 @@ class TNomenclature extends TObjetStd
 	 * @return array : retourne un tableau contenant en clef le fk_product et en valeur le type de ce produit dans la nomenclature
 	 */
 	function getArrayTypesProducts() {
-		
+		$PDOdb = new TPDOdb;
+		 
 		$TTypesProducts = array();
-		$types = TNomenclatureDet::$TType;
+		$types = TNomenclatureDet::getTType($PDOdb);
 		
 		foreach ($this->TNomenclatureDet as $key => $value) {
-			$TTypesProducts[$value->fk_product] = $types[$value->product_type];
+			$TTypesProducts[$value->fk_product] = $types[$value->code_type];
 		}
 
 		return $TTypesProducts;
