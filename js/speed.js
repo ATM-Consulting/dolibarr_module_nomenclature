@@ -81,7 +81,7 @@ $(document).ready(function() {
 	
 	$('input[name=SaveAll]').click(function() {
 		var THierarchie = $('#speednomenclature').sortableListsToHierarchy();
-		
+		$('#addto').hide();
 		THierarchie = parseHierarchie(THierarchie);
 		console.log(THierarchie);
 		$.ajax({
@@ -93,6 +93,8 @@ $(document).ready(function() {
 				,object_type:object_type
 			}
 			,method:'post'
+		}).done(function() {
+			document.location.href = document.location.href+'&save=ok';
 		});
 	});
 	
