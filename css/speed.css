@@ -1,17 +1,15 @@
 #speednomenclature {
 	border:1px dashed #eee;
-	border-radius: 5px;
 	padding: 3px 3px 100px 3px;
 	margin:0 200px 0 0;
 }
 #speednomenclature li,#sortableListsBase li { 
 	padding: 10px 10px 10px 10px;
-	background-color: #3f3f3f;
+	background-color: #5f6e7d;
     border: 1px solid #ccc;
     margin: 5px;
     color:white;
     font-size:14px;
-    border-radius: 5px;
     list-style: none;
 }
 #speednomenclature li div.label {
@@ -22,13 +20,17 @@
 	display:inline-block;
 	width:10%;
 }
+#speednomenclature li div.qtyws {
+	display:inline-block;
+	width:30%;
+}
 
 li.currElemClass div.qty, li.currElemClass ul {
 	display:none;
 }
 
 #speednomenclature li div.title {
-	color:#000;
+	color:#666;
 	font-weight: bold;
 	
 }
@@ -47,7 +49,7 @@ li.currElemClass div.qty, li.currElemClass ul {
 	text-align: right;
 }
 #speednomenclature li div.free {
-	color:#0000ff;
+	color:#000;
 }
 
 #speednomenclature a {
@@ -60,22 +62,27 @@ li.currElemClass div.qty, li.currElemClass ul {
 }
 
 #speednomenclature li.workstation {
-	background-color: #3f5f3f;
+	background-color: #df1a69;
 }
 
 #speednomenclature .placeholderClass {
 	background-color:yellow;
 }
 #speednomenclature .hintClass {
-	background-color:green;
+	background-color:#E0E4CC;
 	border:1px dashed white
 }
 #speednomenclature .currElemClass {
-	background-color:#0000FF;
+	background-color:#A7DBD8;
 	color:#fff;
 }
 #speednomenclature li.lineObject {
-	background-color: #8f8f9f;
+	background-color: #69D2E7;
+	color:#fff;
+}
+#speednomenclature li.special {
+	background-color: #FA6900;
+	color:#fff;
 }
 
 div#addto {
@@ -83,13 +90,12 @@ div#addto {
 	top:0;
 	right:-1px;
 	padding: 10px 20px 10px 10px;
-	background-color: #3f3f3f;
+	background-color: #A7DBD8;
     border: 1px solid #ccc;
-    border-radius: 5px 0 0 5px;
-   color:#fff;
+    color:#fff;
 }
 #speednomenclature li.selectedElement {
-	background-color: #ccccff;
+	background-color: #A7DBD8;
 }
 #speednomenclature li.newElement {
 	background-color: #6666ff;
