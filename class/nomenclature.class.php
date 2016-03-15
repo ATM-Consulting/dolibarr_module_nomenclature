@@ -113,16 +113,16 @@ class TNomenclature extends TObjetStd
             if($n === false) return false;
             $this->fk_nomenclature_parent = $n->getId();
         }
-        else {
+	else if($this->fk_nomenclature_parent>0) {
             $n = new TNomenclature;
             $n->load($PDOdb, $this->fk_nomenclature_parent);
         }
-        
+//var_dump($n);        
         $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
-        
-        if(empty($this->TNomenclatureDet) && !empty($this->TNomenclatureDetOriginal)) {
-            
+
+        if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
+	 {
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
                 $this->TNomenclatureDet[$k] = new TNomenclatureDet;
                 $this->TNomenclatureDet[$k]->set_values((array)$det);
@@ -230,6 +230,15 @@ class TNomenclature extends TObjetStd
         return $res; 
             
     }
+	
+	function deleteChildrenNotImported(&$PDOdb)
+	{
+		foreach ($this->TNomenclatureDet as $k => &$det)
+		{
+			if ($det->is_imported > 0) $det->delete($PDOdb);
+		}
+	}
+	
 	function load_product_ws(&$PDOdb) {
 		
 		$this->TNomenclatureWorkstation=array();
@@ -324,11 +333,11 @@ class TNomenclature extends TObjetStd
 		$TNomenclature = new TNomenclature;
 		
 		$PDOdb->Execute('SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature 
-		          WHERE fk_product='.(int) $fk_product.' 
+		          WHERE (fk_object='.(int)$fk_product.' AND object_type=\'product\')
 		          AND qty_reference<='.$qty_ref.'
 		          ORDER BY is_default DESC, qty_reference DESC
 		          LIMIT 1');
-        $res = $PDOdb->Get_line();
+	        $res = $PDOdb->Get_line();
 	
 		if ($res)
 		{
@@ -358,12 +367,13 @@ class TNomenclature extends TObjetStd
 	 * @return array : retourne un tableau contenant en clef le fk_product et en valeur le type de ce produit dans la nomenclature
 	 */
 	function getArrayTypesProducts() {
-		
+		$PDOdb = new TPDOdb;
+		 
 		$TTypesProducts = array();
-		$types = TNomenclatureDet::$TType;
+		$types = TNomenclatureDet::getTType($PDOdb);
 		
 		foreach ($this->TNomenclatureDet as $key => $value) {
-			$TTypesProducts[$value->fk_product] = $types[$value->product_type];
+			$TTypesProducts[$value->fk_product] = $types[$value->code_type];
 		}
 
 		return $TTypesProducts;
@@ -401,7 +411,7 @@ class TNomenclatureDet extends TObjetStd
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
-        $this->add_champs('fk_product,fk_nomenclature',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_product,fk_nomenclature,is_imported',array('type'=>'integer', 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
         $this->add_champs('qty,price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));

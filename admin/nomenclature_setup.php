@@ -151,6 +151,22 @@ dol_fiche_head(
 $form=new Form($db);
 
 
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("Parameters").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('nomenclatureAllowFreeLine').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_ALLOW_FREELINE');
+print '</td></tr>';
+
+print '</table>';
+
 
 $var=false;
 print '<table class="noborder" width="100%">';
