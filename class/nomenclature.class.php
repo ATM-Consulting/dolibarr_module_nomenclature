@@ -14,6 +14,7 @@ class TNomenclature extends TObjetStd
         $this->add_champs('fk_object,fk_nomenclature_parent',array('type'=>'integer', 'index'=>true));
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty_reference',array('type'=>'float','index'=>true));
+		
         $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
         $this->add_champs('note_private',array('type'=>'text'));
         
@@ -98,8 +99,9 @@ class TNomenclature extends TObjetStd
 		$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 		$this->marge = $marge->tx_object;
 		
-		$this->totalPV = ($this->totalMO + $this->totalPRC) * (1 + ($marge->tx_object / 100)); 
+		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 		
+		$this->totalPV = $this->totalPRCMO * $marge->tx_object; 
 		
 		return $coef_qty_price;
 	}
@@ -436,7 +438,7 @@ class TNomenclatureDet extends TObjetStd
 	/*
 	 * Retourne le prix unitaire en fonction de la quantité commandé
 	 */
-    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false) {
+    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true) {
         global $db;
         $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price 
                 WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
@@ -447,7 +449,8 @@ class TNomenclatureDet extends TObjetStd
             return $price;
             
         }
-        elseif($searchforhigherqtyifnone) {
+        
+        if($searchforhigherqtyifnone) {
             
             $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price 
                     WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
@@ -459,6 +462,14 @@ class TNomenclatureDet extends TObjetStd
             }            
             
         }
+		
+		if($search_child_price) {
+			
+			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
+			$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
+			
+			return $n->totalPRCMO;
+		}
         
         return 0;
         
@@ -658,7 +669,11 @@ class TNomenclatureCoefObject extends TObjetStd
 	static function getMarge(&$PDOdb, $object, $type_object)
 	{
 		$TCoef = self::loadCoefObject($PDOdb, $object, $type_object);
-		return $TCoef['coef_marge'];
+		$marge = $TCoef['coef_marge'];
+		
+		if($marge > 5) $marge = 1+($marge/100);
+		
+		return $marge;
 	}
 
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)

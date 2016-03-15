@@ -98,7 +98,7 @@ $(document).ready(function() {
 		});
 	});
 	
-	$('input[rel=qty]').change(function() {
+	$('#speednomenclature input[rel=qty]').change(function() {
 		
 		var qty = $(this).val();
 		
@@ -107,8 +107,18 @@ $(document).ready(function() {
 		
 		var fk_object = $li.attr('fk_object');
 		var object_type = $li.attr('object_type');
-		fk_nomenclature
+		
 		$('ul[fk_nomenclature='+fk_nomenclature+']>li[fk_object='+fk_object+'][object_type='+object_type+']>div>div.qty>input[rel=qty]').val(qty).css({ 'background-color':'#00ff00' }).animate({'background-color':'#ffffff'},'slow');
+		
+	});
+	
+	$('#speednomenclature [rel=delete]').click(function() {
+		
+		if(window.confirm("Vous êtes sûr ?")) {
+			
+			$(this).closest('li').remove();
+			
+		}
 		
 	});
 	

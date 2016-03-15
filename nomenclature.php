@@ -183,6 +183,7 @@ else if($action==='save_nomenclature') {
 	    
 		setEventMessage($langs->trans('NomenclatureSaved'));
 	    
+		$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
 	    $n->save($PDOdb);
 	}
 	
@@ -664,7 +665,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        	<?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
 		        </tr>
 		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', $marge->tx_object, $qty_ref); ?></td>
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100, $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;">
                        	<?php echo price(round($price_to_sell,2)); ?>

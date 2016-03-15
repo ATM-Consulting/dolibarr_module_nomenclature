@@ -226,7 +226,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		}
 
 		$price_buy = $total_mo+$total_price;
-		$price_to_sell = $price_buy * (1 + ($marge->tx_object / 100));
+		$price_to_sell = $price_buy * $marge->tx_object;
 		
 		//Puis mettre à jour son prix
 		if ($object->element == 'propal') $object->updateline($line->id, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);

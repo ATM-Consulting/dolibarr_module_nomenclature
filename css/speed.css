@@ -100,3 +100,7 @@ div#addto {
 #speednomenclature li.newElement {
 	background-color: #6666ff;
 }
+div[rel=delete] {
+	float:right;
+	cursor: hand;
+}
