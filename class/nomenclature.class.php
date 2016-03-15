@@ -170,7 +170,7 @@ class TNomenclature extends TObjetStd
 	
 	private function setAll() {
 		$this->TNomenclatureAll = array_merge($this->TNomenclatureDet,$this->TNomenclatureWorkstation);
-		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 	
 	function addProduct($PDOdb, $fk_new_product) {
@@ -219,6 +219,14 @@ class TNomenclature extends TObjetStd
 	function sortTNomenclatureWorkstation(&$objA, &$objB)
 	{
 		$r = $objA->rang > $objB->rang;
+		
+		if ($r == 1) return 1;
+		else return -1;
+	}
+	
+	function sortTNomenclatureAll(&$objA, &$objB)
+	{
+		$r = $objA->unifyRang > $objB->unifyRang;
 		
 		if ($r == 1) return 1;
 		else return -1;
@@ -422,7 +430,7 @@ class TNomenclatureDet extends TObjetStd
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
-        $this->add_champs('fk_product,fk_nomenclature,is_imported,rang',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang',array('type'=>'integer', 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
         $this->add_champs('qty,price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
@@ -520,9 +528,8 @@ class TNomenclatureWorkstation extends TObjetStd
     function __construct() 
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation');
-        $this->add_champs('fk_workstation,fk_nomenclature',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_workstation,fk_nomenclature,rang,unifyRang',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
-        $this->add_champs('rang',array('type'=>'float', 'index'=>true));
         $this->add_champs('note_private',array('type'=>'text'));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
         

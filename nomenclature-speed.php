@@ -258,7 +258,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 					echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'">';
 					echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
 					echo '<div>';
-						echo '<div class="label">'.$product->getNomUrl(1).' '.$product->label.'</div>';
+						echo '<div class="label">'.($line->unifyRang+1).'. '. $product->getNomUrl(1).' '.$product->label.'</div>';
 						echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" /></div>';
 					echo '</div>';
 						_drawnomenclature($product->id, 'product',$product->id,$line->qty * $qty,$level+1);		
@@ -270,7 +270,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 				echo '<li class="nomenclature workstation" line-type="workstation"  k="'.$k.'" object_type="workstation" id="nomenclature-ws-'.$line->getId().'" fk_object="'.$line->workstation->getId().'">';
 				echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
 				echo '<div>';
-					echo '<div class="label">'.$line->workstation->name.'</div>';
+					echo '<div class="label">'.($line->unifyRang+1).'. '.$line->workstation->name.'</div>';
 					echo '<div class="qtyws" >
 						<input rel="nb_hour_prepare" value="'.$line->nb_hour_prepare.'" class="flat qty clicable" size="5" title="Heure(s) de préparation" />
 						<input rel="nb_hour_manufacture" value="'.$line->nb_hour_manufacture.'" class="flat qty clicable" size="5" title="Heure(s) de fabrication" />';
