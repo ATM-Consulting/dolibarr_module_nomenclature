@@ -236,7 +236,7 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 	$nomenclature=new TNomenclature;
 	$nomenclature->loadByObjectId($PDOdb, $fk_object, $object_type, true,$fk_product,$qty);
 	
-	if(!empty($nomenclature->TNomenclatureDet) || !empty($nomenclature->TNomenclatureWorkstation)) {
+	if(!empty($nomenclature->TNomenclatureAll)) {
 		
 		if($nomenclature->iExist) {
 			echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';
@@ -245,8 +245,11 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 			echo '<ul class="lines notanomenclature" container-type="nomenclature" fk_nomenclature="0" fk_original_nomenclature="'.$nomenclature->fk_nomenclature_parent.'">';
 			echo '<div>'.$langs->trans('PseudoNomenclature') .img_help('',$langs->trans('PseudoNomenclatureInfo')  ).'</div>';
 		}
-		if(!empty($nomenclature->TNomenclatureDet)) {
-			foreach($nomenclature->TNomenclatureDet as $k=>&$line) {
+		
+		foreach($nomenclature->TNomenclatureAll as $k=>&$line) {
+			
+			if(get_class($line) === 'TNomenclatureDet' ) {
+				
 				$product = new Product($db);
 				if($line->fk_product>0 && $product->fetch($line->fk_product)>0) {
 					$id = $line->getId() > 0 ? $line->getId() : $nomenclature->fk_nomenclature_parent.'-'.$k;
@@ -261,23 +264,23 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 						_drawnomenclature($product->id, 'product',$product->id,$line->qty * $qty,$level+1);		
 					echo '</li>';
 				}
+				
 			}
-		}
-
-		if(!empty($nomenclature->TNomenclatureWorkstation)) {
-			foreach($nomenclature->TNomenclatureWorkstation as $k=>&$ws) {
-				echo '<li class="nomenclature workstation" line-type="workstation"  k="'.$k.'" object_type="workstation" id="nomenclature-ws-'.$ws->getId().'" fk_object="'.$ws->workstation->getId().'">';
+			else {
+				echo '<li class="nomenclature workstation" line-type="workstation"  k="'.$k.'" object_type="workstation" id="nomenclature-ws-'.$line->getId().'" fk_object="'.$line->workstation->getId().'">';
 				echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
 				echo '<div>';
-					echo '<div class="label">'.$ws->workstation->name.'</div>';
+					echo '<div class="label">'.$line->workstation->name.'</div>';
 					echo '<div class="qtyws" >
-						<input rel="nb_hour_prepare" value="'.$ws->nb_hour_prepare.'" class="flat qty clicable" size="5" title="Heure(s) de préparation" />
-						<input rel="nb_hour_manufacture" value="'.$ws->nb_hour_manufacture.'" class="flat qty clicable" size="5" title="Heure(s) de fabrication" />';
+						<input rel="nb_hour_prepare" value="'.$line->nb_hour_prepare.'" class="flat qty clicable" size="5" title="Heure(s) de préparation" />
+						<input rel="nb_hour_manufacture" value="'.$line->nb_hour_manufacture.'" class="flat qty clicable" size="5" title="Heure(s) de fabrication" />';
 					echo '</div>
 				</div>';
 				echo '</li>';
 			}
+			
 		}
+	
 		echo '</ul>';
 	}
 

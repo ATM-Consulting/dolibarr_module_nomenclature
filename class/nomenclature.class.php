@@ -30,7 +30,8 @@ class TNomenclature extends TObjetStd
         
         $this->TNomenclatureDet = $this->TNomenclatureDetOriginal = array();
         $this->TNomenclatureWorkstation = $this->TNomenclatureWorkstationOriginal = array();       
-        
+        $this->TNomenclatureAll = array();
+		
         $this->iExist = false;
     }   
     
@@ -161,8 +162,15 @@ class TNomenclature extends TObjetStd
 		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		
+		$this->setAll();
+		
 		return $res;
 		
+	}
+	
+	private function setAll() {
+		$this->TNomenclatureAll = array_merge($this->TNomenclatureDet,$this->TNomenclatureWorkstation);
+		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 	}
 	
 	function addProduct($PDOdb, $fk_new_product) {
