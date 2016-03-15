@@ -37,9 +37,30 @@ function _put(&$PDOdb, $case) {
 			_putHierarchie($PDOdb,GETPOST('THierarchie'),GETPOST('fk_object'),GETPOST('object_type'));
 			
 			break;
+		case 'rang':
+			
+			_setRang($PDOdb, GETPOST('TRank'),GETPOST('type'));
+			
+			break;
     }
     
 }
+
+function _setRang(&$PDOdb, $TRank,$type) {
+	
+	foreach($TRank as $k=>$id) {
+		
+		if($type == 'det') $o=new TNomenclatureDet;
+		else $o=new TNomenclatureWorkstation;
+		
+		$o->load($PDOdb, $id);
+		$o->rang = $k;
+		$o->save($PDOdb);
+		
+	}
+	
+}
+
 function _get_nomenclature_line() {
 	
 	
@@ -79,6 +100,7 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			}
 			$nomenclature->TNomenclatureDet[$k]->to_delete = false;
 			$nomenclature->TNomenclatureDet[$k]->fk_product = $line['fk_object'];
+			$nomenclature->TNomenclatureDet[$k]->rang = $k;
 			
 			if(isset($line['qty'])) $nomenclature->TNomenclatureDet[$k]->qty = $line['qty'];
 			
@@ -89,6 +111,7 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			}
 			$nomenclature->TNomenclatureWorkstation[$k]->to_delete = false;
 			$nomenclature->TNomenclatureWorkstation[$k]->fk_workstation = $line['fk_object'];
+			$nomenclature->TNomenclatureWorkstation[$k]->rang = $k;
 			
 			if(isset($line['nb_hour_manufacture'])) {
 				$nomenclature->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $line['nb_hour_manufacture'];
