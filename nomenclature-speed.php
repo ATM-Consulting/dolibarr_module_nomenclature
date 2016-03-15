@@ -28,6 +28,9 @@
 	
 	if(empty($object))exit;
 	$PDOdb=new TPDOdb;
+	
+	$TProductAlreadyInPage=array();
+	
 	_drawlines($object, $object_type);
 	
 function _drawHeader($object, $object_type) {
@@ -142,7 +145,7 @@ global $db,$langs,$conf,$PDOdb;
 }
 	
 function _drawlines(&$object, $object_type) {
-	global $db,$langs,$conf,$PDOdb;
+	global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
 	
 	llxHeader('', 'Nomenclatures', '', '', 0, 0, array('/nomenclature/js/speed.js','/nomenclature/js/jquery-sortable-lists.min.js'), array('/nomenclature/css/speed.css'));
 	
@@ -225,7 +228,7 @@ function _drawlines(&$object, $object_type) {
 	llxFooter();
 } 
 function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1) {
-	global $db,$langs,$conf,$PDOdb;
+	global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
 	
 	$max_nested_aff_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL) ? 7 : $conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL;
 	if($level > $max_nested_aff_level) {
@@ -236,7 +239,14 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 	$nomenclature=new TNomenclature;
 	$nomenclature->loadByObjectId($PDOdb, $fk_object, $object_type, true,$fk_product,$qty);
 	
-	if(!empty($nomenclature->TNomenclatureAll)) {
+	if(!empty($TProductAlreadyInPage[$fk_product])) {
+		echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';
+		echo '<li class="nomenclature clicable" no-hierarchie-parse="1" id="nomenclature-nouse-'.$nomenclature->getId().'-'.$fk_product.'">Nomenclature déjà affichée <a href="#" onclick="window.scrollTo( $(\'li[fk_object='.$fk_product.'][object_type=product]\').first().offset().top,0 ); ">ici</a></li>';
+		echo '</ul>';
+	}
+	else if(!empty($nomenclature->TNomenclatureAll)) {
+		
+		$TProductAlreadyInPage[$fk_product] = 1;
 		
 		if($nomenclature->iExist) {
 			echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';

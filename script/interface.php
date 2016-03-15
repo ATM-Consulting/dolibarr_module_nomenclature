@@ -91,8 +91,11 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			$det->to_delete = true;
 		}
 	}
+	
 
-	foreach($THierarchie as &$line) {
+	foreach($THierarchie as $kUnify=>&$line) {
+		
+		if(!empty($line['dontuse'])) return false; // ne pas traiter
 		
 		$k = $line['order'];	
 		if($line['object_type'] == 'product') {
@@ -102,8 +105,8 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			}
 			$nomenclature->TNomenclatureDet[$k]->to_delete = false;
 			$nomenclature->TNomenclatureDet[$k]->fk_product = $line['fk_object'];
-			$nomenclature->TNomenclatureDet[$k]->unifyRang = $k;
-			
+			$nomenclature->TNomenclatureDet[$k]->unifyRang = $kUnify;
+			//print $nomenclature->getid()."/$kUnify det <br />";
 			if(isset($line['qty'])) $nomenclature->TNomenclatureDet[$k]->qty = $line['qty'];
 			
 		}
@@ -113,8 +116,8 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 			}
 			$nomenclature->TNomenclatureWorkstation[$k]->to_delete = false;
 			$nomenclature->TNomenclatureWorkstation[$k]->fk_workstation = $line['fk_object'];
-			$nomenclature->TNomenclatureWorkstation[$k]->unifyRang = $k;
-			
+			$nomenclature->TNomenclatureWorkstation[$k]->unifyRang = $kUnify;
+			//print $nomenclature->getid()."/$kUnify ws <br />";
 			if(isset($line['nb_hour_manufacture'])) {
 				$nomenclature->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $line['nb_hour_manufacture'];
 				$nomenclature->TNomenclatureWorkstation[$k]->nb_hour_prepare = $line['nb_hour_prepare'];
@@ -125,6 +128,11 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 		if($line['object_type'] != 'workstation') _putHierarchieNomenclature($PDOdb, empty($line['children']) ? array() : $line['children'],$line['fk_object'],$line['object_type']);
 
 	}
+	/*if($fk_object == 11) {
+		var_dump($THierarchie,$nomenclature);exit;
+		
+		
+	}*/
 	
 	if(isset($nomenclature)
 	 && ($nomenclature->TNomenclatureDet!=$nomenclature->TNomenclatureDetOriginal || $nomenclature->TNomenclatureWorkstation!=$nomenclature->TNomenclatureWorkstationOriginal) 
@@ -134,8 +142,9 @@ function _putHierarchieNomenclature(&$PDOdb, $THierarchie,$fk_object=0,$object_t
 		
 		var_dump($nomenclature);
 	}*/
-		
+	//	$PDOdb->debug=true;
 	 	$nomenclature->save($PDOdb);
+	//	$PDOdb->debug=false;
 	}
 }
 
