@@ -475,9 +475,11 @@ class TNomenclatureDet extends TObjetStd
 		if($search_child_price) {
 			
 			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
-			$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
+			if($n!==false) {
+				$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
 			
-			return $n->totalPRCMO;
+				return $n->totalPRCMO;
+			}
 		}
         
         return 0;
