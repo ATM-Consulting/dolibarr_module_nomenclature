@@ -130,23 +130,32 @@ function parseHierarchie(THierarchie) {
 		
 		$li = $('li#'+THierarchie[x].id);
 		
+		if($li.attr("no-hierarchie-parse") == 1) {
+			THierarchie[x].dontuse = 1;
+			return THierarchie;
+		}
+		else{
+			THierarchie[x].dontuse = 0;
+			THierarchie[x].fk_object = $li.attr('fk_object');
+			THierarchie[x].object_type = $li.attr('object_type');
+			
+			THierarchie[x].fk_product = $li.attr('fk_product');  
+			THierarchie[x].fk_original_nomenclature = $li.closest('ul').attr('fk_original_nomenclature');
+			THierarchie[x].fk_nomenclature = $li.closest('ul').attr('fk_nomenclature');
+			
+			if($li.find('input[rel=qty]')) THierarchie[x].qty = $li.find('input[rel=qty]').val();
+			if($li.find('input[rel=nb_hour_manufacture]')) THierarchie[x].nb_hour_manufacture = $li.find('input[rel=nb_hour_manufacture]').val();
+			if($li.find('input[rel=nb_hour_prepare]')) THierarchie[x].nb_hour_prepare = $li.find('input[rel=nb_hour_prepare]').val();
+			//THierarchie[x].k = $li.attr('k');
+			//}
+			
+			if(THierarchie[x].children && THierarchie[x].children.length>0) {
+				THierarchie[x].children = parseHierarchie(THierarchie[x].children);
+			}	
+			
+		}
+		
 		//if($li.attr('line-type') == 'nomenclature' || $li.attr('line-type') == 'workstation') {
-		THierarchie[x].fk_object = $li.attr('fk_object');
-		THierarchie[x].object_type = $li.attr('object_type');
-		
-		THierarchie[x].fk_product = $li.attr('fk_product');  
-		THierarchie[x].fk_original_nomenclature = $li.closest('ul').attr('fk_original_nomenclature');
-		THierarchie[x].fk_nomenclature = $li.closest('ul').attr('fk_nomenclature');
-		
-		if($li.find('input[rel=qty]')) THierarchie[x].qty = $li.find('input[rel=qty]').val();
-		if($li.find('input[rel=nb_hour_manufacture]')) THierarchie[x].nb_hour_manufacture = $li.find('input[rel=nb_hour_manufacture]').val();
-		if($li.find('input[rel=nb_hour_prepare]')) THierarchie[x].nb_hour_prepare = $li.find('input[rel=nb_hour_prepare]').val();
-		//THierarchie[x].k = $li.attr('k');
-		//}
-		
-		if(THierarchie[x].children && THierarchie[x].children.length>0) {
-			THierarchie[x].children = parseHierarchie(THierarchie[x].children);
-		}	
 		
 	}
 	
