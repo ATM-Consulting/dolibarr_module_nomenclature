@@ -239,14 +239,14 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 	$nomenclature=new TNomenclature;
 	$nomenclature->loadByObjectId($PDOdb, $fk_object, $object_type, true,$fk_product,$qty);
 	
-	if(!empty($TProductAlreadyInPage[$fk_product])) {
+	if(!empty($TProductAlreadyInPage[$fk_object.'_'. $object_type])) {
 		echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';
-		echo '<li class="nomenclature clicable" no-hierarchie-parse="1" id="nomenclature-nouse-'.$nomenclature->getId().'-'.$fk_product.'">Nomenclature déjà affichée <a href="#" onclick="window.scrollTo( $(\'li[fk_object='.$fk_product.'][object_type=product]\').first().offset().top,0 ); ">ici</a></li>';
+		echo '<li class="nomenclature clicable" no-hierarchie-parse="1" id="nomenclature-nouse-'.$nomenclature->getId().'-'.$fk_product.'">Nomenclature déjà affichée <a href="#" onclick="window.scrollTo(0, $(\'li[fk_object='.$fk_product.'][object_type=product]\').first().offset().top ); ">ici</a></li>';
 		echo '</ul>';
 	}
 	else if(!empty($nomenclature->TNomenclatureAll)) {
 		
-		$TProductAlreadyInPage[$fk_product] = 1;
+		$TProductAlreadyInPage[$fk_object.'_'. $object_type] = 1;
 		
 		if($nomenclature->iExist) {
 			echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';

@@ -81,9 +81,11 @@ $(document).ready(function() {
 	
 	$('input[name=SaveAll]').click(function() {
 		var THierarchie = $('#speednomenclature').sortableListsToHierarchy();
-		$('#addto').hide();
+		$('#addto').html("Sauvegarde en cours...");
 		THierarchie = parseHierarchie(THierarchie);
 		console.log(THierarchie);
+
+	//	return false;
 		$.ajax({
 			url:"script/interface.php"
 			,data : {

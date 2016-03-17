@@ -184,7 +184,7 @@ else if($action==='save_nomenclature') {
 		setEventMessage($langs->trans('NomenclatureSaved'));
 	    
 		$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
-	    $n->save($PDOdb);
+	    	$n->save($PDOdb);
 	}
 	
 }
