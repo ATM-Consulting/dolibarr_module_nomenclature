@@ -162,8 +162,6 @@ class TNomenclature extends TObjetStd
 		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		
-		$this->setAll();
-		
 		return $res;
 		
 	}
@@ -245,7 +243,8 @@ class TNomenclature extends TObjetStd
         }
         
         $this->load_original($PDOdb, $fk_product, $qty);
-        
+	$this->setAll();        
+
         return $res; 
             
     }

@@ -60,7 +60,7 @@ nomenclatureApplyAllCoefOnPriceError=Impossible de mettre les prix à jour, le s
 
 SaveAll=Sauvegarder les modifications
 PseudoNomenclature=Nomenclature virtuelle du produit 
-PseudoNomenclatureInfo=Le premier niveau sera rattachée à la ligne à sauvegarde, les niveaux inférieurs seront des nomenclatures commune de produits
+PseudoNomenclatureInfo=Nomenclature du produit, pas de la ligne. Le premier niveau sera rattachée à la ligne à sauvegarde, les niveaux inférieurs seront des nomenclatures commune de produits
 
 EditLine=Editer la ligne
 ThisProductCreateAnInfinitLoop=Ce produit ne peut être ajouté car il créé une boucle infinie

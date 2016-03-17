@@ -236,8 +236,13 @@ function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1
 		return false;
 	}
 	
+
 	$nomenclature=new TNomenclature;
 	$nomenclature->loadByObjectId($PDOdb, $fk_object, $object_type, true,$fk_product,$qty);
+/*if($fk_object == 811) {
+        echo 1;
+var_dump( $object_type,$fk_product,$qty , $nomenclature->TNomenclatureAll);
+}*/
 	
 	if(!empty($TProductAlreadyInPage[$fk_object.'_'. $object_type])) {
 		echo '<ul class="lines nomenclature" container-type="nomenclature" fk_nomenclature="'.$nomenclature->getId().'">';
