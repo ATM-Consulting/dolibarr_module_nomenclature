@@ -164,6 +164,13 @@ print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_ALLOW_FREELINE');
 print '</td></tr>';
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('nomenclatureJustMP').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_ALLOW_JUST_MP');
+print '</td></tr>';
 
 print '</table>';
 
