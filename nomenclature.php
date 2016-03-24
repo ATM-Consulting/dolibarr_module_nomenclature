@@ -65,18 +65,25 @@ else if($action === 'delete_nomenclature_detail') {
 	$n=new TNomenclature;
 	
     $n->load($PDOdb, $fk_nomenclature);
+
+    if($n->getId()>0) {
     
-	$n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
+    $n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
     
     $n->save($PDOdb);
-    
+   } 
 }
 else if($action === 'delete_ws') {
-	$n=new TNomenclature;
-    
+    $n=new TNomenclature;
+ //   $PDOdb->debug = true;
     $n->load($PDOdb, $fk_nomenclature);
-    $n->TNomenclatureWorkstation[GETPOST('k')]->to_delete = true;
-    $n->save($PDOdb);
+
+    if($n->getId()>0) {
+    	$k = (int)GETPOST('k');
+//var_dump( $fk_nomenclature,$k,$n->TNomenclatureWorkstation);
+	$n->TNomenclatureWorkstation[$k]->to_delete = true;
+	$n->save($PDOdb);
+    }
     
 }
 else if($action==='save_nomenclature') {
@@ -193,10 +200,10 @@ if($object_type != 'product') {
 	
     $langs->load('nomenclature@nomenclature');
     
-	$n=new TNomenclature;
+    $n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref);
-	
     _fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
+   
 }
 else{
 	_show_product_nomenclature($PDOdb, $product, $qty_ref);	
@@ -342,9 +349,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
 	
+	if($n->getId() == 0) {
+		echo '<div class="error">Nomenclature chargée depuis le produit, sauvegardez pour créér une nomenclature locale</div>';
+	}
+
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
     echo $formCore->hidden('action', 'save_nomenclature');
-	echo $formCore->hidden('json', $json);
+    echo $formCore->hidden('json', $json);
     echo $formCore->hidden('fk_nomenclature', $n->getId());
     echo $formCore->hidden('fk_product', $product->id);
     echo $formCore->hidden('fk_object', $fk_object);
@@ -531,10 +542,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 							    ?></td>
                                
                                
-                               <td><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
+                               <td><?php
+				if($n->getId()>0) {
+					?><a class="tojs" href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php 
                                echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_object=<?php 
                                echo $fk_object ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php 
-                               echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=1"><?php echo img_delete() ?></a></td>
+                               echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=1"><?php echo img_delete() ?></a><?php 
+				}
+				?></td>
                                
                                <?php
                                
@@ -641,9 +656,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            		echo $ws->nb_hour_calculate.'h';
 						   ?></td>
                            
-                           <td ><a href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
+                           <td ><?php if($n->getId()>0) { ?><a class="tojs" href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php 
                            echo $n->getId() ?>&fk_object=<?php echo $fk_object ?>&object_type=<?php 
-                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a></td>
+                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a><?php } ?></td>
                            <?php
                            
                            if($user->rights->nomenclature->showPrice) {

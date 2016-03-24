@@ -93,7 +93,7 @@ else
 		$o->label = 'Marge';
 		$o->description = "Coef. de marge";
 		$o->code_type = "coef_marge";
-		$o->tx = 10;
+		$o->tx = 1.1;
 		$o->save($PDOdb);
 	}
 }

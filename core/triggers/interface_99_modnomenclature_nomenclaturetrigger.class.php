@@ -122,14 +122,17 @@ class Interfacenomenclaturetrigger
 		define('INC_FROM_DOLIBARR', true);
 		dol_include_once('/nomenclature/config.php');
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
-        
         $PDOdb = new TPDOdb;
 		
         if ($action == 'ORDER_CREATE') {
 			dol_syslog(
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
-        } elseif ($action == 'LINEORDER_INSERT') {
+        } 
+	elseif($action == 'LINEPROPAL_INSERT') {
+		$this->_setPrice($PDOdb, $object,$object->fk_propal,'propal');
+	}
+	elseif ($action == 'LINEORDER_INSERT') {
 			
 			if(!$conf->nomenclature->enabled) return 0;
 			if ($object->product_type == 9) return 0;
@@ -138,7 +141,10 @@ class Interfacenomenclaturetrigger
             $origin = GETPOST('origin');
 			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
             
-            if($origin !== 'propal' || empty($origin_id)) return 0;
+            if($origin !== 'propal' || empty($origin_id))  {
+			null;
+		}
+else {
 			
 			$propal = new Propal($db);
 			$propal->fetch($origin_id);
@@ -199,7 +205,9 @@ class Interfacenomenclaturetrigger
 				
 				}
 			}
-			
+		}
+			$this->_setPrice($PDOdb, $object,$object->fk_commande, 'commande');
+		
             dol_syslog(
                 "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
             );
@@ -268,6 +276,34 @@ class Interfacenomenclaturetrigger
 
         return 0;
     }
+
+
+	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
+global $db,$conf,$user,$langs;
+		if($object->subprice >0 || $object->product_type>1 ) return 0;
+
+		$n = new TNomenclature;
+                $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);		
+		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type);
+		
+		
+		if($object_type=='commande') {
+//		var_dump($n->totalPV, $object_type,$object);exit;
+
+			$commande = new Commande($db);
+			$commande->fetch($fk_parent);
+
+			$commande->updateline($object->id,$object->desc,$n->totalPV,$object->qty,$object->remise_percent,$object->txtva,$object->txlocaltax1,$object->txlocaltax2,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$n->totalPRCMO);
+		}
+
+		else if($object_type=='propal') {
+			$propal = new Propal($db);
+			$propal->fetch($fk_parent);
+			$propal->updateline($object->id,$n->totalPV,$object->qty,$object->remise_percent,$object->txtva,$object->txlocaltax1,$object->txlocaltax2,$object->desc,'HT',0,0,0,0,$object->fk_fournprice,$n->totalPRCMO);
+
+		}
+
+	}
 
 	private function _deleteNomenclature(&$PDOdb, &$db, &$object, $object_type)
 	{
