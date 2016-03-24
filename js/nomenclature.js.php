@@ -16,7 +16,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                     ButtonWhoSubmit = $(this).attr('name');
                });    
                
-               $div.find('a').each(function(){
+               $div.find('a.tojs').each(function(){
                     $a = $(this);
                     var url = $(this).attr('href');
                     $(this).attr('href','javascript:;');
