@@ -500,7 +500,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 											$fk_availability=0;
 										}
 
-										echo '<td rowspan="2">';
+										echo '<td>';
 										if($fk_availability > 0) {
 											$form->load_cache_availability();
 											$availability=$form->cache_availability[$fk_availability]['label'];
