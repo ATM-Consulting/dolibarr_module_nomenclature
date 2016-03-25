@@ -233,7 +233,7 @@ function _drawlines(&$object, $object_type) {
 	<div class="logme"></div>
 	
 	<div style="text-align: left;">
-		<div class="inline-block divButAction"><a href="nomenclature-detail.php?id=<?php echo GETPOST('id') ?>&object=<?php echo GETPOST('object') ?>" class="butAction">Détails produits et MO</a></div>
+		<div class="inline-block divButAction"><a href="nomenclature-detail.php?id=<?php echo GETPOST('id') ?>&object=<?php echo GETPOST('object') ?>" class="butAction">Liste produits et MO nécessaires</a></div>
 		
 	</div>
 	

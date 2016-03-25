@@ -230,6 +230,76 @@ class TNomenclature extends TObjetStd
 		else return -1;
 	}
 	
+	private function setCombinedArray() {
+		
+		$this->TNomenclatureDetCombined = $this->TNomenclatureWorkstationCombined = array();
+		
+		foreach($this->TNomenclatureDet as $det) {
+			if($this->TNomenclatureDetCombined[$det->fk_product]) {
+				$this->TNomenclatureDetCombined[$det->fk_product]->qty+=$det->qty;
+			}
+			else{
+				$this->TNomenclatureDetCombined[$det->fk_product] = $det;
+			}
+		} 
+		
+		foreach($this->TNomenclatureWorkstation as $ws) {
+			if($this->TNomenclatureWorkstationCombined[$ws->fk_workstation]) {
+				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation]->nb_hour+=$ws->nb_hour;
+				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation]->nb_hour_prepare+=$ws->nb_hour_prepare;
+				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation]->nb_hour_manufacture+=$ws->nb_hour_manufacture;
+			}
+			else{
+				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation] = $ws;
+			}
+		}
+		
+		
+	}
+	
+	function fetchCombinedDetails(&$PDOdb) {
+		
+		$this->setCombinedArray();
+		
+		foreach($this->TNomenclatureDet as &$det) {
+			
+			$n=new TNomenclature;
+			$n->loadByObjectId($PDOdb, $det->fk_product, 'product',true,$det->fk_product,$det->qty);
+			$n->setCombinedArray();
+			
+			foreach($n->TNomenclatureDetCombined as &$n_det) {
+				
+				if($this->TNomenclatureDetCombined[$n_det->fk_product]) {
+					$this->TNomenclatureDetCombined[$n_det->fk_product]->qty+=$n_det->qty * $det->qty;
+				}
+				else{
+					$this->TNomenclatureDetCombined[$n_det->fk_product] = $n_det;
+					$this->TNomenclatureDetCombined[$n_det->fk_product]->qty *= $det->qty;
+				}
+				
+			}
+			
+			
+			foreach($n->TNomenclatureWorkstationCombined as &$n_ws) {
+				if($this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]) {
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour+=$n_ws->nb_hour* $det->qty;
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_prepare+=$n_ws->nb_hour_prepare* $det->qty;
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_manufacture+=$n_ws->nb_hour_manufacture* $det->qty;
+				}
+				else{
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation] = $n_ws;
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour *= $det->qty;
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_prepare *= $det->qty;
+					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_manufacture *= $det->qty;
+				}
+			}	
+			
+		} 
+		
+		
+			
+	}
+	
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()." 
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
