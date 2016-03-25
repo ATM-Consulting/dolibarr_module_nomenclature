@@ -190,7 +190,7 @@ function _drawlines(&$object, $object_type) {
 		
 		echo '<div>';
 		
-		if($line->product_type == 0 || $line->product_type == 1) echo '<a href="javascript:editLine('.$line->id.');" class="editline">'.img_edit($langs->trans('EditLine')).'</a>';
+		if($line->product_type == 0 || $line->product_type == 1) echo '<a href="javascript:editLine('.$line->id.');" class="editline clicable">'.img_edit($langs->trans('EditLine')).'</a>';
 		
 		$label = !empty($line->label) ? $line->label : (empty($line->libelle) ? $line->desc : $line->libelle);
 		
@@ -231,6 +231,12 @@ function _drawlines(&$object, $object_type) {
 	echo '</ul>';
 	?>
 	<div class="logme"></div>
+	
+	<div style="text-align: left;">
+		<div class="inline-block divButAction"><a href="nomenclature-detail.php?id=<?php echo GETPOST('id') ?>&object=<?php echo GETPOST('object') ?>" class="butAction">Liste produits et MO nécessaires</a></div>
+		
+	</div>
+	
 	<?php
 	dol_fiche_end();
 	llxFooter();
