@@ -731,7 +731,7 @@ class TNomenclatureCoefObject extends TObjetStd
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef_object');
 		
-		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true));
+		$this->add_champs('fk_object,entity',array('type'=>'integer', 'index'=>true));
         $this->add_champs('type_object',array('type'=>'varchar', 'length'=>50, 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'vachar', 'length'=>30, 'index'=>true));
         $this->add_champs('tx_object',array('type'=>'float'));
@@ -766,7 +766,11 @@ class TNomenclatureCoefObject extends TObjetStd
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE fk_object = '.(int)$object->id.' AND type_object = "'.$type_object.'"';
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object 
+				WHERE fk_object = '.(int)$object->id.' 
+				AND type_object = "'.$type_object.'"
+				AND entity IN('.getEntity('nomenclature').')';
+				
 		$PDOdb->Execute($sql);
 		$TRes = $PDOdb->Get_All();
 		
