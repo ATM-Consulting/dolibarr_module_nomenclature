@@ -156,10 +156,10 @@ function _drawlines(&$object, $object_type) {
 	echo '<div id="addto" style="float:right; width:200px;">';
 	
 		if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-			print $formDoli->select_produits('', 'fk_product', '', 0,0,1,0);
+			print $formDoli->select_produits('', 'fk_product', '', 0,0,0,0);
 		}
 		else{
-			print $formDoli->select_produits('', 'fk_product', '', 0);	
+			print $formDoli->select_produits('', 'fk_product', '', 0,0,0);	
 		}
 	
 		echo $formCore->bt($langs->trans('AddProductNomenclature'), 'AddProductNomenclature');

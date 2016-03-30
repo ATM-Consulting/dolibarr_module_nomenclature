@@ -750,10 +750,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                    <?php
 	                    
 	                    	if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-	                    		print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,1,0);
+	                    		print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,0,0);
 	                    	}
 							else{
-								print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0);	
+								print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,0);	
 							}
 	                    
 	                        
