@@ -57,13 +57,14 @@ $(document).ready(function() {
 	
 	
 	$('#speednomenclature').mousemove(function (e) {
-        $('div#addto').offset({ top: e.pageY - 50 });
-    });
+	      $('div#addto').offset({ top: e.pageY - 50 });
+	});
 	
-	$('#speednomenclature li').mouseenter(function(e) {
-		if($(this).attr('line-type') == 'line' || $(this).attr('line-type')=='nomenclature') {
+	$('#speednomenclature li .label').mouseenter(function(e) {
+		$li = $(this).closest('li');
+		if($li.attr('line-type') == 'line' || $li.attr('line-type')=='nomenclature') {
 			$('#speednomenclature li').removeClass('selectedElement');
-			$(this).addClass('selectedElement');	
+			$li.addClass('selectedElement');	
 		}
 	});
 	
@@ -117,7 +118,7 @@ $(document).ready(function() {
 	$('#speednomenclature [rel=delete]').click(function() {
 		
 		if(window.confirm("Vous êtes sûr ?")) {
-			
+			console.log($(this));
 			$(this).closest('li').remove();
 			
 		}

@@ -465,19 +465,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
                                <td><?php 
                                     $p_nomdet = new Product($db);
-                                    if ($det->fk_product>0) 
+                                    if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0) 
                                     {
-                                    	$p_nomdet->fetch($det->fk_product);
 										echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
                                     
 										if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
-									}
-									else 
-									{
-										echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
-									}
+	          		    }
+        			    else 
+				   {
+						echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
+				  }
 									
-									_draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
+				   _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 									
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 									
