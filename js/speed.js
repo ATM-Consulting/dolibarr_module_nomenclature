@@ -60,13 +60,28 @@ $(document).ready(function() {
 	      $('div#addto').offset({ top: e.pageY - 50 });
 	});
 	
-	$('#speednomenclature li .label').mouseenter(function(e) {
-		$li = $(this).closest('li');
-		if($li.attr('line-type') == 'line' || $li.attr('line-type')=='nomenclature') {
-			$('#speednomenclature li').removeClass('selectedElement');
+	if(NOMENCLATURE_SPEED_CLICK_SELECT) {
+		
+		$('#speednomenclature li .clickToSelect').click(function(e) {
+			$li = $(this).closest('li');
+			$('li.selectedElement').removeClass('selectedElement');
 			$li.addClass('selectedElement');	
-		}
-	});
+			
+		});
+		
+	}
+	else{
+		
+		$('#speednomenclature li .label').mouseenter(function(e) {
+			$li = $(this).closest('li');
+			if($li.attr('line-type') == 'line' || $li.attr('line-type')=='nomenclature') {
+				$('#speednomenclature li').removeClass('selectedElement');
+				$li.addClass('selectedElement');	
+			}
+		});
+		
+	}
+	
 	
 	$('input[name=AddProductNomenclature]').click(function() {
 		

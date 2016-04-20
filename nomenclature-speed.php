@@ -96,6 +96,7 @@ global $db,$langs,$conf,$PDOdb;
 	?><script type="text/javascript">
 		var fk_object=<?php echo $object->id; ?>;
 		var object_type="<?php echo $object_type; ?>";
+		var NOMENCLATURE_SPEED_CLICK_SELECT = <?php echo (int)$conf->global->NOMENCLATURE_SPEED_CLICK_SELECT; ?>;
 		
 		function editLine(fk_line) {
 	
@@ -190,8 +191,14 @@ function _drawlines(&$object, $object_type) {
 		
 		echo '<div>';
 		
-		if($line->product_type == 0 || $line->product_type == 1) echo '<a href="javascript:editLine('.$line->id.');" class="editline clicable">'.img_edit($langs->trans('EditLine')).'</a>';
-		
+		if($line->product_type == 0 || $line->product_type == 1) {
+			echo '<a href="javascript:editLine('.$line->id.');" class="editline clicable">'.img_edit($langs->trans('EditLine')).'</a>';
+			if(!empty($conf->global->NOMENCLATURE_SPEED_CLICK_SELECT)) {
+			
+				echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">'.img_next('Sélectionner cette ligne').'</a>';
+			
+			}
+		}
 		$label = !empty($line->label) ? $line->label : (empty($line->libelle) ? $line->desc : $line->libelle);
 		
 		if($line->fk_product>0) {
@@ -286,6 +293,11 @@ var_dump( $object_type,$fk_product,$qty , $nomenclature->TNomenclatureAll);
 				
 					echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'">';
 					echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
+					if(!empty($conf->global->NOMENCLATURE_SPEED_CLICK_SELECT)) {
+			
+						echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">'.img_next('Sélectionner cette ligne').'</a>';
+					
+					}
 					echo '<div>';
 						echo '<div class="label">'.($line->unifyRang+1).'. '. $product->getNomUrl(1).' '.$product->label.'</div>';
 						echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" /></div>';
