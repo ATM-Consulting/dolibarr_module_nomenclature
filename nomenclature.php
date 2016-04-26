@@ -106,10 +106,12 @@ else if($action==='save_nomenclature') {
 				{
 					if ($line->id == $fk_object)
 					{
+						$product1 = new Product($db);
+						$product1->fetch($fk_product);
 						$price_buy = $price_buy_init / $line->qty;
 						$price_to_sell = $price_to_sell_init / $line->qty;
 						
-						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);		
+						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $product1->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);		
 					}
 				}
 				
@@ -749,10 +751,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                    <?php
 	                    
 	                    	if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-	                    		print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
+	                    		print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,0,0);
 	                    	}
 							else{
-								print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);	
+								print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,0);	
 							}
 	                    
 	                        
