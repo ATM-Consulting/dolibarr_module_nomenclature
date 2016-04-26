@@ -121,6 +121,7 @@ else if($action==='save_nomenclature') {
 				$n=new TNomenclature;
 				$n->load($PDOdb, $fk_nomenclature);
 				
+				
 				$commande = new Commande($db);
 				$commande->fetch(GETPOST('fk_origin', 'int'));
 				
@@ -128,10 +129,12 @@ else if($action==='save_nomenclature') {
 				{
 					if ($line->id == $fk_object)
 					{
+						$productCommandLine = new Product($db);
+						$productCommandLine->fetch($fk_product);
 						$price_buy = $price_buy_init / $line->qty;
 						$price_to_sell = $price_to_sell_init / $line->qty;
 
-						$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);		
+						$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $productCommandLine->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);		
 					}
 				}
 				break;
