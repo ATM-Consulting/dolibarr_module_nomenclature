@@ -310,6 +310,16 @@ class TNomenclature extends TObjetStd
         if($obj = $PDOdb->Get_line()) {
             $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
             if($res) $this->iExist = true;
+        }else {
+        	$sql = "SELECT rowid FROM ".$this->get_table()." 
+            		WHERE fk_object=".(int)$fk_product." AND object_type='product' AND qty_reference <= ".$qty."  ORDER by qty_reference DESC";
+			$PDOdb->Execute($sql);
+			
+			$res = false;
+	        if($obj = $PDOdb->Get_line()) {
+	            $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
+	            if($res) $this->iExist = true;
+			}
         }
         
         $this->load_original($PDOdb, $fk_product, $qty);
@@ -392,7 +402,7 @@ class TNomenclature extends TObjetStd
     	global $langs;
 		
         $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature 
-                WHERE fk_object=".(int) $fk_object." AND object_type='".$object_type."'");
+		 WHERE fk_object=".(int) $fk_object." AND object_type='".$object_type."'");
         $TNom=array();
         
         foreach($Tab as $row) {
