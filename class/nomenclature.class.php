@@ -116,7 +116,7 @@ class TNomenclature extends TObjetStd
             if($n === false) return false;
             $this->fk_nomenclature_parent = $n->getId();
         }
-	else if($this->fk_nomenclature_parent>0) {
+		else if($this->fk_nomenclature_parent>0) {
             $n = new TNomenclature;
             $n->load($PDOdb, $this->fk_nomenclature_parent);
         }
@@ -323,7 +323,7 @@ class TNomenclature extends TObjetStd
         }
 
         $this->load_original($PDOdb, $fk_product, $qty);
-	$this->setAll();
+		$this->setAll();
 
         return $res;
 

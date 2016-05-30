@@ -156,6 +156,10 @@ else if($action==='save_nomenclature') {
 	    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
 	    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
 	    
+		if(!$n->iExist) { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
+			$n->reinit();	
+		}
+		
 		$n->set_values($_POST);
 	    
 	    $n->is_default = (int)GETPOST('is_default');
@@ -196,7 +200,8 @@ else if($action==='save_nomenclature') {
 		setEventMessage($langs->trans('NomenclatureSaved'));
 	    
 		$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
-	    	$n->save($PDOdb);
+		
+	    $n->save($PDOdb);
 	}
 	
 }
