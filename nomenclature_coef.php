@@ -14,7 +14,7 @@ switch ($fiche) {
 		
 		if ($action == 'updatecoef')
 		{
-			_updateCoef($PDOdb, $db, $conf, $langs, $user);
+			$res = _updateCoef($PDOdb, $db, $conf, $langs, $user);
 			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 2));
 			exit;
 		}
@@ -61,11 +61,10 @@ function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user)
 
 	llxHeader('','Coefficients');
 
-    $head = societe_prepare_head($object, $user);
+	$head = societe_prepare_head($object, $user);
 	$titre = $langs->trans('ThirdParty');
 	$picto = 'company';
 	dol_fiche_head($head, 'nomenclaturecoef', $titre, 0, $picto);
-	
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'tiers');
 	
 	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("ThirdPartyName"), 'socid', 'nom', 'tiers', $id);
@@ -116,7 +115,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 			$name ='TNomenclatureCoefObject['.$type.'][tx_object]';
 			
 			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : '#eeeeff'  ).'">';
-			echo '<td>&nbsp;'.$coef->label.'</td>';
+			echo '<td>&nbsp;'.$coef->label.( $coef->rowid>0 ? '' : img_help(1,$langs->trans('CoefGenericSaveForSpecific') ) ).'</td>';
 			echo '<td>'.$coef->description.'</td>';
 			echo '<td><input name="'.$name.'" value="'.$coef->tx_object.'" size="5" /></td>';
 			echo '</tr>';
@@ -147,7 +146,7 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$type_object = GETPOST('fiche', 'alpha');
 	
 	$TNomenclatureCoefObject = GETPOST('TNomenclatureCoefObject');
-	
+//	var_dump($TNomenclatureCoefObject);
 	if (!empty($TNomenclatureCoefObject)) 
 	{
 		foreach ($TNomenclatureCoefObject as $code_type => &$coef)
@@ -160,12 +159,12 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 			$obj->fk_object = $fk_object;
 			$obj->type_object = $type_object;
 			$obj->code_type = $code_type;
-			
+//	$PDOdb->debug = 1;		
 			
 			$obj->save($PDOdb);
 		}
 	}
-		
+//		exit;
 	setEventMessages($langs->trans('nomenclatureCoefUpdated'), null);
 }
 
