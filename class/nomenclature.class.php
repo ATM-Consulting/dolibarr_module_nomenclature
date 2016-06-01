@@ -55,7 +55,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($qty_ref))$coef_qty_price = 1;
 		else $coef_qty_price = $qty_ref / $this->qty_reference;
-
+//var_dump($coef_qty_price,$qty_ref,$this->qty_reference,$this->getId());
 	    switch ($object_type)
         {
            case 'propal':
@@ -127,7 +127,9 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
 
         if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
-	 	{
+	{
+      	    $this->qty_reference = $n->qty_reference ;
+
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
                 $this->TNomenclatureDet[$k] = new TNomenclatureDet;
                 $this->TNomenclatureDet[$k]->set_values((array)$det);
