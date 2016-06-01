@@ -118,14 +118,16 @@ class TNomenclature extends TObjetStd
         }
 		else if($this->fk_nomenclature_parent>0) {
             $n = new TNomenclature;
-            $n->load($PDOdb, $this->fk_nomenclature_parent);
+            if(!$n->load($PDOdb, $this->fk_nomenclature_parent)) {
+            	return false;
+            }
         }
 //var_dump($n);
         $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
 
         if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
-	 {
+	 	{
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
                 $this->TNomenclatureDet[$k] = new TNomenclatureDet;
                 $this->TNomenclatureDet[$k]->set_values((array)$det);
@@ -154,6 +156,9 @@ class TNomenclature extends TObjetStd
 		global $conf;
 
 		$res = parent::load($PDOdb, $id);
+		if($res) {
+			$this->iExist = true;
+		}
 
 		if($loadProductWSifEmpty && $conf->workstation->enabled && empty($this->TNomenclatureWorkstation)) {
 			$this->load_product_ws($PDOdb);
@@ -309,17 +314,7 @@ class TNomenclature extends TObjetStd
         $res = false;
         if($obj = $PDOdb->Get_line()) {
             $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
-            if($res) $this->iExist = true;
-        }else {
-        	$sql = "SELECT rowid FROM ".$this->get_table()."
-            		WHERE fk_object=".(int)$fk_product." AND object_type='product' AND qty_reference <= ".$qty."  ORDER by qty_reference DESC";
-			$PDOdb->Execute($sql);
-
-			$res = false;
-	        if($obj = $PDOdb->Get_line()) {
-	            $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
-	            if($res) $this->iExist = true;
-			}
+           
         }
 
         $this->load_original($PDOdb, $fk_product, $qty);

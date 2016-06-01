@@ -156,7 +156,7 @@ else if($action==='save_nomenclature') {
 	    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
 	    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
 	    
-		if(!$n->iExist) { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
+		if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
 			$n->reinit();	
 		}
 		
@@ -359,8 +359,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
 	
-	if($n->getId() == 0) {
-		echo '<div class="error">Nomenclature chargée depuis le produit, sauvegardez pour créér une nomenclature locale</div>';
+	if($n->getId() == 0 &&  count($n->TNomenclatureDet)+count($n->TNomenclatureWorkstation)>0) {
+		echo '<div class="error">'.$langs->trans('NonLocalNomenclature').'</div>';
 	}
 
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
