@@ -186,7 +186,7 @@ function _drawlines(&$object, $object_type) {
 		<td class="liste_titre"><?php echo $langs->trans('Qty') ?></td>
 	</tr>
 	<?php
-		
+		$total_heure = 0;
 		foreach($TWorkstation as &$ws) {
 			
 			echo '<tr>
@@ -195,10 +195,13 @@ function _drawlines(&$object, $object_type) {
 			</tr>
 			';
 			
-			
+			$total_heure+=$ws->nb_hour;
 		}
-	
+		
 	?>
+	<tr  style="font-weight:bold">
+		<td align="right">Total : </td><td align="right"><?php echo price($total_heure) ?> h</td>
+	</tr>
 	</table>
 	<?php
 	
