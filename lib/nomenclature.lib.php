@@ -36,6 +36,11 @@ function nomenclatureAdminPrepareHead()
     $head[$h][1] = $langs->trans("Parameters");
     $head[$h][2] = 'settings';
     $h++;
+	
+    $head[$h][0] = dol_buildpath("/nomenclature/admin/import.php", 1);
+    $head[$h][1] = $langs->trans("Import");
+    $head[$h][2] = 'import';
+    $h++;
     $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_about.php", 1);
     $head[$h][1] = $langs->trans("About");
     $head[$h][2] = 'about';
