@@ -593,8 +593,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
-                           <td align="right"><?php echo price(round($n->totalPR,2)); ?></td>
-                           <td align="right"><?php echo price(round($n->totalPRC,2)); ?></td>
+                           <td align="right"><?php echo price($n->totalPR); ?></td>
+                           <td align="right"><?php echo price($n->totalPRC); ?></td>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
 
                        </tr>
@@ -725,15 +725,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
-                       <td style="font-weight: bolder; text-align: right;"><?php echo price(round($PR_coef,2)); ?></td>
+                       <td style="font-weight: bolder; text-align: right;"><?php echo price($PR_coef); ?></td>
                        	<?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
 		        </tr>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100, $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;">
-                       	<?php echo price(round($price_to_sell,2)); ?>
-                       	<?php echo $formCore->hidden('price_to_sell', round($price_to_sell,2)); ?>
+                       	<?php echo price($price_to_sell); ?>
+                       	<?php echo $formCore->hidden('price_to_sell', $price_to_sell); ?>
                        </td>
 		        </tr>
 		        <?php
