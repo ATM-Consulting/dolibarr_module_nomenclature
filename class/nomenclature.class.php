@@ -55,7 +55,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($qty_ref))$coef_qty_price = 1;
 		else $coef_qty_price = $qty_ref / $this->qty_reference;
-//var_dump($coef_qty_price,$qty_ref,$this->qty_reference,$this->getId());
+
 	    switch ($object_type)
         {
            case 'propal':

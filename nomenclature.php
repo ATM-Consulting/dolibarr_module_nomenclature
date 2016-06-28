@@ -354,6 +354,7 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user;
 
+	
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type);
 
 	$json = GETPOST('json', 'int');
@@ -721,6 +722,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 				$PR_coef = $n->totalMO+$n->totalPRC;
 				$price_buy = $n->totalMO+$n->totalPRC;
 				$price_to_sell = $n->totalPV;
+				if(empty($qty_ref)) $qty_ref = $n->qty_reference;
 		        ?>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>

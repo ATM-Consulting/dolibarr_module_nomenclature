@@ -279,11 +279,11 @@ else {
 
 
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
-global $db,$conf,$user,$langs;
+		global $db,$conf,$user,$langs;
 		if($object->subprice >0 || $object->product_type>1 ) return 0;
 
 		$n = new TNomenclature;
-                $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);		
+        $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);		
 		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type);
 		
 		
