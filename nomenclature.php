@@ -165,7 +165,12 @@ else if($action==='save_nomenclature') {
 	    $n->is_default = (int)GETPOST('is_default');
 
 		if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
-
+		
+		// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
+		$tab = array();
+		foreach($_POST['TNomenclature'] as $val) $tab[] = $val;
+		$_POST['TNomenclature'] = $tab;
+		
 	    if(!empty($_POST['TNomenclature'])) {
 	        foreach($_POST['TNomenclature'] as $k=>$TDetValues) {
 	            $n->TNomenclatureDet[$k]->set_values($TDetValues);
