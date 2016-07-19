@@ -788,7 +788,29 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price($PR_coef); ?></td>
                        	<?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
-		        </tr>
+		        </tr><?php
+		        
+		       if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+		        		
+					  ?><tr class="liste_total" >
+		                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', $qty_ref); ?></td>
+		                       <td colspan="3">&nbsp;</td>
+		                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price($n->totalPRCMO_PMP); ?></span></td>
+				      </tr><?php
+				      
+				      if(!empty($conf->of->enabled)) {
+					      	?><tr class="liste_total" >
+			                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', $qty_ref); ?></td>
+			                       <td colspan="3">&nbsp;</td>
+			                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price($n->totalPRCMO_OF); ?></span></td>
+					      	</tr><?php
+						
+				      }
+				      
+					
+		        }
+		        
+		        ?>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100, $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>

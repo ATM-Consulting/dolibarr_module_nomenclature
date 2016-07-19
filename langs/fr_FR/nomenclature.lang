@@ -21,6 +21,8 @@ Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
 TotalAmountCostWithCharge=Coût de revient chargé pour %s exemplaire(s)
+TotalAmountCostWithChargePMP=Coût de revient chargé théorique pour %s exemplaire(s)
+TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
 AmountCostWithChargeCustom=Coût perso
 PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 
