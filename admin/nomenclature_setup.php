@@ -178,6 +178,13 @@ print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_SPEED_CLICK_SELECT');
 print '</td></tr>';
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('NOMENCLATURE_ACTIVATE_DETAILS_COSTS').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_ACTIVATE_DETAILS_COSTS');
+print '</td></tr>';
 
 print '</table>';
 
@@ -243,62 +250,6 @@ print '</table>';
 
 
 
-
-
-
-
-/*
-
-$var=false;
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("Parameters").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-
-
-// Example with a yes / no select
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("CoefFourniture").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_COEF_FOURNITURE">';
-print '<input type="text" name="NOMENCLATURE_COEF_FOURNITURE" value="'.$conf->global->NOMENCLATURE_COEF_FOURNITURE.'"  size="5" />'; 
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("CoefConsommable").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_COEF_CONSOMMABLE">';
-print '<input type="text" name="NOMENCLATURE_COEF_CONSOMMABLE" value="'.$conf->global->NOMENCLATURE_COEF_CONSOMMABLE.'"  size="5" />'; 
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("CoefMarge").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_COEF_MARGE">';
-print '<input type="text" name="NOMENCLATURE_COEF_MARGE" value="'.$conf->global->NOMENCLATURE_COEF_MARGE.'" size="5" />&nbsp;%&nbsp;'; 
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
-print '</form>';
-print '</td></tr>';
-
-print '</table>';
-*/
 
 llxFooter();
 

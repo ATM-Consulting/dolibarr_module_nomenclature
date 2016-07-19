@@ -570,11 +570,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                            if($user->rights->nomenclature->showPrice) {
 
 	                            	$price = $det->calculate_price;
-
 									$price_charge = $det->charged_price;
 
 									echo '<td align="right" valign="bottom">';
-                                    echo price($price) ;
+									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+										echo price($det->calculate_price).img_help($langs->trans('pricePA'));
+										echo '<br />'.price($det->calculate_price_pmp).img_help($langs->trans('pricePMP'));
+										if(!empty($conf->of->enabled)) echo '<br />'.price($det->calculate_price_of).img_help($langs->trans('priceOF'));
+									}
+									else{
+										echo price($price);	
+									}
+									
+                                    
                                 	echo '</td>';
 									echo '<td align="right" valign="bottom">';
                                     echo price($price_charge);
