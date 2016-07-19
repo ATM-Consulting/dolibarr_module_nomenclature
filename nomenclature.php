@@ -358,7 +358,6 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user;
 
-	
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type);
 
 	$json = GETPOST('json', 'int');
@@ -574,9 +573,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 									echo '<td align="right" valign="bottom">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
-										echo price($det->calculate_price).img_help($langs->trans('pricePA'));
-										echo '<br />'.price($det->calculate_price_pmp).img_help($langs->trans('pricePMP'));
-										if(!empty($conf->of->enabled)) echo '<br />'.price($det->calculate_price_of).img_help($langs->trans('priceOF'));
+										echo price($det->calculate_price).img_help(1,$langs->trans('pricePA'));
+										echo '<span class="pricePMP"><br />'.price($det->calculate_price_pmp).img_help(1,$langs->trans('pricePMP')).'</span>';
+										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price($det->calculate_price_of).img_help(1,$langs->trans('priceOF')).'</span>';
 									}
 									else{
 										echo price($price);	
@@ -585,7 +584,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     
                                 	echo '</td>';
 									echo '<td align="right" valign="bottom">';
-                                    echo price($price_charge);
+									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+										echo price($det->charged_price);
+										echo '<span class="pricePMP"><br />'.price($det->charged_price_pmp).'</span>';
+										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price($det->charged_price_of).'</span>';
+									}
+									else{
+                                    	echo price($price_charge);
+									}
                                 	echo '</td>';
 									echo '<td align="right" valign="bottom">';
                                     echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($det->price).'" size="5" />';
@@ -612,6 +618,33 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
                        </tr>
                        <?php
+                       
+                       if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+	                        ?>
+	                       <tr class="liste_total">
+	                           <td ><?php echo $langs->trans('TotalPricePMP'); ?></td>
+	                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
+	                           <td align="right"><?php echo price($n->totalPR_PMP); ?></td>
+	                           <td align="right"><?php echo price($n->totalPRC_PMP); ?></td>
+	                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+	
+	                       </tr><?php
+	                       
+	                       if(!empty($conf->of->enabled)) {
+		                       
+		                       ?><tr class="liste_total">
+		                           <td ><?php echo $langs->trans('TotalPriceOF'); ?></td>
+		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
+		                           <td align="right"><?php echo price($n->totalPR_OF); ?></td>
+		                           <td align="right"><?php echo price($n->totalPRC_OF); ?></td>
+		                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+		
+		                       </tr>
+		                       <?php
+						   }
+							
+					   }
+                       
 					   }
                        ?>
                        </tfoot>

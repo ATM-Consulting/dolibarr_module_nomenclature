@@ -74,3 +74,10 @@ CoefGenericSaveForSpecific=Coefficient générique. Sauvegardez pour rendre spé
 NonLocalNomenclature=Nomenclature chargée depuis le produit, sauvegardez pour créér une nomenclature locale
 
 NOMENCLATURE_ACTIVATE_DETAILS_COSTS=Activer les prix de revient détaillés
+
+PricePA=Budget : prix d’achat fixe défini sur la fiche article
+PricePMP=Théorique : prix moyen pondéré (PMP) du produit
+PriceOF=Réel : analyse des OF sur la période
+TotalPricePMP=Total Matière Théorique
+TotalPriceOF=Total Matière Réel
+

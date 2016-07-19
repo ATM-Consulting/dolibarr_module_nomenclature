@@ -72,7 +72,7 @@ class TNomenclature extends TObjetStd
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
 		if(!empty($object)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
-		$totalPR = $totalPRC = 0;
+		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = 0;
 		foreach($this->TNomenclatureDet as &$det) {
 
 			$det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
@@ -84,9 +84,21 @@ class TNomenclature extends TObjetStd
 
 			$det->charged_price = empty($det->price) ? $det->calculate_price * $coef : $det->price * $coef_qty_price;
 			$totalPRC+= $det->charged_price;
+			
+			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP');
+				$totalPR_PMP+= $det->calculate_price_pmp ;
+				$det->charged_price_pmp = empty($det->price) ? $det->calculate_price_pmp * $coef : $det->price * $coef_qty_price;
+				$totalPRC_PMP+= $det->charged_price_pmp;
+			}
+			
 		}
 		$this->totalPR = $totalPR;
 		$this->totalPRC = $totalPRC;
+
+		$this->totalPR_PMP = $totalPR_PMP;
+		$this->totalPRC_PMP = $totalPRC_PMP;
+
 
 		$total_mo = 0;
 		foreach($this->TNomenclatureWorkstation as &$ws) {
@@ -497,8 +509,6 @@ class TNomenclature extends TObjetStd
 
 class TNomenclatureDet extends TObjetStd
 {
-
-
 	/**
 	 * product_type == fk_coef (rowid de la table nomenclature_coef)
 	 */
@@ -527,6 +537,29 @@ class TNomenclatureDet extends TObjetStd
         $this->{OBJETSTD_DATEUPDATE}=time();
 
     }
+
+	function getPrice(&$PDOdb, $qty, $type='') {
+		
+		if($type == 'PMP') {
+			return $this->getPMPPrice();
+		}
+		else{
+			return $this->getSupplierPrice($PDOdb, $qty, true);	
+		}
+		
+	}
+
+	function getPMPPrice() {
+		global $db,$conf,$user,$langs;
+		
+		dol_include_once('/product/class/product.class.php');
+		
+		$p=new Product($db);
+		$p->fetch($this->fk_product);
+		
+		return $p->pmp;
+		
+	}
 
 	/*
 	 * Retourne le prix unitaire en fonction de la quantité commandé
