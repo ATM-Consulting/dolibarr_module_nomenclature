@@ -21,6 +21,8 @@ Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
 TotalAmountCostWithCharge=Coût de revient chargé pour %s exemplaire(s)
+TotalAmountCostWithChargePMP=Coût de revient chargé théorique pour %s exemplaire(s)
+TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
 AmountCostWithChargeCustom=Coût perso
 PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 
@@ -72,3 +74,12 @@ nomenclatureJustMP=Permettre la liaison uniquement avec des matières première
 CoefGenericSaveForSpecific=Coefficient générique. Sauvegardez pour rendre spécifique à cet objet.
 
 NonLocalNomenclature=Nomenclature chargée depuis le produit, sauvegardez pour créér une nomenclature locale
+
+NOMENCLATURE_ACTIVATE_DETAILS_COSTS=Activer les prix de revient détaillés
+PricePA=Budget, prix d'achat fixe défini sur la fiche article
+PricePMP=Théorique, prix moyen pondéré (PMP) du produit
+PriceOF=Réel, analyse des OF sur la période
+TotalPricePMP=Total Matière Théorique
+TotalPriceOF=Total Matière Réel
+priceMO_OF=Réel, analyse des OF sur la période
+TotalMO_OF=Total M.O. Réel
