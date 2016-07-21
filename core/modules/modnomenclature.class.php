@@ -224,6 +224,13 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][5] = 'updatecoef';
         $r++;
 
+       	$this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
+        $this->rights[$r][1] = 'massUpdate';  // Permission label
+        $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
+        $this->rights[$r][4] = 'global';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][5] = 'massUpdate';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $r++;
+
 
 		// Main menu entries
 		$this->menu = array();			// List of menus to add
@@ -247,19 +254,19 @@ class modnomenclature extends DolibarrModules
 		// $r++;
 		//
 		// Example to declare a Left Menu entry into an existing Top menu entry:
-		// $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=xxx',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-		//							'type'=>'left',			                // This is a Left menu entry
-		//							'titre'=>'nomenclature left menu',
-		//							'mainmenu'=>'xxx',
-		//							'leftmenu'=>'nomenclature',
-		//							'url'=>'/nomenclature/pagelevel2.php',
-		//							'langs'=>'mylangfile@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-		//							'position'=>100,
-		//							'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-		//							'perms'=>'1',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
-		//							'target'=>'',
-		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-		// $r++;
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+									'type'=>'left',			                // This is a Left menu entry
+									'titre'=>'massUpdateMenu',
+									'mainmenu'=>'products',
+									'leftmenu'=>'nomenclature',
+									'url'=>'/nomenclature/massUpdate.php',
+									'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+									'position'=>100,
+									'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+									'perms'=>'$user->rights->nomenclature->global->massUpdate',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+									'target'=>'',
+									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
+		 $r++;
 
 
 		// Exports
