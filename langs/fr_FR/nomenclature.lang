@@ -90,3 +90,6 @@ PercentUP=Augmentation en %
 ShowImpact=Montrer l'impact
 QtyAfter=Qté après
 MakeIt=Faire la mise à jour
+
+NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST=Utiliser le prix de la nomenclature enfant avant le prix d'achat pour le calcul
+NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED=Le prix personnalisé d'un composant est un déboursé
