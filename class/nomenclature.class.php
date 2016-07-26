@@ -74,27 +74,36 @@ class TNomenclature extends TObjetStd
 
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det) {
-
-			$det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
+			
+			$perso_price = $det->price;
+			
+			if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED) && !empty($perso_price)) {
+				$det->calculate_price = $perso_price * $coef_qty_price;
+				$perso_price = 0;
+			}
+			else{
+				$det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
+			}
+			
 			$totalPR+= $det->calculate_price ;
 
 			if (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
 
-			$det->charged_price = empty($det->price) ? $det->calculate_price * $coef : $det->price * $coef_qty_price;
+			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
 			$totalPRC+= $det->charged_price;
 			
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP');
 				$totalPR_PMP+= $det->calculate_price_pmp ;
-				$det->charged_price_pmp = empty($det->price) ? $det->calculate_price_pmp * $coef : $det->price * $coef_qty_price;
+				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$totalPRC_PMP+= $det->charged_price_pmp;
 				
 				if(!empty($conf->of->enabled)) {
 					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF');
 					$totalPR_OF+= $det->calculate_price_of ;
-					$det->charged_price_of = empty($det->price) ? $det->calculate_price_of * $coef : $det->price * $coef_qty_price;
+					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
 					$totalPRC_OF+= $det->charged_price_of;
 				}
 				
@@ -614,43 +623,42 @@ class TNomenclatureDet extends TObjetStd
 	 * Retourne le prix unitaire en fonction de la quantité commandé
 	 */
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true) {
-        global $db;
+        global $db,$conf;
+		
+		$price_supplier = $child_price = 0;
+		
         $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
                 WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
 
         if($obj = $PDOdb->Get_line()) {
-            $price = $obj->price / $obj->quantity;
-
-            return $price;
-
+            $price_supplier = $obj->price / $obj->quantity;
         }
 
-        if($searchforhigherqtyifnone) {
+        if($searchforhigherqtyifnone && empty($price_supplier)) {
 
             $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
                     WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
 
             if($obj = $PDOdb->Get_line()) {
-                $price = $obj->price / $obj->quantity;
-
-                return $price;
+                $price_supplier = $obj->price / $obj->quantity;
             }
 
         }
 
-		if($search_child_price) {
+		if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
 
 			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
 			if($n!==false) {
 				$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
 
-				return $n->totalPRCMO;
+				$child_price = $n->totalPRCMO / $qty;
+				//var_dump($child_price,$n);exit;
 			}
 		}
 
-        return 0;
-
-
+		if(empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)) return empty($price_supplier) ? $child_price : $price_supplier;
+		else  return empty($child_price) ? $price_supplier : $child_price;
+		
     }
 
 	//renvoi la nomenclature par defaut du produit de la ligne
