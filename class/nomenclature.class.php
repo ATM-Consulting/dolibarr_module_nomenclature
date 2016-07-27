@@ -15,6 +15,8 @@ class TNomenclature extends TObjetStd
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
         $this->add_champs('qty_reference',array('type'=>'float','index'=>true));
 
+		$this->add_champs('totalPRCMO_PMP,totalPRCMO_OF,totalPRCMO',array('type'=>'float'));
+
         $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
         $this->add_champs('note_private',array('type'=>'text'));
 
