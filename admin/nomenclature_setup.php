@@ -37,7 +37,7 @@ dol_include_once('/nomenclature/class/nomenclature.class.php');
 // Translations
 $langs->load("nomenclature@nomenclature");
 $PDOdb = new TPDOdb;
-		
+
 // Access control
 if (! $user->admin) {
     accessforbidden();
@@ -49,36 +49,36 @@ $action = GETPOST('action', 'alpha');
 if ($action == 'add' || $action == 'edit')
 {
 	$id = GETPOST('rowid', 'int');
-	
-	if (GETPOST('delete')) 
+
+	if (GETPOST('delete'))
 	{
 		$nomenclatureCoef = new TNomenclatureCoef;
 		$nomenclatureCoef->load($PDOdb, $id);
 		$res = $nomenclatureCoef->delete($PDOdb);
-		
+
 		if ($res > 0) setEventMessages($langs->trans('NomenclatureDeleteSuccess'), null);
 		else setEventMessages($langs->trans('NomenclatureErrorCantDelete'), null, 'errors');
 	}
-	else 
+	else
 	{
 		$label = GETPOST('label', 'alpha');
 		$desc = GETPOST('desc', 'alpha');
 		$code = GETPOST('code_type', 'alpha');
 		$tx = GETPOST('tx', 'alpha');
-		
+
 		if ($label && $code && $tx)
 		{
 			$nomenclatureCoef = new TNomenclatureCoef;
-			
+
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
-			
+
 			$nomenclatureCoef->label = $label;
 			$nomenclatureCoef->description = $desc;
 			$nomenclatureCoef->code_type = $code;
 			$nomenclatureCoef->tx = $tx;
-			
+
 			$rowid = $nomenclatureCoef->save($PDOdb);
-			
+
 			if ($rowid) setEventMessages($langs->trans('NomenclatureSuccessAddCoef'), null);
 			else setEventMessages($langs->trans('NomenclatureErrorAddCoefDoublon'), null, 'errors');
 		}
@@ -100,8 +100,8 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	$code=$reg[1];
 	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
 	{
-		setEventMessage($langs->trans("ParamSaved"));	
-			
+		setEventMessage($langs->trans("ParamSaved"));
+
 		header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
 	}
@@ -109,9 +109,9 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	{
 		dol_print_error($db);
 	}
-	
+
 }
-	
+
 if (preg_match('/del_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
@@ -204,6 +204,15 @@ print ajax_constantonoff('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED');
 print '</td></tr>';
 
 
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('NOMENCLATURE_HIDE_ADVISED_PRICE').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_HIDE_ADVISED_PRICE');
+print '</td></tr>';
+
+
 print '</table>';
 
 
@@ -225,9 +234,9 @@ print '<input type="hidden" name="action" value="add">';
 print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
 print '<input type="text" name="label" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" />&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
-print '<input type="text" name="code_type" value="'.($action == 'add' && !empty($code) ? $code : '').'"  size="15" />&nbsp;&nbsp;'; 
+print '<input type="text" name="code_type" value="'.($action == 'add' && !empty($code) ? $code : '').'"  size="15" />&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
-print '<input type="text" name="tx" value="'.($action == 'add' && !empty($tx) ? $tx : '').'"  size="5" />&nbsp;&nbsp;'; 
+print '<input type="text" name="tx" value="'.($action == 'add' && !empty($tx) ? $tx : '').'"  size="5" />&nbsp;&nbsp;';
 print '<input type="submit" class="button" value="'.$langs->trans("Add").'">';
 print '</form>';
 print '</td></tr>';
@@ -255,12 +264,12 @@ foreach ($TCoef as $coef)
 	print '<input type="hidden" name="action" value="edit">';
 	print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
 	print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
-	print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;'; 
+	print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
 	print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
-	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;'; 
+	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
 	print '<input type="submit" class="button" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
 	print '<input type="submit" class="button" name="delete" value="'.$langs->trans("Delete").'">';
-	print '</td></tr>';	
+	print '</td></tr>';
 	print '</form>';
 }
 
