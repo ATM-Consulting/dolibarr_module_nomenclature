@@ -627,7 +627,7 @@ class TNomenclatureDet extends TObjetStd
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true) {
         global $db,$conf;
 
-        if ($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE) {
+        if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
         	$qty=1;
         }
 
