@@ -203,7 +203,6 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED');
 print '</td></tr>';
 
-
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans('NOMENCLATURE_HIDE_ADVISED_PRICE').'</td>';
@@ -212,6 +211,29 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_HIDE_ADVISED_PRICE');
 print '</td></tr>';
 
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('NOMENCLATURE_USE_ON_INVOICE').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_USE_ON_INVOICE');
+print '</td></tr>';
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC');
+print '</td></tr>';
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_USE_QTYREF_TO_ONE');
+print '</td></tr>';
 
 print '</table>';
 
