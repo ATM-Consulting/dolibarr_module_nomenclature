@@ -75,7 +75,7 @@ class TNomenclature extends TObjetStd
 		if(!empty($object)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
-		foreach($this->TNomenclatureDet as &$det) {
+		foreach($this->TNomenclatureDet as &$det ) {
 
 			$perso_price = $det->price;
 
