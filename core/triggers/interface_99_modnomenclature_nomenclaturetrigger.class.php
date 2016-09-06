@@ -311,8 +311,10 @@ class Interfacenomenclaturetrigger
 		foreach ($object->lines as $line)
 		{
 			if ($line->product_type == 9) continue;
-
-			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature WHERE object_type = "'.$object_type.'" AND fk_object = '.$line->id;
+			
+			$line_id = (!empty($line->id)?$line->id:$line->rowid);
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature WHERE object_type = "'.$object_type.'" AND fk_object = '.$line_id;
+			
 			$PDOdb->Execute($sql);
 
 			if ($PDOdb->Get_Recordcount() > 0)
