@@ -267,13 +267,14 @@ class Interfacenomenclaturetrigger
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
 		global $db,$conf,$user,$langs;
 
-		if (($object->subprice >0 && empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC))
-				|| $object->product_type>1 ) {
+		if ($object->subprice >0 
+			|| !empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC)
+			|| $object->product_type>1 ) {
 					return 0;
 		}
 
 		$n = new TNomenclature;
-        $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
+        	$n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
 		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type);
 
 
@@ -282,6 +283,9 @@ class Interfacenomenclaturetrigger
 		} else {
 			$sell_price_to_use=$n->totalPV;
 		}
+
+
+		if(empty($sell_price_to_use)) return 0;
 
 		if($object_type=='commande') {
 //		var_dump($n->totalPV, $object_type,$object);exit;
