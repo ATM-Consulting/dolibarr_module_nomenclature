@@ -892,7 +892,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    <?php if ($json == 1) { ?>
                    		<style type="text/css">
                    			.dialogSouldBeZindexed {
-                   				z-index:101 !important;
+                   				/*z-index:101 !important;  Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
                    			}
                    		</style>
 						<div>
