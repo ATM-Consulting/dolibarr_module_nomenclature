@@ -55,6 +55,15 @@ class TNomenclature extends TObjetStd
 
 		global $db,$langs,$conf;
 
+		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
+
+		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+		if($this->nested_price_level>$max_level){
+			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
+			
+			return false;
+		} 	
+
 		if(empty($qty_ref))$coef_qty_price = 1;
 		else $coef_qty_price = $qty_ref / $this->qty_reference;
 
@@ -76,6 +85,8 @@ class TNomenclature extends TObjetStd
 
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
+
+			$det->nested_price_level = $this->nested_price_level;
 
 			$perso_price = $det->price;
 
@@ -243,6 +254,10 @@ class TNomenclature extends TObjetStd
 		}
 		else {
 
+			global $langs;
+			
+			setEventMessage($langs->trans('CantAddProductBecauseOfAnInfiniteLoop', 'errors'));
+
 			$det->to_delete = true;
 			$this->save($PDOdb);
 
@@ -252,7 +267,7 @@ class TNomenclature extends TObjetStd
 
 	function infinitLoop(&$PDOdb, $level = 1) {
 		global $conf;
-		return false;
+		
 		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($level > $max_level) return true;
 
@@ -655,6 +670,8 @@ class TNomenclatureDet extends TObjetStd
 
 			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
 			if($n!==false) {
+				$n->nested_price_level = $this->nested_price_level + 1;
+				
 				$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
 
 				$child_price = $n->totalPRCMO / $qty;

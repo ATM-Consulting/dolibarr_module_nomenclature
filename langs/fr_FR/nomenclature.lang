@@ -97,3 +97,6 @@ NOMENCLATURE_HIDE_ADVISED_PRICE=Masquer la ligne de prix conseillé dans la nome
 NOMENCLATURE_USE_ON_INVOICE=Utilise les cout de reviens de nomenclature avec les factures
 NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC=Forcer l'utilsation du prix de vente plutot que le cout margé (lors de l'ajout d'une ligne propal/commande/facture)
 NOMENCLATURE_USE_QTYREF_TO_ONE=Toujorus utilisé la quanté de référence à 1 pour le calcul du cout de reviens
+
+CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela créé une boucle infinie
+SetPriceInfiniteLoop=Boucle infinie détectée dans la récupération du prix
