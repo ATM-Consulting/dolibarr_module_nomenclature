@@ -183,7 +183,11 @@ else if($action==='save_nomenclature') {
 	    }
 
 	    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
-	    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
+		if ($fk_new_product == $product->id)
+		{
+			setEventMessages($langs->trans('nomenclature_error_try_add_product_from_himself'), array(), 'errors');
+		}
+		elseif(GETPOST('add_nomenclature') && $fk_new_product>0) {
 	    	if(!$n->addProduct($PDOdb, $fk_new_product)) {
 				$p_err= new Product($db);
 				$p_err->fetch($fk_new_product);
