@@ -93,3 +93,7 @@ MakeIt=Faire la mise à jour
 
 NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST=Utiliser le prix de la nomenclature enfant avant le prix d'achat pour le calcul
 NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED=Le prix personnalisé d'un composant est un déboursé
+NOMENCLATURE_HIDE_ADVISED_PRICE=Masquer la ligne de prix conseillé dans la nomenclature
+NOMENCLATURE_USE_ON_INVOICE=Utilise les cout de reviens de nomenclature avec les factures
+NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC=Forcer l'utilsation du prix de vente plutot que le cout margé (lors de l'ajout d'une ligne propal/commande/facture)
+NOMENCLATURE_USE_QTYREF_TO_ONE=Toujorus utilisé la quanté de référence à 1 pour le calcul du cout de reviens
