@@ -91,7 +91,13 @@ class TNomenclature extends TObjetStd
 			$perso_price = $det->price;
 
 			if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED) && !empty($perso_price)) {
-				$det->calculate_price = $perso_price * $coef_qty_price;
+				if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_APPLY_QTY)) {
+					$det->calculate_price = $perso_price * $det->qty * $coef_qty_price;
+				}
+				else{
+					$det->calculate_price = $perso_price * $coef_qty_price;	
+				}
+				
 				$perso_price = 0;
 			}
 			else{
