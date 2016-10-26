@@ -55,6 +55,15 @@ class TNomenclature extends TObjetStd
 
 		global $db,$langs,$conf;
 
+		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
+
+		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+		if($this->nested_price_level>$max_level){
+			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
+			
+			return false;
+		} 	
+
 		if(empty($qty_ref))$coef_qty_price = 1;
 		else $coef_qty_price = $qty_ref / $this->qty_reference;
 
@@ -75,10 +84,12 @@ class TNomenclature extends TObjetStd
 		if(!empty($object)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
-		foreach($this->TNomenclatureDet as &$det) {
-			
+		foreach($this->TNomenclatureDet as &$det ) {
+
+			$det->nested_price_level = $this->nested_price_level;
+
 			$perso_price = $det->price;
-			
+
 			if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED) && !empty($perso_price)) {
 				$det->calculate_price = $perso_price * $coef_qty_price;
 				$perso_price = 0;
@@ -86,7 +97,7 @@ class TNomenclature extends TObjetStd
 			else{
 				$det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
 			}
-			
+
 			$totalPR+= $det->calculate_price ;
 
 			if (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
@@ -95,23 +106,23 @@ class TNomenclature extends TObjetStd
 
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
 			$totalPRC+= $det->charged_price;
-			
+
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP');
 				$totalPR_PMP+= $det->calculate_price_pmp ;
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$totalPRC_PMP+= $det->charged_price_pmp;
-				
+
 				if(!empty($conf->of->enabled)) {
 					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF');
 					$totalPR_OF+= $det->calculate_price_of ;
 					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
 					$totalPRC_OF+= $det->charged_price_of;
 				}
-				
-				
+
+
 			}
-			
+
 		}
 		$this->totalPR = $totalPR;
 		$this->totalPRC = $totalPRC;
@@ -126,15 +137,15 @@ class TNomenclature extends TObjetStd
 		$total_mo = $total_mo_of = 0;
 		foreach($this->TNomenclatureWorkstation as &$ws) {
 			list($ws->nb_hour_calculate, $ws->calculate_price) = $ws->getPrice($PDOdb, $coef_qty_price);
-			
+
 			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
-			
+
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
 			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF');
 				$total_mo_of+=empty($ws->price) ? $ws->calculate_price_of : $ws->price;
 			}
-			
-			
+
+
 
 		}
 		$this->totalMO = $total_mo;
@@ -145,14 +156,14 @@ class TNomenclature extends TObjetStd
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 		$this->totalPV = $this->totalPRCMO * $marge->tx_object;
-		
+
 		if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
 			$this->totalPRCMO_OF = $this->totalMO_OF + $this->totalPRC_OF;
-	
+
 			$this->totalPV_PMP = $this->totalPRCMO_PMP * $marge->tx_object;
 			$this->totalPV_OF = $this->totalPRCMO_OF * $marge->tx_object;
-			
+
 		}
 
 		return $coef_qty_price;
@@ -243,6 +254,10 @@ class TNomenclature extends TObjetStd
 		}
 		else {
 
+			global $langs;
+			
+			setEventMessage($langs->trans('CantAddProductBecauseOfAnInfiniteLoop', 'errors'));
+
 			$det->to_delete = true;
 			$this->save($PDOdb);
 
@@ -252,7 +267,7 @@ class TNomenclature extends TObjetStd
 
 	function infinitLoop(&$PDOdb, $level = 1) {
 		global $conf;
-		return false;
+		
 		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($level > $max_level) return true;
 
@@ -367,7 +382,7 @@ class TNomenclature extends TObjetStd
         $res = false;
         if($obj = $PDOdb->Get_line()) {
             $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
-           
+
         }
 
         $this->load_original($PDOdb, $fk_product, $qty);
@@ -578,7 +593,7 @@ class TNomenclatureDet extends TObjetStd
     }
 
 	function getPrice(&$PDOdb, $qty, $type='') {
-		
+
 		if($type == 'PMP') {
 			return $this->getPMPPrice();
 		}
@@ -586,39 +601,39 @@ class TNomenclatureDet extends TObjetStd
 			return $this->getOFPrice($PDOdb);
 		}
 		else{
-			return $this->getSupplierPrice($PDOdb, $qty, true);	
+			return $this->getSupplierPrice($PDOdb, $qty, true);
 		}
-		
+
 	}
 
 	function getOFPrice(&$PDOdb) {
 		global $conf;
-		if(empty($conf->of->enabled)) return 0; 
-	
-	
+		if(empty($conf->of->enabled)) return 0;
+
+
 		$PDOdb->Execute("SELECT AVG(pmp) as pmp
-                FROM ".MAIN_DB_PREFIX."assetOf_line 
+                FROM ".MAIN_DB_PREFIX."assetOf_line
                 WHERE type='NEEDED' AND fk_product=".$this->fk_product." AND date_maj>=DATE_SUB(NOW(), INTERVAL 6 MONTH) AND pmp>0");
-				
+
 		if($obj = $PDOdb->Get_line()) {
 			return (float)$obj->pmp;
-			
+
 		}
-		
+
 		return 0;
-		
+
 	}
 
 	function getPMPPrice() {
 		global $db,$conf,$user,$langs;
-		
+
 		dol_include_once('/product/class/product.class.php');
-		
+
 		$p=new Product($db);
 		$p->fetch($this->fk_product);
-		
+
 		return $p->pmp;
-		
+
 	}
 
 	/*
@@ -626,9 +641,13 @@ class TNomenclatureDet extends TObjetStd
 	 */
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true) {
         global $db,$conf;
-		
+
+        if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
+        	$qty=1;
+        }
+
 		$price_supplier = $child_price = 0;
-		
+
         $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
                 WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
 
@@ -651,6 +670,8 @@ class TNomenclatureDet extends TObjetStd
 
 			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
 			if($n!==false) {
+				$n->nested_price_level = $this->nested_price_level + 1;
+				
 				$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
 
 				$child_price = $n->totalPRCMO / $qty;
@@ -660,7 +681,7 @@ class TNomenclatureDet extends TObjetStd
 
 		if(empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)) return empty($price_supplier) ? $child_price : $price_supplier;
 		else  return empty($child_price) ? $price_supplier : $child_price;
-		
+
     }
 
 	//renvoi la nomenclature par defaut du produit de la ligne
@@ -718,30 +739,30 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->{OBJETSTD_DATEUPDATE}=time();
 
     }
-	
+
 	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='') {
-		global $conf;	
-			
+		global $conf;
+
 		$nb_hour = 0;
 		$price = 0;
-		
+
 		$nb_hour = $this->nb_hour_prepare + ($this->nb_hour_manufacture * $coef_qty_price);
-		
+
 		if($type == 'OF' && !empty($conf->of->enabled)) {
-		
+
 			$PDOdb->Execute("SELECT SUM(thm * nb_hour) / SUM(nb_hour) as thm
-	                FROM ".MAIN_DB_PREFIX."asset_workstation_of  
+	                FROM ".MAIN_DB_PREFIX."asset_workstation_of
 	                WHERE fk_asset_workstation=".$this->fk_workstation." AND date_maj>=DATE_SUB(NOW(), INTERVAL 6 MONTH) AND thm>0");
-					
+
 			if($obj = $PDOdb->Get_line()) {
 				$price = $obj->thm * $nb_hour;
 			}
-		
+
 		}
 		else{
 			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour;
 		}
-		
+
 		return array( $nb_hour , $price );
 	}
 
