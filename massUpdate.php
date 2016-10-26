@@ -47,17 +47,20 @@
 			foreach($Tab as &$row) {
 				
 				$p=new Product($db);
-				$p->fetch($row->fk_object);
 				
-				$bc = (empty($bc) || $bc == 'pair') ? 'impair' : 'pair';
-				
-				echo '<tr class="'.$bc.'">
-					<td>'.$p->getNomUrl(1).'</td>
-					<td>'.$TCoef[$row->code_type]->label.'</td>
-					<td>'.price($row->qty).'</td>
-					<td>'.price($row->qty * ( (100 +  $coef) / 100)  ).'</td>
-				</tr>
-				';
+				if($row->fk_object>0 && $p->fetch($row->fk_object)>0) {
+					$bc = (empty($bc) || $bc == 'pair') ? 'impair' : 'pair';
+					
+					echo '<tr class="'.$bc.'">
+						<td>'.$p->getNomUrl(1).'</td>
+						<td>'.$TCoef[$row->code_type]->label.'</td>
+						<td>'.price($row->qty).'</td>
+						<td>'.price($row->qty * ( (100 +  $coef) / 100)  ).'</td>
+					</tr>
+					';
+					
+					
+				}
 				
 				
 				
