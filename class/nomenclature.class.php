@@ -722,6 +722,7 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->add_champs('fk_workstation,fk_nomenclature,rang,unifyRang',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
+		$this->add_champs('nb_days_before_beginning',array('type'=>'integer'));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
 
         $this->_init_vars();

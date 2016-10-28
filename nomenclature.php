@@ -669,6 +669,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                <tr class="liste_titre">
                    <!--<td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>-->
                    <td class="liste_titre" colspan="2"><?php echo $langs->trans('Worstations'); ?></td>
+                   <td class="liste_titre"><?php echo $langs->trans('nb_days_before_beginning'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('QtyPrepare'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('QtyFabrication'); ?></td>
                    <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
@@ -702,6 +703,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 echo $ws->workstation->getNomUrl(1);
                                 echo $formCore->zonetexte('', 'TNomenclatureWorkstation['.$k.'][note_private]', $ws->note_private, 80, 1, ' style="width:95%;"');
                            ?></td>
+                           <td ><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_days_before_beginning]', $ws->nb_days_before_beginning, 7,100) ?></td>
                            <td ><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_prepare]', $ws->nb_hour_prepare, 7,100) ?></td>
                            <td ><?php
                            		echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100);
