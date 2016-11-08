@@ -203,6 +203,15 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED');
 print '</td></tr>';
 
+if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED)) {
+	$var=!$var;
+	print '<tr '.$bc[$var].'>';
+	print '<td> &raquo; '.$langs->trans('NOMENCLATURE_PERSO_PRICE_APPLY_QTY').'</td>';
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="center" width="300">';
+	print ajax_constantonoff('NOMENCLATURE_PERSO_PRICE_APPLY_QTY');
+	print '</td></tr>';
+}
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans('NOMENCLATURE_HIDE_ADVISED_PRICE').'</td>';
