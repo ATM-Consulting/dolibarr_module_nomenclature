@@ -17,6 +17,7 @@ nomenclatureQtyReference=Qté de référence
 WillUseProductWorkstationIfNotSpecified=Utilisera la définition globale du produit si non précisée
 QtyPrepare=Temps de préparation
 QtyFabrication=Temps de fabrication
+nb_days_before_beginning=Délai avant démarrage
 Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
