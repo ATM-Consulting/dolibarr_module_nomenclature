@@ -300,7 +300,10 @@ var_dump( $object_type,$fk_product,$qty , $nomenclature->TNomenclatureAll);
 					}
 					echo '<div>';
 						echo '<div class="label">'.($line->unifyRang+1).'. '. $product->getNomUrl(1).' '.$product->label.'</div>';
-						echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" /></div>';
+						echo '<div class="qty"><input rel="qty" value="'.$line->qty.'" class="flat qty clicable" size="5" />';
+						if($qty > 1) echo '&nbsp;(x '.$qty.')';
+						echo '</div>';
+						
 					echo '</div>';
 						_drawnomenclature($product->id, 'product',$product->id,$line->qty * $qty,$level+1);		
 					echo '</li>';
@@ -315,6 +318,7 @@ var_dump( $object_type,$fk_product,$qty , $nomenclature->TNomenclatureAll);
 					echo '<div class="qtyws" >
 						<input rel="nb_hour_prepare" value="'.$line->nb_hour_prepare.'" class="flat qty clicable" size="5" title="Heure(s) de préparation" />
 						<input rel="nb_hour_manufacture" value="'.$line->nb_hour_manufacture.'" class="flat qty clicable" size="5" title="Heure(s) de fabrication" />';
+					if($qty > 1) echo '&nbsp;(x '.$qty.')';
 					echo '</div>
 				</div>';
 				echo '</li>';
