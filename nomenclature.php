@@ -382,7 +382,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	<script type="text/javascript">
 	$(document).ready(function() {
 		$("#det-table>tbody").sortable({
-			placeholder: "ui-state-highlight"
+			handle:".handler"
+			,placeholder: "ui-state-highlight"
 			,stop:function(event,ui) {
 				var sorted = $("#det-table>tbody").sortable( "toArray", { attribute: "rowid" } );
 
@@ -398,7 +399,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 			}
 		});
 		$("#workstation-table>tbody").sortable({
-			placeholder: "ui-state-highlight"
+			handle:".handler"
+			,placeholder: "ui-state-highlight"
 			,stop:function(event,ui) {
 				var sorted = $("#workstation-table>tbody").sortable( "toArray", { attribute: "rowid" } );
 
@@ -460,6 +462,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></td><?php
                            }
                            ?>
+                           <td class="liste_titre">&nbsp;</td>
                        </tr>
                        </thead>
                        <tbody>
@@ -598,6 +601,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 	echo '</td>';
 	                            }
                                ?>
+                               <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
+									<?php echo img_picto('Move','grip'); ?>
+									</a>
+								</td>
                            </tr>
                            <?php
 
@@ -678,7 +686,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                  	?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php }
 
                  ?>
-
+                 <td class="liste_titre">&nbsp;</td>
                </tr>
                </thead>
                <tbody>
@@ -733,6 +741,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                           echo '</td>';
 	                      }
                        ?>
+                               <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
+									<?php echo img_picto('Move','grip'); ?>
+									</a>
+								</td>
                        </tr>
 
                        <?php
