@@ -671,7 +671,14 @@ class TNomenclatureDet extends TObjetStd
             }
 
         }
-
+		
+		// Si aucun prix fournisseur de disponible
+		if (empty($price_supplier) && (double) DOL_VERSION >= 4.0)
+		{
+			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
+			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
+		}
+		
 		if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
 
 			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
