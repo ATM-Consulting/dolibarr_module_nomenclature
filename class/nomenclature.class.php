@@ -51,7 +51,7 @@ class TNomenclature extends TObjetStd
         }
     }
 
-	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type) {
+	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
 
 		global $db,$langs,$conf;
 
@@ -73,15 +73,15 @@ class TNomenclature extends TObjetStd
                	dol_include_once('/comm/propal/class/propal.class.php');
                	dol_include_once('/societe/class/societe.class.php');
 				$object = new Propal($db);
-	  		 	$object->fetch($fk_object);
+	  		 	$object->fetch($fk_origin);
 				$object->fetch_thirdparty();
 				$object_type_string = 'propal';
-               	break;
+				break;
 
         }
 
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
-		if(!empty($object)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
+		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
@@ -924,6 +924,23 @@ class TNomenclatureCoefObject extends TObjetStd
 		return $marge;
 	}
 
+	static function deleteCoefsObject(&$PDOdb, $fk_object, $type_object) {
+		
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid 
+				FROM ".MAIN_DB_PREFIX."nomenclature_coef_object
+				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
+				");
+		
+		foreach($Tab as &$row) {
+			
+			$c = new TNomenclatureCoefObject;
+			$c->load($PDOdb, $row->rowid);
+			$c->delete($PDOdb);
+			
+		}
+		
+	}
+	
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
@@ -931,7 +948,7 @@ class TNomenclatureCoefObject extends TObjetStd
 				WHERE fk_object = '.(int)$object->id.'
 				AND type_object = "'.$type_object.'"';
 /*				AND entity IN('.getEntity('nomenclature').')';*/
-
+//var_dump($sql);exit;
 		$PDOdb->Execute($sql);
 		$TRes = $PDOdb->Get_All();
 

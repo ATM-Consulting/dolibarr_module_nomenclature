@@ -37,7 +37,7 @@ addWorkstation=Ajouter un poste de charge
 AddWorkstation=Ajouter un poste de charge
 
 ApplyNomenclaturePrice=Appliquer le prix de vente
-ApplyNewCoefToObjectLine=Appliquer les coefficients aux lignes
+ApplyNewCoefToObjectLine=Recalculer le prix de vente des lignes
 CloneNomenclatureFromProduct=Importer nomenclature 
 NomenclatureCloned=Nomenclature(s) importée(s)
 
@@ -102,3 +102,5 @@ NOMENCLATURE_USE_QTYREF_TO_ONE=Toujorus utilisé la quanté de référence à 1 
 
 CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela créé une boucle infinie
 SetPriceInfiniteLoop=Boucle infinie détectée dans la récupération du prix
+
+DeleteSpecificCoef=Supprimer les coef. spécifiques
