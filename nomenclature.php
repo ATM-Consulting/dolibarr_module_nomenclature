@@ -358,7 +358,7 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user;
 
-	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type);
+	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
