@@ -645,7 +645,7 @@ class TNomenclatureDet extends TObjetStd
 	/*
 	 * Retourne le prix unitaire en fonction de la quantité commandé
 	 */
-    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true) {
+    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false) {
         global $db,$conf;
 
         if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
@@ -654,43 +654,51 @@ class TNomenclatureDet extends TObjetStd
 
 		$price_supplier = $child_price = 0;
 
-        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
-                WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
+		if (!$force_cost_price)
+		{
+			$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
 
-        if($obj = $PDOdb->Get_line()) {
-            $price_supplier = $obj->price / $obj->quantity;
-        }
+			if($obj = $PDOdb->Get_line()) {
+				$price_supplier = $obj->price / $obj->quantity;
+			}
 
-        if($searchforhigherqtyifnone && empty($price_supplier)) {
+			if($searchforhigherqtyifnone && empty($price_supplier)) {
 
-            $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
-                    WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
+				$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
 
-            if($obj = $PDOdb->Get_line()) {
-                $price_supplier = $obj->price / $obj->quantity;
-            }
+				if($obj = $PDOdb->Get_line()) {
+					$price_supplier = $obj->price / $obj->quantity;
+				}
 
-        }
+			}
+		}
+        
 		
 		// Si aucun prix fournisseur de disponible
-		if (empty($price_supplier) && (double) DOL_VERSION >= 4.0)
+		if ((empty($price_supplier) && (double) DOL_VERSION >= 4.0) || $force_cost_price)
 		{
 			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
 			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
 		}
 		
-		if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
+		if (!$force_cost_price)
+		{
+			if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
 
-			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
-			if($n!==false) {
-				$n->nested_price_level = $this->nested_price_level + 1;
-				
-				$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
+				$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
+				if($n!==false) {
+					$n->nested_price_level = $this->nested_price_level + 1;
 
-				$child_price = $n->totalPRCMO / $qty;
-				//var_dump($child_price,$n);exit;
-			}
+					$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
+
+					$child_price = $n->totalPRCMO / $qty;
+					//var_dump($child_price,$n);exit;
+				}
+			}	
 		}
+		
 
 		if(empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)) return empty($price_supplier) ? $child_price : $price_supplier;
 		else  return empty($child_price) ? $price_supplier : $child_price;
