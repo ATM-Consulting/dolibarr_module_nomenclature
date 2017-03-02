@@ -34,7 +34,7 @@ function _card(&$PDOdb) {
 	
 	$formCore=new TFormCore('auto','formImport','post',true);
 	
-	echo $formCore->fichier('Fichier source'.img_help(1, 'Numéro nomenclature,Id produit, Id Composant, Qté, Qté de référence, Code type') , 'file1', '', 40);
+	echo $formCore->fichier('Fichier source'.img_help(1, 'Numéro nomenclature,Ref produit, Ref Composant, Qté, Qté de référence, Code type (MO pour Poste de travail)') , 'file1', '', 40);
 	echo $formCore->btsubmit('Voir', 'bt_view');
 	
 	_import_to_session();
@@ -59,27 +59,39 @@ function _show_tab_session(&$PDOdb) {
 	foreach($Tab as $fk_product=>$TNomenclature) {
 		
 		$p=new Product($db);	
-		if($p->fetch($fk_product)<=0) continue;
+		if($p->fetch(0,$fk_product)<=0) continue;
 		
 		echo '<hr />'.$p->getNomUrl(1).' - '.$p->label;
 			
 		foreach($TNomenclature as $TData) {
 			
 			$n=new TNomenclature;
-			$n->fk_object = $fk_product;
-			$n->type_object = 'product';
+			$n->fk_object = $p->id;
+			$n->object_type = 'product';
 			
 			foreach($TData as $data) {
 				if(!empty($data['qty_ref']))$n->qty_reference = (double)$data['qty_ref'];
 				
-				$p_compo=new Product($db);	
-				if($p_compo->fetch($data['fk_product_composant'])<=0) continue;
+				if($data['type'] == 'MO') {
+					$w = new TWorkstation();
+					$w->loadBy($PDOdb, $data['fk_product_composant'], 'code');
+					
+					$k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
+					$n->TNomenclatureWorkstation[$k]->fk_workstation = $w->getId();
+					$n->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $data['qty'];
+					$n->TNomenclatureWorkstation[$k]->rang = $k+1;
+					$n->TNomenclatureWorkstation[$k]->workstation = $w;
+				} else {
+					$p_compo=new Product($db);	
+					if($p_compo->fetch(0,$data['fk_product_composant'])<=0) continue;
 				
-				$k = $n->addChild($PDOdb, 'TNomenclatureDet');
-				$n->TNomenclatureDet[$k]->fk_product = $data['fk_product_composant'];
-				$n->TNomenclatureDet[$k]->qty = $data['qty'];
-				$n->TNomenclatureDet[$k]->code_type = $data['type'];
-				$n->TNomenclatureDet[$k]->product = $p_compo;
+					$k = $n->addChild($PDOdb, 'TNomenclatureDet');
+					$n->TNomenclatureDet[$k]->fk_product = $p_compo->id;
+					$n->TNomenclatureDet[$k]->qty = $data['qty'];
+					$n->TNomenclatureDet[$k]->code_type = $data['type'];
+					$n->TNomenclatureDet[$k]->product = $p_compo;
+				}
+				
 			}
 			
 			if($save) $n->save($PDOdb);
@@ -112,12 +124,24 @@ function _show_nomenclature(&$n) {
 	
 	echo '<table class="border" width="100%"><tr class="liste_titre"><td>Type</td><td>Composant</td><td>Qté</td></tr>';
 	
+	// Components
 	foreach($n->TNomenclatureDet as &$det) {
 		
 		echo '<tr>
 			<td width="10%">'.$det->code_type.'</td>
 			<td width="70%">'.$det->product->getNomUrl(1).' - '.$det->product->label.'</td>
 			<td  width="20%" align="right">'.price($det->qty).'</td>
+		</tr>';
+		
+	}
+	
+	// Workstations
+	foreach($n->TNomenclatureWorkstation as &$wst) {
+		
+		echo '<tr>
+			<td width="10%">'.$wst->workstation->code.'</td>
+			<td width="70%">'.$wst->workstation->getNomUrl(1).'</td>
+			<td  width="20%" align="right">'.$wst->nb_hour_manufacture.'</td>
 		</tr>';
 		
 	}
@@ -144,7 +168,7 @@ function _import_to_session() {
 			$num_nomenclature = (int)$row[0];
 			if(empty($num_nomenclature)) $num_nomenclature = 1;
 			
-			$fk_product = (int)$row[1];
+			$fk_product = trim($row[1]);
 			if(empty($fk_product)) continue;
 			
 			$fk_product_composant = $row[2]; // produit ou code WS
@@ -165,7 +189,6 @@ function _import_to_session() {
 			);
 			
 		}
-		
 		
 	}
 	
