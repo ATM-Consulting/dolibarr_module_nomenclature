@@ -677,7 +677,7 @@ class TNomenclatureDet extends TObjetStd
         
 		
 		// Si aucun prix fournisseur de disponible
-		if ((empty($price_supplier) && (double) DOL_VERSION >= 4.0) || $force_cost_price)
+		if ((empty($price_supplier) && (double) DOL_VERSION >= 3.9) || $force_cost_price)
 		{
 			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
 			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
