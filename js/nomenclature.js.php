@@ -49,10 +49,10 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                        		var url = false;
                        		switch(object_type) {
 							    case 'propal':
-							        url = "<?php echo dol_buildpath('/comm/propal.php?id=', 2); ?>"+fk_origin;
+							        url = "<?php echo dol_buildpath('/comm/propal.php?id=', 1); ?>"+fk_origin;
 							        break;
 							    case 'commande':
-							        url = "<?php echo dol_buildpath('/commande/card.php?id=', 2); ?>"+fk_origin;
+							        url = "<?php echo dol_buildpath('/commande/card.php?id=', 1); ?>"+fk_origin;
 							        break;
 							} 
 							

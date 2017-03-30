@@ -10,7 +10,7 @@ $action = GETPOST('action', 'alpha');
 if(GETPOST('deleteSpecific')) {
 	
 	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, GETPOST('id'), $fiche);
-	header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&id='.GETPOST('id', 'int').'&fiche='.$fiche, 2));
+	header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&id='.GETPOST('id', 'int').'&fiche='.$fiche, 1));
 	exit;
 	
 }
@@ -23,7 +23,7 @@ switch ($fiche) {
 		if ($action == 'updatecoef')
 		{
 			$res = _updateCoef($PDOdb, $db, $conf, $langs, $user);
-			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 2));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 1));
 			exit;
 		}
 		
@@ -39,7 +39,7 @@ switch ($fiche) {
 			
 			if (GETPOST('update_line_price')) _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
 			
-			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?id='.GETPOST('id', 'int').'&fiche=propal', 2));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?id='.GETPOST('id', 'int').'&fiche=propal', 1));
 			exit;
 		}
 		
@@ -53,7 +53,7 @@ switch ($fiche) {
 		if ($action == 'updatecoef')
 		{
 			_updateCoef($PDOdb, $db, $conf, $langs, $user);
-			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 2));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 1));
 			exit;
 		}
 		
