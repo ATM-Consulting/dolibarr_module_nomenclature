@@ -104,3 +104,7 @@ CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela 
 SetPriceInfiniteLoop=Boucle infinie détectée dans la récupération du prix
 
 DeleteSpecificCoef=Supprimer les coef. spécifiques
+
+nomenclatureRead=Consulter les nomenclatures
+nomenclatureWrite=Créer/modifier les nomenclatures
+nomenclatureShowPrice=Voir le prix du détail d'une nomenclature
