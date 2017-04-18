@@ -309,7 +309,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 			'qty'=>'number'
 		)
 		,'link'=>array(
-			'Id'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' Nomenclature</a>'
+			'Id'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' '.$langs->trans('Nomenclature').'</a>'
 		)
 		,'liste'=>array(
 			'titre'=>$langs->trans('ListUseNomenclaure')
