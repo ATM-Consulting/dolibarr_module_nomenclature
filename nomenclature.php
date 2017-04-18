@@ -229,7 +229,7 @@ $db->close();
 function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 	global $user, $langs, $db, $conf;
 
-	llxHeader('','Nomenclature');
+	llxHeader('',$langs->trans('Nomenclature'));
 
     $head=product_prepare_head($product, $user);
 	$titre=$langs->trans('Nomenclature');
