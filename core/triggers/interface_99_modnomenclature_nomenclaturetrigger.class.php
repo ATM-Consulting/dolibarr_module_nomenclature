@@ -130,10 +130,8 @@ class Interfacenomenclaturetrigger
 			$this->_setPrice($PDOdb, $object, $object->fk_facture, 'facture');
 		} elseif ($action == 'LINEORDER_INSERT') {
 
-			if (! $conf->nomenclature->enabled)
-				return 0;
-			if ($object->product_type == 9)
-				return 0;
+			if (empty($conf->nomenclature->enabled)) return 0;
+			if ($object->product_type == 9)	return 0;
 
 				// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
 			$origin = GETPOST('origin');
@@ -146,27 +144,21 @@ class Interfacenomenclaturetrigger
 				$propal = new Propal($db);
 				$propal->fetch($origin_id);
 				$fk_line_origin = 0;
-
 				foreach ( $propal->lines as $line ) {
-					if ($line->product_type == $object->product_type && $line->qty == $object->qty && $line->desc == $object->desc && $line->fk_product == $object->fk_product && $line->tva_tx == $object->tva_tx && $line->total_ttc == $object->total_ttc) {
+					if ($line->rang == $object->rang) {
 						$fk_line_origin = $line->id;
 						break;
 					}
 				}
-
-				// On cherche la nomenclature de type propal, ayant pour parent une nomenclature du produit de la ligne de propal
+				
+				// On cherche la nomenclature de la ligne de propal originale
+				// si pas de perso, alors ce sera celle du produit lié
 				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'nomenclature
 				WHERE (
 					object_type = "propal"
 					AND fk_object = ' . $fk_line_origin . '
 			  	)
-				OR fk_nomenclature_parent IN (
-						SELECT rowid
-						FROM ' . MAIN_DB_PREFIX . 'nomenclature
-						WHERE object_type = "product"
-						AND fk_object = ' . ( int ) $object->fk_product . '
-						ORDER BY rowid ASC
-				)';
+				';
 
 				$resql = $db->query($sql);
 				$TIDNomenclature = array ();
