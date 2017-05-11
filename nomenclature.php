@@ -231,7 +231,7 @@ $db->close();
 function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 	global $user, $langs, $db, $conf;
 
-	llxHeader('','Nomenclature');
+	llxHeader('',$langs->trans('Nomenclature'));
 
     $head=product_prepare_head($product, $user);
 	$titre=$langs->trans('Nomenclature');
@@ -297,7 +297,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 
 	$liste = new TListviewTBS('listeUse');
 
-	$sql="SELECT n.fk_object as 'Id Nomenclature', n.fk_object, nd.qty
+	$sql="SELECT n.fk_object as 'Id', n.fk_object, nd.qty
 
 	FROM ".MAIN_DB_PREFIX."nomenclaturedet nd
 		LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (n.rowid=nd.fk_nomenclature)
@@ -311,7 +311,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 			'qty'=>'number'
 		)
 		,'link'=>array(
-			'Id Nomenclature'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' Nomenclature</a>'
+			'Id'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' '.$langs->trans('Nomenclature').'</a>'
 		)
 		,'liste'=>array(
 			'titre'=>$langs->trans('ListUseNomenclaure')
@@ -322,8 +322,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 			,'picto_search'=>img_picto('','search.png', '', 0)
 		)
 		,'title'=>array(
-			'fk_object'=>'Produit'
-			,'qty'=>'Quantité'
+			'fk_object'=>$langs->trans('product')
+			,'qty'=>$langs->trans('Qty')
+			,'Id'=>$langs->trans('Nomenclature')
 		)
 		,'eval'=>array(
 			'fk_object' => 'get_format_libelle_produit(@fk_object@)'
@@ -360,7 +361,7 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user, $hookmanager;
 
-	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type);
+	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
@@ -384,7 +385,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	<script type="text/javascript">
 	$(document).ready(function() {
 		$("#det-table>tbody").sortable({
-			placeholder: "ui-state-highlight"
+			handle:".handler"
+			,placeholder: "ui-state-highlight"
 			,stop:function(event,ui) {
 				var sorted = $("#det-table>tbody").sortable( "toArray", { attribute: "rowid" } );
 
@@ -400,7 +402,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 			}
 		});
 		$("#workstation-table>tbody").sortable({
-			placeholder: "ui-state-highlight"
+			handle:".handler"
+			,placeholder: "ui-state-highlight"
 			,stop:function(event,ui) {
 				var sorted = $("#workstation-table>tbody").sortable( "toArray", { attribute: "rowid" } );
 
@@ -462,6 +465,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></td><?php
                            }
                            ?>
+                           <td class="liste_titre">&nbsp;</td>
                        </tr>
                        </thead>
                        <tbody>
@@ -600,6 +604,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 	echo '</td>';
 	                            }
                                ?>
+                               <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
+									<?php echo img_picto('Move','grip'); ?>
+									</a>
+								</td>
                            </tr>
                            <?php
 
@@ -680,7 +689,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                  	?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php }
 
                  ?>
-
+                 <td class="liste_titre">&nbsp;</td>
                </tr>
                </thead>
                <tbody>
@@ -735,6 +744,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                           echo '</td>';
 	                      }
                        ?>
+                               <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
+									<?php echo img_picto('Move','grip'); ?>
+									</a>
+								</td>
                        </tr>
 
                        <?php

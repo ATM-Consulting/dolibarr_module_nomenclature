@@ -51,7 +51,7 @@ class TNomenclature extends TObjetStd
         }
     }
 
-	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type) {
+	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
 
 		global $db,$langs,$conf;
 
@@ -73,15 +73,15 @@ class TNomenclature extends TObjetStd
                	dol_include_once('/comm/propal/class/propal.class.php');
                	dol_include_once('/societe/class/societe.class.php');
 				$object = new Propal($db);
-	  		 	$object->fetch($fk_object);
+	  		 	$object->fetch($fk_origin);
 				$object->fetch_thirdparty();
 				$object_type_string = 'propal';
-               	break;
+				break;
 
         }
 
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
-		if(!empty($object)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
+		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
@@ -645,7 +645,7 @@ class TNomenclatureDet extends TObjetStd
 	/*
 	 * Retourne le prix unitaire en fonction de la quantité commandé
 	 */
-    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true) {
+    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false) {
         global $db,$conf;
 
         if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
@@ -654,36 +654,51 @@ class TNomenclatureDet extends TObjetStd
 
 		$price_supplier = $child_price = 0;
 
-        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
-                WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
+		if (!$force_cost_price)
+		{
+			$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
 
-        if($obj = $PDOdb->Get_line()) {
-            $price_supplier = $obj->price / $obj->quantity;
-        }
+			if($obj = $PDOdb->Get_line()) {
+				$price_supplier = $obj->price / $obj->quantity;
+			}
 
-        if($searchforhigherqtyifnone && empty($price_supplier)) {
+			if($searchforhigherqtyifnone && empty($price_supplier)) {
 
-            $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
-                    WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
+				$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
 
-            if($obj = $PDOdb->Get_line()) {
-                $price_supplier = $obj->price / $obj->quantity;
-            }
+				if($obj = $PDOdb->Get_line()) {
+					$price_supplier = $obj->price / $obj->quantity;
+				}
 
-        }
-
-		if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
-
-			$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
-			if($n!==false) {
-				$n->nested_price_level = $this->nested_price_level + 1;
-				
-				$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
-
-				$child_price = $n->totalPRCMO / $qty;
-				//var_dump($child_price,$n);exit;
 			}
 		}
+        
+		
+		// Si aucun prix fournisseur de disponible
+		if ((empty($price_supplier) && (double) DOL_VERSION >= 3.9) || $force_cost_price)
+		{
+			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
+			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
+		}
+		
+		if (!$force_cost_price)
+		{
+			if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
+
+				$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
+				if($n!==false) {
+					$n->nested_price_level = $this->nested_price_level + 1;
+
+					$n->setPrice($PDOdb, $qty, $this->fk_product, 'product');
+
+					$child_price = $n->totalPRCMO / $qty;
+					//var_dump($child_price,$n);exit;
+				}
+			}	
+		}
+		
 
 		if(empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)) return empty($price_supplier) ? $child_price : $price_supplier;
 		else  return empty($child_price) ? $price_supplier : $child_price;
@@ -917,6 +932,23 @@ class TNomenclatureCoefObject extends TObjetStd
 		return $marge;
 	}
 
+	static function deleteCoefsObject(&$PDOdb, $fk_object, $type_object) {
+		
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid 
+				FROM ".MAIN_DB_PREFIX."nomenclature_coef_object
+				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
+				");
+		
+		foreach($Tab as &$row) {
+			
+			$c = new TNomenclatureCoefObject;
+			$c->load($PDOdb, $row->rowid);
+			$c->delete($PDOdb);
+			
+		}
+		
+	}
+	
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
@@ -924,7 +956,7 @@ class TNomenclatureCoefObject extends TObjetStd
 				WHERE fk_object = '.(int)$object->id.'
 				AND type_object = "'.$type_object.'"';
 /*				AND entity IN('.getEntity('nomenclature').')';*/
-
+//var_dump($sql);exit;
 		$PDOdb->Execute($sql);
 		$TRes = $PDOdb->Get_All();
 

@@ -12,7 +12,6 @@ if(!defined('INC_FROM_DOLIBARR')) {
 
 global $db;
 
-
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 
 if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE) || isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE)) 

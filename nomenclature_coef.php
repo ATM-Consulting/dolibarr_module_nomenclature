@@ -7,6 +7,14 @@ $PDOdb = new TPDOdb;
 $fiche = GETPOST('fiche', 'alpha');
 $action = GETPOST('action', 'alpha');
 
+if(GETPOST('deleteSpecific')) {
+	
+	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, GETPOST('id'), $fiche);
+	header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&id='.GETPOST('id', 'int').'&fiche='.$fiche, 1));
+	exit;
+	
+}
+
 switch ($fiche) {
 	case 'tiers':
 		dol_include_once('/societe/class/societe.class.php');
@@ -15,7 +23,7 @@ switch ($fiche) {
 		if ($action == 'updatecoef')
 		{
 			$res = _updateCoef($PDOdb, $db, $conf, $langs, $user);
-			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 2));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 1));
 			exit;
 		}
 		
@@ -31,7 +39,7 @@ switch ($fiche) {
 			
 			if (GETPOST('update_line_price')) _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
 			
-			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?id='.GETPOST('id', 'int').'&fiche=propal', 2));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?id='.GETPOST('id', 'int').'&fiche=propal', 1));
 			exit;
 		}
 		
@@ -45,7 +53,7 @@ switch ($fiche) {
 		if ($action == 'updatecoef')
 		{
 			_updateCoef($PDOdb, $db, $conf, $langs, $user);
-			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 2));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&fiche=tiers', 1));
 			exit;
 		}
 		
@@ -126,6 +134,11 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
     echo "</table>\n";
 	
 	echo '<div class="tabsAction">';
+	
+	if($coef->rowid>0) {
+		echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
+	}
+	
 	echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
 
 	if ($fiche == 'propal') echo '<br /><div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
@@ -190,42 +203,16 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 			break;
 	}
 	
-	//Etape 1 => récupérer les coefs
-	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal'); //Coef de l'objet
-	$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
-	
-	//Etape 2 => mettre à jour le price de chaque ligne de nomenclature
 	foreach ($object->lines as $line)
-	{//var_dump($marge, 'toto', $object);
+	{
 		if ($line->product_type == 9) continue;
 		
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
-		
-		$total_price = 0;
-		$total_mo = 0;
-		foreach ($nomenclature->TNomenclatureDet as $k => $det)
-		{
-			$price = $det->getSupplierPrice($PDOdb, 1,true) * $det->qty;
+		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
 
-			if (!empty($TCoefObject[$det->code_type])) $coef = $TCoefObject[$det->code_type]->tx_object;
-			else $coef = 1;
-			
-			$det->price = $price * $coef;
-			$det->save($PDOdb);
-			
-			$total_price += $det->price;
-		}
-		
-		//Etape 3 => prendre en compte le cout de revient des postes de travails (Non pris en compte pour le moment)
-		foreach ($nomenclature->TNomenclatureWorkstation as $k => $ws)
-		{
-			$price = ($ws->workstation->thm + $ws->workstation->thm_machine) * $ws->nb_hour; 
-			$total_mo+=$price;
-		}
-
-		$price_buy = $total_mo+$total_price;
-		$price_to_sell = $price_buy * $marge->tx_object;
+		$price_buy = $nomenclature->totalMO+$nomenclature->totalPRC;
+		$price_to_sell = $nomenclature->totalPV / $line->qty;
 		
 		//Puis mettre à jour son prix
 		if ($object->element == 'propal')$object->updateline($line->id, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
