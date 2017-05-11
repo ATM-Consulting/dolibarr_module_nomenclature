@@ -13,6 +13,8 @@ if($conf->workstation->enabled) {
     dol_include_once('/workstation/class/workstation.class.php');
 }
 
+$hookmanager->initHooks(array('nomenclaturecard'));
+
 $langs->load("stocks");
 $langs->load("nomenclature@nomenclature");
 
@@ -287,7 +289,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 			print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" autofocus />';
 	    ?>
 	    <div class="inline-block divButAction">
-	        <input type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+	        <input id="nomenclature_bt_clone_nomenclature" type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
 	    </div>
 	</div>
 	<?php
@@ -356,7 +358,7 @@ function get_format_libelle_produit($fk_product = null) {
 }
 
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
-	global $langs, $conf, $db, $user;
+	global $langs, $conf, $db, $user, $hookmanager;
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type);
 
@@ -886,7 +888,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 	                    ?>
 		                <div class="inline-block divButAction">
-		                    <input type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+		                    <input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
 		                </div>
 
                    </div>
@@ -910,7 +912,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 							?>
 							<div class="inline-block divButAction">
-								<input type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
+								<input id="nomenclature_bt_clone_nomenclature" type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
 							</div>
 						</div>
 
@@ -928,6 +930,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    </div>
                    <?php } ?>
 
+					<?php $parameters = array(); $reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $n, $action); ?>
                 </div>
             </td>
         </tr>
