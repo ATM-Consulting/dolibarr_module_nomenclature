@@ -142,7 +142,7 @@ class TNomenclature extends TObjetStd
 
 		$total_mo = $total_mo_of = 0;
 		foreach($this->TNomenclatureWorkstation as &$ws) {
-			list($ws->nb_hour_calculate, $ws->calculate_price) = $ws->getPrice($PDOdb, $coef_qty_price);
+			list($ws->nb_hour_calculate, $ws->calculate_price) = $ws->getPrice($PDOdb, $coef_qty_price, '', $fk_origin, $this->object_type);
 
 			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
 
@@ -761,7 +761,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
     }
 
-	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='') {
+	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='', $fk_object=0, $object_type='') {
 		global $conf;
 
 		$nb_hour = 0;
@@ -781,7 +781,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		}
 		else{
-			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour;
+			$price = ($this->workstation->getThm($PDOdb, $fk_object, $object_type) + $this->workstation->thm_machine) * $nb_hour;
 		}
 
 		return array( $nb_hour , $price );
