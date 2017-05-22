@@ -3,9 +3,16 @@
 require 'config.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 
+$hookmanager->initHooks(array('nomenclature_coef'));
+
 $PDOdb = new TPDOdb;
 $fiche = GETPOST('fiche', 'alpha');
 $action = GETPOST('action', 'alpha');
+
+$object = '';
+$parameters = array('fiche' => $fiche);
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if(GETPOST('deleteSpecific')) {
 	
@@ -27,7 +34,7 @@ switch ($fiche) {
 			exit;
 		}
 		
-		_fiche_tiers($PDOdb, $db, $conf, $langs, $user);
+		_fiche_tiers($PDOdb, $db, $conf, $langs, $user, $action);
 		break;
 	case 'propal':
 		dol_include_once('/comm/propal/class/propal.class.php');
@@ -43,7 +50,7 @@ switch ($fiche) {
 			exit;
 		}
 		
-		_fiche_propal($PDOdb, $db, $conf, $langs, $user);
+		_fiche_propal($PDOdb, $db, $conf, $langs, $user, $action);
 		break;
 	
 	default:
@@ -57,11 +64,11 @@ switch ($fiche) {
 			exit;
 		}
 		
-		_fiche_tiers($PDOdb, $db, $conf, $langs, $user);
+		_fiche_tiers($PDOdb, $db, $conf, $langs, $user, $action);
 		break;
 }
 
-function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user)
+function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user, $action='')
 {
 	$id = GETPOST('socid', 'int');
 	$object = new Societe($db);
@@ -75,10 +82,10 @@ function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	dol_fiche_head($head, 'nomenclaturecoef', $titre, 0, $picto);
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'tiers');
 	
-	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("ThirdPartyName"), 'socid', 'nom', 'tiers', $id);
+	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("ThirdPartyName"), 'socid', 'nom', 'tiers', $id, $action);
 }
 
-function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user)
+function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user, $action='')
 {
 	$id = GETPOST('id', 'int');
 	$object = new Propal($db);
@@ -94,11 +101,13 @@ function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	
 	$TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal');
 	
-	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("Ref"), 'id', 'ref', 'propal', $id);
+	_print_list_coef($PDOdb, $db, $langs, $object, $TCoefObject, $langs->trans("Ref"), 'id', 'ref', 'propal', $id, $action);
 }
 
-function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id)
+function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id, $action='')
 {
+	global $hookmanager;
+	
 	$form = new Form($db);
     echo '<form action="'.$_SERVER['PHP_SELF'].'" method="POST">';
 	echo '<input type="hidden" name="id" value="'.$id.'" />';
@@ -130,6 +139,9 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 		}
 	}
 	
+	// Other attributes
+	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
+	$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	
     echo "</table>\n";
 	
@@ -142,7 +154,10 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
 
 	if ($fiche == 'propal') echo '<br /><div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
-				
+	
+	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
+	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
+			
 	echo '</div>';
 	
 	
