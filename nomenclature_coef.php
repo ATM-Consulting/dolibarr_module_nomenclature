@@ -68,7 +68,7 @@ switch ($fiche) {
 		break;
 }
 
-function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$usern, $action='')
+function _fiche_tiers(&$PDOdb, &$db, &$conf, &$langs, &$user, $action='')
 {
 	$id = GETPOST('socid', 'int');
 	$object = new Societe($db);
