@@ -248,6 +248,10 @@ class Interfacenomenclaturetrigger
 			$db->query($sql);
 
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'propal');
+			
+			$TNomenclatureWorkstationThmObject = new TNomenclatureWorkstationThmObject;
+			TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
+			
 		} elseif ($action == 'ORDER_DELETE') {
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
 		}
