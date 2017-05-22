@@ -123,15 +123,17 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
     echo '</tr>';
     
     // List of coef
-    echo '<tr style="background:#f2f2f2;"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
+	$background_title = '#f2f2f2';
+    echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
     
+	$background_line = '#eeeeff';
 	if (!empty($TCoefObject))
 	{
 		foreach ($TCoefObject as $type=>&$coef)
 		{
 			$name ='TNomenclatureCoefObject['.$type.'][tx_object]';
 			
-			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : '#eeeeff'  ).'">';
+			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : $background_line  ).'">';
 			echo '<td>&nbsp;'.$coef->label.( $coef->rowid>0 ? '' : img_help(1,$langs->trans('CoefGenericSaveForSpecific') ) ).'</td>';
 			echo '<td>'.$coef->description.'</td>';
 			echo '<td><input name="'.$name.'" value="'.$coef->tx_object.'" size="5" /></td>';
@@ -140,7 +142,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	}
 	
 	// Other attributes
-	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
+	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id, 'background_title'=>$background_title, 'background_line'=>$background_line);
 	$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	
     echo "</table>\n";
