@@ -103,3 +103,7 @@ else
  
 $o=new TNomenclatureCoefObject($db);
 $o->init_db_by_vars($PDOdb);
+
+
+$o=new TNomenclatureWorkstationThmObject;
+$o->init_db_by_vars($PDOdb);

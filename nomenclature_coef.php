@@ -15,6 +15,13 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if(GETPOST('deleteSpecific')) {
+	if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fiche == 'propal') 
+	{
+		require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+		$object = new Propal($db);
+		$object->fetch(GETPOST('id'));
+		TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
+	}
 	
 	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, GETPOST('id'), $fiche);
 	header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&id='.GETPOST('id', 'int').'&fiche='.$fiche, 1));
@@ -42,6 +49,15 @@ switch ($fiche) {
 		
 		if ($action == 'updatecoef')
 		{
+			if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
+			{
+				$object = new Propal($db);
+				$object->fetch(GETPOST('id'));
+				
+				$TNomenclatureWorkstationThmObject = GETPOST('TNomenclatureWorkstationThmObject');
+				TNomenclatureWorkstationThmObject::updateAllThmObject($PDOdb, $object, $TNomenclatureWorkstationThmObject);
+			}
+			
 			_updateCoef($PDOdb, $db, $conf, $langs, $user);
 			
 			if (GETPOST('update_line_price')) _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
@@ -106,7 +122,7 @@ function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user, $action='')
 
 function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id, $action='')
 {
-	global $hookmanager;
+	global $hookmanager,$conf;
 	
 	$form = new Form($db);
     echo '<form action="'.$_SERVER['PHP_SELF'].'" method="POST">';
@@ -138,6 +154,28 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 			echo '<td>'.$coef->description.'</td>';
 			echo '<td><input name="'.$name.'" value="'.$coef->tx_object.'" size="5" /></td>';
 			echo '</tr>';
+		}
+	}
+	
+	if ($fiche == 'propal' && !empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
+	{
+		$TNomenclatureWorkstationThmObject = TNomenclatureWorkstationThmObject::loadAllThmObject($PDOdb, $object, $object->element);
+		if (!empty($TNomenclatureWorkstationThmObject))
+		{
+			echo '<tr style="background:'.$background_title.';">';
+			echo '<td colspan="3"><b>'.$langs->trans('workstationListCustomTHM').'</b></td>';
+			echo '</tr>';
+
+			foreach ($TNomenclatureWorkstationThmObject as $thm_object)
+			{
+				$name ='TNomenclatureWorkstationThmObject['.$thm_object->fk_workstation.']';
+
+				echo '<tr style="background:'.( $thm_object->getId()>0 ? 'white' : $background_line  ).'">';
+				echo '<td>&nbsp;'.$thm_object->label.( $thm_object->getId()>0 ? '' : img_help(1,$langs->trans('ThmGenericSaveForSpecific') ) ).'</td>';
+				echo '<td>'.$thm_object->description.'</td>';
+				echo '<td><input name="'.$name.'" value="'.$thm_object->thm_object.'" size="5" /></td>';
+				echo '</tr>';
+			}
 		}
 	}
 	

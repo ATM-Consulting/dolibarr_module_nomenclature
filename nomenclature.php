@@ -99,7 +99,7 @@ else if($action==='save_nomenclature') {
 			case 'propal':
 				dol_include_once('/comm/propal/class/propal.class.php');
 				$n=new TNomenclature;
-				$n->load($PDOdb, $fk_nomenclature);
+				$n->load($PDOdb, $fk_nomenclature, false, 0 , 1, GETPOST('fk_origin', 'int'), $object_type);
 
 				$propal = new Propal($db);
 				$propal->fetch(GETPOST('fk_origin', 'int'));
@@ -156,7 +156,7 @@ else if($action==='save_nomenclature') {
 		$n=new TNomenclature;
 
 	    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
-	    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref);
+	    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, GETPOST('fk_origin'));
 
 		if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
 			$n->reinit();
@@ -217,7 +217,7 @@ if($object_type != 'product') {
     $langs->load('nomenclature@nomenclature');
 
     $n=new TNomenclature;
-    $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref);
+    $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, GETPOST('fk_origin'));
     _fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
 
 }

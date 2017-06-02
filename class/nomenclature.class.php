@@ -222,7 +222,7 @@ class TNomenclature extends TObjetStd
 
 	}
 
-	function load(&$PDOdb, $id, $loadProductWSifEmpty = false, $fk_product= 0 , $qty = 1) {
+	function load(&$PDOdb, $id, $loadProductWSifEmpty = false, $fk_product= 0 , $qty = 1, $object_type='', $fk_object_parent=0) {
 		global $conf;
 
 		$res = parent::load($PDOdb, $id);
@@ -234,6 +234,8 @@ class TNomenclature extends TObjetStd
 			$this->load_product_ws($PDOdb);
 		}
 
+		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
+		
 		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 
@@ -379,7 +381,7 @@ class TNomenclature extends TObjetStd
 
 	}
 
-	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1) {
+	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1, $fk_origin=0) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()."
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
 
@@ -387,16 +389,49 @@ class TNomenclature extends TObjetStd
 
         $res = false;
         if($obj = $PDOdb->Get_line()) {
-            $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty);
-
+            $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty, 0, 1, $object_type, $fk_origin);
         }
 
         $this->load_original($PDOdb, $fk_product, $qty);
 		$this->setAll();
 
+		$this->loadThmObject($PDOdb, $object_type, $fk_origin);
+		
         return $res;
 
     }
+	
+	function loadThmObject(&$PDOdb, $object_type, $fk_object_parent)
+	{
+		global $conf,$TNomenclatureWorkstationThmObject;
+		
+		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
+		{
+			foreach ($this->TNomenclatureWorkstation as &$nomenclatureWs)
+			{
+				if (empty($nomenclatureWs->thmobjectloaded))
+				{
+					if (empty($TNomenclatureWorkstationThmObject[$nomenclatureWs->fk_workstation]))
+					{
+						$workstationThmObject = new TNomenclatureWorkstationThmObject;
+						$workstationThmObject->loadByFkWorkstationByFkObjectByType($PDOdb, $nomenclatureWs->fk_workstation, $fk_object_parent, $object_type);
+					}
+					else
+					{
+						$workstationThmObject = $TNomenclatureWorkstationThmObject[$nomenclatureWs->fk_workstation];
+					}
+					
+					if ($workstationThmObject->getId() > 0)
+					{
+						$TNomenclatureWorkstationThmObject[$nomenclatureWs->fk_workstation] = $workstationThmObject;
+						$nomenclatureWs->workstation->thm = $workstationThmObject->thm_object;
+					}
+					
+					$nomenclatureWs->thmobjectloaded = true;
+				}
+			}
+		}
+	}
 
 	function deleteChildrenNotImported(&$PDOdb)
 	{
@@ -407,7 +442,6 @@ class TNomenclature extends TObjetStd
 	}
 
 	function load_product_ws(&$PDOdb) {
-
 		$this->TNomenclatureWorkstation=array();
 
 		$sql = "SELECT fk_workstation, nb_hour,nb_hour_prepare,nb_hour_manufacture";
@@ -802,7 +836,7 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
         parent::save($PDOdb);
     }
-
+	
 }
 
 class TNomenclatureCoef extends TObjetStd
@@ -995,4 +1029,157 @@ class TNomenclatureCoefObject extends TObjetStd
 		ksort($Tab);
 		return $Tab;
 	}
+}
+
+
+
+
+class TNomenclatureWorkstationThmObject extends TObjetStd
+{
+	function __construct()
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation_thm_object');
+
+		$this->add_champs('fk_workstation',array('type'=>'integer'));
+		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('type_object',array('type'=>'varchar', 'length'=>50, 'index'=>true));
+        $this->add_champs('thm_object',array('type'=>'float'));
+
+        $this->_init_vars();
+
+        $this->start();
+		$this->label = '';
+    }
+	
+	function loadByFkWorkstationByFkObjectByType(&$PDOdb, $fk_workstation, $fk_object_parent, $type)
+	{
+		$PDOdb->Execute('SELECT rowid FROM '.$this->get_table().' WHERE fk_object = '.$fk_object_parent.' AND fk_workstation = '.$fk_workstation.' AND type_object = "'.$type.'"');
+
+		if($obj = $PDOdb->Get_line())
+		{
+			return $this->load($PDOdb, $obj->rowid);
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Méthode pour supprimer tous les THM custom associés à la propal
+	 * 
+	 * @param type $PDOdb
+	 * @param type $fk_object
+	 * @param type $type_object
+	 */
+	static function deleteAllThmObject(&$PDOdb, $fk_object, $type_object)
+	{
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid 
+				FROM ".MAIN_DB_PREFIX."nomenclature_workstation_thm_object
+				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
+				");
+		
+		foreach($Tab as &$row)
+		{
+			$c = new TNomenclatureWorkstationThmObject;
+			$c->load($PDOdb, $row->rowid);
+			$c->delete($PDOdb);
+		}
+	}
+	
+	/**
+	 * Methode pour récupérer le tableau des THM custom associés à la propal
+	 * 
+	 * @param type $PDOdb
+	 * @param type $object
+	 * @param type $type_object
+	 * @return array of TNomenclatureWorkstationThmObject
+	 */
+	static function loadAllThmObject(&$PDOdb, &$object, $type_object)
+	{
+		$Tab = array();
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_workstation_thm_object
+				WHERE fk_object = '.(int)$object->id.'
+				AND type_object = "'.$type_object.'"';
+/*				AND entity IN('.getEntity('nomenclature').')';*/
+
+		$PDOdb->Execute($sql);
+		$TRes = $PDOdb->Get_All();
+
+		foreach ($TRes as $row)
+		{
+			$o = new TNomenclatureWorkstationThmObject;
+			$o->load($PDOdb, $row->rowid);
+
+			$ws = new TWorkstation;
+			$ws->load($PDOdb, $o->fk_workstation, false);
+			
+			$o->label = $ws->name;
+			$Tab[$o->fk_workstation] = $o;
+		}
+
+		// Récupération des fk_workstation depuis les lignes
+		dol_include_once('/nomenclature/class/nomenclature.class.php');
+		foreach ($object->lines as &$line)
+		{
+			if (!empty($line->fk_product) && $line->special_code != 9)
+			{
+				$n=new TNomenclature;
+				$n->loadByObjectId($PDOdb, $line->id, $object->element, false, $line->fk_product, $line->qty);
+				
+				foreach ($n->TNomenclatureWorkstation as &$nomenclatureWorkstation)
+				{
+					if (empty($Tab[$nomenclatureWorkstation->fk_workstation]))
+					{
+						$o = new TNomenclatureWorkstationThmObject;
+						$o->rowid = 0;
+						$o->fk_workstation = $nomenclatureWorkstation->fk_workstation;
+						$o->fk_object = $object->id;
+						$o->type_object = $object->element;
+
+						$ws = new TWorkstation;
+						$ws->load($PDOdb, $o->fk_workstation, false);
+
+						$o->label = $ws->name;
+						$o->thm_object = $ws->thm;
+						
+						$Tab[$o->fk_workstation] = $o;
+					}
+				}
+			}
+		}
+		
+		ksort($Tab);
+		return $Tab;
+	}
+	
+	/**
+	 * Methode pour mettre à jour les THM liés à l'objet (n'applique pas le nouveau THM sur les lignes du document)
+	 * 
+	 * @param type $PDOdb
+	 * @param type $object
+	 * @param type $TNomenclatureWorkstationThmObject
+	 */
+	static function updateAllThmObject(&$PDOdb, &$object, $TNomenclatureWorkstationThmObject)
+	{
+		global $langs;
+		
+		if (!empty($TNomenclatureWorkstationThmObject)) 
+		{
+			foreach ($TNomenclatureWorkstationThmObject as $fk_workstation => &$thm)
+			{
+				// TODO loadByFkWorkstation
+				$o = new TNomenclatureWorkstationThmObject;
+				$o->loadByFkWorkstationByFkObjectByType($PDOdb, $fk_workstation, $object->id, $object->element);
+				
+				$o->fk_object = $object->id;
+				$o->type_object = $object->element;
+				$o->fk_workstation = $fk_workstation;
+				$o->thm_object = $thm;
+				
+				$o->save($PDOdb);
+			}
+		}
+		
+		setEventMessages($langs->trans('workstationThmUpdated'), null);
+	}
+	
 }
