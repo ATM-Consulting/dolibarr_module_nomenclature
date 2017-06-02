@@ -222,7 +222,7 @@ class TNomenclature extends TObjetStd
 
 	}
 
-	function load(&$PDOdb, $id, $loadProductWSifEmpty = false, $fk_product= 0 , $qty = 1, $object_type='', $fk_origin=0) {
+	function load(&$PDOdb, $id, $loadProductWSifEmpty = false, $fk_product= 0 , $qty = 1, $object_type='', $fk_object_parent=0) {
 		global $conf;
 
 		$res = parent::load($PDOdb, $id);
@@ -234,7 +234,7 @@ class TNomenclature extends TObjetStd
 			$this->load_product_ws($PDOdb);
 		}
 
-		$this->loadThmObject($PDOdb, $object_type, $fk_origin);
+		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
 		
 		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
@@ -401,11 +401,11 @@ class TNomenclature extends TObjetStd
 
     }
 	
-	function loadThmObject(&$PDOdb, $object_type, $fk_origin)
+	function loadThmObject(&$PDOdb, $object_type, $fk_object_parent)
 	{
 		global $conf,$TNomenclatureWorkstationThmObject;
 		
-		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_origin > 0 && $object_type == 'propal')
+		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
 		{
 			foreach ($this->TNomenclatureWorkstation as &$nomenclatureWs)
 			{
@@ -414,7 +414,7 @@ class TNomenclature extends TObjetStd
 					if (empty($TNomenclatureWorkstationThmObject[$nomenclatureWs->fk_workstation]))
 					{
 						$workstationThmObject = new TNomenclatureWorkstationThmObject;
-						$workstationThmObject->loadByFkWorkstationByFkObjectByType($PDOdb, $nomenclatureWs->fk_workstation, $fk_origin, $object_type);
+						$workstationThmObject->loadByFkWorkstationByFkObjectByType($PDOdb, $nomenclatureWs->fk_workstation, $fk_object_parent, $object_type);
 					}
 					else
 					{
@@ -1051,9 +1051,9 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		$this->label = '';
     }
 	
-	function loadByFkWorkstationByFkObjectByType(&$PDOdb, $fk_workstation, $fk_object, $type)
+	function loadByFkWorkstationByFkObjectByType(&$PDOdb, $fk_workstation, $fk_object_parent, $type)
 	{
-		$PDOdb->Execute('SELECT rowid FROM '.$this->get_table().' WHERE fk_object = '.$fk_object.' AND fk_workstation = '.$fk_workstation.' AND type_object = "'.$type.'"');
+		$PDOdb->Execute('SELECT rowid FROM '.$this->get_table().' WHERE fk_object = '.$fk_object_parent.' AND fk_workstation = '.$fk_workstation.' AND type_object = "'.$type.'"');
 
 		if($obj = $PDOdb->Get_line())
 		{
