@@ -810,7 +810,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
     }
 
-	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='', $ph=false) {
+	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='') {
 		global $conf;
 
 		$nb_hour = 0;
