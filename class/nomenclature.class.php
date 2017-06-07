@@ -830,7 +830,6 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		}
 		else{
-			if ($ph) var_dump('HEY = '.$this->workstation->thm);
 			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour;
 		}
 
