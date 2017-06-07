@@ -566,7 +566,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					?><a class="tojs" href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php
                                echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_object=<?php
                                echo $fk_object ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php
-                               echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=1"><?php echo img_delete() ?></a><?php
+                               echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a><?php
 				}
 				?></td>
 
