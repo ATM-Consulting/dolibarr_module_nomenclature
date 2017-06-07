@@ -440,8 +440,8 @@ class TNomenclature extends TObjetStd
 				if ($det->fk_product>0 && $product->fetch($det->fk_product)>0)
 				{
 					$n = new TNomenclature;
-					$n->loadByObjectId($PDOdb, $product->id, 'product', false);
-					$n->loadThmObject($PDOdb, $object_type, $fk_object_parent, true);
+					$res = $n->loadByObjectId($PDOdb, $product->id, 'product', false);
+					if ($res) $n->loadThmObject($PDOdb, $object_type, $fk_object_parent, true);
 				}
 			}
 			
@@ -1129,9 +1129,6 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		{
 			$o = new TNomenclatureWorkstationThmObject;
 			$o->load($PDOdb, $row->rowid);
-
-			$ws = new TWorkstation;
-			$ws->load($PDOdb, $o->fk_workstation, false);
 			
 			$o->label = $TWorkstation[$o->fk_workstation]->name;
 			$TThmObject[$o->fk_workstation] = $o;
