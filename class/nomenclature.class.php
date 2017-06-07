@@ -403,10 +403,11 @@ class TNomenclature extends TObjetStd
 	
 	function loadThmObject(&$PDOdb, $object_type, $fk_object_parent)
 	{
-		global $conf,$TNomenclatureWorkstationThmObject;
+		global $db,$conf,$TNomenclatureWorkstationThmObject;
 		
 		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
 		{
+			// 1 : on charge le coef custom (si existant) des TNomenclatureWorkstation
 			foreach ($this->TNomenclatureWorkstation as &$nomenclatureWs)
 			{
 				if (empty($nomenclatureWs->thmobjectloaded))
@@ -430,6 +431,20 @@ class TNomenclature extends TObjetStd
 					$nomenclatureWs->thmobjectloaded = true;
 				}
 			}
+			
+			// 2 : on charge les coef custom des TNomenclatureDet qui possède une nomenclature (récusrive)
+			require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+			foreach ($this->TNomenclatureDet as &$det)
+			{
+				$product = new Product($db);
+				if ($det->fk_product>0 && $product->fetch($det->fk_product)>0)
+				{
+					$n = new TNomenclature;
+					$n->loadByObjectId($PDOdb, $product->id, 'product', false);
+					$n->loadThmObject($PDOdb, $object_type, $fk_object_parent, true);
+				}
+			}
+			
 		}
 	}
 
@@ -795,7 +810,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
     }
 
-	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='') {
+	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='', $ph=false) {
 		global $conf;
 
 		$nb_hour = 0;
@@ -815,6 +830,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		}
 		else{
+			if ($ph) var_dump('HEY = '.$this->workstation->thm);
 			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour;
 		}
 
@@ -1095,16 +1111,22 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 	 */
 	static function loadAllThmObject(&$PDOdb, &$object, $type_object)
 	{
-		$Tab = array();
+		$TThmObject = array();
+		
+		// 1 : on récupère tous les Poste de travail existants
+		dol_include_once('/workstation/class/workstation.class.php');
+		$TWorkstation = TWorkstation::getAllWorkstationObject($PDOdb);
+		
+		// 2 : on va chercher les coef custom
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_workstation_thm_object
 				WHERE fk_object = '.(int)$object->id.'
 				AND type_object = "'.$type_object.'"';
 /*				AND entity IN('.getEntity('nomenclature').')';*/
 
 		$PDOdb->Execute($sql);
-		$TRes = $PDOdb->Get_All();
+		$Tab = $PDOdb->Get_All();
 
-		foreach ($TRes as $row)
+		foreach ($Tab as $row)
 		{
 			$o = new TNomenclatureWorkstationThmObject;
 			$o->load($PDOdb, $row->rowid);
@@ -1112,43 +1134,31 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 			$ws = new TWorkstation;
 			$ws->load($PDOdb, $o->fk_workstation, false);
 			
-			$o->label = $ws->name;
-			$Tab[$o->fk_workstation] = $o;
+			$o->label = $TWorkstation[$o->fk_workstation]->name;
+			$TThmObject[$o->fk_workstation] = $o;
 		}
 
-		// Récupération des fk_workstation depuis les lignes
-		dol_include_once('/nomenclature/class/nomenclature.class.php');
-		foreach ($object->lines as &$line)
+		// 3 : je merge mon tableau de workstations avec mes thm custom si encore non défini
+		foreach ($TWorkstation as &$workstation)
 		{
-			if (!empty($line->fk_product) && $line->special_code != 9)
+			if (empty($TThmObject[$workstation->getId()]))
 			{
-				$n=new TNomenclature;
-				$n->loadByObjectId($PDOdb, $line->id, $object->element, false, $line->fk_product, $line->qty);
-				
-				foreach ($n->TNomenclatureWorkstation as &$nomenclatureWorkstation)
-				{
-					if (empty($Tab[$nomenclatureWorkstation->fk_workstation]))
-					{
-						$o = new TNomenclatureWorkstationThmObject;
-						$o->rowid = 0;
-						$o->fk_workstation = $nomenclatureWorkstation->fk_workstation;
-						$o->fk_object = $object->id;
-						$o->type_object = $object->element;
+				$o = new TNomenclatureWorkstationThmObject;
+				$o->rowid = 0;
+				$o->fk_workstation = $workstation->getId();
+				$o->fk_object = $object->id;
+				$o->type_object = $object->element;
 
-						$ws = new TWorkstation;
-						$ws->load($PDOdb, $o->fk_workstation, false);
+				$o->label = $workstation->name;
+				$o->thm_object = $workstation->thm;
 
-						$o->label = $ws->name;
-						$o->thm_object = $ws->thm;
-						
-						$Tab[$o->fk_workstation] = $o;
-					}
-				}
+				$TThmObject[$o->fk_workstation] = $o;
 			}
+			
 		}
 		
-		ksort($Tab);
-		return $Tab;
+		ksort($TThmObject);
+		return $TThmObject;
 	}
 	
 	/**
