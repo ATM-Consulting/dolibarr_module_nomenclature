@@ -238,8 +238,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 	$picto=($product->type==1?'service':'product');
 	dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
 
-	headerProduct($product);
-
+	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', ($user->societe_id?0:1), 'ref');
+	else headerProduct($product);
+	
 	?><script type="text/javascript">
 		function uncheckOther(obj)
 		{
