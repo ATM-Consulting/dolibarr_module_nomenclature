@@ -694,9 +694,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                <tr class="liste_titre">
                    <!--<td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>-->
                    <td class="liste_titre" colspan="2"><?php echo $langs->trans('Worstations'); ?></td>
+                   <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
                    <td class="liste_titre"><?php echo $langs->trans('nb_days_before_beginning'); ?></td>
+                   <?php }?>
+                   <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) {?>
                    <td class="liste_titre"><?php echo $langs->trans('QtyPrepare'); ?></td>
+                   <?php }?>
+                   <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) {?>
                    <td class="liste_titre"><?php echo $langs->trans('QtyFabrication'); ?></td>
+                   <?php }?>
                    <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
                    <td class="liste_titre">&nbsp;</td>
                  <?php if($user->rights->nomenclature->showPrice) {
@@ -728,12 +734,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 echo $ws->workstation->getNomUrl(1);
                                 echo $formCore->zonetexte('', 'TNomenclatureWorkstation['.$k.'][note_private]', $ws->note_private, 80, 1, ' style="width:95%;"');
                            ?></td>
+                           <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
                            <td ><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_days_before_beginning]', $ws->nb_days_before_beginning, 7,100) ?></td>
+                           <?php }?>
+                           <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) {?>
                            <td ><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_prepare]', $ws->nb_hour_prepare, 7,100) ?></td>
+                           <?php }?>
+                           <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) {?>
                            <td ><?php
                            		echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_hour_manufacture]', $ws->nb_hour_manufacture, 7,100);
                            		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
                            	?></td>
+                           <?php }?>
                            <td ><?php
                            		echo $ws->nb_hour_calculate.'h';
 						   ?></td>
