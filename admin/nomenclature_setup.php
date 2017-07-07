@@ -256,8 +256,43 @@ print ajax_constantonoff('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS');
 print '</form>';
 print '</td></tr>';
 
-print '</table>';
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_BEFORE_LAUNCH").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_BEFORE_LAUNCH">';
+print ajax_constantonoff('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH');
+print '</form>';
+print '</td></tr>';
 
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_PREPARE").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_PREPARE">';
+print ajax_constantonoff('NOMENCLATURE_USE_TIME_PREPARE');
+print '</form>';
+print '</td></tr>';
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_DOING").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_DOING">';
+print ajax_constantonoff('NOMENCLATURE_USE_TIME_DOING');
+print '</form>';
+print '</td></tr>';
+
+print '</table>';
 
 $var=false;
 print '<table class="noborder" width="100%">';
