@@ -281,9 +281,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
 
 	foreach($TNomenclature as $iN => &$n) {
-
+		echo '<div class="tabBar">';
 	    _fiche_nomenclature($PDOdb, $n, $product, $product->id, 'product',$qty_ref);
-
+		echo '</div>';
 	}
 
 
@@ -684,6 +684,29 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
            </td>
 
         </tr>
+        
+        <tr>
+			<td colspan="5">
+				<div class="tabsAction">
+					<div>
+						<?php
+						if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
+							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
+						}
+						else{
+							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
+						}
+						?>
+						
+						<div class="inline-block divButAction">
+							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+						</div>
+					</div>
+				</div>
+			</td>
+        </tr>
+        
+        
         <?php
        if($conf->workstation->enabled) {
 
@@ -934,28 +957,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                     }
 
                     ?>
-                    <div>
-	                    <?php
-
-	                    	if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-	                    		print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
-	                    	}
-							else{
-								print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
-							}
-
-
-	                    ?>
-		                <div class="inline-block divButAction">
-		                    <input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
-		                </div>
-
-                   </div>
-
-                   <?php if ($json == 1) { ?>
+                </div>
+            </td>
+        </tr>
+        
+        <tr>
+			<td colspan="5">
+				<div class="tabsAction">
+					<?php if ($json == 1) { ?>
                    		<style type="text/css">
                    			.dialogSouldBeZindexed {
-                   				/*z-index:101 !important;  Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
+                   				z-index:101 !important;  /* Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
+                   				/* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs) */
+                   				overflow:visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
                    			}
                    		</style>
 						<div>
@@ -981,17 +995,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                   <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 	               </div>
 
-                   <?php if ($json) { ?>
-                   <div>
-                   		<div class="inline-block divButAction">
-		                    <input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
-		                </div>
-                   </div>
-                   <?php } ?>
+					<?php if ($json) { ?>
+						<div class="inline-block divButAction">
+							<input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
+						</div>
+					<?php } ?>
 
 					<?php $parameters = array(); $reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $n, $action); ?>
-                </div>
-            </td>
+				</div>
+			</td>
         </tr>
     </table>
     <?php
