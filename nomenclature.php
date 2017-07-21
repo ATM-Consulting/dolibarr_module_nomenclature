@@ -786,19 +786,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 					if($user->rights->nomenclature->showPrice) {
 	                    ?><tr class="liste_total">
-	                           <td><?php echo $langs->trans('Total'); ?></td>
+	                           <td colspan="2"><?php echo $langs->trans('Total'); ?></td>
 	                           <td colspan="4">&nbsp;</td>
 	                           <td>&nbsp;</td>
 	                           <td align="right"><?php echo price($n->totalMO); ?></td>
-
+								<td></td>
 	                    </tr><?php
 	                     if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
 		                    ?><tr class="liste_total">
-		                           <td><?php echo $langs->trans('TotalMO_OF'); ?></td>
+		                           <td colspan="2"><?php echo $langs->trans('TotalMO_OF'); ?></td>
 		                           <td colspan="4">&nbsp;</td>
 		                           <td>&nbsp;</td>
 		                           <td align="right"><?php echo price($n->totalMO_OF,'','',1,1,2); ?></td>
-
+									<td></td>
 		                    </tr><?php
 						 }
 					}
