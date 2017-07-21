@@ -969,6 +969,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    			.dialogSouldBeZindexed {
                    				z-index:101 !important;  /* Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
                    				/* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs) */
+                   				overflow:visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
                    			}
                    		</style>
 						<div>
