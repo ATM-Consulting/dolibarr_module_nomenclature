@@ -460,26 +460,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    <table width="100%" class="liste"  id="det-table">
                        <thead>
                        <tr class="liste_titre">
-                           <td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>
-                           <td class="liste_titre"><?php echo $langs->trans('Product'); ?></td>
+                           <th class="liste_titre" width="5%"><?php echo $langs->trans('Type'); ?></th>
+                           <th class="liste_titre" width="55%"><?php echo $langs->trans('Product'); ?></th>
                            <?php
 		                        if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 								{
-									print '<td class="liste_titre">'.$langs->trans('Availability').'</td>';
+									print '<th class="liste_titre" width="5%">'.$langs->trans('Availability').'</th>';
 								}
 							?>
 
-                           <td class="liste_titre"><?php echo $langs->trans('PhysicalStock'); ?></td>
-                           <td class="liste_titre"><?php echo $langs->trans('VirtualStock'); ?></td>
-                           <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
-                           <td class="liste_titre">&nbsp;</td>
+                           <th class="liste_titre" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
+                           <th class="liste_titre" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
+                           <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                            <?php if($user->rights->nomenclature->showPrice) {
-                           		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></td><?php
-                           		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php
-                           		?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></td><?php
+                           		?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
+                           		?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
+                           		?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
                            ?>
-                           <td class="liste_titre">&nbsp;</td>
+                           <th class="liste_titre" width="1%">&nbsp;</th>
+                           <th class="liste_titre" width="1%">&nbsp;</th>
                        </tr>
                        </thead>
                        <tbody>
@@ -574,16 +574,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
 							    ?></td>
 
-
-                               <td><?php
-				if($n->getId()>0) {
-					?><a class="tojs" href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1) ?>?action=delete_nomenclature_detail&k=<?php echo $k ?>&fk_nomenclature=<?php
-                               echo $n->getId() ?>&fk_product=<?php echo $product->id ?>&fk_object=<?php
-                               echo $fk_object ?>&object_type=<?php echo $object_type ?>&qty_ref=<?php
-                               echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a><?php
-				}
-				?></td>
-
                                <?php
 
 	                            if($user->rights->nomenclature->showPrice) {
@@ -591,7 +581,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                            	$price = $det->calculate_price;
 									$price_charge = $det->charged_price;
 
-									echo '<td align="right" valign="bottom">';
+									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($det->calculate_price).img_help(1,$langs->trans('PricePA'));
 										echo '<span class="pricePMP"><br />'.price($det->calculate_price_pmp).img_help(1,$langs->trans('PricePMP')).'</span>';
@@ -603,7 +593,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 
                                 	echo '</td>';
-									echo '<td align="right" valign="bottom">';
+									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($det->charged_price);
 										echo '<span class="pricePMP"><br />'.price($det->charged_price_pmp).'</span>';
@@ -613,11 +603,23 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                     	echo price($price_charge);
 									}
                                 	echo '</td>';
-									echo '<td align="right" valign="bottom">';
+									echo '<td align="right" valign="middle">';
                                     echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($det->price).'" size="5" />';
                                 	echo '</td>';
 	                            }
                                ?>
+                               
+								<td><?php
+								if($n->getId()>0)
+								{
+									$param = '?action=delete_nomenclature_detail&k='.$k.'&fk_nomenclature='.$n->getId().'&fk_product='.$product->id.'&fk_object='.$fk_object;
+									$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
+								
+									echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
+								}
+								?></td>
+                               
+                               
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
 									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
@@ -631,7 +633,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					?></tbody><tfoot><?php
 
 				       if($user->rights->nomenclature->showPrice) {
-				       		$colspan = 5;
+				       		$colspan = 4;
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;
                        ?>
                        <tr class="liste_total">
@@ -640,7 +642,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            <td align="right"><?php echo price($n->totalPR); ?></td>
                            <td align="right"><?php echo price($n->totalPRC); ?></td>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
-
                        </tr>
                        <?php
 
@@ -692,24 +693,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                <table class="liste" width="100%" id="workstation-table">
                	<thead>
                <tr class="liste_titre">
-                   <!--<td class="liste_titre"><?php echo $langs->trans('Type'); ?></td>-->
-                   <td class="liste_titre" colspan="2"><?php echo $langs->trans('Worstations'); ?></td>
+                   <!--<th class="liste_titre"><?php echo $langs->trans('Type'); ?></th>-->
+                   <th class="liste_titre" colspan="1" width="55%"><?php echo $langs->trans('Worstations'); ?></th>
+                   <th class="liste_titre" colspan="1" width="5%"></th>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
-                   <td class="liste_titre"><?php echo $langs->trans('nb_days_before_beginning'); ?></td>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('nb_days_before_beginning'); ?></th>
                    <?php }?>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) {?>
-                   <td class="liste_titre"><?php echo $langs->trans('QtyPrepare'); ?></td>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyPrepare'); ?></th>
                    <?php }?>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) {?>
-                   <td class="liste_titre"><?php echo $langs->trans('QtyFabrication'); ?></td>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyFabrication'); ?></th>
                    <?php }?>
-                   <td class="liste_titre"><?php echo $langs->trans('Qty'); ?></td>
-                   <td class="liste_titre">&nbsp;</td>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                  <?php if($user->rights->nomenclature->showPrice) {
-                 	?><td class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></td><?php }
+                 	?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php }
 
                  ?>
-                 <td class="liste_titre">&nbsp;</td>
+                 <th class="liste_titre" width="5%">&nbsp;</th>
+                 <th class="liste_titre" width="1%">&nbsp;</th>
+                 <th class="liste_titre" width="1%">&nbsp;</th>
                </tr>
                </thead>
                <tbody>
@@ -729,11 +732,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                         */
                        ?>
                        <tr class="<?php echo $class ?>" rowid="<?php echo $ws->getId(); ?>">
-                       	   <td colspan="2"><?php
+                       	   <td colspan="1"><?php
 
                                 echo $ws->workstation->getNomUrl(1);
                                 echo $formCore->zonetexte('', 'TNomenclatureWorkstation['.$k.'][note_private]', $ws->note_private, 80, 1, ' style="width:95%;"');
                            ?></td>
+                           <td>&nbsp;</td>
                            <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
                            <td ><?php echo $formCore->texte('', 'TNomenclatureWorkstation['.$k.'][nb_days_before_beginning]', $ws->nb_days_before_beginning, 7,100) ?></td>
                            <?php }?>
@@ -750,9 +754,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                            		echo $ws->nb_hour_calculate.'h';
 						   ?></td>
 
-                           <td ><?php if($n->getId()>0) { ?><a class="tojs" href="<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>?action=delete_ws&k=<?php echo $k ?>&fk_product=<?php echo $product->id ?>&fk_nomenclature=<?php
-                           echo $n->getId() ?>&fk_object=<?php echo $fk_object ?>&object_type=<?php
-                           echo $object_type ?>&qty_ref=<?php echo $qty_ref ?>&fk_origin=<?php echo GETPOST('fk_origin', 'int'); ?>&json=<?php echo $json; ?>"><?php echo img_delete() ?></a><?php } ?></td>
                            <?php
 
                            if($user->rights->nomenclature->showPrice) {
@@ -760,7 +761,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 								$price_charge = ($ws->price) ? $ws->price : $ws->calculate_price; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
 								$total_mo+=$price_charge;
 
-	                           echo '<td align="right" valign="bottom">';
+	                           echo '<td align="right" valign="middle">';
                                echo price($price_charge) ;
 
 							   if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
@@ -770,6 +771,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	                           echo '</td>';
 	                      }
                        ?>
+						<td>&nbsp;</td>
+						<td align="center">
+							<?php
+							if($n->getId()>0)
+							{
+								$param = '?action=delete_ws&k='.$k.'&fk_nomenclature='.$n->getId().'&fk_product='.$product->id.'&fk_object='.$fk_object;
+								$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
+
+								echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
+							}
+							?>
+						</td>
+						
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
 									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
@@ -784,20 +798,25 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 				?></tbody><tfoot><?php
 
+					$colspan = 4;
+					if (empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) $colspan--;
+					if (empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) $colspan--;
+					if (empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) $colspan--;
+					
 					if($user->rights->nomenclature->showPrice) {
 	                    ?><tr class="liste_total">
 	                           <td colspan="2"><?php echo $langs->trans('Total'); ?></td>
-	                           <td colspan="4">&nbsp;</td>
-	                           <td>&nbsp;</td>
+	                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
 	                           <td align="right"><?php echo price($n->totalMO); ?></td>
+								<td>&nbsp;</td>
 								<td></td>
 	                    </tr><?php
 	                     if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
 		                    ?><tr class="liste_total">
 		                           <td colspan="2"><?php echo $langs->trans('TotalMO_OF'); ?></td>
-		                           <td colspan="4">&nbsp;</td>
-		                           <td>&nbsp;</td>
+		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
 		                           <td align="right"><?php echo price($n->totalMO_OF,'','',1,1,2); ?></td>
+		                           <td>&nbsp;</td>
 									<td></td>
 		                    </tr><?php
 						 }
