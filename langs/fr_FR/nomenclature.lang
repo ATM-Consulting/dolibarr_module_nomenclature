@@ -48,7 +48,7 @@ ModifyCoef=Modifier un coefficient
 CreateCoef=Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel=Libellé : 
 NomenclatureCreateCode=Code type : 
-NomenclatureCreateTx=Taux :
+NomenclatureCreateTx=Coef :
 
 NomenclatureSuccessAddCoef=Ajout d'un nouveau coefficient
 NomenclatureDeleteSuccess=Suppression de l'enregistrement
