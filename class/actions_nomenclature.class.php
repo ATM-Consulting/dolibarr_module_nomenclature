@@ -99,7 +99,43 @@ class Actionsnomenclature
 					}
 				</style>
 				
+				
+				<script type="text/javascript"> 
+					$(document).ready(function() {
+						$("#idprod").change(function() {
+							var prod_id = $(this).val();
+							var data = {"action": "idprod_change", "prod_id": prod_id};
+							 ajax_call(data);
+							
+								
+						});
+						function ajax_call(datas)
+						{
+							$.ajax({
+								url: "<?php echo dol_buildpath('/nomenclature/prod_ajax.php', 1) ; ?>",
+								type: "POST",
+								dataType: "json",
+								data: datas,
+								success: function(data){
+									
+									if(data.result){
+										setTimeout(function(){ $("#fournprice_predef").hide();$(".liste_titre_add td:contains('Prix de revient')").hide();}, 300);
+										
+									} else {
+										$("#fournprice_predef").show();
+										$(".liste_titre_add td:contains('Prix de revient')").show();
+									}					
+									
+								},
+								error: function(error){
+									$.jnotify('AjaxError',"error");
+								}
+							});
+						}
+					});
+				</script>
 				<?php
+				
 			}
 			
 		}
