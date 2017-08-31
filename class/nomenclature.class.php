@@ -461,7 +461,7 @@ class TNomenclature extends TObjetStd
 
 		$sql = "SELECT fk_workstation, nb_hour,nb_hour_prepare,nb_hour_manufacture";
 		$sql.= " FROM ".MAIN_DB_PREFIX."workstation_product";
-		$sql.= " WHERE fk_product = ".$fk_product;
+		$sql.= " WHERE fk_product = ".$this->fk_object;
 		$PDOdb->Execute($sql);
 
 		while($res = $PDOdb->Get_line())
