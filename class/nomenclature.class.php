@@ -113,10 +113,10 @@ class TNomenclature extends TObjetStd
 			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'costprice'){
 			        // sélectionne le prix de revient renseigné sur la fiche produit
 			        $det->calculate_price = $det->getCostPrice() * $det->qty * $coef_qty_price;
-			        if(empty($det->calculate_price)) $det->getPMPPrice() * $det->qty * $coef_qty_price;
-			        if(empty($det->calculate_price)) $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
+			        if(empty($det->calculate_price)) $det->calculate_price = $det->getPMPPrice() * $det->qty * $coef_qty_price;
+			        if(empty($det->calculate_price)) $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
 			    }
-			    else { //comportement initial (on prend le premier prix fournisseur qui vient...)
+			    else { //comportement initial en cas de non-configuration (on prend le premier prix fournisseur qui vient...)
 			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
 			    }
 				
