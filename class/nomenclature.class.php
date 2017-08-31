@@ -749,9 +749,14 @@ class TNomenclatureDet extends TObjetStd
 			}
 
 			if($searchforhigherqtyifnone && empty($price_supplier)) {
-
-				$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+			    if(!$best_one){
+			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
+			    } else {
+			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY unitprice ASC LIMIT 1 ");
+			    }
+				
 
 				if($obj = $PDOdb->Get_line()) {
 					$price_supplier = $obj->price / $obj->quantity;
