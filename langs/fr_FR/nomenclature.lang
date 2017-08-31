@@ -92,6 +92,7 @@ ShowImpact=Montrer l'impact
 QtyAfter=Qté après
 MakeIt=Faire la mise à jour
 
+NOMENCLATURE_COST_TYPE=Prix d'achat/revient suggéré par défaut
 NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST=Utiliser le prix de la nomenclature enfant avant le prix d'achat pour le calcul
 NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED=Le prix personnalisé d'un composant est un déboursé
 NOMENCLATURE_PERSO_PRICE_APPLY_QTY=Ce déboursé prend en compte la quantité de la ligne
@@ -102,6 +103,11 @@ NOMENCLATURE_USE_QTYREF_TO_ONE=Toujours utiliser la quanté de référence à 1 
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Utiliser le champs "Délai avant démarrage" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_PREPARE=Utiliser le champs "Temps de préparation" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_DOING=Utiliser le champs "Temps de fabrication" dans la nomemclature sur les postes de travail
+
+ParamSaved=Enregistrement réalisé avec succés
+CostType1=Meilleur prix fournisseur renseigné
+CostType2=Prix moyen pondéré (PMP) ou meilleur prix fournisseur si PMP non-défini
+CostType3=Prix de revient si défini sur la fiche produit ou PMP si défini ou meilleur prix fournisseur
 
 CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela créé une boucle infinie
 SetPriceInfiniteLoop=Boucle infinie détectée dans la récupération du prix
