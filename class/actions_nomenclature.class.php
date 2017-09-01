@@ -102,13 +102,13 @@ class Actionsnomenclature
 				
 				<script type="text/javascript"> 
 					$(document).ready(function() {
-						$("#idprod").change(function() {
-							var prod_id = $(this).val();
-							var data = {"action": "idprod_change", "prod_id": prod_id};
+						$("#fournprice_predef").ready(function(){$("#idprod").change(function() {
+							var fk_product = $(this).val();
+							var data = {"action": "idprod_change", "fk_product": fk_product};
 							 ajax_call(data);
 							
 								
-						});
+						})});
 						function ajax_call(datas)
 						{
 							$.ajax({
@@ -116,20 +116,18 @@ class Actionsnomenclature
 								type: "POST",
 								dataType: "json",
 								data: datas,
-								success: function(data){
-									
-									if(data.result){
-										setTimeout(function(){ $("#fournprice_predef").hide();$(".liste_titre_add td:contains('Prix de revient')").hide();}, 300);
+								
+							}).done(function(data){
+								if(data.result){
+										 $("#fournprice_predef").hide();
+										 $(".liste_titre_add td:contains('Prix de revient')").hide();
 										
 									} else {
 										$("#fournprice_predef").show();
 										$(".liste_titre_add td:contains('Prix de revient')").show();
-									}					
-									
-								},
-								error: function(error){
-									$.jnotify('AjaxError',"error");
-								}
+									}		
+							}).fail(function(){
+								$.jnotify('AjaxError',"error");
 							});
 						}
 					});

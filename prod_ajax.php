@@ -17,9 +17,9 @@ if(GETPOST('action'))
 		
 		if($action == 'idprod_change')
 		{
-			$prod_id= (int)GETPOST('prod_id');
+			$fk_product= (int)GETPOST('fk_product');
 			$nomenclature = new TNomenclature();
-			$nomenclature->loadByObjectId($PDOdb, $prod_id, 'product');
+			$nomenclature->loadByObjectId($PDOdb, $fk_product, 'product');
 			
 			
 			if($nomenclature->iExist)
