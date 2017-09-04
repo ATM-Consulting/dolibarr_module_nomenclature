@@ -95,6 +95,7 @@ $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 /*
  * Actions
  */
+
 if (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
@@ -311,6 +312,10 @@ print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="costprice" '
 if (isset($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'costprice') print 'checked ';
 print '/> ';
 print $langs->trans('CostType3');
+print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
+if (!isset($conf->global->NOMENCLATURE_COST_TYPE) || isset($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'disable') print 'checked ';
+print '/> ';
+print $langs->trans('Disabled');
 print '</td>';
 print '<td align="center" width="300"><input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
 print '</td></tr>';
