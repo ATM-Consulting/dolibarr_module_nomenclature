@@ -101,7 +101,25 @@ class TNomenclature extends TObjetStd
 				$perso_price = 0;
 			}
 			else{
-				$det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
+			    if(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == '1') {
+			        // sélectionne le meilleur prix fournisseur
+			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
+			    }
+			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'pmp'){
+			        //sélectionne le pmp si renseigné
+			        $det->calculate_price = $det->getPMPPrice() * $det->qty * $coef_qty_price;
+			        if(empty($det->calculate_price)) $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
+			    }
+			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'costprice'){
+			        // sélectionne le prix de revient renseigné sur la fiche produit
+			        $det->calculate_price = $det->getCostPrice() * $det->qty * $coef_qty_price;
+			        if(empty($det->calculate_price)) $det->calculate_price = $det->getPMPPrice() * $det->qty * $coef_qty_price;
+			        if(empty($det->calculate_price)) $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
+			    }
+			    else { //comportement initial en cas de non-configuration (on prend le premier prix fournisseur qui vient...)
+			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
+			    }
+				
 			}
 
 			$totalPR+= $det->calculate_price ;
@@ -690,11 +708,23 @@ class TNomenclatureDet extends TObjetStd
 		return $p->pmp;
 
 	}
+	
+	function getCostPrice() {
+	    global $db,$conf,$user,$langs;
+	    
+	    dol_include_once('/product/class/product.class.php');
+	    
+	    $p=new Product($db);
+	    $p->fetch($this->fk_product);
+
+	    return $p->cost_price;
+	    
+	}
 
 	/*
 	 * Retourne le prix unitaire en fonction de la quantité commandé
 	 */
-    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false) {
+    function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false, $best_one = false) {
         global $db,$conf;
 
         if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
@@ -705,17 +735,28 @@ class TNomenclatureDet extends TObjetStd
 
 		if (!$force_cost_price)
 		{
-			$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+		    if(!$best_one){
+		        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
+		    } else {
+		        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY unitprice ASC LIMIT 1 ");
+		    }
+			
 
 			if($obj = $PDOdb->Get_line()) {
 				$price_supplier = $obj->price / $obj->quantity;
 			}
 
 			if($searchforhigherqtyifnone && empty($price_supplier)) {
-
-				$PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+			    if(!$best_one){
+			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
+			    } else {
+			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY unitprice ASC LIMIT 1 ");
+			    }
+				
 
 				if($obj = $PDOdb->Get_line()) {
 					$price_supplier = $obj->price / $obj->quantity;
@@ -753,7 +794,7 @@ class TNomenclatureDet extends TObjetStd
 		else  return empty($child_price) ? $price_supplier : $child_price;
 
     }
-
+    
 	//renvoi la nomenclature par defaut du produit de la ligne
 	static function getArboNomenclatureDet(&$PDOdb, &$nomenclatureDet, $qty_to_make, $recursive = false)
 	{

@@ -95,6 +95,7 @@ $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 /*
  * Actions
  */
+
 if (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
@@ -291,6 +292,34 @@ print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_DOING
 print ajax_constantonoff('NOMENCLATURE_USE_TIME_DOING');
 print '</form>';
 print '</td></tr>';
+
+$var=!$var;
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE\">";
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_COST_TYPE").'</td>';
+print '<td width="600">';
+print '<input type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
+if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === '1') print 'checked ';
+print '/> ';
+print $langs->trans('CostType1');
+print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="pmp" ';
+if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'pmp') print 'checked ';
+print '/> ';
+print $langs->trans('CostType2');
+print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="costprice" ';
+if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'costprice') print 'checked ';
+print '/> ';
+print $langs->trans('CostType3');
+print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
+if (empty($conf->global->NOMENCLATURE_COST_TYPE) || $conf->global->NOMENCLATURE_COST_TYPE === 'disable') print 'checked ';
+print '/> ';
+print $langs->trans('Disabled');
+print '</td>';
+print '<td align="center" width="300"><input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
+print '</td></tr>';
+print '</form>';
 
 print '</table>';
 
