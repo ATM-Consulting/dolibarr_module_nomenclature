@@ -103,6 +103,7 @@ NOMENCLATURE_USE_QTYREF_TO_ONE=Toujours utiliser la quanté de référence à 1 
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Utiliser le champs "Délai avant démarrage" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_PREPARE=Utiliser le champs "Temps de préparation" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_DOING=Utiliser le champs "Temps de fabrication" dans la nomemclature sur les postes de travail
+NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Utiliser le déboursé sec comme prix de reviens
 
 ParamSaved=Enregistrement réalisé avec succés
 CostType1=Meilleur prix fournisseur renseigné
