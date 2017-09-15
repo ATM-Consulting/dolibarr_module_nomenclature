@@ -865,7 +865,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		if($user->rights->nomenclature->showPrice) {
 				$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 				$PR_coef = $n->totalMO+$n->totalPRC;
-				if (empty($conf->global->NOMENCLATURE_USE_FALST_COST_AS_BUYING_PRICE)) {
+				if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) {
 					$price_buy = $n->totalMO+$n->totalPRC;
 				} else {
 					$price_buy = $n->totalMO+$n->totalPR;

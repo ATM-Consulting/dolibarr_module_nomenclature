@@ -295,13 +295,13 @@ print '</td></tr>';
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_FALST_COST_AS_BUYING_PRICE").'</td>';
+print '<td>'.$langs->trans("NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_USE_FALST_COST_AS_BUYING_PRICE">';
-print ajax_constantonoff('NOMENCLATURE_USE_FALST_COST_AS_BUYING_PRICE');
+print '<input type="hidden" name="action" value="NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE">';
+print ajax_constantonoff('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE');
 print '</form>';
 print '</td></tr>';
 
