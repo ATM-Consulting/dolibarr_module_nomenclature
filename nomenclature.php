@@ -45,47 +45,47 @@ $parameters = array(
 		'object_type' => $object_type,
 		'fk_object' => $fk_object,
 		'fk_nomenclature' => $fk_nomenclature,
-		
+
 );
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $product, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 if (empty($reshook))
 {
-	
+
 	if($action==='delete_nomenclature') {
 	    $n=new TNomenclature;
 	    $n->load($PDOdb, GETPOST('fk_nomenclature'));
 	    $n->delete($PDOdb);
-	
+
 	    setEventMessage('NomenclatureDeleted');
-	
+
 	}
 	else if($action==='clone_nomenclature') {
-	
+
 		cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_product_clone', 'int'), $fk_object, $object_type);
 	}
 	else if($action==='add_nomenclature') {
-	
+
 	    $n=new TNomenclature;
 	    $n->set_values($_REQUEST);
 	    $n->save($PDOdb);
-	
-	
+
+
 	}
 	else if($action==='add_fk_nomenclature') {
 		//TODO ajouter les enfants de la nomenclature passé en post à la nomenclature courrante
-	
+
 	}
 	else if($action === 'delete_nomenclature_detail') {
-	
+
 		$n=new TNomenclature;
-	
+
 	    $n->load($PDOdb, $fk_nomenclature);
-	
+
 	    if($n->getId()>0) {
-	
+
 	    $n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
-	
+
 	    $n->save($PDOdb);
 	   }
 	}
@@ -93,52 +93,52 @@ if (empty($reshook))
 	    $n=new TNomenclature;
 	 //   $PDOdb->debug = true;
 	    $n->load($PDOdb, $fk_nomenclature);
-	
+
 	    if($n->getId()>0) {
 	    	$k = (int)GETPOST('k');
 	//var_dump( $fk_nomenclature,$k,$n->TNomenclatureWorkstation);
 		$n->TNomenclatureWorkstation[$k]->to_delete = true;
 		$n->save($PDOdb);
 	    }
-	
+
 	}
 	else if($action==='save_nomenclature') {
-	
+
 		if (GETPOST('apply_nomenclature_price'))
 		{
 			$price_buy_init = GETPOST('price_buy');
 			$price_to_sell_init = GETPOST('price_to_sell');
-	
+
 			switch ($object_type) {
 				case 'propal':
 					dol_include_once('/comm/propal/class/propal.class.php');
 					$n=new TNomenclature;
 					$n->load($PDOdb, $fk_nomenclature, false, 0 , 1, GETPOST('fk_origin', 'int'), $object_type);
-	
+
 					$propal = new Propal($db);
 					$propal->fetch(GETPOST('fk_origin', 'int'));
-	
+
 					foreach ($propal->lines as $line)
 					{
 						if ($line->id == $fk_object)
 						{
 							$price_buy = $price_buy_init / $line->qty;
 							$price_to_sell = $price_to_sell_init / $line->qty;
-	
+
 							$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
 						}
 					}
-	
+
 					break;
 				case 'commande':
 					dol_include_once('/commande/class/commande.class.php');
 					$n=new TNomenclature;
 					$n->load($PDOdb, $fk_nomenclature);
-	
-	
+
+
 					$commande = new Commande($db);
 					$commande->fetch(GETPOST('fk_origin', 'int'));
-	
+
 					foreach ($commande->lines as $line)
 					{
 						if ($line->id == $fk_object)
@@ -147,66 +147,66 @@ if (empty($reshook))
 							$productCommandLine->fetch($fk_product);
 							$price_buy = $price_buy_init / $line->qty;
 							$price_to_sell = $price_to_sell_init / $line->qty;
-	
+
 							$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $productCommandLine->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
 						}
 					}
 					break;
 			}
-	
+
 		}
 		elseif (GETPOST('clone_nomenclature'))
 		{
 			$n=new TNomenclature;
 			$n->load($PDOdb, $fk_nomenclature);
 			$n->delete($PDOdb);
-	
+
 			cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
 		}
 		else
 		{
 			$n=new TNomenclature;
-	
+
 		    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
 		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, GETPOST('fk_origin'));
-	
+
 			if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
 				$n->reinit();
 			}
-	
+
 			$n->set_values($_POST);
-	
+
 		    $n->is_default = (int)GETPOST('is_default');
-	
+
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
-	
+
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
 				foreach($_POST['TNomenclature'] as $val) $tab[] = $val;
-	
+
 		        foreach($tab as $k=>$TDetValues) {
 		            $n->TNomenclatureDet[$k]->set_values($TDetValues);
 		        }
 		    }
-	
+
 		    if(!empty($_POST['TNomenclatureWorkstation'])) {
 		        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
 		            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
 		        }
 		    }
-	
+
 		    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
 		    	if(!$n->addProduct($PDOdb, $fk_new_product)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
-	
+
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
 		    	}
-	
+
 		    }
-	
+
 		    $fk_new_workstation = GETPOST('fk_new_workstation');
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
 		        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
@@ -214,14 +214,14 @@ if (empty($reshook))
 		        $det->fk_workstation = $fk_new_workstation;
 		        $det->rang = $k+1;
 		    }
-	
+
 			setEventMessage($langs->trans('NomenclatureSaved'));
-	
+
 			$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
-	
+
 		    $n->save($PDOdb);
 		}
-	
+
 	}
 }
 
@@ -253,7 +253,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 
 	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', ($user->societe_id?0:1), 'ref');
 	else headerProduct($product);
-	
+
 	?><script type="text/javascript">
 		function uncheckOther(obj)
 		{
@@ -608,18 +608,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                 	echo '</td>';
 	                            }
                                ?>
-                               
+
 								<td><?php
 								if($n->getId()>0)
 								{
 									$param = '?action=delete_nomenclature_detail&k='.$k.'&fk_nomenclature='.$n->getId().'&fk_product='.$product->id.'&fk_object='.$fk_object;
 									$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
-								
+
 									echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
 								}
 								?></td>
-                               
-                               
+
+
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
 									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
@@ -684,7 +684,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
            </td>
 
         </tr>
-        
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
@@ -697,7 +697,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
 						}
 						?>
-						
+
 						<div class="inline-block divButAction">
 							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
 						</div>
@@ -705,8 +705,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 				</div>
 			</td>
         </tr>
-        
-        
+
+
         <?php
        if($conf->workstation->enabled) {
 
@@ -806,7 +806,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 							}
 							?>
 						</td>
-						
+
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
 									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
@@ -825,7 +825,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) $colspan--;
-					
+
 					if($user->rights->nomenclature->showPrice) {
 	                    ?><tr class="liste_total">
 	                           <td colspan="2"><?php echo $langs->trans('Total'); ?></td>
@@ -865,7 +865,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 		if($user->rights->nomenclature->showPrice) {
 				$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 				$PR_coef = $n->totalMO+$n->totalPRC;
-				$price_buy = $n->totalMO+$n->totalPRC;
+				if (empty($conf->global->NOMENCLATURE_USE_FALST_COST_AS_BUYING_PRICE)) {
+					$price_buy = $n->totalMO+$n->totalPRC;
+				} else {
+					$price_buy = $n->totalMO+$n->totalPR;
+				}
+
 				$price_to_sell = $n->totalPV;
 				if(empty($qty_ref)) $qty_ref = $n->qty_reference;
 		        ?>
@@ -960,7 +965,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                 </div>
             </td>
         </tr>
-        
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">

@@ -5,3 +5,5 @@ ATMAbout = This module has been developed by <a href="http://www.atm-consulting.
 
 nomenclatureSetup = nomenclature module setup
 nomenclatureAbout = About nomenclature
+
+NOMENCLATURE_USE_DEBOURSE_SEC_AS_BUYING_PRICE = Use flat cost as buy price
