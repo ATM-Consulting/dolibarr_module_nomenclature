@@ -526,6 +526,7 @@ class TNomenclature extends TObjetStd
                 ,'qty'=>$qty
 				,'childs'=>$childs
                 ,'note_private'=>$d->note_private
+				,'rowid'=>$d->rowid
             );
 
         }
