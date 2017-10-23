@@ -638,7 +638,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
-                           <td class="col_" colspan="<?php echo $colspan; ?>">&nbsp;</td>
+                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price($n->totalPR); ?></td>
                            <td align="right"><?php echo price($n->totalPRC); ?></td>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
