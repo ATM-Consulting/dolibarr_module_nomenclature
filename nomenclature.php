@@ -103,12 +103,11 @@ if (empty($reshook))
 
 	}
 	else if($action==='save_nomenclature') {
-
 		if (GETPOST('apply_nomenclature_price'))
 		{
 			$price_buy_init = GETPOST('price_buy');
 			$price_to_sell_init = GETPOST('price_to_sell');
-
+			
 			switch ($object_type) {
 				case 'propal':
 					dol_include_once('/comm/propal/class/propal.class.php');
@@ -183,6 +182,7 @@ if (empty($reshook))
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
+				
 				foreach($_POST['TNomenclature'] as $val) $tab[] = $val;
 
 		        foreach($tab as $k=>$TDetValues) {
@@ -460,8 +460,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                    <table width="100%" class="liste"  id="det-table">
                        <thead>
                        <tr class="liste_titre">
-                           <th class="liste_titre" width="5%"><?php echo $langs->trans('Type'); ?></th>
-                           <th class="liste_titre" width="55%"><?php echo $langs->trans('Product'); ?></th>
+                           <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th>
+                           <th class="liste_titre col_product" width="55%"><?php echo $langs->trans('Product'); ?></th>
                            <?php
 		                        if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 								{
@@ -469,13 +469,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 								}
 							?>
 
-                           <th class="liste_titre" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
-                           <th class="liste_titre" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
-                           <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
+                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
+                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
+                           <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                            <?php if($user->rights->nomenclature->showPrice) {
-                           		?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
-                           		?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
-                           		?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
+                           		?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
+                           		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
+                           		?><th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
                            ?>
                            <th class="liste_titre" width="1%">&nbsp;</th>
@@ -569,7 +569,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                		echo !empty($det->fk_product) ? price($p_nomdet->stock_theorique,'',0,1,1,2) : '-';
                                	?>
                                </td>
-                               <td><?php
+                               <td class="ligne_col_qty"><?php
                                		echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
 							    ?></td>
@@ -638,7 +638,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
-                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
+                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price($n->totalPR); ?></td>
                            <td align="right"><?php echo price($n->totalPRC); ?></td>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
