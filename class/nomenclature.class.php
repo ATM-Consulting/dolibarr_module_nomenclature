@@ -631,6 +631,33 @@ class TNomenclature extends TObjetStd
 		return false;
 
 	}
+	/*
+	 * Function to know if there is other product child
+	 * $details = result of getDetails
+	 * $type = product_type
+	 */
+	public static function isLastProduct($details,$type){
+		global $db;
+		foreach ($details as &$lineNomen)
+		{
+			//Conversion du tableau en objet
+			$lineNomenclature = new stdClass();
+			foreach ($lineNomen as $key => $value)
+			{
+				$lineNomenclature->$key = $value;
+			}
+			$product = new Product($db);
+			$product->fetch($lineNomenclature->fk_product);
+			
+			if($product->type==$type){
+				return false;
+			}else if(!empty($lineNomenclature->childs)){
+				TNomenclature::isLastProduct($lineNomenclature->childs);
+			}
+			
+		}
+		return true;
+	}
 
 }
 
