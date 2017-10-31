@@ -32,7 +32,6 @@ $PDOdb=new TPDOdb;
 $fk_object=(int)GETPOST('fk_object');
 $fk_nomenclature=(int)GETPOST('fk_nomenclature');
 $object_type = GETPOST('object_type');
-
 if(empty($object_type)) {
     $object_type='product';
     $fk_object = $product->id;
