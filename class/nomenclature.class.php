@@ -631,6 +631,30 @@ class TNomenclature extends TObjetStd
 		return false;
 
 	}
+	/*
+	 * Fonction pour savoir si un produit d'un certain type n'a pas d'autres enfants du même type
+	 * $details = result of getDetails
+	 * $type = product_type
+	 */
+	public static function noProductOfThisType($details,$type){
+		global $db;
+		
+		foreach ($details as &$lineNomen)
+		{
+			//Conversion du tableau en objet
+			$product = new Product($db);
+			$product->fetch($lineNomen['fk_product']);
+			
+			if($product->type==$type){
+				return false;
+			}else if(!empty($lineNomen['childs']) && !TNomenclature::noProductOfThisType($lineNomen['childs'],$type)){
+				
+				return false;
+			}
+			
+		}
+		return true;
+	}
 
 }
 
