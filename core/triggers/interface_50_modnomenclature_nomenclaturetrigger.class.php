@@ -263,14 +263,15 @@ class Interfacenomenclaturetrigger
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
 		global $db,$conf,$user,$langs;
 
-		if ($object->subprice >0 
-			|| !empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC)
-			|| $object->product_type>1 ) {
-					return 0;
-		}
+		// Je conserve ce truc de #?!@@! pcq je ne sais pas si ça a été mis pour de la compatibilité avec module externe... ????
+		if ($object->product_type > 1) return 0;
 
 		$n = new TNomenclature;
-        	$n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
+        $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
+		
+		$id = $n->getId();
+		if (empty($id) && empty($n->fk_nomenclature_parent)) return 0; // ça veut dire que pas de nomenclature direct ni de nomenclature d'origine
+		
 		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type);
 
 
@@ -289,19 +290,19 @@ class Interfacenomenclaturetrigger
 			$commande = new Commande($db);
 			$commande->fetch($fk_parent);
 
-			$commande->updateline($object->id,$object->desc,$sell_price_to_use,$object->qty,$object->remise_percent,$object->txtva,$object->txlocaltax1,$object->txlocaltax2,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$n->totalPRCMO);
+			$commande->updateline($object->id,$object->desc,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$n->totalPRCMO);
 		}
 
 		else if($object_type=='propal') {
 			$propal = new Propal($db);
 			$propal->fetch($fk_parent);
-			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->txtva,$object->txlocaltax1,$object->txlocaltax2,$object->desc,'HT',0,0,0,0,$object->fk_fournprice,$n->totalPRCMO);
+			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice,$n->totalPRCMO);
 
 		}else if ($object_type == 'facture') {
 
 			$facture = new Facture($db);
 			$facture->fetch($fk_parent);
-			$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->txtva, $object->txlocaltax1, $object->txlocaltax2, 'HT', 0, $facture->type, 0, 0, $object->fk_fournprice, $n->totalPRC_fruidoraix,'',0,0,100);
+			$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', 0, $object->product_type, 0, 0, $object->fk_fournprice, $n->totalPRC,'',0,0,100);
 		}
 
 	}
