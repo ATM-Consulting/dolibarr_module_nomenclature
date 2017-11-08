@@ -927,7 +927,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	      		     }
 		        }
 
-		        if(empty($conf->global->NOMENCLATURE_HIDE_ADVISED_PRICE)) {
+		        if(!empty($conf->global->NOMENCLATURE_HIDE_ADVISED_PRICE))
+				{
+					echo $formCore->hidden('price_to_sell', $price_to_sell);
+				}
+				else {
 		        ?>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100, $qty_ref); ?></td>
