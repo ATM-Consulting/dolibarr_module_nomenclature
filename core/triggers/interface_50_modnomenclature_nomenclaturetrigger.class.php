@@ -262,8 +262,7 @@ class Interfacenomenclaturetrigger
 
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
 		global $db,$conf,$user,$langs;
-
-		// Je conserve ce truc de #?!@@! pcq je ne sais pas si ça a été mis pour de la compatibilité avec module externe... ????
+		
 		if ($object->product_type > 1) return 0;
 
 		$n = new TNomenclature;
