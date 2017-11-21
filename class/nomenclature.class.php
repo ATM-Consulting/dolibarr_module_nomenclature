@@ -114,13 +114,13 @@ class TNomenclature extends TObjetStd
 			$totalPRC+= $det->charged_price;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
-				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP');
+				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP') * $det->qty * $coef_qty_price;
 				$totalPR_PMP+= $det->calculate_price_pmp ;
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$totalPRC_PMP+= $det->charged_price_pmp;
 
 				if(!empty($conf->of->enabled)) {
-					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF');
+					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF') * $det->qty * $coef_qty_price;
 					$totalPR_OF+= $det->calculate_price_of ;
 					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
 					$totalPRC_OF+= $det->charged_price_of;

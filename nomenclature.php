@@ -584,8 +584,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price( $price ).img_help(1,$langs->trans('PricePA'));
-										echo '<span class="pricePMP"><br />'.price($det->calculate_price_pmp).img_help(1,$langs->trans('PricePMP')).'</span>';
-										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price($det->calculate_price_of).img_help(1,$langs->trans('PriceOF')).'</span>';
+										echo '<span class="pricePMP"><br />'.price(price2num($det->calculate_price_pmp,'MT')).img_help(1,$langs->trans('PricePMP')).'</span>';
+										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->calculate_price_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
 									}
 									else{
 										echo price($price);
@@ -596,8 +596,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($price_charge);
-										echo '<span class="pricePMP"><br />'.price($det->charged_price_pmp).'</span>';
-										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price($det->charged_price_of).'</span>';
+										echo '<span class="pricePMP"><br />'.price(price2num($det->charged_price_pmp,'MT')).'</span>';
+										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->charged_price_of,'MT')).'</span>';
 									}
 									else{
                                     	echo price($price_charge);
@@ -893,14 +893,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					  ?><tr class="liste_total" >
 		                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', $qty_ref); ?></td>
 		                       <td colspan="3">&nbsp;</td>
-		                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price($n->totalPRCMO_PMP); ?></span></td>
+		                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price(price2num($n->totalPRCMO_PMP,'MT')); ?></span></td>
 				      </tr><?php
 
 				      if(!empty($conf->of->enabled)) {
 					      	?><tr class="liste_total" >
 			                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', $qty_ref); ?></td>
 			                       <td colspan="3">&nbsp;</td>
-			                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price($n->totalPRCMO_OF); ?></span></td>
+			                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price(price2num($n->totalPRCMO_OF,'MT')); ?></span></td>
 					      	</tr><?php
 
 				      }
@@ -911,7 +911,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	      					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', 1); ?></td>
 	      					<td colspan="3">&nbsp;</td>
 	      					<td style="font-weight: bolder; text-align: right;">
-	      					<?php echo price($n->totalPRCMO_PMP/$qty_ref); ?>
+	      					<?php echo price(price2num($n->totalPRCMO_PMP/$qty_ref,'MT')); ?>
 	      					</td>
 	      				</tr>
 
@@ -919,7 +919,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	      					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', 1); ?></td>
 	      					<td colspan="3">&nbsp;</td>
 	      					<td style="font-weight: bolder; text-align: right;">
-	      					<?php echo price($n->totalPRCMO_OF/$qty_ref); ?>
+	      					<?php echo price(price2num($n->totalPRCMO_OF/$qty_ref,'MT')); ?>
 	      					</td>
 	      				</tr>
 
