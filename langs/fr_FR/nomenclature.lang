@@ -98,11 +98,11 @@ NOMENCLATURE_PERSO_PRICE_APPLY_QTY=Ce déboursé prend en compte la quantité de
 NOMENCLATURE_HIDE_ADVISED_PRICE=Masquer la ligne de prix conseillé dans la nomenclature
 NOMENCLATURE_USE_ON_INVOICE=Utiliser les coûts de revient de nomenclature avec les factures
 NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC=Forcer l'utilsation du prix de vente plutôt que le coût margé (lors de l'ajout d'une ligne propal/commande/facture)
-NOMENCLATURE_USE_QTYREF_TO_ONE=Toujours utiliser la quanté de référence à 1 pour le calcul du coût de revient
+NOMENCLATURE_USE_QTYREF_TO_ONE=Toujours utiliser la quantité de référence à 1 pour le calcul du coût de revient
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Utiliser le champs "Délai avant démarrage" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_PREPARE=Utiliser le champs "Temps de préparation" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_DOING=Utiliser le champs "Temps de fabrication" dans la nomemclature sur les postes de travail
-
+NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION = Permettre de lier une ligne de produit au poste de charge
 CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela créé une boucle infinie
 SetPriceInfiniteLoop=Boucle infinie détectée dans la récupération du prix
 

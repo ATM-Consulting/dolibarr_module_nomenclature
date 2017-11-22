@@ -508,6 +508,7 @@ class TNomenclature extends TObjetStd
                 ,'qty'=>$qty
 				,'childs'=>$childs
                 ,'note_private'=>$d->note_private
+            	,'workstations'=>$d->workstations
             );
 
         }
@@ -627,6 +628,7 @@ class TNomenclatureDet extends TObjetStd
 		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang',array('type'=>'integer', 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
+		$this->add_champs('workstations',array('type'=>'varchar', 'length' => 255));
         $this->add_champs('qty,price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
 

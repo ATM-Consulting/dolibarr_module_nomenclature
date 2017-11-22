@@ -187,6 +187,11 @@ if (empty($reshook))
 	
 		        foreach($tab as $k=>$TDetValues) {
 		            $n->TNomenclatureDet[$k]->set_values($TDetValues);
+		            
+		            if(isset($_POST['TNomenclature_'.$k.'_workstations'])) {
+		            	$n->TNomenclatureDet[$k]->workstations = implode(',', $_POST['TNomenclature_'.$k.'_workstations']);
+		            }
+		            
 		        }
 		    }
 	
@@ -514,6 +519,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 
+									if(!empty($conf->global->NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION)) {
+									
+										if(empty($TWorkstationToSelect)) {
+											$TWorkstationToSelect=array();
+											foreach($n->TNomenclatureWorkstation as &$wsn) {
+												$TWorkstationToSelect[$wsn->workstation->id] = $wsn->workstation->name;
+											}
+										}
+										
+										echo $form->multiselectarray('TNomenclature_'.$k.'_workstations', $TWorkstationToSelect,(empty($det->workstations) ? array() : explode(',', $det->workstations)),0,0,'minwidth300'  );
+										
+									}
+									
                                 ?></td><?php
 
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
@@ -550,7 +568,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                </td>
                                <td>
                                	<?php
-                               		if($conf->asset->enabled && $p_nomdet->id>0){
+                               		if($conf->of->enabled && $p_nomdet->id>0){
 
                                			// On récupère les quantités dans les OF
                                			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
