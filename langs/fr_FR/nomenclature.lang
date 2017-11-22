@@ -58,17 +58,17 @@ NomenclatureErrorAddCoefDoublon=Erreur : le code renseigné existe déjà en bas
 NomenclatureErrorCantDelete=Erreur : impossible de supprimer l'enregistrement car une/plusieurs liaison(s) enfant(s) existe(s).
 
 CoefList=Liste des coefficients
-nomenclatureCoefUpdated=Coefficients mis à jours
-nomenclatureApplyAllCoefOnPriceError=Impossible de mettre les prix à jour, le status du document n'est pas en brouillon
+nomenclatureCoefUpdated=Coefficients mis à jour
+nomenclatureApplyAllCoefOnPriceError=Impossible de mettre les prix à jour, le statut du document n'est pas en brouillon
 
 SaveAll=Sauvegarder les modifications
 PseudoNomenclature=Nomenclature virtuelle du produit 
 PseudoNomenclatureInfo=Nomenclature du produit, pas de la ligne. Le premier niveau sera rattachée à la ligne à sauvegarde, les niveaux inférieurs seront des nomenclatures commune de produits
 
 EditLine=Editer la ligne
-ThisProductCreateAnInfinitLoop=Ce produit ne peut être ajouté car il créé une boucle infinie
+ThisProductCreateAnInfinitLoop=Ce produit ne peut être ajouté car il crée une boucle infinie
 ThisIsAnInfinitLoop=Il y a une boucle infinie dans ce produit, merci de corriger l'appel erroné
-ThereIsTooLevelHere=Trop de niveau a afficher (boucle infinie ?)
+ThereIsTooLevelHere=Trop de niveaux à afficher (boucle infinie ?)
 
 nomenclatureJustMP=Permettre la liaison uniquement avec des matières premières
 
@@ -81,10 +81,10 @@ PricePA=Budget, prix d'achat fixe défini sur la fiche article
 PricePMP=Théorique, prix moyen pondéré (PMP) du produit
 PriceOF=Réel, analyse des OF sur la période
 TotalPricePMP=Total Matière Théorique
-TotalPriceOF=Total Matière Réel
+TotalPriceOF=Total Matière Réelle
 priceMO_OF=Réel, analyse des OF sur la période
 TotalMO_OF=Total M.O. Réel
-massUpdate=Mettre les nomenclature à jour en masse
+massUpdate=Mettre les nomenclatures à jour en masse
 massUpdateMenu=Nomenclature mise à jour en masse
 nomenclatureSpeedSelectClick=Nomenclature Rapide, sélection au clic
 PercentUP=Augmentation en %
@@ -103,14 +103,14 @@ NOMENCLATURE_USE_QTYREF_TO_ONE=Toujours utiliser la quanté de référence à 1 
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Utiliser le champs "Délai avant démarrage" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_PREPARE=Utiliser le champs "Temps de préparation" dans la nomemclature sur les postes de travail
 NOMENCLATURE_USE_TIME_DOING=Utiliser le champs "Temps de fabrication" dans la nomemclature sur les postes de travail
-NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Utiliser le déboursé sec comme prix de reviens
+NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Utiliser le déboursé sec comme prix de revient
 
-ParamSaved=Enregistrement réalisé avec succés
+ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
 CostType2=Prix moyen pondéré (PMP) ou meilleur prix fournisseur si PMP non-défini
 CostType3=Prix de revient si défini sur la fiche produit ou PMP si défini ou meilleur prix fournisseur
 
-CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela créé une boucle infinie
+CantAddProductBecauseOfAnInfiniteLoop=Ce produit ne peut être ajouté car cela crée une boucle infinie
 SetPriceInfiniteLoop=Boucle infinie détectée dans la récupération du prix
 
 DeleteSpecificCoef=Supprimer les coef. spécifiques
