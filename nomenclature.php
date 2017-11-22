@@ -187,6 +187,11 @@ if (empty($reshook))
 	
 		        foreach($tab as $k=>$TDetValues) {
 		            $n->TNomenclatureDet[$k]->set_values($TDetValues);
+		            
+		            if(isset($_POST['TNomenclature_'.$k.'_workstations'])) {
+		            	$n->TNomenclatureDet[$k]->workstations = implode(',', $_POST['TNomenclature_'.$k.'_workstations']);
+		            }
+		            
 		        }
 		    }
 	
@@ -514,6 +519,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 
+									if(!empty($conf->global->NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION)) {
+									
+										if(empty($TWorkstationToSelect)) {
+											$TWorkstationToSelect=array();
+											foreach($n->TNomenclatureWorkstation as &$wsn) {
+												$TWorkstationToSelect[$wsn->workstation->id] = $wsn->workstation->name;
+											}
+										}
+										
+										echo $form->multiselectarray('TNomenclature_'.$k.'_workstations', $TWorkstationToSelect,(empty($det->workstations) ? array() : explode(',', $det->workstations)),0,0,'minwidth300'  );
+										
+									}
+									
                                 ?></td><?php
 
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
@@ -550,7 +568,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
                                </td>
                                <td>
                                	<?php
-                               		if($conf->asset->enabled && $p_nomdet->id>0){
+                               		if($conf->of->enabled && $p_nomdet->id>0){
 
                                			// On récupère les quantités dans les OF
                                			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
@@ -584,8 +602,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price( $price ).img_help(1,$langs->trans('PricePA'));
-										echo '<span class="pricePMP"><br />'.price($det->calculate_price_pmp).img_help(1,$langs->trans('PricePMP')).'</span>';
-										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price($det->calculate_price_of).img_help(1,$langs->trans('PriceOF')).'</span>';
+										echo '<span class="pricePMP"><br />'.price(price2num($det->calculate_price_pmp,'MT')).img_help(1,$langs->trans('PricePMP')).'</span>';
+										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->calculate_price_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
 									}
 									else{
 										echo price($price);
@@ -596,8 +614,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($price_charge);
-										echo '<span class="pricePMP"><br />'.price($det->charged_price_pmp).'</span>';
-										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price($det->charged_price_of).'</span>';
+										echo '<span class="pricePMP"><br />'.price(price2num($det->charged_price_pmp,'MT')).'</span>';
+										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->charged_price_of,'MT')).'</span>';
 									}
 									else{
                                     	echo price($price_charge);
@@ -893,14 +911,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					  ?><tr class="liste_total" >
 		                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', $qty_ref); ?></td>
 		                       <td colspan="3">&nbsp;</td>
-		                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price($n->totalPRCMO_PMP); ?></span></td>
+		                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price(price2num($n->totalPRCMO_PMP,'MT')); ?></span></td>
 				      </tr><?php
 
 				      if(!empty($conf->of->enabled)) {
 					      	?><tr class="liste_total" >
 			                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', $qty_ref); ?></td>
 			                       <td colspan="3">&nbsp;</td>
-			                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price($n->totalPRCMO_OF); ?></span></td>
+			                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price(price2num($n->totalPRCMO_OF,'MT')); ?></span></td>
 					      	</tr><?php
 
 				      }
@@ -911,7 +929,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	      					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', 1); ?></td>
 	      					<td colspan="3">&nbsp;</td>
 	      					<td style="font-weight: bolder; text-align: right;">
-	      					<?php echo price($n->totalPRCMO_PMP/$qty_ref); ?>
+	      					<?php echo price(price2num($n->totalPRCMO_PMP/$qty_ref,'MT')); ?>
 	      					</td>
 	      				</tr>
 
@@ -919,7 +937,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	      					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', 1); ?></td>
 	      					<td colspan="3">&nbsp;</td>
 	      					<td style="font-weight: bolder; text-align: right;">
-	      					<?php echo price($n->totalPRCMO_OF/$qty_ref); ?>
+	      					<?php echo price(price2num($n->totalPRCMO_OF/$qty_ref,'MT')); ?>
 	      					</td>
 	      				</tr>
 
@@ -927,7 +945,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 	      		     }
 		        }
 
-		        if(empty($conf->global->NOMENCLATURE_HIDE_ADVISED_PRICE)) {
+		        if(!empty($conf->global->NOMENCLATURE_HIDE_ADVISED_PRICE))
+				{
+					echo $formCore->hidden('price_to_sell', $price_to_sell);
+				}
+				else {
 		        ?>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100, $qty_ref); ?></td>
