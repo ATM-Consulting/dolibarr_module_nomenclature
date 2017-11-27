@@ -263,10 +263,10 @@ class Interfacenomenclaturetrigger
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
 		global $db,$conf,$user,$langs;
 		
-		if ($object->product_type > 1) return 0;
+		if ($object->product_type > 1 || (empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC) && $object->subprice>0)) return 0; //si on ne prends systématique le PV mais que ce dernier est défini, alors il prend le pas. Pour que le prix calculé soit utilisé, il faut un PV = 0
 
 		$n = new TNomenclature;
-        $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
+	        $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
 		
 		$id = $n->getId();
 		if (empty($id) && empty($n->fk_nomenclature_parent)) return 0; // ça veut dire que pas de nomenclature direct ni de nomenclature d'origine
