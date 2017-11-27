@@ -280,8 +280,9 @@ class Interfacenomenclaturetrigger
 			$sell_price_to_use=$n->totalPV;
 		}
 
-
 		if(empty($sell_price_to_use)) return 0;
+
+		$sell_price_to_use = price2num($sell_price_to_use,'MT'); //round value
 
 		if($object_type=='commande') {
 //		var_dump($n->totalPV, $object_type,$object);exit;
