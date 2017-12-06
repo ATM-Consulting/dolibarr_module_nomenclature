@@ -895,12 +895,17 @@ class TNomenclatureCoef extends TObjetStd
 
 	static function getFirstCodeType(&$PDOdb = false)
 	{
+		global $cacheFirstCodeType;
+
+		if(isset($cacheFirstCodeType))return $cacheFirstCodeType;
+
 		if (!$PDOdb) $PDOdb = new TPDOdb;
 
 		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef');
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			$row = $PDOdb->Get_line();
+			$cacheFirstCodeType = $row->code_type;
 			return $row->code_type;
 		}
 
@@ -963,6 +968,8 @@ class TNomenclatureCoefObject extends TObjetStd
 
 	function loadByTypeByCoef(&$PDOdb, $code_type, $fk_object, $type_object)
 	{
+		if(empty($fk_object) || empty($type_object) )return false;
+
 		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." WHERE code_type='".$code_type."' AND fk_object=".$fk_object." AND type_object='".$type_object."'");
 
 		if($obj = $PDOdb->Get_line())
