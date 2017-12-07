@@ -132,13 +132,13 @@ class TNomenclature extends TObjetStd
 			$totalPRC+= $det->charged_price;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
-				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP');
+				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP') * $det->qty * $coef_qty_price;
 				$totalPR_PMP+= $det->calculate_price_pmp ;
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$totalPRC_PMP+= $det->charged_price_pmp;
 
 				if(!empty($conf->of->enabled)) {
-					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF');
+					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF') * $det->qty * $coef_qty_price;
 					$totalPR_OF+= $det->calculate_price_of ;
 					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
 					$totalPRC_OF+= $det->charged_price_of;
@@ -213,7 +213,7 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
 
         if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
-	{
+		{
       	    $this->qty_reference = $n->qty_reference ;
 
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
@@ -526,6 +526,7 @@ class TNomenclature extends TObjetStd
                 ,'qty'=>$qty
 				,'childs'=>$childs
                 ,'note_private'=>$d->note_private
+            	,'workstations'=>$d->workstations
 				,'rowid'=>$d->rowid
             );
 
@@ -670,6 +671,7 @@ class TNomenclatureDet extends TObjetStd
 		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang',array('type'=>'integer', 'index'=>true));
 		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
+		$this->add_champs('workstations',array('type'=>'varchar', 'length' => 255));
         $this->add_champs('qty,price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
 
@@ -724,8 +726,10 @@ class TNomenclatureDet extends TObjetStd
 
 	function getPMPPrice() {
 		global $db,$conf,$user,$langs;
-
-		dol_include_once('/product/class/product.class.php');
+		
+		if (empty($this->fk_product)) return 0;
+		
+		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 
 		$p=new Product($db);
 		$p->fetch($this->fk_product);
@@ -736,8 +740,10 @@ class TNomenclatureDet extends TObjetStd
 	
 	function getCostPrice() {
 	    global $db,$conf,$user,$langs;
-	    
-	    dol_include_once('/product/class/product.class.php');
+		
+		if (empty($this->fk_product)) return 0;
+		
+		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 	    
 	    $p=new Product($db);
 	    $p->fetch($this->fk_product);
@@ -819,7 +825,7 @@ class TNomenclatureDet extends TObjetStd
 		else  return empty($child_price) ? $price_supplier : $child_price;
 
     }
-    
+
 	//renvoi la nomenclature par defaut du produit de la ligne
 	static function getArboNomenclatureDet(&$PDOdb, &$nomenclatureDet, $qty_to_make, $recursive = false)
 	{
@@ -959,12 +965,17 @@ class TNomenclatureCoef extends TObjetStd
 
 	static function getFirstCodeType(&$PDOdb = false)
 	{
+		global $cacheFirstCodeType;
+
+		if(isset($cacheFirstCodeType))return $cacheFirstCodeType;
+
 		if (!$PDOdb) $PDOdb = new TPDOdb;
 
 		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef');
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			$row = $PDOdb->Get_line();
+			$cacheFirstCodeType = $row->code_type;
 			return $row->code_type;
 		}
 
@@ -1027,6 +1038,8 @@ class TNomenclatureCoefObject extends TObjetStd
 
 	function loadByTypeByCoef(&$PDOdb, $code_type, $fk_object, $type_object)
 	{
+		if(empty($fk_object) || empty($type_object) )return false;
+
 		$PDOdb->Execute("SELECT rowid FROM ".$this->get_table()." WHERE code_type='".$code_type."' AND fk_object=".$fk_object." AND type_object='".$type_object."'");
 
 		if($obj = $PDOdb->Get_line())

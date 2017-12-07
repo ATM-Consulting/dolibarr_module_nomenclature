@@ -185,15 +185,19 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	
     echo "</table>\n";
 	
+	
 	echo '<div class="tabsAction">';
 	
-	if($coef->rowid>0) {
-		echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
-	}
-	
-	echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
+	if ($object->statut == 0)
+	{
+		if($coef->rowid>0) {
+			echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
+		}
 
-	if ($fiche == 'propal') echo '<br /><div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
+		echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
+
+		if ($fiche == 'propal') echo '<br /><div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
+	}
 	
 	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
 	$reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -266,7 +270,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
 		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
 
-		$price_buy = $nomenclature->totalMO+$nomenclature->totalPRC;
+		$price_buy = ($nomenclature->totalMO+$nomenclature->totalPRC) / $line->qty;
 		$price_to_sell = $nomenclature->totalPV / $line->qty;
 		
 		//Puis mettre à jour son prix

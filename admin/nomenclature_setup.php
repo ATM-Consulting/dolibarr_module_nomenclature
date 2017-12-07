@@ -186,7 +186,13 @@ print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_ACTIVATE_DETAILS_COSTS');
 print '</td></tr>';
-
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans('NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION').'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION');
+print '</td></tr>';
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST').'</td>';
