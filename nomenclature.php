@@ -879,11 +879,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 					$commande->fetch($fk_origin);
 					$commande->fetchObjectLinked();
 					
-					foreach($commande->linkedObjects as $type_obj => $TObjectLinked) {
-						if($type_obj != 'propal') continue;
+					if(! empty($commande->linkedObjects['propal'])) {
+						reset($commande->linkedObjects['propal']);
+						$propal = current($commande->linkedObjects['propal']);
 
-						$propal = current($TObjectLinked);
-						$n->setPrice($PDOdb, $n->qty_reference, $propal->id, $type_obj, $propal->id);
+						$n->setPrice($PDOdb, $n->qty_reference, $propal->id, 'propal', $propal->id);
 						$marge = current($n->TCoefObject);
 						$n->save($PDOdb);
 					}
