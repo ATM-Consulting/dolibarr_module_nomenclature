@@ -872,26 +872,24 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 
 		if($user->rights->nomenclature->showPrice) {
-				$fk_origin = GETPOST('fk_origin', 'int');
-				
 				if($object_type == 'commande') {
+					$fk_origin = GETPOST('fk_origin', 'int');
+					
 					$commande = new Commande($db);
 					$commande->fetch($fk_origin);
 					$commande->fetchObjectLinked();
 					
-					if(! empty($commande->linkedObjects)) {
-						foreach($commande->linkedObjects as $type_obj => $TObjectLinked) {
-							if($type_obj != 'propal') continue;
-							
-							$propal = current($TObjectLinked);
-							$n->setPrice($PDOdb, $n->qty_reference, $propal->id, $type_obj, $propal->id);
-							$marge = current($n->TCoefObject);
-							$n->save($PDOdb);
-						}
+					foreach($commande->linkedObjects as $type_obj => $TObjectLinked) {
+						if($type_obj != 'propal') continue;
+
+						$propal = current($TObjectLinked);
+						$n->setPrice($PDOdb, $n->qty_reference, $propal->id, $type_obj, $propal->id);
+						$marge = current($n->TCoefObject);
+						$n->save($PDOdb);
 					}
 				}
 				else {
-					$marge = TNomenclatureCoefObject::getMarge($PDOdb, $commande, $object_type);
+					$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 				}
 				$PR_coef = price2num($n->totalMO+$n->totalPRC,'MT');
 				if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) {
