@@ -137,6 +137,7 @@ class Interfacenomenclaturetrigger
 			$origin = GETPOST('origin');
 			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
 
+			// Module Workflow 
 			if(empty($origin) && empty($origin_id) && ! empty($object->context['origin']) && ! empty($object->context['origin_id'])) {
 				$origin = $object->context['origin'];
 				$origin_id = $object->context['origin_id'];
