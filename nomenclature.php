@@ -6,6 +6,8 @@ dol_include_once('/fourn/class/fournisseur.product.class.php');
 dol_include_once('/core/class/html.formother.class.php');
 dol_include_once('/core/lib/product.lib.php');
 dol_include_once('/nomenclature/class/nomenclature.class.php');
+dol_include_once('/commande/class/commande.class.php');
+dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 
@@ -32,11 +34,19 @@ $PDOdb=new TPDOdb;
 $fk_object=(int)GETPOST('fk_object');
 $fk_nomenclature=(int)GETPOST('fk_nomenclature');
 $object_type = GETPOST('object_type');
+$fk_origin = GETPOST('fk_origin');
 
 if(empty($object_type)) {
     $object_type='product';
     $fk_object = $product->id;
 }
+
+if(! empty($object_type)) {
+	$class = ucfirst($object_type);
+	$object = new $class($db);
+	if(! empty($fk_origin)) $object->fetch($fk_origin);
+}
+
 /*
  * Actions
  */
@@ -70,7 +80,6 @@ if (empty($reshook))
 	    $n->set_values($_REQUEST);
 	    $n->save($PDOdb);
 	
-	
 	}
 	else if($action==='add_fk_nomenclature') {
 		//TODO ajouter les enfants de la nomenclature passé en post à la nomenclature courrante
@@ -100,7 +109,6 @@ if (empty($reshook))
 		$n->TNomenclatureWorkstation[$k]->to_delete = true;
 		$n->save($PDOdb);
 	    }
-	
 	}
 	else if($action==='save_nomenclature') {
 	
@@ -135,10 +143,9 @@ if (empty($reshook))
 					$n=new TNomenclature;
 					$n->load($PDOdb, $fk_nomenclature);
 	
-	
 					$commande = new Commande($db);
 					$commande->fetch(GETPOST('fk_origin', 'int'));
-	
+
 					foreach ($commande->lines as $line)
 					{
 						if ($line->id == $fk_object)
@@ -221,9 +228,9 @@ if (empty($reshook))
 		    }
 	
 			setEventMessage($langs->trans('NomenclatureSaved'));
-	
+
 			$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
-	
+
 		    $n->save($PDOdb);
 		}
 	
@@ -236,17 +243,15 @@ if($object_type != 'product') {
 
     $n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, GETPOST('fk_origin'));
-    _fiche_nomenclature($PDOdb, $n, $product, $fk_object, $object_type, $qty_ref);
+    _fiche_nomenclature($PDOdb, $n, $product, $object, $fk_object, $object_type, $qty_ref);
 
 }
 else{
-	_show_product_nomenclature($PDOdb, $product, $qty_ref);
+	_show_product_nomenclature($PDOdb, $product, $object, $qty_ref);
 }
 
-
-
 $db->close();
-function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
+function _show_product_nomenclature(&$PDOdb, &$product, &$object, $qty_ref) {
 	global $user, $langs, $db, $conf;
 
 	llxHeader('',$langs->trans('Nomenclature'));
@@ -287,10 +292,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 
 	foreach($TNomenclature as $iN => &$n) {
 		echo '<div class="tabBar">';
-	    _fiche_nomenclature($PDOdb, $n, $product, $product->id, 'product',$qty_ref);
+	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product',$qty_ref);
 		echo '</div>';
 	}
-
 
 	?>
 	<div class="tabsAction">
@@ -354,13 +358,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, $qty_ref) {
 
 	dol_fiche_end();
 
-
-
 	llxFooter();
 
-
 }
-
 
 function get_format_libelle_produit($fk_product = null) {
 	global $db;
@@ -377,7 +377,7 @@ function get_format_libelle_produit($fk_product = null) {
 	}
 }
 
-function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type='product', $qty_ref=1) {
+function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $object_type='product', $qty_ref=1) {
 	global $langs, $conf, $db, $user, $hookmanager;
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
@@ -437,8 +437,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 			}
 		});
-
-
 
 	});
 	</script>
@@ -883,7 +881,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, $fk_object=0, $object_type=
 
 
 		if($user->rights->nomenclature->showPrice) {
-				$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
+				if($object_type == 'commande') {
+					$fk_origin = GETPOST('fk_origin', 'int');
+					
+					$commande = new Commande($db);
+					$commande->fetch($fk_origin);
+					$commande->fetchObjectLinked();
+					
+					$TLinkedObjects = $commande->linkedObjects['propal'];
+					if(! empty($TLinkedObjects)) {
+						reset($TLinkedObjects);
+						$propal = current($TLinkedObjects);
+
+						$n->setPrice($PDOdb, $n->qty_reference, $propal->id, 'propal', $propal->id);
+						$marge = current($n->TCoefObject);
+						$n->save($PDOdb);
+					}
+				}
+				else {
+					$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
+				}
 				$PR_coef = price2num($n->totalMO+$n->totalPRC,'MT');
 				if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) {
 					$price_buy =  price2num($n->totalMO+$n->totalPRC,'MT');
