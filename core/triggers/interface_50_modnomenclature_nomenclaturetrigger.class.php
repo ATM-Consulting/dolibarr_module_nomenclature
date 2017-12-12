@@ -134,8 +134,8 @@ class Interfacenomenclaturetrigger
 			if ($object->product_type == 9)	return 0;
 
 				// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
-			$origin = GETPOST('origin');
-			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
+			$origin = $object->context['origin'];//GETPOST('origin');
+			$origin_id = $object->context['origin_id'];//GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
 
 			if ($origin !== 'propal' || empty($origin_id)) {
 				null;
