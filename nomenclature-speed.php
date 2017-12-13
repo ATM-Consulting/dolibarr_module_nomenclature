@@ -28,7 +28,7 @@
 	
 	if(empty($object))exit;
 	$PDOdb=new TPDOdb;
-	
+
 	$TProductAlreadyInPage=array();
 	
 	_drawlines($object, $object_type);
@@ -92,6 +92,18 @@ global $db,$langs,$conf,$PDOdb;
                 print '</table>';
 
         }
+
+
+	if($object->fk_statut>0 || $object->statut>0) {
+
+		echo '<div class="error">'. $langs->trans('StatusOfObjectAvoidEdit') .'</div>';
+		
+
+		llxFooter();
+		exit;
+	}
+
+
 
 	?><script type="text/javascript">
 		var fk_object=<?php echo $object->id; ?>;
