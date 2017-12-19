@@ -50,6 +50,21 @@ class TNomenclature extends TObjetStd
             $det->reinit();
         }
     }
+	
+	function getBuyPrice()
+	{
+		global $conf;
+		
+		if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) $price_buy =  price2num($this->totalMO + $this->totalPRC, 'MT');
+		else $price_buy =  price2num($this->totalMO + $this->totalPR, 'MT');
+		
+		return $price_buy;
+	}
+	
+	function getSellPrice()
+	{
+		return price2num($this->totalPV, 'MT');
+	}
 
 	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
 

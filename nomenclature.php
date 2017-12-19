@@ -111,58 +111,8 @@ if (empty($reshook))
 	    }
 	}
 	else if($action==='save_nomenclature') {
-	
-		if (GETPOST('apply_nomenclature_price'))
-		{
-			$price_buy_init = GETPOST('price_buy');
-			$price_to_sell_init = GETPOST('price_to_sell');
-	
-			switch ($object_type) {
-				case 'propal':
-					dol_include_once('/comm/propal/class/propal.class.php');
-					$n=new TNomenclature;
-					$n->load($PDOdb, $fk_nomenclature, false, 0 , 1, GETPOST('fk_origin', 'int'), $object_type);
-	
-					$propal = new Propal($db);
-					$propal->fetch(GETPOST('fk_origin', 'int'));
-	
-					foreach ($propal->lines as $line)
-					{
-						if ($line->id == $fk_object)
-						{
-							$price_buy = $price_buy_init / $line->qty;
-							$price_to_sell = $price_to_sell_init / $line->qty;
-	
-							$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
-						}
-					}
-	
-					break;
-				case 'commande':
-					dol_include_once('/commande/class/commande.class.php');
-					$n=new TNomenclature;
-					$n->load($PDOdb, $fk_nomenclature);
-	
-					$commande = new Commande($db);
-					$commande->fetch(GETPOST('fk_origin', 'int'));
-
-					foreach ($commande->lines as $line)
-					{
-						if ($line->id == $fk_object)
-						{
-							$productCommandLine = new Product($db);
-							$productCommandLine->fetch($fk_product);
-							$price_buy = $price_buy_init / $line->qty;
-							$price_to_sell = $price_to_sell_init / $line->qty;
-	
-							$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $productCommandLine->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
-						}
-					}
-					break;
-			}
-	
-		}
-		elseif (GETPOST('clone_nomenclature'))
+		
+		if (GETPOST('clone_nomenclature'))
 		{
 			$n=new TNomenclature;
 			$n->load($PDOdb, $fk_nomenclature);
@@ -232,8 +182,57 @@ if (empty($reshook))
 			$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
 
 		    $n->save($PDOdb);
+			
+			// Fait l'update du PA et PU de la ligne si nécessaire
+			_updateObjectLine($n, $object_type, $fk_object);
+			
 		}
 	
+	}
+}
+
+function _updateObjectLine(&$n, $object_type, $fk_object)
+{
+	global $db;
+	
+	if (GETPOST('apply_nomenclature_price'))
+	{
+		// On ne passe plus par du GETPOST() des montants mais par l'objet même qui est mis à jour juste avant
+		$price_buy = $n->getBuyPrice();
+		$price_to_sell =  $n->getSellPrice();
+
+		switch ($object_type) {
+			case 'propal':
+				dol_include_once('/comm/propal/class/propal.class.php');
+
+				$propal = new Propal($db);
+				$propal->fetch(GETPOST('fk_origin', 'int'));
+
+				foreach ($propal->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+					}
+				}
+
+				break;
+			case 'commande':
+				dol_include_once('/commande/class/commande.class.php');
+
+				$commande = new Commande($db);
+				$commande->fetch(GETPOST('fk_origin', 'int'));
+
+				foreach ($commande->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
+					}
+				}
+				break;
+		}
+
 	}
 }
 
@@ -902,12 +901,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
 				}
 				$PR_coef = price2num($n->totalMO+$n->totalPRC,'MT');
-				if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) {
-					$price_buy =  price2num($n->totalMO+$n->totalPRC,'MT');
-				} else {
-					$price_buy =  price2num($n->totalMO+$n->totalPR,'MT');
-				}
-				$price_to_sell =  price2num($n->totalPV,'MT');
+				$price_buy = $n->getBuyPrice();
+				$price_to_sell =  $n->getSellPrice();
 				if(empty($qty_ref)) $qty_ref = $n->qty_reference;
 		        ?>
 		        <tr class="liste_total" >
