@@ -152,7 +152,18 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : $background_line  ).'">';
 			echo '<td>&nbsp;'.$coef->label.( $coef->rowid>0 ? '' : img_help(1,$langs->trans('CoefGenericSaveForSpecific') ) ).'</td>';
 			echo '<td>'.$coef->description.'</td>';
-			echo '<td><input name="'.$name.'" value="'.$coef->tx_object.'" size="5" /></td>';
+			echo '<td>';
+			
+			// Si on est sur une propal et que son statut est > à brouillon alors on affiche juste la valeur
+			if ($object->element == 'propal' && $object->statut > 0)
+			{
+				echo $coef->tx_object;
+			}
+			else
+			{
+				print '<input name="'.$name.'" value="'.$coef->tx_object.'" size="5" />';
+			}
+			echo '</td>';
 			echo '</tr>';
 		}
 	}
@@ -173,7 +184,17 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 				echo '<tr style="background:'.( $thm_object->getId()>0 ? 'white' : $background_line  ).'">';
 				echo '<td>&nbsp;'.$thm_object->label.( $thm_object->getId()>0 ? '' : img_help(1,$langs->trans('ThmGenericSaveForSpecific') ) ).'</td>';
 				echo '<td>'.$thm_object->description.'</td>';
-				echo '<td><input name="'.$name.'" value="'.$thm_object->thm_object.'" size="5" /></td>';
+				echo '<td>';
+				// Si on est sur une propal et que son statut est > à brouillon alors on affiche juste la valeur
+				if ($object->element == 'propal' && $object->statut > 0)
+				{
+					echo $thm_object->thm_object;
+				}
+				else
+				{
+					echo '<input name="'.$name.'" value="'.$thm_object->thm_object.'" size="5" />';
+				}
+				echo '</td>';
 				echo '</tr>';
 			}
 		}
@@ -191,12 +212,12 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	if ($object->statut == 0)
 	{
 		if($coef->rowid>0) {
-			echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
+			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
 		}
 
-		echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
-
-		if ($fiche == 'propal') echo '<br /><div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
+		// l'action par défaut = updatecoef (donc sur une propal il est préférable de ne pas laisser la possibilité au client d'enregistrer des coefs custom sans les appliquer)
+		if ($fiche == 'propal') echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
+		else echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
 	}
 	
 	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
