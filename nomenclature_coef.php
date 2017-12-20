@@ -24,6 +24,10 @@ if(GETPOST('deleteSpecific')) {
 	}
 	
 	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, GETPOST('id'), $fiche);
+	
+	// Si je supprime les coef custom, alors je dois ré-appliquer en automatique les prix de vente (sinon ça veut dire qu'on laisse la possibilité de supprimer les coef et de garder des montants lignes incohérents)
+	if ($fiche == 'propal') _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
+	
 	header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?socid='.GETPOST('id', 'int').'&id='.GETPOST('id', 'int').'&fiche='.$fiche, 1));
 	exit;
 	

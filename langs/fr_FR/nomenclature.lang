@@ -22,10 +22,12 @@ Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
 TotalAmountCostWithCharge=Coût de revient chargé pour %s exemplaire(s)
+TotalAmountCostWithChargeUnit=Coût de revient chargé pour 1 exemplaire
 TotalAmountCostWithChargePMP=Coût de revient chargé théorique pour %s exemplaire(s)
 TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
 AmountCostWithChargeCustom=Coût perso
 PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
+PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
 
 NomenclatureSaved=Nomenclature enregistrée
 WorkstationAlreadyAssociated=Ce poste de charge est déjà associé à cette nomenclature
