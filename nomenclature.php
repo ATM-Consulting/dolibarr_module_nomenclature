@@ -1024,14 +1024,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                    <?php } ?>
 
-                   
+					<div class="inline-block divButAction">
+						<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
+					</div>
 					<?php if ($json) { ?>
 						<div class="inline-block divButAction">
 							<input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
-						</div>
-					<?php } else { ?>
-						<div class="inline-block divButAction">
-							<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 						</div>
 					<?php } ?>
 
