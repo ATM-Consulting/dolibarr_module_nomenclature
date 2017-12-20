@@ -277,7 +277,7 @@ class Interfacenomenclaturetrigger
 		$id = $n->getId();
 		if (empty($id) && empty($n->fk_nomenclature_parent)) return 0; // ça veut dire que pas de nomenclature direct ni de nomenclature d'origine
 		
-		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type);
+		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type, $fk_parent);
 
 
 		if (!empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC)) {

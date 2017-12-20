@@ -125,7 +125,7 @@ if (empty($reshook))
 			$n=new TNomenclature;
 	
 		    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
-		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, GETPOST('fk_origin'));
+		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin);
 	
 			if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
 				$n->reinit();
@@ -179,7 +179,7 @@ if (empty($reshook))
 	
 			setEventMessage($langs->trans('NomenclatureSaved'));
 
-			$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type);
+			$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type, $fk_origin);
 
 		    $n->save($PDOdb);
 			
@@ -879,27 +879,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         }
 
 
-		if($user->rights->nomenclature->showPrice) {
-				if($object_type == 'commande') {
-					$fk_origin = GETPOST('fk_origin', 'int');
-					
-					$commande = new Commande($db);
-					$commande->fetch($fk_origin);
-					$commande->fetchObjectLinked();
-					
-					$TLinkedObjects = $commande->linkedObjects['propal'];
-					if(! empty($TLinkedObjects)) {
-						reset($TLinkedObjects);
-						$propal = current($TLinkedObjects);
-
-						$n->setPrice($PDOdb, $n->qty_reference, $propal->id, 'propal', $propal->id);
-						$marge = current($n->TCoefObject);
-						$n->save($PDOdb);
-					}
-				}
-				else {
-					$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
-				}
+		if($user->rights->nomenclature->showPrice)
+		{
+				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload 
+				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
+				$marge = $n->marge_object;
+				
 				$PR_coef = price2num($n->totalMO+$n->totalPRC,'MT');
 				$price_buy = $n->getBuyPrice();
 				$price_to_sell =  $n->getSellPrice();
@@ -915,7 +900,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		        if($qty_ref!=1 && !empty($qty_ref)) {
 	        	?>
 				<tr class="liste_total" >
-					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', 1); ?></td>
+					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeUnit'); ?></td>
 					<td colspan="3">&nbsp;</td>
 					<td style="font-weight: bolder; text-align: right;">
 					<?php echo price($PR_coef/$qty_ref); ?>
@@ -977,6 +962,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        	<?php echo $formCore->hidden('price_to_sell', $price_to_sell); ?>
                        </td>
 		        </tr>
+				
+					<?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+					<tr class="liste_total" >
+						   <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseilUnit', ($marge->tx_object -1)* 100); ?></td>
+						   <td colspan="3">&nbsp;</td>
+						   <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell / $qty_ref); ?></td>
+					</tr>
+					<?php } ?>
 		        <?php
 		        }
 		}
@@ -1031,13 +1024,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                    <?php } ?>
 
-                   <div class="inline-block divButAction">
-	                   <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
-	               </div>
-
+                   
 					<?php if ($json) { ?>
 						<div class="inline-block divButAction">
 							<input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
+						</div>
+					<?php } else { ?>
+						<div class="inline-block divButAction">
+							<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 						</div>
 					<?php } ?>
 

@@ -85,14 +85,37 @@ class TNomenclature extends TObjetStd
 	    switch ($object_type)
         {
            case 'propal':
-               	dol_include_once('/comm/propal/class/propal.class.php');
-               	dol_include_once('/societe/class/societe.class.php');
+               	require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+               	require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+				
 				$object = new Propal($db);
 	  		 	$object->fetch($fk_origin);
 				$object->fetch_thirdparty();
-				$object_type_string = 'propal';
+				
 				break;
-
+		   case 'commande':
+			   require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+			   require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+			   
+			   $commande = new Commande($db);
+			   if ($commande->fetch($fk_origin) > 0)
+			   {
+				   $commande->fetchObjectLinked();
+				   if (!empty($commande->linkedObjects['propal']))
+				   {
+					   // Récupération de la propal d'origine pour récupérer ses coef
+					   $object = current($commande->linkedObjects['propal']);
+					   $object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
+				   }
+			   }
+			   else
+			   {
+				   dol_print_error($db);
+			   }
+			   
+			   break;
+			   
+			  // TODO le cas "facture" semble exister sur un déclanchement de trigger LINEBILL_INSERT, il faudrait potentiellement remonter à la commande d'origin puis à la propal d'origin pour récup les coef custom
         }
 
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
@@ -191,6 +214,7 @@ class TNomenclature extends TObjetStd
 		$this->totalMO_OF = $total_mo_of;
 
 		$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
+		$this->marge_object = $marge;
 		$this->marge = $marge->tx_object;
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
