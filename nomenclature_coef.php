@@ -215,13 +215,13 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	
 	if ($object->statut == 0)
 	{
-		if($coef->rowid>0) {
-			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
-		}
-
 		// l'action par défaut = updatecoef (donc sur une propal il est préférable de ne pas laisser la possibilité au client d'enregistrer des coefs custom sans les appliquer)
 		if ($fiche == 'propal') echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
 		else echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
+		
+		if($coef->rowid>0) {
+			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
+		}
 	}
 	
 	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
