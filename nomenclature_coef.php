@@ -2,6 +2,7 @@
 
 require 'config.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
+dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 
 $hookmanager->initHooks(array('nomenclature_coef'));
 
@@ -267,6 +268,8 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 
 function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_type)
 {
+//	dol_include_once('/nomenclature/nomenclature.php');
+	
 	$id = GETPOST('id', 'int');
 	
 	switch ($object_type) {
@@ -294,12 +297,8 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
 		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
-
-		$price_buy = ($nomenclature->totalMO+$nomenclature->totalPRC) / $line->qty;
-		$price_to_sell = $nomenclature->totalPV / $line->qty;
 		
-		//Puis mettre à jour son prix
-		if ($object->element == 'propal')$object->updateline($line->id, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+		_updateObjectLine($nomenclature, $object_type, $line->id, false, array('apply_nomenclature_price' => 1, 'fk_origin' => $object->id));
 		
 	}
 	
