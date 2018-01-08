@@ -217,8 +217,7 @@ class TNomenclature extends TObjetStd
 		$this->marge_object = $marge;
 		$this->marge = $marge->tx_object;
 
-		if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) $this->totalPRCMO = $this->totalMO + $this->totalPR;
-		else $this->totalPRCMO = $this->totalMO + $this->totalPRC;
+		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 		$this->totalPV = $this->totalPRCMO * $marge->tx_object;
 
 		if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
