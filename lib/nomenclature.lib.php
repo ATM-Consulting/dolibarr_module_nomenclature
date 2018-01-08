@@ -73,3 +73,48 @@ function cloneNomenclatureFromProduct(&$PDOdb, $fk_product, $fk_object, $object_
     
     if (!$json) setEventMessage('NomenclatureCloned');
 }
+
+function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nomenclature_price=false)
+{
+	global $db;
+
+	if (! empty($apply_nomenclature_price))
+	{
+		// On ne passe plus par du GETPOST() des montants mais par l'objet même qui est mis à jour juste avant
+		$price_buy = $n->getBuyPrice();
+		$price_to_sell =  $n->getSellPrice();
+
+		switch ($object_type) {
+			case 'propal':
+				dol_include_once('/comm/propal/class/propal.class.php');
+				
+				$propal = new Propal($db);
+				$propal->fetch($fk_origin);
+				
+				foreach ($propal->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+					}
+				}
+
+				break;
+			case 'commande':
+				dol_include_once('/commande/class/commande.class.php');
+
+				$commande = new Commande($db);
+				$commande->fetch(GETPOST('fk_origin', 'int'));
+
+				foreach ($commande->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$commande->updateline($fk_object, $line->desc, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
+					}
+				}
+				break;
+		}
+
+	}
+}

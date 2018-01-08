@@ -2,6 +2,7 @@
 
 require 'config.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
+dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 
 $hookmanager->initHooks(array('nomenclature_coef'));
 
@@ -215,13 +216,13 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	
 	if ($object->statut == 0)
 	{
-		if($coef->rowid>0) {
-			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
-		}
-
 		// l'action par défaut = updatecoef (donc sur une propal il est préférable de ne pas laisser la possibilité au client d'enregistrer des coefs custom sans les appliquer)
 		if ($fiche == 'propal') echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
 		else echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
+		
+		if($coef->rowid>0) {
+			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
+		}
 	}
 	
 	$parameters = array('paramid'=>$paramid, 'fiche'=>$fiche, 'id'=>$id);
@@ -267,6 +268,8 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 
 function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_type)
 {
+//	dol_include_once('/nomenclature/nomenclature.php');
+	
 	$id = GETPOST('id', 'int');
 	
 	switch ($object_type) {
@@ -293,13 +296,10 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
-		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
-
-		$price_buy = ($nomenclature->totalMO+$nomenclature->totalPRC) / $line->qty;
-		$price_to_sell = $nomenclature->totalPV / $line->qty;
+//		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
+		$nomenclature->setPrice($PDOdb,$nomenclature->qty_reference,$line->id,'propal',$object->id);
 		
-		//Puis mettre à jour son prix
-		if ($object->element == 'propal')$object->updateline($line->id, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+		_updateObjectLine($nomenclature, $object_type, $line->id, $object->id, true);
 		
 	}
 	
