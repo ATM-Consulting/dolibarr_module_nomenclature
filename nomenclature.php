@@ -184,7 +184,7 @@ if (empty($reshook))
 		    $n->save($PDOdb);
 			
 			// Fait l'update du PA et PU de la ligne si nécessaire
-			_updateObjectLine($n, $object_type, $fk_object);
+			_updateObjectLine($n, $object_type, $fk_object, GETPOST('fk_origin'), GETPOST('apply_nomenclature_price'));
 			
 		}
 	

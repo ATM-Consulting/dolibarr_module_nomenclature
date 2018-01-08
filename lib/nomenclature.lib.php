@@ -74,44 +74,27 @@ function cloneNomenclatureFromProduct(&$PDOdb, $fk_product, $fk_object, $object_
     if (!$json) setEventMessage('NomenclatureCloned');
 }
 
-function _updateObjectLine(&$n, $object_type, $fk_object, $from_line = true, $TParam = array())
+function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nomenclature_price=false)
 {
 	global $db;
-	
-	if(! $from_line) {
-//		$apply_nomenclature_price = $TParam['apply_nomenclature_price'];
-//		$fk_origin = $TParam['fk_origin'];
-		foreach($TParam as $key => $value) {
-			${$key} = $value;
-		}
-	}
-	
-	if (GETPOST('apply_nomenclature_price') || ! empty($apply_nomenclature_price))
+
+	if (! empty($apply_nomenclature_price))
 	{
 		// On ne passe plus par du GETPOST() des montants mais par l'objet même qui est mis à jour juste avant
 		$price_buy = $n->getBuyPrice();
 		$price_to_sell =  $n->getSellPrice();
-		
+
 		switch ($object_type) {
 			case 'propal':
 				dol_include_once('/comm/propal/class/propal.class.php');
-
+				
 				$propal = new Propal($db);
-				if(empty($fk_origin)) {
-					$propal->fetch(GETPOST('fk_origin', 'int'));
-				}
-				else {
-					$propal->fetch($fk_origin);
-				}
+				$propal->fetch($fk_origin);
 				
 				foreach ($propal->lines as $line)
 				{
 					if ($line->id == $fk_object)
 					{
-						if(! $from_line) {
-							$price_buy /= $line->qty;
-							$price_to_sell /= $line->qty;
-						}
 						$propal->updateline($fk_object, $price_to_sell, $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $price_buy, $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
 					}
 				}
