@@ -78,6 +78,16 @@ class TNomenclature extends TObjetStd
 		return price2num($this->totalPV / $qty_ref, 'MT');
 	}
 
+	/**
+	 * Doit calculer au global et non unitairement
+	 * 
+	 * @param TPDOdb $PDOdb
+	 * @param float $qty_ref		qty de référence pour calculer un coefficient avec l'attribut qty_reference de la nomenclature (devrait s'appeler autrement du genre qty_produite ou qty_de_production)
+	 * @param int $fk_object		not used
+	 * @param string $object_type	string : "product", "propal", "commande"
+	 * @param int $fk_origin		rowid propal ou commande
+	 * @return float
+	 */
 	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
 
 		global $db,$langs,$conf;
