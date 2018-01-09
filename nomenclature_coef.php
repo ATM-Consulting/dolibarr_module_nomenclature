@@ -296,8 +296,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
-//		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
-		$nomenclature->setPrice($PDOdb,$nomenclature->qty_reference,$line->id,'propal',$object->id);
+		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
 		
 		_updateObjectLine($nomenclature, $object_type, $line->id, $object->id, true);
 		

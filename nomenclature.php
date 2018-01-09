@@ -25,7 +25,7 @@ $fk_product = GETPOST('fk_product', 'int');
 $product_ref = GETPOST('ref', 'alpha');
 if ($fk_product || $product_ref) $product->fetch($fk_product, $product_ref);
 
-$qty_ref = (float)GETPOST('qty_ref');
+$qty_ref = (float)GETPOST('qty_ref'); // il s'agit de la qty de la ligne de document, si vide alors il faudra utiliser qty_reference de la nomenclature
 
 $action= GETPOST('action');
 
@@ -125,7 +125,7 @@ if (empty($reshook))
 			$n=new TNomenclature;
 			
 		    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
-		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin);
+		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
 	
 			if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
 				$n->reinit();
@@ -179,7 +179,9 @@ if (empty($reshook))
 	
 			setEventMessage($langs->trans('NomenclatureSaved'));
 			
-			$n->setPrice($PDOdb,$n->qty_reference,$n->fk_object,$n->object_type, $fk_origin);
+			if (empty($qty_ref)) $qty_ref = $n->qty_reference; // si vide alors le save provient de l'onglet "Ouvrage" depuis un produit
+			
+			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
 
 		    $n->save($PDOdb);
 			
@@ -201,11 +203,11 @@ if($object_type != 'product') {
 
 }
 else{
-	_show_product_nomenclature($PDOdb, $product, $object, $qty_ref);
+	_show_product_nomenclature($PDOdb, $product, $object);
 }
 
 $db->close();
-function _show_product_nomenclature(&$PDOdb, &$product, &$object, $qty_ref) {
+function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	global $user, $langs, $db, $conf;
 
 	llxHeader('',$langs->trans('Nomenclature'));
@@ -246,7 +248,8 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object, $qty_ref) {
 
 	foreach($TNomenclature as $iN => &$n) {
 		echo '<div class="tabBar">';
-	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product',$qty_ref);
+		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
+	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
 		echo '</div>';
 	}
 
@@ -840,10 +843,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
 				$marge = $n->marge_object;
 				
-				$PR_coef = price2num($n->totalMO+$n->totalPRC,'MT');
-				$price_buy = $n->getBuyPrice();
-				$price_to_sell =  $n->getSellPrice();
-				if(empty($qty_ref)) $qty_ref = $n->qty_reference;
+				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
+				$price_buy = $n->getBuyPrice(); // prix d'achat total
+				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
 		        ?>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
@@ -852,6 +854,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        	<?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
 		        </tr><?php
 
+				// On affiche aussi à l'unité
 		        if($qty_ref!=1 && !empty($qty_ref)) {
 	        	?>
 				<tr class="liste_total" >
@@ -918,7 +921,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        </td>
 		        </tr>
 				
-					<?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+					<?php 
+					// On affiche aussi à l'unité
+					if($qty_ref!=1 && !empty($qty_ref)) { 
+					?>
 					<tr class="liste_total" >
 						   <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseilUnit', ($marge->tx_object -1)* 100); ?></td>
 						   <td colspan="3">&nbsp;</td>

@@ -51,19 +51,31 @@ class TNomenclature extends TObjetStd
         }
     }
 	
-	function getBuyPrice()
+	/**
+	 * Renvoi le prix d'achat de la nomenclature
+	 * 
+	 * @param	int		$qty_ref	permet de renvoyer le cout "unitaire" (depuis une ligne de document, cette qty est celle de la ligne de document, mais depuis l'onglet "Ouvrage" c'est normalement qty_reference de la nomenclature même)
+	 * @return type
+	 */
+	function getBuyPrice($qty_ref=1)
 	{
 		global $conf;
 		
 		if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) $price_buy =  price2num($this->totalMO + $this->totalPRC, 'MT');
 		else $price_buy =  price2num($this->totalMO + $this->totalPR, 'MT');
 		
-		return $price_buy;
+		return $price_buy / $qty_ref;
 	}
 	
-	function getSellPrice()
+	/**
+	 * Renvoi le prix de vente de la nomenclature
+	 * 
+	 * @param	int		$qty_line	permet de renvoyer le prix de vente "unitaire" (depuis une ligne de document, cette qty est celle de la ligne de document, mais depuis l'onglet "Ouvrage" c'est normalement qty_reference de la nomenclature même)
+	 * @return type
+	 */
+	function getSellPrice($qty_ref=1)
 	{
-		return price2num($this->totalPV, 'MT');
+		return price2num($this->totalPV / $qty_ref, 'MT');
 	}
 
 	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
@@ -80,7 +92,7 @@ class TNomenclature extends TObjetStd
 		} 	
 
 		if(empty($qty_ref))$coef_qty_price = 1;
-		else $coef_qty_price = $qty_ref / $this->qty_reference;
+		else $coef_qty_price = $qty_ref / $this->qty_reference; // $this->qty_reference = qty produite pour une unité de nomenclature (c'est une qté de production)
 
 	    switch ($object_type)
         {
@@ -186,6 +198,7 @@ class TNomenclature extends TObjetStd
 			}
 
 		}
+		
 		$this->totalPR = $totalPR;
 		$this->totalPRC = $totalPRC;
 
