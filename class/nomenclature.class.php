@@ -101,8 +101,9 @@ class TNomenclature extends TObjetStd
 			return false;
 		} 	
 
-		if(empty($qty_ref))$coef_qty_price = 1;
-		else $coef_qty_price = $qty_ref / $this->qty_reference; // $this->qty_reference = qty produite pour une unité de nomenclature (c'est une qté de production)
+		if (empty($qty_ref)) $qty_ref = $this->qty_reference; // si vide alors le save provient de l'onglet "Ouvrage" depuis un produit
+		
+		$coef_qty_price = $qty_ref / $this->qty_reference; // $this->qty_reference = qty produite pour une unité de nomenclature (c'est une qté de production)
 
 	    switch ($object_type)
         {

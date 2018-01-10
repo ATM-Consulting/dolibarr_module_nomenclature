@@ -179,8 +179,6 @@ if (empty($reshook))
 	
 			setEventMessage($langs->trans('NomenclatureSaved'));
 			
-			if (empty($qty_ref)) $qty_ref = $n->qty_reference; // si vide alors le save provient de l'onglet "Ouvrage" depuis un produit
-			
 			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
 
 		    $n->save($PDOdb);
