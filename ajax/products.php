@@ -177,8 +177,13 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 		return;
 
 		// When used from jQuery, the search term is added as GET param "term".
-	$searchkey = ((GETPOST($idprod) && GETPOST($idprod) !== 'BadFirstParameterForGETPOST') ? GETPOST($idprod) : ((GETPOST($htmlname) && GETPOST($htmlname) !== 'BadFirstParameterForGETPOST') ? GETPOST($htmlname) : ''));
-
+	$searchkey='';
+	if(GETPOST($idprod) && GETPOST($idprod) !== 'BadFirstParameterForGETPOST') {
+		$searchkey = GETPOST($idprod);
+	} elseif(GETPOST($htmlname) && GETPOST($htmlname) !== 'BadFirstParameterForGETPOST'){
+		$searchkey = GETPOST($htmlname);
+	}
+	
 	$form = new Form($db);
 	if (empty($mode) || $mode == 1) {
 		$arrayresult = $form->select_produits_list("", $htmlname, $type, "", $price_level, $searchkey, $status, 2, $outjson, $socid);
