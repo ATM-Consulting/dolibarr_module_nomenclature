@@ -10,6 +10,7 @@ dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 
 if($conf->workstation->enabled) {
     dol_include_once('/workstation/class/workstation.class.php');
@@ -444,6 +445,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
 		                        <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php } ?>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> <th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
                            		?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
@@ -565,9 +568,24 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                		echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
 							    ?></td>
+								
+								<?php if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?>
+								
+									<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
+	                               
+		                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
+		                               	&nbsp;<input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][tx_custom2]" style="width:50px;" value="<?php echo empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2; ?>"/>
+		                               <?php } ?>
+	                               
+	                               	</td>
 
                                <?php
-
+							   }
+							    
+							   if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) {
+							   		?><td><input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][loss_percent]" style="width:50px;" value="<?php echo $det->loss_percent ?>" />%</td><?php
+							   }
+							   
 	                            if($user->rights->nomenclature->showPrice) {
 
 	                            	$price = price2num($det->calculate_price,'MT');
@@ -629,6 +647,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				       		$colspan = 4;
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
+							if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) $colspan += 1;
+							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan += 1;
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>

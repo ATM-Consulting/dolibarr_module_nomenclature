@@ -732,10 +732,10 @@ class TNomenclatureDet extends TObjetStd
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
-        $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang',array('type'=>'integer', 'index'=>true));
-		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
+        $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang,fk_unit',array('type'=>'integer', 'index'=>true));
+		$this->add_champs('code_type,code_type2',array('type'=>'varchar', 'length' => 30));
 		$this->add_champs('workstations',array('type'=>'varchar', 'length' => 255));
-        $this->add_champs('qty,price,tx_custom',array('type'=>'float'));
+        $this->add_champs('qty,price,tx_custom,tx_custom2,loss_percent',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
 
         $this->_init_vars();
