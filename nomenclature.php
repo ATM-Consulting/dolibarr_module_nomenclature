@@ -436,10 +436,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								{
 									print '<th class="liste_titre" width="5%">'.$langs->trans('Availability').'</th>';
 								}
-							?>
-
-                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
-                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
+						   
+						   		if(!empty($conf->stock->enabled)) {
+								   ?>
+		
+		                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
+		                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
+		                        <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                            <?php if($user->rights->nomenclature->showPrice) {
                            		?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
@@ -530,32 +533,34 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 										echo '</td>';
 									}
 
-
-                               ?>
-                               <td>
-                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
-                               </td>
-                               <td>
-                               	<?php
-                               		if($conf->of->enabled && $p_nomdet->id>0){
-
-                               			// On récupère les quantités dans les OF
-                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
-                               					FROM '.MAIN_DB_PREFIX.'assetOf of
-                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid)
-                               					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
-	                               		$resql = $db->query($q);
-
-										// On régule le stock théorique en fonction de ces quantités
-										while($res = $db->fetch_object($resql)) {
-											if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
-											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
+								
+								if(!empty($conf->stock->enabled)) {
+	                               ?>
+	                               <td>
+	                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
+	                               </td>
+	                               <td>
+	                               	<?php
+	                               		if($conf->of->enabled && $p_nomdet->id>0){
+	
+	                               			// On récupère les quantités dans les OF
+	                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
+	                               					FROM '.MAIN_DB_PREFIX.'assetOf of
+	                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid)
+	                               					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
+		                               		$resql = $db->query($q);
+	
+											// On régule le stock théorique en fonction de ces quantités
+											while($res = $db->fetch_object($resql)) {
+												if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
+												elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
+											}
+	
 										}
-
-									}
-                               		echo !empty($det->fk_product) ? price($p_nomdet->stock_theorique,'',0,1,1,2) : '-';
-                               	?>
-                               </td>
+	                               		echo !empty($det->fk_product) ? price($p_nomdet->stock_theorique,'',0,1,1,2) : '-';
+	                               	?>
+	                               </td>
+	                             <?php } ?>
                                <td class="ligne_col_qty"><?php
                                		echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
@@ -623,6 +628,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				       if($user->rights->nomenclature->showPrice) {
 				       		$colspan = 4;
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;
+							if(empty($conf->stock->enabled)) $colspan -= 2;
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
@@ -630,6 +636,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <td align="right"><?php echo price(price2num($n->totalPR,'MT')); ?></td>
                            <td align="right"><?php echo price(price2num($n->totalPRC,'MT')); ?></td>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+                           <td align="right"></td>
+                           <td align="right"></td>
                        </tr>
                        <?php
 
@@ -641,6 +649,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                           <td align="right"><?php echo price(price2num($n->totalPR_PMP,'MT')); ?></td>
 	                           <td align="right"><?php echo price(price2num($n->totalPRC_PMP,'MT')); ?></td>
 	                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+	                           <td align="right"></td>
+	                           <td align="right"></td>
 
 	                       </tr><?php
 
@@ -652,6 +662,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <td align="right"><?php echo price(price2num($n->totalPR_OF,'MT')); ?></td>
 		                           <td align="right"><?php echo price(price2num($n->totalPRC_OF,'MT')); ?></td>
 		                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+		                           <td align="right"></td>
+		                           <td align="right"></td>
 
 		                       </tr>
 		                       <?php
@@ -822,6 +834,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                           <td align="right"><?php echo price($n->totalMO); ?></td>
 								<td>&nbsp;</td>
 								<td></td>
+								<td></td>
 	                    </tr><?php
 	                     if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
 		                    ?><tr class="liste_total">
@@ -838,7 +851,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                }
                else{
 
-                   echo '<tr><td colspan="5">'. $langs->trans('WillUseProductWorkstationIfNotSpecified') .'</td></tr>';
+                   echo '<tr><td colspan="10">'. $langs->trans('WillUseProductWorkstationIfNotSpecified') .'</td></tr>';
                }
 
                 ?>
