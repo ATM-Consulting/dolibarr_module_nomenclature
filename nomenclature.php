@@ -355,6 +355,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
     echo $formCore->hidden('qty_ref', $qty_ref);
     echo $formCore->hidden('qty_price', $qty_price);
 
+    $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+    
 	?>
 	<script type="text/javascript">
 	$(document).ready(function() {
@@ -393,6 +395,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 			}
 		});
 
+		<?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
+			// Récupération des coef
+			TCoef = {<?php foreach($TCoef as $obj_coef) echo '"'.$obj_coef->code_type.'":'.$obj_coef->tx.','; ?>};
+			
+			$('.select_coef').change(function() {
+				$(this).parent('td').find('input[type="number"]').val(TCoef[$(this).val()]);
+			});
+		<?php } ?>
+		
 	});
 	</script>
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
@@ -451,11 +462,16 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        foreach($TNomenclatureDet as $k=>&$det) {
 
                            $class = ($class == 'impair') ? 'pair' : 'impair';
-
+                           
                            ?>
                            <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>">
-                               <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
-                               <td><?php
+                               <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
+                               
+                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
+                               	&nbsp;<input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][tx_custom]" style="width:50px;" value="<?php echo empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom; ?>"/>
+                               <?php } ?>
+                               
+                               </td><td><?php
                                     $p_nomdet = new Product($db);
                                     if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0)
                                     {
