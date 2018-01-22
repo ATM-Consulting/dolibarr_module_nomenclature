@@ -246,7 +246,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
 
 	foreach($TNomenclature as $iN => &$n) {
-		echo '<div class="tabBar">';
+		echo '<div id="nomenclature'.$n->id.'" class="tabBar">';
 		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
 	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
 		echo '</div>';
