@@ -260,6 +260,20 @@ class Interfacenomenclaturetrigger
 			
 		} elseif ($action == 'ORDER_DELETE') {
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
+		} elseif ($action == 'LINE_DUPLICATE') {
+			
+			if ($object->line_from->product_type != 9)
+			{
+				$n = new TNomenclature;
+				$n->loadByObjectId($PDOdb, $object->line_from->id, $object->element, true, $object->line_from->fk_product, $object->line_from->qty);
+				
+				// S'il y a bien un load depuis ma ligne de propal d'origine
+				if ($n->iExist)
+				{
+					$n->cloneObject($PDOdb, $object->line->id);
+				}
+			}
+			
 		}
 
 		return 0;
