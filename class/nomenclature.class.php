@@ -733,9 +733,9 @@ class TNomenclatureDet extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang,fk_unit',array('type'=>'integer', 'index'=>true));
-		$this->add_champs('code_type,code_type2',array('type'=>'varchar', 'length' => 30));
+        $this->add_champs('code_type,code_type2,fk_fournprice',array('type'=>'varchar', 'length' => 30)); // Got : Je mets fk_fournprice en chaîne car fk_fournprice peut contenir un id ou "costprice" ou "pmpprice"
 		$this->add_champs('workstations',array('type'=>'varchar', 'length' => 255));
-        $this->add_champs('qty,price,tx_custom,tx_custom2,loss_percent',array('type'=>'float'));
+        $this->add_champs('qty,price,tx_custom,tx_custom2,loss_percent,buying_price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
 
         $this->_init_vars();
@@ -915,6 +915,109 @@ class TNomenclatureDet extends TObjetStd
 
 		return $res;
 	}
+	
+	// Récupération des différents tarifs (tarifs fourn, PMP) de la même manière que Dolibarr, puis adaptationp our le cas nomenclature
+	function printSelectProductFournisseurPrice() {
+		
+		global $langs;
+		
+		?>
+		<script type="text/javascript">
+		
+		$.post('<?php echo DOL_URL_ROOT; ?>/fourn/ajax/getSupplierPrices.php?bestpricefirst=1', { 'idprod': <?php echo $this->fk_product; ?> }, function(data) {
+    	    	if (data && data.length > 0)
+    	    	{
+        	  		var options = '';
+        	  		var defaultkey = '';
+        	  		var defaultprice = '';
+    	      		var bestpricefound = 0;
+
+    	      		var bestpriceid = 0; var bestpricevalue = 0;
+    	      		var pmppriceid = 0; var pmppricevalue = 0;
+    	      		var costpriceid = 0; var costpricevalue = 0;
+
+    				/* setup of margin calculation */
+    	      		var defaultbuyprice = '<?php
+    	      		if (isset($conf->global->MARGIN_TYPE))
+    	      		{
+    	      		    if ($conf->global->MARGIN_TYPE == '1')   print 'bestsupplierprice';
+    	      		    if ($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
+    	      		    if ($conf->global->MARGIN_TYPE == 'costprice') print 'costprice';
+    	      		} ?>';
+    	      		console.log("we will set the field for margin. defaultbuyprice="+defaultbuyprice);
+
+    	      		var i = 0;
+    	      		$(data).each(function() {
+    	      			if (this.id != 'pmpprice' && this.id != 'costprice')
+    		      		{
+    		        		i++;
+                            this.price = parseFloat(this.price); // to fix when this.price >0
+    			      		// If margin is calculated on best supplier price, we set it by defaut (but only if value is not 0)
+    			      		//console.log("id="+this.id+"-price="+this.price+"-"+(this.price > 0));
+    		      			if (bestpricefound == 0 && this.price > 0) { defaultkey = this.id; defaultprice = this.price; bestpriceid = this.id; bestpricevalue = this.price; bestpricefound=1; }	// bestpricefound is used to take the first price > 0
+    		      		}
+    	      			if (this.id == 'pmpprice')
+    	      			{
+    	      				// If margin is calculated on PMP, we set it by defaut (but only if value is not 0)
+    			      		//console.log("id="+this.id+"-price="+this.price);
+    			      		if ('pmp' == defaultbuyprice || 'costprice' == defaultbuyprice)
+    			      		{
+    			      			if (this.price > 0) {
+    				      			defaultkey = this.id; defaultprice = this.price; pmppriceid = this.id; pmppricevalue = this.price;
+    			      				//console.log("pmppricevalue="+pmppricevalue);
+    			      			}
+    			      		}
+    	      			}
+    	      			if (this.id == 'costprice')
+    	      			{
+    	      				// If margin is calculated on Cost price, we set it by defaut (but only if value is not 0)
+    			      		//console.log("id="+this.id+"-price="+this.price+"-pmppricevalue="+pmppricevalue);
+    			      		if ('costprice' == defaultbuyprice)
+    			      		{
+    		      				if (this.price > 0) { defaultkey = this.id; defaultprice = this.price; costpriceid = this.id; costpricevalue = this.price; }
+    		      				else if (pmppricevalue > 0) { defaultkey = pmppriceid; defaultprice = pmppricevalue; }
+    			      		}
+    	      			}
+    	        		options += '<option value="'+this.id+'" price="'+this.price+'">'+this.label+'</option>';
+    	      		});
+
+    	      		console.log("finally selected defaultkey="+defaultkey+" defaultprice="+defaultprice);
+
+    	      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").html(options);
+
+    	      		if (defaultkey != '')
+    				{
+    		      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").val(defaultkey);
+    		      	}
+
+    	      		// Préselection de la liste avec la valeur en base si existante
+    	      		<?php if(!empty($this->fk_fournprice)) { ?>
+		      			$("#fournprice_predef_line_<?php echo $this->rowid; ?>").val('<?php echo $this->fk_fournprice; ?>');
+		      		<?php } ?>
+    	      		
+    	      		/* At loading, no product are yet selected, so we hide field of buying_price */
+    	      		//$("#buying_price").hide();
+
+    	      		/* Define default price at loading */
+    	      		var defaultprice = $("#fournprice_predef_line_<?php echo $this->rowid; ?>").find('option:selected').attr("price");
+    			    $("#buying_price").val(defaultprice);
+
+    	      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").change(function() {
+    		      		console.log("change on fournprice_predef");
+    	      			var linevalue=$(this).find('option:selected').val();
+    	        		var pricevalue = $(this).find('option:selected').attr("price");
+    	        		$(this).closest('tr').find('input[name*="buying_price"]').val(pricevalue);
+    				});
+    	    	}
+    	  	},
+    	  	'json');
+
+		</script>
+		
+		<?php
+		
+	}
+	
 }
 
 

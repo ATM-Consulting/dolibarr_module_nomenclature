@@ -128,3 +128,4 @@ ThmGenericSaveForSpecific=THM générique. Sauvegardez pour rendre spécifique �
 workstationThmUpdated=THM mis à jours
 NOMENCLATURE_USE_CUSTOM_THM_FOR_WS=Permettre de renseigner des THM personnalisés sur les propositions commerciales via l'onglet "Coefficient" de "nomenclature"
 StatusOfObjectAvoidEdit=Le status de l'objet ne permet pas son édition
+LossPercent=Pourcentage de perte
