@@ -361,11 +361,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	?>
 	<script type="text/javascript">
 	$(document).ready(function() {
-		$("#det-table>tbody").sortable({
+		$(".det-table>tbody").sortable({
 			handle:".handler"
 			,placeholder: "ui-state-highlight"
 			,stop:function(event,ui) {
-				var sorted = $("#det-table>tbody").sortable( "toArray", { attribute: "rowid" } );
+				var sorted = $(this).sortable( "toArray", { attribute: "rowid" } );
 
 				$.ajax({
 					url:"<?php echo dol_buildpath('/nomenclature/script/interface.php',1) ?>"
@@ -378,11 +378,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 			}
 		});
-		$("#workstation-table>tbody").sortable({
+		$(".workstation-table>tbody").sortable({
 			handle:".handler"
 			,placeholder: "ui-state-highlight"
 			,stop:function(event,ui) {
-				var sorted = $("#workstation-table>tbody").sortable( "toArray", { attribute: "rowid" } );
+				var sorted = $(this).sortable( "toArray", { attribute: "rowid" } );
 
 				$.ajax({
 					url:"<?php echo dol_buildpath('/nomenclature/script/interface.php',1) ?>"
@@ -427,7 +427,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                if(count($TNomenclatureDet>0)) {
 
                    ?>
-                   <table width="100%" class="liste"  id="det-table">
+                   <table width="100%" class="liste det-table">
                        <thead>
                        <tr class="liste_titre">
                            <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th>
@@ -632,7 +632,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                
                                
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
-									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
 									</a>
 								</td>
@@ -733,7 +733,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
        ?><tr>
            <td colspan="5"><?php
                ?>
-               <table class="liste" width="100%" id="workstation-table">
+               <table class="liste workstation-table" width="100%">
                	<thead>
                <tr class="liste_titre">
                    <!--<th class="liste_titre"><?php echo $langs->trans('Type'); ?></th>-->
@@ -829,7 +829,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						</td>
 						
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
-									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$line->id; ?>">
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$ws->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
 									</a>
 								</td>
