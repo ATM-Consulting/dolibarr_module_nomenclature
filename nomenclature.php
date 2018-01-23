@@ -445,6 +445,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
 		                        <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
+                           <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?> <th class="liste_titre col_fk_unit" width="5%"><?php echo $langs->trans('Unit'); ?></th> <?php } ?>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php } ?>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> <th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
@@ -568,7 +569,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                		echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
 							    ?></td>
-								
+								<?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?>
+	                               <td class="ligne_col_fk_unit"><?php
+	                               		echo $form->selectUnits($det->fk_unit, 'TNomenclature['.$k.'][fk_unit]', 1);
+								    ?></td>
+								<?php } ?>
 								<?php if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?>
 								
 									<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
