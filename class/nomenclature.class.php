@@ -747,6 +747,23 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
     }
+    
+    function save(&$PDOdb) {
+    	
+    	global $db, $conf;
+    	
+    	// Enregistrement de l'unité du produit dans la ligne de nomclature
+    	if(!empty($conf->global->PRODUCT_USE_UNITS) && empty($this->fk_unit) && !empty($this->fk_product)) {
+    		require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+    		$prod = new Product($db);
+    		if($prod->fetch($this->fk_product) > 0) {
+    			$this->fk_unit = $prod->fk_unit;
+    		}
+    	}
+    	
+    	return parent::save($PDOdb);
+    	
+    }
 
     function reinit() {
         $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def
