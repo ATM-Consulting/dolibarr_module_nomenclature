@@ -448,6 +448,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?> <th class="liste_titre col_fk_unit" width="5%"><?php echo $langs->trans('Unit'); ?></th> <?php } ?>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php } ?>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> <th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th> <?php } ?>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_BUY_PRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyPrice'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
                            		?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
@@ -652,6 +653,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				       		$colspan = 4;
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
+							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan += 1;
 							if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) $colspan += 1;
 							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan += 1;
                        ?>
@@ -670,7 +672,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                        ?>
 	                       <tr class="liste_total">
 	                           <td ><?php echo $langs->trans('TotalPricePMP'); ?></td>
-	                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
+	                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
 	                           <td align="right"><?php echo price(price2num($n->totalPR_PMP,'MT')); ?></td>
 	                           <td align="right"><?php echo price(price2num($n->totalPRC_PMP,'MT')); ?></td>
 	                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
