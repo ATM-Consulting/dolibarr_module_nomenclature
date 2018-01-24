@@ -449,7 +449,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?> <th class="liste_titre col_fk_unit" width="5%"><?php echo $langs->trans('Unit'); ?></th> <?php } ?>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php } ?>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> <th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th> <?php } ?>
-                           <?php if(!empty($conf->global->NOMENCLATURE_USE_BUY_PRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPrice'); ?></th> <?php } ?>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
                            		?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
@@ -593,7 +593,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							   		?><td nowrap><input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][loss_percent]" style="width:60px;" value="<?php echo $det->loss_percent ?>" />%</td><?php
 							   }
 							   
-							   if(!empty($conf->global->NOMENCLATURE_USE_BUY_PRICE)) {
+							   if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
 							   		
 							   		?><td nowrap><select id="fournprice_predef_line_<?php echo $det->rowid; ?>" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select>
 							   		<input type="number" step="0.01" size="2" name="TNomenclature[<?php echo $k; ?>][buying_price]" style="width:60px;" value="<?php echo empty($det->buying_price) ? '' : $det->buying_price; ?>"></td><?php
@@ -665,7 +665,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan ++;
-							if(!empty($conf->global->NOMENCLATURE_USE_BUY_PRICE)) $colspan ++;
+							if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) $colspan ++;
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>

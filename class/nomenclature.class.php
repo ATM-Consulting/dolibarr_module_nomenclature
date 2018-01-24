@@ -162,7 +162,8 @@ class TNomenclature extends TObjetStd
 				$perso_price = 0;
 			}
 			else{
-			    if(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == '1') {
+				if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE) && !empty($det->buying_price)) $det->calculate_price = $det->buying_price;
+			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == '1') {
 			        // sélectionne le meilleur prix fournisseur
 			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
 			    }
