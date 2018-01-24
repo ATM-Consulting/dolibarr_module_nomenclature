@@ -184,11 +184,13 @@ class TNomenclature extends TObjetStd
 			}
 
 			$totalPR+= $det->calculate_price ;
-
-			if (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
+			
+			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
+			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
+			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
-
+			
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
 			$totalPRC+= $det->charged_price;
 
