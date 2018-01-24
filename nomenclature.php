@@ -596,7 +596,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							   if(!empty($conf->global->NOMENCLATURE_USE_BUY_PRICE)) {
 							   		
 							   		?><td nowrap><select id="fournprice_predef_line_<?php echo $det->rowid; ?>" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select>
-							   		<input type="number" step="0.1" size="2" name="TNomenclature[<?php echo $k; ?>][buying_price]" style="width:60px;" value="<?php echo empty($det->buying_price) ? '' : $det->buying_price; ?>"></td><?php
+							   		<input type="number" step="0.01" size="2" name="TNomenclature[<?php echo $k; ?>][buying_price]" style="width:60px;" value="<?php echo empty($det->buying_price) ? '' : $det->buying_price; ?>"></td><?php
 									$det->printSelectProductFournisseurPrice();
 									
 							   }

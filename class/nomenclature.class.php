@@ -730,6 +730,8 @@ class TNomenclatureDet extends TObjetStd
 	 */
     function __construct()
     {
+    	global $conf;
+    	
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang,fk_unit',array('type'=>'integer', 'index'=>true));
@@ -746,6 +748,8 @@ class TNomenclatureDet extends TObjetStd
 
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
+        if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) $this->code_type2 = $this->code_type;
+        
     }
     
     function save(&$PDOdb) {
@@ -944,7 +948,7 @@ class TNomenclatureDet extends TObjetStd
 		$.post('<?php echo DOL_URL_ROOT; ?>/fourn/ajax/getSupplierPrices.php?bestpricefirst=1', { 'idprod': <?php echo $this->fk_product; ?> }, function(data) {
     	    	if (data && data.length > 0)
     	    	{
-        	  		var options = '';
+    	    		var options = '<option value="0" price=""></option>'; // Valeur vide
         	  		var defaultkey = '';
         	  		var defaultprice = '';
     	      		var bestpricefound = 0;
@@ -1002,10 +1006,11 @@ class TNomenclatureDet extends TObjetStd
 
     	      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").html(options);
 
-    	      		if (defaultkey != '')
+    	      		// Pour l'instant on laisee l'utilisateur choisir à la main le prix d'achat
+    	      		/*if (defaultkey != '')
     				{
     		      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").val(defaultkey);
-    		      	}
+    		      	}*/
 
     	      		// Préselection de la liste avec la valeur en base si existante
     	      		<?php if(!empty($this->fk_fournprice)) { ?>
