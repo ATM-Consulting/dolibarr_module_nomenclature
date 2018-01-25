@@ -259,8 +259,16 @@ class Interfacenomenclaturetrigger
 			
 		} elseif ($action == 'ORDER_DELETE') {
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
+		} elseif ($action == 'PRODUCT_DELETE') {
+			$n = new TNomenclature();
+			$n->loadByObjectId($PDOdb, $object->id, $object->element);
+			$n->delete($PDOdb);
+		} elseif ($action == 'LINEPROPAL_DELETE' && $object->element == 'propaldet') {
+			$n = new TNomenclature();
+			$n->loadByObjectId($PDOdb, $object->id, 'propal');
+			$n->delete($PDOdb);
 		}
-
+		
 		return 0;
 	}
 
