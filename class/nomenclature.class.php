@@ -941,7 +941,7 @@ class TNomenclatureDet extends TObjetStd
 	}
 	
 	// Récupération des différents tarifs (tarifs fourn, PMP) de la même manière que Dolibarr, puis adaptationp our le cas nomenclature
-	function printSelectProductFournisseurPrice() {
+	function printSelectProductFournisseurPrice($k, $nomenclature_id=0, $nomenclature_type='product') {
 		
 		global $langs;
 		
@@ -1007,7 +1007,14 @@ class TNomenclatureDet extends TObjetStd
 
     	      		console.log("finally selected defaultkey="+defaultkey+" defaultprice="+defaultprice);
 
-    	      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").html(options);
+    	      		<?php if(empty($nomenclature_id) || $nomenclature_type !== 'product') { ?>
+    	      		
+    	      			var select_fournprice = $('select[name=TNomenclature\\[<?php echo $k; ?>\\]\\[fk_fournprice\\]]');
+					<?php } else { ?>
+						var select_fournprice = $('div#nomenclature<?php echo $nomenclature_id; ?> select[name=TNomenclature\\[<?php echo $k; ?>\\]\\[fk_fournprice\\]]');
+					<?php } ?>
+	
+    	      		select_fournprice.html(options);
 
     	      		// Pour l'instant on laisee l'utilisateur choisir à la main le prix d'achat
     	      		/*if (defaultkey != '')
@@ -1017,17 +1024,13 @@ class TNomenclatureDet extends TObjetStd
 
     	      		// Préselection de la liste avec la valeur en base si existante
     	      		<?php if(!empty($this->fk_fournprice)) { ?>
-		      			$("#fournprice_predef_line_<?php echo $this->rowid; ?>").val('<?php echo $this->fk_fournprice; ?>');
+    	      			select_fournprice.val('<?php echo $this->fk_fournprice; ?>');
 		      		<?php } ?>
     	      		
     	      		/* At loading, no product are yet selected, so we hide field of buying_price */
     	      		//$("#buying_price").hide();
 
-    	      		/* Define default price at loading */
-    	      		var defaultprice = $("#fournprice_predef_line_<?php echo $this->rowid; ?>").find('option:selected').attr("price");
-    			    $("#buying_price").val(defaultprice);
-
-    	      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").change(function() {
+    			    select_fournprice.change(function() {
     		      		console.log("change on fournprice_predef");
     	      			var linevalue=$(this).find('option:selected').val();
     	        		var pricevalue = $(this).find('option:selected').attr("price");
