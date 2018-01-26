@@ -107,6 +107,9 @@ NOMENCLATURE_USE_TIME_PREPARE=Utiliser le champs "Temps de préparation" dans la
 NOMENCLATURE_USE_TIME_DOING=Utiliser le champs "Temps de fabrication" dans la nomenclature sur les postes de travail
 NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION = Permettre de lier une ligne de produit au poste de charge
 NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Utiliser le déboursé sec comme prix de revient
+NOMENCLATURE_ALLOW_USE_MANUAL_COEF=Autoriser l'édition manuelle du/des coefficient(s)
+NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Appliquer un coefficient supplémentaire sur le coût de revient
+NOMENCLATURE_USE_CUSTOM_BUYPRICE=Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
