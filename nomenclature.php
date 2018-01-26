@@ -451,7 +451,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
                            	?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
-                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php }
+                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('CoefCoutRevient'); ?></th> <?php }
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
                            		?><th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
@@ -668,7 +668,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
 							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
-							if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) $colspan ++;
                        ?>
@@ -676,6 +675,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price(price2num($n->totalPR,'MT')); ?></td>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) print '<td align="right"></td>'; ?>
                            <td align="right"><?php echo price(price2num($n->totalPRC,'MT')); ?></td>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
                            <td align="right"></td>
@@ -689,6 +689,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                           <td ><?php echo $langs->trans('TotalPricePMP'); ?></td>
 	                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
 	                           <td align="right"><?php echo price(price2num($n->totalPR_PMP,'MT')); ?></td>
+	                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) print '<td align="right"></td>'; ?>
 	                           <td align="right"><?php echo price(price2num($n->totalPRC_PMP,'MT')); ?></td>
 	                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
 	                           <td align="right"></td>
@@ -702,6 +703,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <td ><?php echo $langs->trans('TotalPriceOF'); ?></td>
 		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
 		                           <td align="right"><?php echo price(price2num($n->totalPR_OF,'MT')); ?></td>
+		                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) print '<td align="right"></td>'; ?>
 		                           <td align="right"><?php echo price(price2num($n->totalPRC_OF,'MT')); ?></td>
 		                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
 		                           <td align="right"></td>
