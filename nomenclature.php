@@ -402,7 +402,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 			TCoef = {<?php foreach($TCoef as $obj_coef) echo '"'.$obj_coef->code_type.'":'.$obj_coef->tx.','; ?>};
 			
 			$('.select_coef').change(function() {
-				$(this).parent('td').find('input[type="number"]').val(TCoef[$(this).val()]);
+				$(this).parent('td').find('input[type="text"]').val(TCoef[$(this).val()]);
 			});
 		<?php } ?>
 		
@@ -476,9 +476,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>">
                                <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
                                
-                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
-                               	&nbsp;<input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][tx_custom]" style="width:60px;" value="<?php echo empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom; ?>"/>
-                               <?php } ?>
+                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
+                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom]', empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom, 7,100);
+                               } ?>
                                
                                </td><td><?php
                                     $p_nomdet = new Product($db);
@@ -574,10 +574,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                               </td>
 	                             <?php }
 	                             
-									if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) {
-										?><td nowrap><input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][loss_percent]" style="width:60px;" value="<?php echo $det->loss_percent ?>" />%</td><?php
-								    }
+	                             ?><td nowrap><?php
+	                             	if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) echo $formCore->texte('', 'TNomenclature['.$k.'][loss_percent]', $det->loss_percent, 7,100);
 	                           ?>
+	                           %</td>
                                <td class="ligne_col_qty"><?php
                                echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
@@ -586,8 +586,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								
 							   if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
 							   		
-							   		?><td nowrap><select id="TNomenclature[<?php echo $k; ?>][fk_fournprice]" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select>
-							   		<input type="number" step="0.01" size="2" name="TNomenclature[<?php echo $k; ?>][buying_price]" style="width:60px;" value="<?php echo empty($det->buying_price) ? '' : $det->buying_price; ?>"></td><?php
+							   		?><td nowrap><select id="TNomenclature[<?php echo $k; ?>][fk_fournprice]" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select><?php
+							   		echo $formCore->texte('', 'TNomenclature['.$k.'][buying_price]', empty($det->buying_price) ? '' : $det->buying_price, 7,100).'</td>';
 							   		$det->printSelectProductFournisseurPrice($k, $n->rowid, $n->object_type);
 									
 							   }
@@ -614,9 +614,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								
 									<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
 	                               
-		                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
-		                               	&nbsp;<input type="number" step="0.1" name="TNomenclature[<?php echo $k; ?>][tx_custom2]" style="width:60px;" value="<?php echo empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2; ?>"/>
-		                               <?php } ?>
+		                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
+		                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 7,100);
+		                               } ?>
 	                               
 	                               	</td>
 
