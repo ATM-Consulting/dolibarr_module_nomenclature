@@ -477,7 +477,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
                                
                                <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
-                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom]', empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom, 7,100);
+                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom]', empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom, 3,100);
                                } ?>
                                
                                </td><td><?php
@@ -575,7 +575,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                             <?php }
 	                             
 	                             ?><td nowrap><?php
-	                             	if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) echo $formCore->texte('', 'TNomenclature['.$k.'][loss_percent]', $det->loss_percent, 7,100);
+	                             	if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) echo $formCore->texte('', 'TNomenclature['.$k.'][loss_percent]', $det->loss_percent, 2,100);
 	                           ?>
 	                           %</td>
                                <td class="ligne_col_qty"><?php
@@ -615,7 +615,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
 	                               
 		                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
-		                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 7,100);
+		                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 3,100);
 		                               } ?>
 	                               
 	                               	</td>
