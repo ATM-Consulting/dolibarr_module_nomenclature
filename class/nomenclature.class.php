@@ -334,6 +334,7 @@ class TNomenclature extends TObjetStd
 
 		$k = $this->addChild($PDOdb, 'TNomenclatureDet');
         $det = &$this->TNomenclatureDet[$k];
+        $det->rang = $k;
         $det->fk_product = $fk_new_product;
 
 		$this->save($PDOdb);
