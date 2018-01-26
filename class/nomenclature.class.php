@@ -202,19 +202,41 @@ class TNomenclature extends TObjetStd
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
 			
-			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
+			// Coefficient appliqué sur le coût de revient
+			$coef2 = 0;
+			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
+				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
+			}
+			
+			if(empty($perso_price)) {
+				$det->charged_price = $det->calculate_price * $coef;
+				if(!empty($coef2)) $det->charged_price *= $coef2;
+			} else $det->charged_price = $perso_price * $coef_qty_price;
+			
+			
 			$totalPRC+= $det->charged_price;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP') * $det->qty * $coef_qty_price;
 				$totalPR_PMP+= $det->calculate_price_pmp ;
-				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
+				
+				if(empty($perso_price)) {
+					$det->charged_price_pmp = $det->calculate_price_pmp * $coef;
+					if(!empty($coef2)) $det->charged_price_pmp *= $coef2;
+				} else $det->charged_price_pmp = $perso_price * $coef_qty_price;
+								
+				
 				$totalPRC_PMP+= $det->charged_price_pmp;
 
 				if(!empty($conf->of->enabled)) {
 					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF') * $det->qty * $coef_qty_price;
 					$totalPR_OF+= $det->calculate_price_of ;
-					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
+					
+					if(empty($perso_price)) {
+						$det->charged_price_of = $det->calculate_price_of * $coef;
+					} else $det->charged_price_of = $perso_price * $coef_qty_price;
+					
 					$totalPRC_OF+= $det->charged_price_of;
 				}
 
@@ -762,7 +784,7 @@ class TNomenclatureDet extends TObjetStd
 
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
-        if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) $this->code_type2 = $this->code_type;
+        if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->code_type2 = $this->code_type;
         
     }
     

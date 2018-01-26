@@ -451,7 +451,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
                            	?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
-                           		if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php }
+                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('Coef2'); ?></th> <?php }
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
                            		?><th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
@@ -610,7 +610,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                 	echo '</td>';
                                 	
-	                            	if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) { ?>
+	                            	if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?>
 								
 									<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
 	                               
@@ -668,7 +668,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
 							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
-							if(!empty($conf->global->NOMENCLATURE_USE_SECOND_COEF)) $colspan ++;
+							if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) $colspan ++;
                        ?>
