@@ -235,6 +235,7 @@ class TNomenclature extends TObjetStd
 					
 					if(empty($perso_price)) {
 						$det->charged_price_of = $det->calculate_price_of * $coef;
+						if(!empty($coef2)) $det->charged_price_of *= $coef2;
 					} else $det->charged_price_of = $perso_price * $coef_qty_price;
 					
 					$totalPRC_OF+= $det->charged_price_of;
