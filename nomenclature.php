@@ -541,7 +541,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                	?>
                                </td>
                                <td class="ligne_col_qty"><?php
-                               		echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
+                               echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
 							    ?></td>
 
