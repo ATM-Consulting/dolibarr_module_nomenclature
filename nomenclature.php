@@ -451,8 +451,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
                            	?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
-                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?> <th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('CoefCoutRevient'); ?></th> <?php }
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
+                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+                           		?>
+                           			<th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('CoefMarge'); ?></th>
+                           			<th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('PV'); ?></th>
+                           		<?php }
                            		?><th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
                            ?>
@@ -610,17 +614,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                 	echo '</td>';
                                 	
-	                            	if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?>
-								
-									<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
-	                               
-		                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
-		                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 3,100);
-		                               } ?>
-	                               
-	                               	</td>
-
-	                               <?php
 								   }
                                 	
 									echo '<td align="right" valign="middle">';
@@ -633,10 +626,37 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                     	echo price($price_charge);
 									}
                                 	echo '</td>';
+                                	
+	                            	if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?>
+								
+										<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
+		                               
+			                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
+			                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 3,100);
+			                               } ?>
+		                               
+		                               	</td>
+		                               	<?php
+		                               	
+		                               		$pv = price2num($det->pv,'MT');
+		
+											echo '<td align="right" valign="middle">';
+											if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+												echo price( $pv).img_help(1,$langs->trans('PricePA'));
+												echo '<span class="pricePMP"><br />'.price(price2num($det->pv_pmp,'MT')).img_help(1,$langs->trans('PricePMP')).'</span>';
+												if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->pv_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
+											}
+											else{
+												echo price($pv);
+											}
+											echo '</td>';
+
+
+                                			echo '</td>';
+	                            	}
 									echo '<td align="right" valign="middle">';
                                     echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($det->price).'" size="5" />';
                                 	echo '</td>';
-	                            }
                                ?>
                                
 								<td><?php
@@ -675,8 +695,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price(price2num($n->totalPR,'MT')); ?></td>
-                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) print '<td align="right"></td>'; ?>
                            <td align="right"><?php echo price(price2num($n->totalPRC,'MT')); ?></td>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+                           			print '<td align="right"></td>';
+                           			?><td align="right"><?php echo price(price2num($n->totalPV,'MT')); ?></td><?php
+                           		  } ?>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
                            <td align="right"></td>
                            <td align="right"></td>
@@ -689,8 +712,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                           <td ><?php echo $langs->trans('TotalPricePMP'); ?></td>
 	                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
 	                           <td align="right"><?php echo price(price2num($n->totalPR_PMP,'MT')); ?></td>
-	                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) print '<td align="right"></td>'; ?>
 	                           <td align="right"><?php echo price(price2num($n->totalPRC_PMP,'MT')); ?></td>
+	                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+	                           			print '<td align="right"></td>';
+	                           			?><td align="right"><?php echo price(price2num($n->totalPV_PMP,'MT')); ?></td><?php
+	                           		  } ?>
 	                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
 	                           <td align="right"></td>
 	                           <td align="right"></td>
@@ -703,8 +729,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <td ><?php echo $langs->trans('TotalPriceOF'); ?></td>
 		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
 		                           <td align="right"><?php echo price(price2num($n->totalPR_OF,'MT')); ?></td>
-		                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) print '<td align="right"></td>'; ?>
 		                           <td align="right"><?php echo price(price2num($n->totalPRC_OF,'MT')); ?></td>
+		                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+		                           			print '<td align="right"></td>';
+		                           			?><td align="right"><?php echo price(price2num($n->totalPV_OF,'MT')); ?></td><?php
+	                       				  } ?>
 		                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
 		                           <td align="right"></td>
 		                           <td align="right"></td>

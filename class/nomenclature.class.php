@@ -202,43 +202,36 @@ class TNomenclature extends TObjetStd
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
 			
-			// Coefficient appliqué sur le coût de revient
-			$coef2 = 0;
+			// Coefficient appliqué sur le coût de revient (coeff de marge par ligne)
+			$coef2 = 1;
 			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
 				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
 			}
 			
-			if(empty($perso_price)) {
-				$det->charged_price = $det->calculate_price * $coef;
-				if(!empty($coef2)) $det->charged_price *= $coef2;
-			} else $det->charged_price = $perso_price * $coef_qty_price;
-			
+			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
+			$det->pv = empty($perso_price) ? $det->charged_price * $coef2 : $perso_price * $coef_qty_price;
 			
 			$totalPRC+= $det->charged_price;
+			$totalPV += $det->pv;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP') * $det->qty * $coef_qty_price;
 				$totalPR_PMP+= $det->calculate_price_pmp ;
-				
-				if(empty($perso_price)) {
-					$det->charged_price_pmp = $det->calculate_price_pmp * $coef;
-					if(!empty($coef2)) $det->charged_price_pmp *= $coef2;
-				} else $det->charged_price_pmp = $perso_price * $coef_qty_price;
-								
+				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
+				$det->pv_pmp = empty($perso_price) ? $det->charged_price_pmp * $coef2 : $perso_price * $coef_qty_price;
 				
 				$totalPRC_PMP+= $det->charged_price_pmp;
+				$totalPV_PMP+= $det->pv_pmp;
 
 				if(!empty($conf->of->enabled)) {
 					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF') * $det->qty * $coef_qty_price;
 					$totalPR_OF+= $det->calculate_price_of ;
+					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
+					$det->pv_of = empty($perso_price) ? $det->charged_price_of * $coef2 : $perso_price * $coef_qty_price;
 					
-					if(empty($perso_price)) {
-						$det->charged_price_of = $det->calculate_price_of * $coef;
-						if(!empty($coef2)) $det->charged_price_of *= $coef2;
-					} else $det->charged_price_of = $perso_price * $coef_qty_price;
-					
-					$totalPRC_OF+= $det->charged_price_of;
+					$totalPRC_OF += $det->charged_price_of;
+					$totalPV_OF += $det->pv_of;
 				}
 
 
@@ -278,14 +271,14 @@ class TNomenclature extends TObjetStd
 		$this->marge = $marge->tx_object;
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
-		$this->totalPV = $this->totalPRCMO * $marge->tx_object;
+		$this->totalPV = ($this->totalMO + $totalPV) * $marge->tx_object;
 
 		if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
 			$this->totalPRCMO_OF = $this->totalMO_OF + $this->totalPRC_OF;
 
-			$this->totalPV_PMP = $this->totalPRCMO_PMP * $marge->tx_object;
-			$this->totalPV_OF = $this->totalPRCMO_OF * $marge->tx_object;
+			$this->totalPV_PMP = ($this->totalMO + $totalPV_PMP) * $marge->tx_object;
+			$this->totalPV_OF = ($this->totalMO_OF + $totalPV_OF) * $marge->tx_object;
 
 		}
 
