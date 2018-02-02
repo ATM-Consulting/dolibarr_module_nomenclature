@@ -21,6 +21,7 @@ nb_days_before_beginning=Délai avant démarrage
 Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
+TotalAmountCost=Coût de revient
 TotalAmountCostWithCharge=Coût de revient chargé pour %s exemplaire(s)
 TotalAmountCostWithChargeUnit=Coût de revient chargé pour 1 exemplaire
 TotalAmountCostWithChargePMP=Coût de revient chargé théorique pour %s exemplaire(s)

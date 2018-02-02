@@ -943,10 +943,16 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
 				$marge = $n->marge_object;
 				
+				$PR = price2num($n->totalPR,'MT');
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
 				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
 		        ?>
+		        <tr class="liste_total" >
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCost', $qty_ref); ?></td>
+                       <td colspan="3">&nbsp;</td>
+                       <td style="font-weight: bolder; text-align: right;"><?php echo price($PR); ?></td>
+		        </tr>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
