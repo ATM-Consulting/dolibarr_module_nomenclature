@@ -404,8 +404,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 			$('.select_coef').change(function() {
 				$(this).parent('td').find('input[type="text"]').val(TCoef[$(this).val()]);
 			});
-		<?php } ?>
+		<?php }
 		
+		if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?>
+	
+			$("input[name*=qty_base], input[name*=loss_percent]").change(function() {
+
+				if(typeof $('input[name*=qty_base]').attr('name') !== 'undefined') {
+				
+					var line = $(this).closest('tr');
+					var val_qty_base = $(line).find("input[name*=qty_base]").val();
+					var val_loss_percent = $(line).find("input[name*=loss_percent]").val();
+					
+					$(this).closest('tr').find('td.ligne_col_qty').find("input[name*=qty]").val(Math.round(((val_qty_base / ((100 - val_loss_percent)/100)) * 100)) / 100);
+
+				}
+				
+			});
+
+		<?php } ?>
+	
 	});
 	</script>
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
@@ -445,7 +463,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
 		                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
 		                        <?php } ?>
-		                   <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> <th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th> <?php } ?>
+		                   <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> 
+		                   		<th class="liste_titre col_qty_base" width="5%"><?php echo $langs->trans('qty_base'); ?></th>
+		                   		<th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th>
+		                   <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
@@ -580,7 +601,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                               </td>
 	                             <?php }
 	                             
-	                             	if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) echo '<td nowrap>'.$formCore->texte('', 'TNomenclature['.$k.'][loss_percent]', $det->loss_percent, 2,100).'%</td>';
+	                             	if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) {
+	                             		echo '<td class="ligne_col_qty_base" nowrap>'.$formCore->texte('', 'TNomenclature['.$k.'][qty_base]', $det->qty_base, 2,100, '').'</td>';
+	                             		echo '<td nowrap>'.$formCore->texte('', 'TNomenclature['.$k.'][loss_percent]', $det->loss_percent, 2,100).'%</td>';
+	                             	}
 	                           ?>
 	                           
                                <td class="ligne_col_qty"><?php
@@ -701,7 +725,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
 							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
-							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan ++;
+							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan += 2;
 							if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) $colspan ++;
                        ?>
                        <tr class="liste_total">

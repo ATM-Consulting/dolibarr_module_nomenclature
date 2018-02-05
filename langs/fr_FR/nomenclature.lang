@@ -112,6 +112,7 @@ NOMENCLATURE_ALLOW_USE_MANUAL_COEF=Autoriser l'édition manuelle du/des coeffici
 NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Autoriser l'édition d'un coefficient de marge par ligne
 NOMENCLATURE_USE_CUSTOM_BUYPRICE=Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
 NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité produit sur chaque ligne
+NOMENCLATURE_USE_LOSS_PERCENT=Activer le calcul automatique de la quantité en fonction du pourcentage de perte
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -136,3 +137,4 @@ StatusOfObjectAvoidEdit=Le status de l'objet ne permet pas son édition
 LossPercent=Pourcentage de perte
 BuyingPriceCustom=Prix d'achat personnalisé<br />(prioritaire sur la conf)
 CoefMarge=Coef. de marge
+qty_base=Qté base
