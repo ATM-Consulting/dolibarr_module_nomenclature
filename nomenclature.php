@@ -518,7 +518,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                 
 	                                <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?>
 		                               <td class="ligne_col_fk_unit"><?php
-		                               		echo $form->selectUnits($det->fk_unit, 'TNomenclature['.$k.'][fk_unit]', 1);
+		                               		if(!empty($conf->global->NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT)) echo $form->selectUnits($det->fk_unit, 'TNomenclature['.$k.'][fk_unit]', 1);
+		                               		else {
+		                               			// On copie l'unité de la ligne dans l'objet produit pour utiliser la fonction getLabelOfUnit()
+		                               			$original_fk_unit = $p_nomdet->fk_unit;
+		                               			$p_nomdet->fk_unit = $det->fk_unit;
+		                               			print ucfirst($langs->trans($p_nomdet->getLabelOfUnit()));
+		                               			// On remet l'unité de base du produit au cas où
+		                               			$p_nomdet->fk_unit = $original_fk_unit;
+		                               		}
 									    ?></td>
 									<?php }
 

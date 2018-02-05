@@ -111,6 +111,7 @@ NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Utiliser le déboursé sec comme prix
 NOMENCLATURE_ALLOW_USE_MANUAL_COEF=Autoriser l'édition manuelle du/des coefficient(s)
 NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Autoriser l'édition d'un coefficient de marge par ligne
 NOMENCLATURE_USE_CUSTOM_BUYPRICE=Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
+NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité produit sur chaque ligne
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
