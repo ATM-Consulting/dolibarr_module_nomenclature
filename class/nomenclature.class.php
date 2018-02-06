@@ -620,7 +620,8 @@ class TNomenclature extends TObjetStd
 				,'childs'=>$childs
                 ,'note_private'=>$d->note_private
             	,'workstations'=>$d->workstations
-				,'rowid'=>$d->rowid
+            	,'rowid'=>$d->rowid
+            	,'fk_unit'=>$d->fk_unit
             );
 
         }
