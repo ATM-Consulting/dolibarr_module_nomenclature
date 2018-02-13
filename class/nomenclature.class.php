@@ -172,7 +172,8 @@ class TNomenclature extends TObjetStd
 				$perso_price = 0;
 			}
 			else{
-			    if(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == '1') {
+				if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE) && !empty($det->buying_price)) $det->calculate_price = $det->buying_price * $det->qty * $coef_qty_price;
+			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == '1') {
 			        // sélectionne le meilleur prix fournisseur
 			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
 			    }
@@ -194,25 +195,43 @@ class TNomenclature extends TObjetStd
 			}
 
 			$totalPR+= $det->calculate_price ;
-
-			if (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
+			
+			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
+			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
+			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
-
+			
+			// Coefficient appliqué sur le coût de revient (coeff de marge par ligne)
+			$coef2 = 1;
+			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
+				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
+			}
+			
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
+			$det->pv = empty($perso_price) ? $det->charged_price * $coef2 : $perso_price * $coef_qty_price;
+			
 			$totalPRC+= $det->charged_price;
+			$totalPV += $det->pv;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP') * $det->qty * $coef_qty_price;
 				$totalPR_PMP+= $det->calculate_price_pmp ;
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
+				$det->pv_pmp = empty($perso_price) ? $det->charged_price_pmp * $coef2 : $perso_price * $coef_qty_price;
+				
 				$totalPRC_PMP+= $det->charged_price_pmp;
+				$totalPV_PMP+= $det->pv_pmp;
 
 				if(!empty($conf->of->enabled)) {
 					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF') * $det->qty * $coef_qty_price;
 					$totalPR_OF+= $det->calculate_price_of ;
 					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
-					$totalPRC_OF+= $det->charged_price_of;
+					$det->pv_of = empty($perso_price) ? $det->charged_price_of * $coef2 : $perso_price * $coef_qty_price;
+					
+					$totalPRC_OF += $det->charged_price_of;
+					$totalPV_OF += $det->pv_of;
 				}
 
 
@@ -252,14 +271,14 @@ class TNomenclature extends TObjetStd
 		$this->marge = $marge->tx_object;
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
-		$this->totalPV = $this->totalPRCMO * $marge->tx_object;
+		$this->totalPV = ($this->totalMO + $totalPV) * $marge->tx_object;
 
 		if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
 			$this->totalPRCMO_OF = $this->totalMO_OF + $this->totalPRC_OF;
 
-			$this->totalPV_PMP = $this->totalPRCMO_PMP * $marge->tx_object;
-			$this->totalPV_OF = $this->totalPRCMO_OF * $marge->tx_object;
+			$this->totalPV_PMP = ($this->totalMO + $totalPV_PMP) * $marge->tx_object;
+			$this->totalPV_OF = ($this->totalMO_OF + $totalPV_OF) * $marge->tx_object;
 
 		}
 
@@ -601,7 +620,8 @@ class TNomenclature extends TObjetStd
 				,'childs'=>$childs
                 ,'note_private'=>$d->note_private
             	,'workstations'=>$d->workstations
-				,'rowid'=>$d->rowid
+            	,'rowid'=>$d->rowid
+            	,'fk_unit'=>$d->fk_unit
             );
 
         }
@@ -741,12 +761,14 @@ class TNomenclatureDet extends TObjetStd
 	 */
     function __construct()
     {
+    	global $conf;
+    	
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
-        $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang',array('type'=>'integer', 'index'=>true));
-		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
+        $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang,fk_unit',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('code_type,code_type2,fk_fournprice',array('type'=>'varchar', 'length' => 30)); // Got : Je mets fk_fournprice en chaîne car fk_fournprice peut contenir un id ou "costprice" ou "pmpprice"
 		$this->add_champs('workstations',array('type'=>'varchar', 'length' => 255));
-        $this->add_champs('qty,price',array('type'=>'float'));
+        $this->add_champs('qty,qty_base,price,tx_custom,tx_custom2,loss_percent,buying_price',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
 
         $this->_init_vars();
@@ -757,6 +779,25 @@ class TNomenclatureDet extends TObjetStd
 
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
+        if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->code_type2 = $this->code_type;
+        
+    }
+    
+    function save(&$PDOdb) {
+    	
+    	global $db, $conf;
+    	
+    	// Enregistrement de l'unité du produit dans la ligne de nomclature
+    	if(!empty($conf->global->PRODUCT_USE_UNITS) && empty($this->fk_unit) && !empty($this->fk_product)) {
+    		require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+    		$prod = new Product($db);
+    		if($prod->fetch($this->fk_product) > 0) {
+    			$this->fk_unit = $prod->fk_unit;
+    		}
+    	}
+    	
+    	return parent::save($PDOdb);
+    	
     }
 
     function reinit() {
@@ -926,6 +967,113 @@ class TNomenclatureDet extends TObjetStd
 
 		return $res;
 	}
+	
+	// Récupération des différents tarifs (tarifs fourn, PMP) de la même manière que Dolibarr, puis adaptationp our le cas nomenclature
+	function printSelectProductFournisseurPrice($k, $nomenclature_id=0, $nomenclature_type='product') {
+		
+		global $langs;
+		
+		?>
+		<script type="text/javascript">
+		
+		$.post('<?php echo DOL_URL_ROOT; ?>/fourn/ajax/getSupplierPrices.php?bestpricefirst=1', { 'idprod': <?php echo $this->fk_product; ?> }, function(data) {
+    	    	if (data && data.length > 0)
+    	    	{
+    	    		var options = '<option value="0" price=""></option>'; // Valeur vide
+        	  		var defaultkey = '';
+        	  		var defaultprice = '';
+    	      		var bestpricefound = 0;
+
+    	      		var bestpriceid = 0; var bestpricevalue = 0;
+    	      		var pmppriceid = 0; var pmppricevalue = 0;
+    	      		var costpriceid = 0; var costpricevalue = 0;
+
+    				/* setup of margin calculation */
+    	      		var defaultbuyprice = '<?php
+    	      		if (isset($conf->global->MARGIN_TYPE))
+    	      		{
+    	      		    if ($conf->global->MARGIN_TYPE == '1')   print 'bestsupplierprice';
+    	      		    if ($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
+    	      		    if ($conf->global->MARGIN_TYPE == 'costprice') print 'costprice';
+    	      		} ?>';
+    	      		console.log("we will set the field for margin. defaultbuyprice="+defaultbuyprice);
+
+    	      		var i = 0;
+    	      		$(data).each(function() {
+    	      			if (this.id != 'pmpprice' && this.id != 'costprice')
+    		      		{
+    		        		i++;
+                            this.price = parseFloat(this.price); // to fix when this.price >0
+    			      		// If margin is calculated on best supplier price, we set it by defaut (but only if value is not 0)
+    			      		//console.log("id="+this.id+"-price="+this.price+"-"+(this.price > 0));
+    		      			if (bestpricefound == 0 && this.price > 0) { defaultkey = this.id; defaultprice = this.price; bestpriceid = this.id; bestpricevalue = this.price; bestpricefound=1; }	// bestpricefound is used to take the first price > 0
+    		      		}
+    	      			if (this.id == 'pmpprice')
+    	      			{
+    	      				// If margin is calculated on PMP, we set it by defaut (but only if value is not 0)
+    			      		//console.log("id="+this.id+"-price="+this.price);
+    			      		if ('pmp' == defaultbuyprice || 'costprice' == defaultbuyprice)
+    			      		{
+    			      			if (this.price > 0) {
+    				      			defaultkey = this.id; defaultprice = this.price; pmppriceid = this.id; pmppricevalue = this.price;
+    			      				//console.log("pmppricevalue="+pmppricevalue);
+    			      			}
+    			      		}
+    	      			}
+    	      			if (this.id == 'costprice')
+    	      			{
+    	      				// If margin is calculated on Cost price, we set it by defaut (but only if value is not 0)
+    			      		//console.log("id="+this.id+"-price="+this.price+"-pmppricevalue="+pmppricevalue);
+    			      		if ('costprice' == defaultbuyprice)
+    			      		{
+    		      				if (this.price > 0) { defaultkey = this.id; defaultprice = this.price; costpriceid = this.id; costpricevalue = this.price; }
+    		      				else if (pmppricevalue > 0) { defaultkey = pmppriceid; defaultprice = pmppricevalue; }
+    			      		}
+    	      			}
+    	        		options += '<option value="'+this.id+'" price="'+this.price+'">'+this.label+'</option>';
+    	      		});
+
+    	      		console.log("finally selected defaultkey="+defaultkey+" defaultprice="+defaultprice);
+
+    	      		<?php if(empty($nomenclature_id) || $nomenclature_type !== 'product') { ?>
+    	      		
+    	      			var select_fournprice = $('select[name=TNomenclature\\[<?php echo $k; ?>\\]\\[fk_fournprice\\]]');
+					<?php } else { ?>
+						var select_fournprice = $('div#nomenclature<?php echo $nomenclature_id; ?> select[name=TNomenclature\\[<?php echo $k; ?>\\]\\[fk_fournprice\\]]');
+					<?php } ?>
+	
+    	      		select_fournprice.html(options);
+
+    	      		// Pour l'instant on laisee l'utilisateur choisir à la main le prix d'achat
+    	      		/*if (defaultkey != '')
+    				{
+    		      		$("#fournprice_predef_line_<?php echo $this->rowid; ?>").val(defaultkey);
+    		      	}*/
+
+    	      		// Préselection de la liste avec la valeur en base si existante
+    	      		<?php if(!empty($this->fk_fournprice)) { ?>
+    	      			select_fournprice.val('<?php echo $this->fk_fournprice; ?>');
+		      		<?php } ?>
+    	      		
+    	      		/* At loading, no product are yet selected, so we hide field of buying_price */
+    	      		//$("#buying_price").hide();
+
+    			    select_fournprice.change(function() {
+    		      		console.log("change on fournprice_predef");
+    	      			var linevalue=$(this).find('option:selected').val();
+    	        		var pricevalue = $(this).find('option:selected').attr("price");
+    	        		$(this).closest('tr').find('input[name*="buying_price"]').val(pricevalue);
+    				});
+    	    	}
+    	  	},
+    	  	'json');
+
+		</script>
+		
+		<?php
+		
+	}
+	
 }
 
 

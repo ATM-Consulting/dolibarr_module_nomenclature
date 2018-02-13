@@ -130,8 +130,7 @@ class Interfacenomenclaturetrigger
 			$this->_setPrice($PDOdb, $object, $object->fk_facture, 'facture');
 		} elseif ($action == 'LINEORDER_INSERT') {
 
-			if (empty($conf->nomenclature->enabled)) return 0;
-			if ($object->product_type == 9)	return 0;
+			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
 
 				// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
 			$origin = GETPOST('origin');

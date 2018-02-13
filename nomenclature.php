@@ -10,6 +10,7 @@ dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 
 if($conf->workstation->enabled) {
     dol_include_once('/workstation/class/workstation.class.php');
@@ -18,6 +19,7 @@ if($conf->workstation->enabled) {
 $hookmanager->initHooks(array('nomenclaturecard'));
 
 $langs->load("stocks");
+$langs->load("products");
 $langs->load("nomenclature@nomenclature");
 
 $product = new Product($db);
@@ -264,7 +266,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 			$urloption='htmlname='.$htmlname.'&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
 			print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
 			print $langs->trans("RefOrLabel").' : ';
-			print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" autofocus />';
+			print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" '.(empty($conf->global->NOMENCLATURE_DISABLE_AUTOFOCUS) ? 'autofocus' : '').' />';
 	    ?>
 	    <div class="inline-block divButAction">
 	        <input id="nomenclature_bt_clone_nomenclature" type="button" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
@@ -355,6 +357,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
     echo $formCore->hidden('qty_ref', $qty_ref);
     echo $formCore->hidden('qty_price', $qty_price);
 
+    $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+    
 	?>
 	<script type="text/javascript">
 	$(document).ready(function() {
@@ -393,6 +397,33 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 			}
 		});
 
+		<?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
+			// Récupération des coef
+			TCoef = {<?php foreach($TCoef as $obj_coef) echo '"'.$obj_coef->code_type.'":'.$obj_coef->tx.','; ?>};
+			
+			$('.select_coef').change(function() {
+				$(this).parent('td').find('input[type="text"]').val(TCoef[$(this).val()]);
+			});
+		<?php }
+		
+		if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?>
+	
+			$("input[name*=qty_base], input[name*=loss_percent]").change(function() {
+
+				if(typeof $('input[name*=qty_base]').attr('name') !== 'undefined') {
+				
+					var line = $(this).closest('tr');
+					var val_qty_base = $(line).find("input[name*=qty_base]").val();
+					var val_loss_percent = $(line).find("input[name*=loss_percent]").val();
+					
+					$(this).closest('tr').find('td.ligne_col_qty').find("input[name*=qty]").val(Math.round(((val_qty_base / ((100 - val_loss_percent)/100)) * 100)) / 100);
+
+				}
+				
+			});
+
+		<?php } ?>
+	
 	});
 	</script>
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
@@ -418,21 +449,35 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                    <table width="100%" class="liste det-table">
                        <thead>
                        <tr class="liste_titre">
-                           <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th>
                            <th class="liste_titre col_product" width="55%"><?php echo $langs->trans('Product'); ?></th>
+                           <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?> <th class="liste_titre col_fk_unit" width="5%"><?php echo $langs->trans('Unit'); ?></th> <?php } ?>
                            <?php
 		                        if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 								{
 									print '<th class="liste_titre" width="5%">'.$langs->trans('Availability').'</th>';
 								}
-							?>
-
-                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
-                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
+						   
+						   		if(!empty($conf->stock->enabled)) {
+								   ?>
+		
+		                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
+		                           <th class="liste_titre col_virtualStock" width="5%"><?php echo $langs->trans('VirtualStock'); ?></th>
+		                        <?php } ?>
+		                   <?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?> 
+		                   		<th class="liste_titre col_qty_base" width="5%"><?php echo $langs->trans('qty_base'); ?></th>
+		                   		<th class="liste_titre col_loss_percent" width="5%"><?php echo $langs->trans('LossPercent'); ?></th>
+		                   <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
                            <?php if($user->rights->nomenclature->showPrice) {
-                           		?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th><?php
+                           	?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th>
+                           		<th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th><?php
                            		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
+                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+                           		?>
+                           			<th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('CoefMarge'); ?></th>
+                           			<th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('PV'); ?></th>
+                           		<?php }
                            		?><th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
                            ?>
@@ -451,10 +496,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        foreach($TNomenclatureDet as $k=>&$det) {
 
                            $class = ($class == 'impair') ? 'pair' : 'impair';
-
+                           
                            ?>
                            <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>">
-                               <td><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type); ?></td>
                                <td><?php
                                     $p_nomdet = new Product($db);
                                     if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0)
@@ -485,7 +529,21 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 										
 									}
 									
-                                ?></td><?php
+                                ?></td>
+                                
+	                                <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?>
+		                               <td class="ligne_col_fk_unit"><?php
+		                               		if(!empty($conf->global->NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT)) echo $form->selectUnits($det->fk_unit, 'TNomenclature['.$k.'][fk_unit]', 1);
+		                               		else {
+		                               			// On copie l'unité de la ligne dans l'objet produit pour utiliser la fonction getLabelOfUnit()
+		                               			$original_fk_unit = $p_nomdet->fk_unit;
+		                               			$p_nomdet->fk_unit = $det->fk_unit;
+		                               			print ucfirst($langs->trans($p_nomdet->getLabelOfUnit()));
+		                               			// On remet l'unité de base du produit au cas où
+		                               			$p_nomdet->fk_unit = $original_fk_unit;
+		                               		}
+									    ?></td>
+									<?php }
 
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
 									{
@@ -514,39 +572,55 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 										echo '</td>';
 									}
 
-
-                               ?>
-                               <td>
-                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
-                               </td>
-                               <td>
-                               	<?php
-                               		if($conf->of->enabled && $p_nomdet->id>0){
-
-                               			// On récupère les quantités dans les OF
-                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
-                               					FROM '.MAIN_DB_PREFIX.'assetOf of
-                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid)
-                               					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
-	                               		$resql = $db->query($q);
-
-										// On régule le stock théorique en fonction de ces quantités
-										while($res = $db->fetch_object($resql)) {
-											if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
-											elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
+								
+								if(!empty($conf->stock->enabled)) {
+	                               ?>
+	                               <td>
+	                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
+	                               </td>
+	                               <td class="ligne_col_virtualStock">
+	                               	<?php
+	                               		if($conf->of->enabled && $p_nomdet->id>0){
+	
+	                               			// On récupère les quantités dans les OF
+	                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
+	                               					FROM '.MAIN_DB_PREFIX.'assetOf of
+	                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = of.rowid)
+	                               					WHERE fk_product = '.$p_nomdet->id.' AND of.status NOT IN("DRAFT","CLOSE")';
+		                               		$resql = $db->query($q);
+	
+											// On régule le stock théorique en fonction de ces quantités
+											while($res = $db->fetch_object($resql)) {
+												if($res->type === 'TO_MAKE') $p_nomdet->stock_theorique += $res->qty; // Pour les TO_MAKE la bonne qté est dans le champ qty
+												elseif($res->type === 'NEEDED') $p_nomdet->stock_theorique -= empty($res->qty_needed) ? $res->qty : $res->qty_needed;
+											}
+	
 										}
-
-									}
-                               		echo !empty($det->fk_product) ? price($p_nomdet->stock_theorique,'',0,1,1,2) : '-';
-                               	?>
-                               </td>
+	                               		echo !empty($det->fk_product) ? price($p_nomdet->stock_theorique,'',0,1,1,2) : '-';
+	                               	?>
+	                               </td>
+	                             <?php }
+	                             
+	                             	if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) {
+	                             		echo '<td class="ligne_col_qty_base" nowrap>'.$formCore->texte('', 'TNomenclature['.$k.'][qty_base]', $det->qty_base, 2,100, '').'</td>';
+	                             		echo '<td nowrap>'.$formCore->texte('', 'TNomenclature['.$k.'][loss_percent]', $det->loss_percent, 2,100).'%</td>';
+	                             	}
+	                           ?>
+	                           
                                <td class="ligne_col_qty"><?php
                                echo $formCore->texte('', 'TNomenclature['.$k.'][qty]', $det->qty, 7,100);
 							   		if($coef_qty_price != 1) echo '<br /> x '.price($coef_qty_price,'','',2,2) ;
 							    ?></td>
-
-                               <?php
-
+								<?php
+								
+							   if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+							   		
+							   		?><td nowrap><select id="TNomenclature[<?php echo $k; ?>][fk_fournprice]" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select><?php
+							   		echo $formCore->texte('', 'TNomenclature['.$k.'][buying_price]', empty($det->buying_price) ? '' : $det->buying_price, 7,100).'</td>';
+							   		$det->printSelectProductFournisseurPrice($k, $n->rowid, $n->object_type);
+									
+							   }
+							   
 	                            if($user->rights->nomenclature->showPrice) {
 
 	                            	$price = price2num($det->calculate_price,'MT');
@@ -564,6 +638,21 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                                 	echo '</td>';
+                                	
+								   }
+								   
+								   ?>
+								   
+								   <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
+                               
+	                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
+	                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom]', empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom, 3,100);
+	                               } ?>
+	                               
+	                               </td>
+								   
+								   <?php
+                                	
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($price_charge);
@@ -574,10 +663,37 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                     	echo price($price_charge);
 									}
                                 	echo '</td>';
+                                	
+	                            	if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?>
+								
+										<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
+		                               
+			                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
+			                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 3,100);
+			                               } ?>
+		                               
+		                               	</td>
+		                               	<?php
+		                               	
+		                               		$pv = price2num($det->pv,'MT');
+		
+											echo '<td align="right" valign="middle">';
+											if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+												echo price( $pv).img_help(1,$langs->trans('PricePA'));
+												echo '<span class="pricePMP"><br />'.price(price2num($det->pv_pmp,'MT')).img_help(1,$langs->trans('PricePMP')).'</span>';
+												if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->pv_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
+											}
+											else{
+												echo price($pv);
+											}
+											echo '</td>';
+
+
+                                			echo '</td>';
+	                            	}
 									echo '<td align="right" valign="middle">';
                                     echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($det->price).'" size="5" />';
                                 	echo '</td>';
-	                            }
                                ?>
                                
 								<td><?php
@@ -605,15 +721,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					?></tbody><tfoot><?php
 
 				       if($user->rights->nomenclature->showPrice) {
-				       		$colspan = 4;
-							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan += 1;
+				       		$colspan = 3;
+							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
+							if(empty($conf->stock->enabled)) $colspan -= 2;
+							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
+							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan += 2;
+							if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) $colspan ++;
                        ?>
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
                            <td align="right"><?php echo price(price2num($n->totalPR,'MT')); ?></td>
+                           <td align="right"></td>
                            <td align="right"><?php echo price(price2num($n->totalPRC,'MT')); ?></td>
+                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+                           			print '<td align="right"></td>';
+                           			?><td align="right"><?php echo price(price2num($n->totalPV,'MT')); ?></td><?php
+                           		  } ?>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+                           <td align="right"></td>
+                           <td align="right"></td>
                        </tr>
                        <?php
 
@@ -621,10 +748,17 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                        ?>
 	                       <tr class="liste_total">
 	                           <td ><?php echo $langs->trans('TotalPricePMP'); ?></td>
-	                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
+	                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
 	                           <td align="right"><?php echo price(price2num($n->totalPR_PMP,'MT')); ?></td>
+	                           <td align="right"></td>
 	                           <td align="right"><?php echo price(price2num($n->totalPRC_PMP,'MT')); ?></td>
+	                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+	                           			print '<td align="right"></td>';
+	                           			?><td align="right"><?php echo price(price2num($n->totalPV_PMP,'MT')); ?></td><?php
+	                           		  } ?>
 	                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+	                           <td align="right"></td>
+	                           <td align="right"></td>
 
 	                       </tr><?php
 
@@ -634,8 +768,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <td ><?php echo $langs->trans('TotalPriceOF'); ?></td>
 		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
 		                           <td align="right"><?php echo price(price2num($n->totalPR_OF,'MT')); ?></td>
+		                           <td align="right"></td>
 		                           <td align="right"><?php echo price(price2num($n->totalPRC_OF,'MT')); ?></td>
+		                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+		                           			print '<td align="right"></td>';
+		                           			?><td align="right"><?php echo price(price2num($n->totalPV_OF,'MT')); ?></td><?php
+	                       				  } ?>
 		                           <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
+		                           <td align="right"></td>
+		                           <td align="right"></td>
 
 		                       </tr>
 		                       <?php
@@ -806,6 +947,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                           <td align="right"><?php echo price($n->totalMO); ?></td>
 								<td>&nbsp;</td>
 								<td></td>
+								<td></td>
 	                    </tr><?php
 	                     if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
 		                    ?><tr class="liste_total">
@@ -822,7 +964,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                }
                else{
 
-                   echo '<tr><td colspan="5">'. $langs->trans('WillUseProductWorkstationIfNotSpecified') .'</td></tr>';
+                   echo '<tr><td colspan="10">'. $langs->trans('WillUseProductWorkstationIfNotSpecified') .'</td></tr>';
                }
 
                 ?>
@@ -841,10 +983,16 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
 				$marge = $n->marge_object;
 				
+				$PR = price2num($n->totalPR,'MT');
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
 				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
 		        ?>
+		        <tr class="liste_total" >
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCost', $qty_ref); ?></td>
+                       <td colspan="3">&nbsp;</td>
+                       <td style="font-weight: bolder; text-align: right;"><?php echo price($PR); ?></td>
+		        </tr>
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
@@ -973,7 +1121,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							  $urloption='htmlname='.$htmlname.'&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
 							  print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
 							  print $langs->trans("RefOrLabel").' : ';
-							  print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" autofocus />';
+							  print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" '.(empty($conf->global->NOMENCLATURE_DISABLE_AUTOFOCUS) ? 'autofocus' : '').' />';
 
 							?>
 							<div class="inline-block divButAction">

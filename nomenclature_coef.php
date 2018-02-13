@@ -274,6 +274,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	
 	switch ($object_type) {
 		case 'propal':
+			require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 			$object = new Propal($db);
 			$object->fetch($id);
 			$object->fetch_thirdparty();
