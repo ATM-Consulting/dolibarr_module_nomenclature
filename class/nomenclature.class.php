@@ -801,6 +801,7 @@ class TNomenclatureDet extends TObjetStd
     }
 
     function reinit() {
+    	$this->fk_origin = $this->rowid;
         $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def
         $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
         $this->{OBJETSTD_DATEUPDATE}=time();

@@ -229,6 +229,7 @@ class Interfacenomenclaturetrigger
 							foreach ( $n->TNomenclatureDet as $TDetValues ) {
 								$k = $n_new->addChild($PDOdb, 'TNomenclatureDet');
 								$n_new->TNomenclatureDet[$k]->set_values($TDetValues);
+								$n_new->TNomenclatureDet[$k]->fk_origin = $TDetValues->rowid;
 							}
 						}
 						if (! empty($n->TNomenclatureWorkstation)) {
