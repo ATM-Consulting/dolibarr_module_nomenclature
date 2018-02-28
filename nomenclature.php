@@ -126,7 +126,7 @@ if (empty($reshook))
 		{
 			$n=new TNomenclature;
 			
-		    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
+		    if($fk_nomenclature>0) $n->load($PDOdb, $fk_nomenclature, false, $product->id , $qty_ref, $object_type, $fk_origin);
 		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
 	
 			if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
@@ -182,7 +182,7 @@ if (empty($reshook))
 			setEventMessage($langs->trans('NomenclatureSaved'));
 			
 			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
-
+			
 		    $n->save($PDOdb);
 			
 			// Fait l'update du PA et PU de la ligne si nécessaire
