@@ -55,46 +55,46 @@ $parameters = array(
 		'object_type' => $object_type,
 		'fk_object' => $fk_object,
 		'fk_nomenclature' => $fk_nomenclature,
-		
+
 );
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $product, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 if (empty($reshook))
 {
-	
+
 	if($action==='delete_nomenclature') {
 	    $n=new TNomenclature;
 	    $n->load($PDOdb, GETPOST('fk_nomenclature'));
 	    $n->delete($PDOdb);
-	
+
 	    setEventMessage('NomenclatureDeleted');
-	
+
 	}
 	else if($action==='clone_nomenclature') {
-	
+
 		cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_product_clone', 'int'), $fk_object, $object_type);
 	}
 	else if($action==='add_nomenclature') {
-	
+
 	    $n=new TNomenclature;
 	    $n->set_values($_REQUEST);
 	    $n->save($PDOdb);
-	
+
 	}
 	else if($action==='add_fk_nomenclature') {
 		//TODO ajouter les enfants de la nomenclature passé en post à la nomenclature courrante
-	
+
 	}
 	else if($action === 'delete_nomenclature_detail') {
-	
+
 		$n=new TNomenclature;
-	
+
 	    $n->load($PDOdb, $fk_nomenclature);
-	
+
 	    if($n->getId()>0) {
-	
+
 	    $n->TNomenclatureDet[GETPOST('k')]->to_delete = true;
-	
+
 	    $n->save($PDOdb);
 	   }
 	}
@@ -102,7 +102,7 @@ if (empty($reshook))
 	    $n=new TNomenclature;
 	 //   $PDOdb->debug = true;
 	    $n->load($PDOdb, $fk_nomenclature);
-	
+
 	    if($n->getId()>0) {
 	    	$k = (int)GETPOST('k');
 	//var_dump( $fk_nomenclature,$k,$n->TNomenclatureWorkstation);
@@ -111,64 +111,64 @@ if (empty($reshook))
 	    }
 	}
 	else if($action==='save_nomenclature') {
-		
+
 		if (GETPOST('clone_nomenclature'))
 		{
 			$n=new TNomenclature;
 			$n->load($PDOdb, $fk_nomenclature);
 			$n->delete($PDOdb);
-	
+
 			cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
 		}
 		else
 		{
 			$n=new TNomenclature;
-			
+
 		    if($fk_nomenclature>0) $n->load($PDOdb, $fk_nomenclature, false, $product->id , $qty_ref, $object_type, $fk_origin);
 		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
-	
+
 			if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
 				$n->reinit();
 			}
-	
+
 			$n->set_values($_POST);
-	
+
 		    $n->is_default = (int)GETPOST('is_default');
-	
+
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
-	
+
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
 				foreach($_POST['TNomenclature'] as $val) $tab[] = $val;
-				
+
 		        foreach($tab as $k=>$TDetValues) {
 		            $n->TNomenclatureDet[$k]->set_values($TDetValues);
-		            
+
 		            if(isset($_POST['TNomenclature_'.$k.'_workstations'])) {
 		            	$n->TNomenclatureDet[$k]->workstations = implode(',', $_POST['TNomenclature_'.$k.'_workstations']);
 		            }
-		            
+
 		        }
 		    }
-	
+
 		    if(!empty($_POST['TNomenclatureWorkstation'])) {
 		        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
 		            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
 		        }
 		    }
-	
+
 		    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
 		    	if(!$n->addProduct($PDOdb, $fk_new_product)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
-	
+
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
 		    	}
-	
+
 		    }
-	
+
 		    $fk_new_workstation = GETPOST('fk_new_workstation');
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
 		        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
@@ -176,18 +176,18 @@ if (empty($reshook))
 		        $det->fk_workstation = $fk_new_workstation;
 		        $det->rang = $k+1;
 		    }
-	
+
 			setEventMessage($langs->trans('NomenclatureSaved'));
-			
+
 			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
-			
+
 		    $n->save($PDOdb);
-			
+
 			// Fait l'update du PA et PU de la ligne si nécessaire
 			_updateObjectLine($n, $object_type, $fk_object, GETPOST('fk_origin'), GETPOST('apply_nomenclature_price'));
-			
+
 		}
-	
+
 	}
 }
 
@@ -217,7 +217,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', ($user->societe_id?0:1), 'ref');
 	else headerProduct($product);
-	
+
 	?><script type="text/javascript">
 		function uncheckOther(obj)
 		{
@@ -473,18 +473,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 
 									if(!empty($conf->global->NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION)) {
-									
+
 										if(empty($TWorkstationToSelect)) {
 											$TWorkstationToSelect=array();
 											foreach($n->TNomenclatureWorkstation as &$wsn) {
 												$TWorkstationToSelect[$wsn->workstation->id] = $wsn->workstation->name;
 											}
 										}
-										
+
 										echo $form->multiselectarray('TNomenclature_'.$k.'_workstations', $TWorkstationToSelect,(empty($det->workstations) ? array() : explode(',', $det->workstations)),0,0,'minwidth300'  );
-										
+
 									}
-									
+
                                 ?></td><?php
 
 									if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY))
@@ -579,19 +579,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                 	echo '</td>';
 	                            }
                                ?>
-                               
+
 								<td><?php
 								if($n->getId()>0)
 								{
 									$param = '?action=delete_nomenclature_detail&k='.$k.'&fk_nomenclature='.$n->getId().'&fk_product='.$product->id.'&fk_object='.$fk_object;
 									$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
-								
+
 									// Si la nomenclature a été enregistré puis que les lignes ont été delete, alors l'icone de suppression ne doit pas s'afficher car ce sont les lignes chargé depuis le load_original()
 									if (! empty($n->iExist)) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
 								}
 								?></td>
-                               
-                               
+
+
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
 									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
@@ -656,7 +656,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
            </td>
 
         </tr>
-        
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
@@ -669,7 +669,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
 						}
 						?>
-						
+
 						<div class="inline-block divButAction">
 							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
 						</div>
@@ -677,8 +677,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				</div>
 			</td>
         </tr>
-        
-        
+
+
         <?php
        if($conf->workstation->enabled) {
 
@@ -692,13 +692,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                    <th class="liste_titre" colspan="1" width="55%"><?php echo $langs->trans('Worstations'); ?></th>
                    <th class="liste_titre" colspan="1" width="5%"></th>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
-                   <th class="liste_titre" width="5%"><?php echo $langs->trans('nb_days_before_beginning'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('nb_days_before_beginning').img_info($langs->trans('nb_days_before_beginningHelp')); ?></th>
                    <?php }?>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) {?>
-                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyPrepare'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyPrepare').img_info($langs->trans('QtyPrepareHelp')); ?></th>
                    <?php }?>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) {?>
-                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyFabrication'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyFabrication').img_info($langs->trans('QtyFabricationHelp')); ?></th>
                    <?php }?>
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                  <?php if($user->rights->nomenclature->showPrice) {
@@ -779,7 +779,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							}
 							?>
 						</td>
-						
+
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
 									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$ws->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
@@ -798,7 +798,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) $colspan--;
-					
+
 					if($user->rights->nomenclature->showPrice) {
 	                    ?><tr class="liste_total">
 	                           <td colspan="2"><?php echo $langs->trans('Total'); ?></td>
@@ -837,10 +837,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 		if($user->rights->nomenclature->showPrice)
 		{
-				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload 
+				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
 				$marge = $n->marge_object;
-				
+
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
 				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
@@ -918,10 +918,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        	<?php echo $formCore->hidden('price_to_sell', $price_to_sell); ?>
                        </td>
 		        </tr>
-				
-					<?php 
+
+					<?php
 					// On affiche aussi à l'unité
-					if($qty_ref!=1 && !empty($qty_ref)) { 
+					if($qty_ref!=1 && !empty($qty_ref)) {
 					?>
 					<tr class="liste_total" >
 						   <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseilUnit', ($marge->tx_object -1)* 100); ?></td>
@@ -952,7 +952,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                 </div>
             </td>
         </tr>
-        
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
