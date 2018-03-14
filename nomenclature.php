@@ -388,6 +388,16 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						,type:'ws'
 						,TRank:sorted
 					}
+					,success: function(data) {
+console.log('Sort');
+						$('.workstation-table tr[rowid]').each(function(i, elem) {
+							$(elem).find('input, textarea').each(function(j, child) {
+								var name = $(child).prop('name').replace(/^(TNomenclatureWorkstation\[)([0-9]+)(\].*)/, '$1'+i+'$3');
+								$(child).prop('id', name).prop('name', name);
+console.log(name);
+							});
+						});
+					}
 				});
 
 			}
