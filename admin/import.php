@@ -56,50 +56,53 @@ function _show_tab_session(&$PDOdb) {
 	
 	$save = GETPOST('bt_save') ? true : false;
 	//var_dump($Tab);
-	foreach($Tab as $fk_product=>$TNomenclature) {
-		
-		$p=new Product($db);	
-		if($p->fetch(0,$fk_product)<=0) continue;
-		
-		echo '<hr />'.$p->getNomUrl(1).' - '.$p->label;
-			
-		foreach($TNomenclature as $TData) {
-			
-			$n=new TNomenclature;
-			$n->fk_object = $p->id;
-			$n->object_type = 'product';
-			
-			foreach($TData as $data) {
-				if(!empty($data['qty_ref']))$n->qty_reference = (double)$data['qty_ref'];
-				
-				if($data['type'] == 'MO') {
-					$w = new TWorkstation();
-					$w->loadBy($PDOdb, $data['fk_product_composant'], 'code');
-					
-					$k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
-					$n->TNomenclatureWorkstation[$k]->fk_workstation = $w->getId();
-					$n->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $data['qty'];
-					$n->TNomenclatureWorkstation[$k]->rang = $k+1;
-					$n->TNomenclatureWorkstation[$k]->workstation = $w;
-				} else {
-					$p_compo=new Product($db);	
-					if($p_compo->fetch(0,$data['fk_product_composant'])<=0) continue;
-				
-					$k = $n->addChild($PDOdb, 'TNomenclatureDet');
-					$n->TNomenclatureDet[$k]->fk_product = $p_compo->id;
-					$n->TNomenclatureDet[$k]->qty = $data['qty'];
-					$n->TNomenclatureDet[$k]->code_type = $data['type'];
-					$n->TNomenclatureDet[$k]->product = $p_compo;
+	if (!empty($Tab))
+	{
+		foreach($Tab as $fk_product=>$TNomenclature) {
+
+			$p=new Product($db);	
+			if($p->fetch(0,$fk_product)<=0) continue;
+
+			echo '<hr />'.$p->getNomUrl(1).' - '.$p->label;
+
+			foreach($TNomenclature as $TData) {
+
+				$n=new TNomenclature;
+				$n->fk_object = $p->id;
+				$n->object_type = 'product';
+
+				foreach($TData as $data) {
+					if(!empty($data['qty_ref']))$n->qty_reference = (double)$data['qty_ref'];
+
+					if($data['type'] == 'MO') {
+						$w = new TWorkstation();
+						$w->loadBy($PDOdb, $data['fk_product_composant'], 'code');
+
+						$k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
+						$n->TNomenclatureWorkstation[$k]->fk_workstation = $w->getId();
+						$n->TNomenclatureWorkstation[$k]->nb_hour_manufacture = $data['qty'];
+						$n->TNomenclatureWorkstation[$k]->rang = $k+1;
+						$n->TNomenclatureWorkstation[$k]->workstation = $w;
+					} else {
+						$p_compo=new Product($db);	
+						if($p_compo->fetch(0,$data['fk_product_composant'])<=0) continue;
+
+						$k = $n->addChild($PDOdb, 'TNomenclatureDet');
+						$n->TNomenclatureDet[$k]->fk_product = $p_compo->id;
+						$n->TNomenclatureDet[$k]->qty = $data['qty'];
+						$n->TNomenclatureDet[$k]->code_type = $data['type'];
+						$n->TNomenclatureDet[$k]->product = $p_compo;
+					}
+
 				}
-				
+
+				if($save) $n->save($PDOdb);
+
+				_show_nomenclature($n);
+
 			}
-			
-			if($save) $n->save($PDOdb);
-			
-			_show_nomenclature($n);
-			
+
 		}
-		
 	}
 	
 	if(!$save) {
@@ -190,6 +193,7 @@ function _import_to_session() {
 			
 		}
 		
+		fclose($f1);
 	}
 	
 }
