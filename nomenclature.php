@@ -126,7 +126,7 @@ if (empty($reshook))
 		{
 			$n=new TNomenclature;
 			
-		    if($fk_nomenclature>0)$n->load($PDOdb, $fk_nomenclature);
+		    if($fk_nomenclature>0) $n->load($PDOdb, $fk_nomenclature, false, $product->id , $qty_ref, $object_type, $fk_origin);
 		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
 	
 			if(!$n->iExist && GETPOST('type_object')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
@@ -392,6 +392,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						,type:'ws'
 						,TRank:sorted
 					}
+					,success: function(data) {
+console.log('Sort');
+						$('.workstation-table tr[rowid]').each(function(i, elem) {
+							$(elem).find('input, textarea').each(function(j, child) {
+								var name = $(child).prop('name').replace(/^(TNomenclatureWorkstation\[)([0-9]+)(\].*)/, '$1'+i+'$3');
+								$(child).prop('id', name).prop('name', name);
+console.log(name);
+					});
 				});
 
 			}
@@ -833,13 +841,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                    <th class="liste_titre" colspan="1" width="55%"><?php echo $langs->trans('Worstations'); ?></th>
                    <th class="liste_titre" colspan="1" width="5%"></th>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
-                   <th class="liste_titre" width="5%"><?php echo $langs->trans('nb_days_before_beginning'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('nb_days_before_beginning').img_info($langs->trans('nb_days_before_beginningHelp')); ?></th>
                    <?php }?>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) {?>
-                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyPrepare'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyPrepare').img_info($langs->trans('QtyPrepareHelp')); ?></th>
                    <?php }?>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) {?>
-                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyFabrication'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyFabrication').img_info($langs->trans('QtyFabricationHelp')); ?></th>
                    <?php }?>
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                  <?php if($user->rights->nomenclature->showPrice) {

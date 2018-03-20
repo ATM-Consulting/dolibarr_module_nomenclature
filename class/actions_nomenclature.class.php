@@ -83,7 +83,7 @@ class Actionsnomenclature
 			  	{
 			  		if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
 					
-					if(($line->fk_product>0 && $line->product_type == 0) || ($conf->global->NOMENCLATURE_ALLOW_FREELINE)) 
+					if($line->fk_product>0 || !empty($conf->global->NOMENCLATURE_ALLOW_FREELINE)) 
 					{
 						$lineid = empty($line->id) ? $line->rowid : $line->id;
 						
