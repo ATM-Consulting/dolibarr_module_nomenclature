@@ -162,6 +162,7 @@ function _show_nomenclature(&$n) {
 
 	echo '</table>';
 
+    flush();
 }
 
 function _import_to_session() {
