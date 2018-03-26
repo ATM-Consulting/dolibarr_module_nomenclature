@@ -399,10 +399,13 @@ console.log('Sort');
 								var name = $(child).prop('name').replace(/^(TNomenclatureWorkstation\[)([0-9]+)(\].*)/, '$1'+i+'$3');
 								$(child).prop('id', name).prop('name', name);
 console.log(name);
-					});
-				});
+							});
+						});
 
+					}
+				});
 			}
+
 		});
 
 		<?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) { ?>
