@@ -92,9 +92,27 @@ else
 		$o->label = 'Marge';
 		$o->description = "Coef. de marge";
 		$o->code_type = "coef_marge";
+		$o->type = "nomenclature";
 		$o->tx = 1.1;
 		$o->save($PDOdb);
 	}
+}
+
+
+// Coef marge par défaut pour les lignes de main d'oeuvre
+$o=new TNomenclatureCoef($db);
+$o->loadBy($PDOdb, 'coef_marge_ws', 'code_type');
+
+if ($o->getId() > 0) null; //OK le coef exist donc on ne fait rien
+else
+{
+	$o=new TNomenclatureCoef;
+	$o->label = 'Marge';
+	$o->description = "Coef. de marge";
+	$o->code_type = "coef_marge_ws";
+	$o->type = "workstation";
+	$o->tx = 1;
+	$o->save($PDOdb);
 }
 /*
  * Fin récup
@@ -107,3 +125,6 @@ $o->init_db_by_vars($PDOdb);
 
 $o=new TNomenclatureWorkstationThmObject;
 $o->init_db_by_vars($PDOdb);
+
+// MAJ Champ type de la table llx_nomenclature_coef pour utiliser par défaut la valeur "nomenclature" 
+$db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef SET type = "nomenclature" WHERE type IS NULL');
