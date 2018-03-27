@@ -950,19 +950,19 @@ class TNomenclatureDet extends TObjetStd
 	}
 
 
-    static function getTType(&$PDOdb, $blankRow = false)
+    static function getTType(&$PDOdb, $blankRow = false, $type='nomenclature')
 	{
 		$res = array();
 		if ($blankRow) $res = array('' => '');
 
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE type = "'.$type.'" ORDER BY rowid';
 		$resql = $PDOdb->Execute($sql);
 
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			while ($row = $PDOdb->Get_line())
 			{
-				if ($row->code_type != 'coef_marge') $res[$row->code_type] = $row->label;
+				if ($row->code_type != 'coef_marge' && $row->code_type != 'coef_marge_ws') $res[$row->code_type] = $row->label;
 			}
 		}
 
@@ -1095,6 +1095,8 @@ class TNomenclatureWorkstation extends TObjetStd
 
         $this->qty=1;
         $this->product_type=1;
+        $PDOdb = new TPDOdb;
+        $this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
     }
 
     function reinit()
@@ -1125,7 +1127,8 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		}
 		else{
-			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour;
+			$tx_marge = empty($this->TCoefStandard[$this->code_type]->tx) ? $this->TCoefStandard['coef_marge_ws']->tx : $this->TCoefStandard[$this->code_type]->tx;
+			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour * $tx_marge;
 		}
 
 		return array( $nb_hour , $price );
@@ -1155,7 +1158,7 @@ class TNomenclatureCoef extends TObjetStd
     {
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef');
         $this->add_champs('label,description',array('type'=>'varchar', 'length'=>255));
-		$this->add_champs('code_type',array('type'=>'varchar', 'length'=>30, 'index'=>true));
+		$this->add_champs('code_type,type',array('type'=>'varchar', 'length'=>30, 'index'=>true)); // type = nomenclature ou workstation
         $this->add_champs('tx',array('type'=>'float'));
 
         $this->_init_vars();
@@ -1169,9 +1172,10 @@ class TNomenclatureCoef extends TObjetStd
 		$this->tx_object = $this->tx;
 	}
 
-	static function loadCoef(&$PDOdb)
+	static function loadCoef(&$PDOdb, $type='nomenclature')
 	{
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef ORDER BY rowid';
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE type = "'.$type.'" ORDER BY rowid';
+		
 		$TRes = $PDOdb->ExecuteAsArray($sql);
 		$TResult = array();
 
