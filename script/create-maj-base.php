@@ -13,6 +13,7 @@ if(!defined('INC_FROM_DOLIBARR')) {
 global $db;
 
 dol_include_once('/nomenclature/class/nomenclature.class.php');
+require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
 if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE) || isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE)) 
 {
@@ -112,3 +113,7 @@ $o->init_db_by_vars($PDOdb);
 
 // MAJ Champ type de la table llx_nomenclature_coef pour utiliser par défaut la valeur "nomenclature" 
 $db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef SET type = "nomenclature" WHERE type IS NULL');
+
+// Gestion des PV forcés
+$e = new ExtraFields($db);
+$e->addExtraField('pv_force', 'Prix de vente forcé', 'boolean', '', '', 'propaldet', 0, 0, '', '', 0, '', 0, 1);
