@@ -98,22 +98,6 @@ else
 	}
 }
 
-
-// Coef marge par défaut pour les lignes de main d'oeuvre
-$o=new TNomenclatureCoef($db);
-$o->loadBy($PDOdb, 'coef_marge_ws', 'code_type');
-
-if ($o->getId() > 0) null; //OK le coef exist donc on ne fait rien
-else
-{
-	$o=new TNomenclatureCoef;
-	$o->label = 'Marge';
-	$o->description = "Coef. de marge";
-	$o->code_type = "coef_marge_ws";
-	$o->type = "workstation";
-	$o->tx = 1;
-	$o->save($PDOdb);
-}
 /*
  * Fin récup
  */

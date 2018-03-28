@@ -962,7 +962,7 @@ class TNomenclatureDet extends TObjetStd
 		{
 			while ($row = $PDOdb->Get_line())
 			{
-				if ($row->code_type != 'coef_marge' && $row->code_type != 'coef_marge_ws') $res[$row->code_type] = $row->label;
+				$res[$row->code_type] = $row->label;
 			}
 		}
 
@@ -1127,7 +1127,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		}
 		else{
-			$tx_marge = empty($this->TCoefStandard[$this->code_type]->tx) ? $this->TCoefStandard['coef_marge_ws']->tx : $this->TCoefStandard[$this->code_type]->tx;
+			$tx_marge = empty($this->TCoefStandard[$this->code_type]->tx) ? 1 : $this->TCoefStandard[$this->code_type]->tx;
 			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour * $tx_marge;
 		}
 
