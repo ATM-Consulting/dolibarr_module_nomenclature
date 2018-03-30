@@ -113,6 +113,7 @@ $o->init_db_by_vars($PDOdb);
 
 // MAJ Champ type de la table llx_nomenclature_coef pour utiliser par défaut la valeur "nomenclature" 
 $db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef SET type = "nomenclature" WHERE type IS NULL');
+$db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef_object SET type = "nomenclature" WHERE type IS NULL');
 
 // Gestion des PV forcés
 $e = new ExtraFields($db);
