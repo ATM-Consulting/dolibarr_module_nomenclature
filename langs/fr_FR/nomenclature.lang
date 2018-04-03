@@ -65,6 +65,7 @@ NomenclatureErrorAddCoefDoublon=Erreur : le code renseigné existe déjà en bas
 NomenclatureErrorCantDelete=Erreur : impossible de supprimer l'enregistrement car une/plusieurs liaison(s) enfant(s) existe(s).
 
 CoefList=Liste des coefficients
+CoefListWorkstation=Liste des coefficients de main d'oeuvre
 nomenclatureCoefUpdated=Coefficients mis à jour
 nomenclatureApplyAllCoefOnPriceError=Impossible de mettre les prix à jour, le statut du document n'est pas en brouillon
 
