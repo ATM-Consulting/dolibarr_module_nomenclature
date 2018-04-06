@@ -110,6 +110,13 @@ NOMENCLATURE_USE_TIME_PREPARE=Utiliser le champs "Temps de préparation" dans la
 NOMENCLATURE_USE_TIME_DOING=Utiliser le champs "Temps de fabrication" dans la nomenclature sur les postes de travail
 NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION = Permettre de lier une ligne de produit au poste de charge
 NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Utiliser le déboursé sec comme prix de revient
+NOMENCLATURE_ALLOW_USE_MANUAL_COEF=Autoriser l'édition manuelle du/des coefficient(s)
+NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Autoriser l'édition d'un coefficient de marge par ligne
+NOMENCLATURE_USE_CUSTOM_BUYPRICE=Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
+NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité produit sur chaque ligne
+NOMENCLATURE_USE_LOSS_PERCENT=Activer le calcul automatique de la quantité en fonction du pourcentage de perte
+NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=Sur l'onglet coefficient des propositions, empêcher le recalcul des lignes dont le prix vente a été forcé manuellement
+NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Ne pas utiliser le prix de vente nomenclature lors de l'ajout d'une ligne propal/commande/facture
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
