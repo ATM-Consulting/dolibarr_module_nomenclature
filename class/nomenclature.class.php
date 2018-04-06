@@ -195,7 +195,7 @@ class TNomenclature extends TObjetStd
 			}
 
 			$totalPR+= $det->calculate_price ;
-			
+		
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
 			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
@@ -251,12 +251,16 @@ class TNomenclature extends TObjetStd
 
 		$total_mo = $total_mo_of = 0;
 		foreach($this->TNomenclatureWorkstation as &$ws) {
-			list($ws->nb_hour_calculate, $ws->calculate_price) = $ws->getPrice($PDOdb, $coef_qty_price);
+			if (!empty($this->TCoefObject[$ws->code_type])) $coef = $this->TCoefObject[$ws->code_type]->tx_object;
+			elseif (!empty($this->TCoefStandard[$ws->code_type])) $coef = $this->TCoefStandard[$ws->code_type]->tx;
+			else $coef = 1;
+
+			list($ws->nb_hour_calculate, $ws->calculate_price) = $ws->getPrice($PDOdb, $coef_qty_price, '', $coef);
 
 			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
-			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF');
+			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF'); // [FIXME] - dois je prendre en compte le coef dans ce cas pour être appliqué ? 
 				$total_mo_of+=empty($ws->price) ? $ws->calculate_price_of : $ws->price;
 			}
 
@@ -1087,7 +1091,7 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->add_champs('fk_workstation,fk_nomenclature,rang,unifyRang',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture,nb_days_before_beginning',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
-	$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
+		$this->add_champs('code_type',array('type'=>'varchar', 'length' => 30));
 
         $this->_init_vars();
 
@@ -1095,8 +1099,6 @@ class TNomenclatureWorkstation extends TObjetStd
 
         $this->qty=1;
         $this->product_type=1;
-        $PDOdb = new TPDOdb;
-        $this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
     }
 
     function reinit()
@@ -1107,7 +1109,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
     }
 
-	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='') {
+	function getPrice(&$PDOdb, $coef_qty_price = 1, $type ='', $coef=1) {
 		global $conf;
 
 		$nb_hour = 0;
@@ -1122,13 +1124,12 @@ class TNomenclatureWorkstation extends TObjetStd
 	                WHERE fk_asset_workstation=".$this->fk_workstation." AND date_maj>=DATE_SUB(NOW(), INTERVAL 6 MONTH) AND thm>0");
 
 			if($obj = $PDOdb->Get_line()) {
-				$price = $obj->thm * $nb_hour;
+				$price = $obj->thm * $nb_hour * $coef;
 			}
 
 		}
 		else{
-			$tx_marge = empty($this->TCoefStandard[$this->code_type]->tx) ? 1 : $this->TCoefStandard[$this->code_type]->tx;
-			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour * $tx_marge;
+			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour * $coef;
 		}
 
 		return array( $nb_hour , $price );
@@ -1255,12 +1256,13 @@ class TNomenclatureCoefObject extends TObjetStd
 
 		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true)); /*,entity*/
         $this->add_champs('type_object',array('type'=>'varchar', 'length'=>50, 'index'=>true));
-		$this->add_champs('code_type',array('type'=>'vachar', 'length'=>30, 'index'=>true));
+		$this->add_champs('code_type,type',array('type'=>'vachar', 'length'=>30, 'index'=>true));
         $this->add_champs('tx_object',array('type'=>'float'));
 
         $this->_init_vars();
 
         $this->start();
+		$this->type = 'nomenclature';
     }
 
 	function loadByTypeByCoef(&$PDOdb, $code_type, $fk_object, $type_object)
@@ -1321,6 +1323,12 @@ class TNomenclatureCoefObject extends TObjetStd
 				break;
 			default:
 				$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+				$TCoef += TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
+//				uasort($TCoef, function($a, $b) {
+//					if ($a->type == 'nomenclature' && $b->type == 'workstation') return -1;
+//					else if ($a->type == 'workstation' && $b->type == 'nomenclature') return 1;
+//					else return 0;
+//				});
 				break;
 		}
 

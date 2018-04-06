@@ -393,12 +393,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						,TRank:sorted
 					}
 					,success: function(data) {
-console.log('Sort');
+//console.log('Sort');
 						$('.workstation-table tr[rowid]').each(function(i, elem) {
 							$(elem).find('input, textarea').each(function(j, child) {
 								var name = $(child).prop('name').replace(/^(TNomenclatureWorkstation\[)([0-9]+)(\].*)/, '$1'+i+'$3');
 								$(child).prop('id', name).prop('name', name);
-console.log(name);
+//console.log(name);
 							});
 						});
 
@@ -832,7 +832,7 @@ console.log(name);
         
         
         <?php
-       if($conf->workstation->enabled) {
+       if(!empty($conf->workstation->enabled)) {
 
        ?><tr>
            <td colspan="5"><?php
@@ -871,7 +871,8 @@ console.log(name);
                if(!empty($TNomenclatureWorkstation)) {
 
                    foreach($TNomenclatureWorkstation as $k=>&$ws) {
-
+//var_dump($ws);exit;
+//					   var_dump($ws->getId(), $ws);
                        $class = ($class == 'impair') ? 'pair' : 'impair';
                        /*
 					    * <!-- Pas sur la MO	<td><?php
