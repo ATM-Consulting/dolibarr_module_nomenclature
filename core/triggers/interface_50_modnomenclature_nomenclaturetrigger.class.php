@@ -290,11 +290,7 @@ class Interfacenomenclaturetrigger
 
 		if (!empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC)) {
 			$sell_price_to_use=$object->subprice;
-		}
-		else if (!empty($conf->global->NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE)){
-		    $sell_price_to_use = 0;
-		}
-		else {
+		} else {
 			$sell_price_to_use=$n->totalPV / $object->qty; // ça doit rester un prix unitaire
 		}
 		

@@ -245,14 +245,6 @@ print '</td></tr>';
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE').'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print ajax_constantonoff('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE');
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE').'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
