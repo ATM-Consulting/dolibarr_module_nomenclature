@@ -950,7 +950,7 @@ console.log(name);
 
                     if($conf->workstation->enabled) {
 
-                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, true), -1);
+                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
                         ?>
                         <div class="inline-block divButAction">
                         <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
