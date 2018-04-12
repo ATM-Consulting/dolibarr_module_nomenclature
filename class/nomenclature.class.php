@@ -218,7 +218,6 @@ class TNomenclature extends TObjetStd
 
 		$this->totalPR_OF = $totalPR_OF;
 		$this->totalPRC_OF = $totalPRC_OF;
-		rramagit.org/
 
 		$total_mo = $total_mo_of = 0;
 		foreach($this->TNomenclatureWorkstation as &$ws) {
