@@ -454,7 +454,7 @@ console.log(name);
 
                $TNomenclatureDet = &$n->TNomenclatureDet;
 
-               if(count($TNomenclatureDet>0)) {
+               if(count($TNomenclatureDet)>0) {
 
                    ?>
                    <table width="100%" class="liste det-table">
