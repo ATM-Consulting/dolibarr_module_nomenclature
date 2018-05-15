@@ -454,7 +454,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                $TNomenclatureDet = &$n->TNomenclatureDet;
 
-               if(count($TNomenclatureDet>0)) {
+               if(count($TNomenclatureDet)>0) {
 
                    ?>
                    <table width="100%" class="liste det-table">
