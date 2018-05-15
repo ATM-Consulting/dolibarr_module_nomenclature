@@ -146,3 +146,20 @@ BuyingPriceCustom=Prix d'achat personnalisé<br />(prioritaire sur la conf)
 CoefMarge=Coef. de marge
 qty_base=Qté base
 NomenclatureLineType=Type coef
+
+NomenclatureCreateXQty=Produire x quantité
+
+NomenclatureCreateStock=Créer une entrée en stock (%s)
+NomenclatureHowManyQty=Quantité à produire :
+NomenclatureSelectWarehouseToMake=Entrepôt cible du produit final :
+NomenclatureSelectWarehouseNeeded=Entrepôt cible des composants:
+
+NomenclatureErrorEmptyQtyToStock=Erreur : quantité non renseignée
+NomenclatureErrorNoWarehouseSelectedToMake=Erreur : aucun entrepôt sélectionné pour le stockage du produit fini
+NomenclatureErrorNoWarehouseSelectedNeeded=Erreur : aucun entrepôt sélectionné le déstockage des composants
+NomenclatureErrorInvalidNomenclatureType=Erreur : seul les nomenclatures de type "produit" peuvent générer un mouvement de stock
+
+NomenclatureStockProductFrom=Entrée via nomenclature [%s]
+NomenclatureDestockProductFrom=Sortie via nomenclature [%s]
+
+NomenclatureMvtOk=Mouvements de stock ok
