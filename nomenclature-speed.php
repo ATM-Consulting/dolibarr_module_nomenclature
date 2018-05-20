@@ -198,7 +198,7 @@ function _drawlines(&$object, $object_type) {
 			$class="lineObject";
 			$line_type="line";	
 		}
-		
+
 		echo '<li k="'.$k.'" class="'.$class.'" line-type="'.$line_type.'" object_type="'.$object->element.'" id="line-'.$line->id.'"  fk_object="'.$line->id.'" fk_product="'.$line->fk_product.'">';
 		
 		echo '<div>';
@@ -206,9 +206,9 @@ function _drawlines(&$object, $object_type) {
 		if($line->product_type == 0 || $line->product_type == 1) {
 			echo '<a href="javascript:editLine('.$line->id.');" class="editline clicable">'.img_edit($langs->trans('EditLine')).'</a>';
 			if(!empty($conf->global->NOMENCLATURE_SPEED_CLICK_SELECT)) {
-			
-				echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">'.img_next('Sélectionner cette ligne').'</a>';
-			
+
+				echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">S'.img_next('Sélectionner cette ligne').';</a>';
+
 			}
 		}
 		$label = !empty($line->label) ? $line->label : (empty($line->libelle) ? $line->desc : $line->libelle);
@@ -306,9 +306,9 @@ var_dump( $object_type,$fk_product,$qty , $nomenclature->TNomenclatureAll);
 					echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'">';
 					echo '<div class="clicable" rel="delete">'.img_delete().'</div>';
 					if(!empty($conf->global->NOMENCLATURE_SPEED_CLICK_SELECT)) {
-			
-						echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">'.img_next('Sélectionner cette ligne').'</a>';
-					
+
+						echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">S'.img_next('Sélectionner cette ligne').'</a>';
+
 					}
 					echo '<div>';
 						echo '<div class="label">'.($line->unifyRang+1).'. '. $product->getNomUrl(1).' '.$product->label.'</div>';
