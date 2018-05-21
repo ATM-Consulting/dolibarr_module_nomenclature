@@ -191,6 +191,30 @@ if (empty($reshook))
 		}
 	
 	}
+	else if ($action == 'confirm_create_stock' && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
+	{
+		$fk_nomenclature_used = GETPOST('fk_nomenclature_used', 'int');
+		$fk_warehouse_to_make = GETPOST('fk_warehouse_to_make', 'int');
+		$fk_warehouse_needed = GETPOST('fk_warehouse_needed', 'int');
+		$qty = GETPOST('nomenclature_qty_to_create', 'int');
+		
+		$n = new TNomenclature;
+		$n->load($PDOdb, $fk_nomenclature_used);
+		
+		$res = $n->addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed);
+		if ($res < 0)
+		{
+			setEventMessages('', $n->errors, 'errors');
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature.php', 1).'?fk_product='.$product->id.'&action=create_stock&fk_nomenclature_used='.$n->getId().'&qty_reference='.$qty.'&fk_warehouse_to_make='.$fk_warehouse_to_make.'&fk_warehouse_needed='.$fk_warehouse_needed);
+			exit;
+		}
+		else
+		{
+			setEventMessage($langs->trans('NomenclatureMvtOk'));
+			header('Location: '.dol_buildpath('/nomenclature/nomenclature.php', 1).'?fk_product='.$product->id);
+			exit;
+		}
+	}
 }
 
 if($object_type != 'product') {
@@ -212,6 +236,10 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 	llxHeader('',$langs->trans('Nomenclature'));
 
+	$form = new Form($db);
+	$formconfirm = getFormConfirmNomenclature($form, $product, GETPOST('fk_nomenclature_used'), GETPOST('action'), GETPOST('qty_reference'));
+	if (!empty($formconfirm)) echo $formconfirm;
+	
     $head=product_prepare_head($product, $user);
 	$titre=$langs->trans('Nomenclature');
 	$picto=($product->type==1?'service':'product');
@@ -341,7 +369,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
-
+	
 	if($n->getId() == 0 &&  count($n->TNomenclatureDet)+count($n->TNomenclatureWorkstation)>0) {
 		echo '<div class="error">'.$langs->trans('NonLocalNomenclature').'</div>';
 	}
@@ -454,7 +482,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                $TNomenclatureDet = &$n->TNomenclatureDet;
 
-               if(count($TNomenclatureDet>0)) {
+               if(count($TNomenclatureDet)>0) {
 
                    ?>
                    <table width="100%" class="liste det-table">
@@ -1144,9 +1172,17 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								<input id="nomenclature_bt_clone_nomenclature" type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
 							</div>
 						</div>
-
-                   <?php } ?>
-
+						
+                   <?php }
+				   
+					if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
+					{
+						print '<div class="inline-block divButAction">';
+						print '<a id="nomenclaturecreateqty-'.$n->getId().'" class="butAction" href="'.dol_buildpath('/nomenclature/nomenclature.php', 1).'?fk_product='.$product->id.'&fk_nomenclature_used='.$n->getId().'&qty_reference='.$n->qty_reference.'&action=create_stock">'.$langs->trans('NomenclatureCreateXQty').'</a>';
+						print '</div>';
+					}
+					?>
+						
 					<div class="inline-block divButAction">
 						<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 					</div>

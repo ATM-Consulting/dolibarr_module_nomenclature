@@ -755,6 +755,83 @@ class TNomenclature extends TObjetStd
 		return true;
 	}
 
+	/**
+	 * Méthode qui ce charge de faire les mouvements de stock du produit final ainsi que des composants
+	 * @param type $qty
+	 * @param type $fk_warehouse_to_make
+	 * @param type $fk_warehouse_needed
+	 * @return int
+	 */
+	function addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed)
+	{
+		global $db,$langs,$user,$conf;
+		
+		if (empty($conf->stock->enabled)) return 1;
+		
+		require_once DOL_DOCUMENT_ROOT.'/product/stock/class/mouvementstock.class.php';
+		
+		$error = 0;
+		
+		if (empty($qty)) { $error++; $this->errors[] = $langs->trans('NomenclatureErrorEmptyQtyToStock'); }
+		if (empty($fk_warehouse_to_make) | $fk_warehouse_to_make < 0) { $error++; $this->errors[] = $langs->trans('NomenclatureErrorNoWarehouseSelectedToMake'); }
+		if (empty($fk_warehouse_needed) | $fk_warehouse_needed < 0) { $error++; $this->errors[] = $langs->trans('NomenclatureErrorNoWarehouseSelectedNeeded'); }
+		if ($this->object_type != 'product') { $error++; $this->errors[] = $langs->trans('NomenclatureErrorInvalidNomenclatureType'); }
+		
+		if (empty($error))
+		{
+			$action = 'destockNeeded';
+			if ($qty < 0) $action = 'stockNeeded';
+			
+			$qty_abs = abs($qty); // Qté du produit final à déplacer
+			$coef = $qty_abs / $this->qty_reference; // Coef pour les composants (l'attribut qty des lignes équivaut à la fabrication de qty_reference de la nomenclature)
+
+			$mouvS = new MouvementStock($db);
+			$mouvS->origin = new stdClass();
+			$mouvS->origin->element = 'product';
+			$mouvS->origin->id = $this->fk_object;
+			
+			$db->begin();
+			if($action === 'destockNeeded')
+			{
+				// DESTOCK components (needed)
+				foreach ($this->TNomenclatureDet as &$det)
+				{
+					$result=$mouvS->livraison($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
+					if ($result <= 0) $error++;
+				}
+				
+				// Then STOCK the parent (to_make)
+				$result=$mouvS->reception($user, $this->fk_object, $fk_warehouse_to_make, $qty_abs, $this->totalPRCMO, $langs->trans('NomenclatureStockProductFrom', $this->getId()));
+				if ($result <= 0) $error++;
+			}
+			else
+			{
+				// TODO STOCK components (needed)
+				foreach ($this->TNomenclatureDet as &$det)
+				{
+					$result=$mouvS->reception($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
+					if ($result <= 0) $error++;
+				}
+				
+				// Then DESTOCK the parent (to_make)
+				$result=$mouvS->livraison($user, $this->fk_object, $fk_warehouse_to_make, $qty_abs, $this->totalPRCMO, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
+				if ($result <= 0) $error++;
+			}
+
+			if (empty($error))
+			{
+				$db->commit();
+				return 1;
+			}
+			else
+			{
+				$db->rollback();
+				return -2;
+			}
+		}
+		
+		return -1;
+	}
 }
 
 
