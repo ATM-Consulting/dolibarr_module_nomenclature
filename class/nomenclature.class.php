@@ -832,6 +832,35 @@ class TNomenclature extends TObjetStd
 		
 		return -1;
 	}
+	
+	/**
+	 * Renvoi la quantité potentiellement fabricable du produit final par rapport au stock théorique ou reel des composants
+	 * 
+	 * @param string $attr_stock	attribut d'un objet Product (stock_theorique | stock_reel)
+	 * @return float
+	 */
+	public function getQtyManufacturable($attr_stock='stock_theorique')
+	{
+		global $db;
+		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+		
+		$coef = 1 / $this->qty_reference;
+		
+		$qty_theo = null;
+		foreach ($this->TNomenclatureDet as &$det)
+		{
+			$product = new Product($db);
+			if ($product->fetch($det->fk_product) > 0)
+			{
+				$product->load_stock();
+				$qty = $product->{$attr_stock} / $det->qty * $coef;
+				
+				if ($qty < $qty_theo || is_null($qty_theo)) $qty_theo = $qty;
+			}
+		}
+		
+		return $qty_theo;
+	}
 }
 
 
