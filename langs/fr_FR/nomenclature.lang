@@ -163,3 +163,5 @@ NomenclatureStockProductFrom=Entrée via nomenclature [%s]
 NomenclatureDestockProductFrom=Sortie via nomenclature [%s]
 
 NomenclatureMvtOk=Mouvements de stock ok
+
+NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Activer la fonctionnalité de mouvement de stock depuis l'onglet "Nomenclature" d'un produit (nécessite que le module stock soit activé)

@@ -191,7 +191,7 @@ if (empty($reshook))
 		}
 	
 	}
-	else if ($action == 'confirm_create_stock')
+	else if ($action == 'confirm_create_stock' && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
 	{
 		$fk_nomenclature_used = GETPOST('fk_nomenclature_used', 'int');
 		$fk_warehouse_to_make = GETPOST('fk_warehouse_to_make', 'int');
@@ -1175,7 +1175,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						
                    <?php }
 				   
-					if (!$json && !empty($conf->stock->enabled))
+					if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
 					{
 						print '<div class="inline-block divButAction">';
 						print '<a id="nomenclaturecreateqty-'.$n->getId().'" class="butAction" href="'.dol_buildpath('/nomenclature/nomenclature.php', 1).'?fk_product='.$product->id.'&fk_nomenclature_used='.$n->getId().'&qty_reference='.$n->qty_reference.'&action=create_stock">'.$langs->trans('NomenclatureCreateXQty').'</a>';
