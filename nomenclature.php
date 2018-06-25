@@ -273,14 +273,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	</script><?php
 
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
-
-	foreach($TNomenclature as $iN => &$n) {
-		echo '<div id="nomenclature'.$n->id.'" class="tabBar">';
-		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
-	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
-		echo '</div>';
-	}
-
+	
 	?>
 	<div class="tabsAction">
 		<div class="inline-block divButAction">
@@ -301,6 +294,23 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	    </div>
 	</div>
 	<?php
+	
+	print '<div  class="accordion" >';
+	$accordeonActiveIndex = 'false';
+	$idion = 0;
+	foreach($TNomenclature as $iN => &$n) {
+	    
+	    $fk_nomenclature=(int)GETPOST('fk_nomenclature');
+	    
+	    if(!empty($fk_nomenclature) && $fk_nomenclature == $n->id){ $accordeonActiveIndex = $idion; }
+	    $idion++;
+	    
+		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
+	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
+	}
+	print '</div>';
+	print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: true, active:'.$accordeonActiveIndex.'}); } );</script>';
+	
 
 
 	$liste = new TListviewTBS('listeUse');
@@ -367,6 +377,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
+	print '<h3 class="accordion-title">'. $langs->trans('Nomenclature').' n°'.$n->getId().' '. $n->title.' '. $n->qty_reference.'</h3>';
+	print '<div id="nomenclature'.$n->id.'" class="tabBar accordion-body">';
+	
 	$json = GETPOST('json', 'int');
 	$form=new Form($db);
 	
@@ -465,6 +478,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	
 	});
 	</script>
+	
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
     	if($object_type == 'product') {
 	        ?><tr class="liste_titre">
@@ -1197,9 +1211,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 			</td>
         </tr>
     </table>
+    
     <?php
 
     $formCore->end();
+    print '</div>';
 
 }
 
