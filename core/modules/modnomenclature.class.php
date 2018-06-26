@@ -154,6 +154,7 @@ class modnomenclature extends DolibarrModules
             ,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
             ,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
             ,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
+            ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/tab_project_feedback.php?id=__ID__'
          );
 
         // Dictionaries
