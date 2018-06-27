@@ -92,6 +92,8 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 					if ($line->id == $fk_object)
 					{
 						$propal->updateline($fk_object, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+						$line->array_options['options_pv_force'] = false;
+						$line->insertExtraFields();
 					}
 				}
 
@@ -113,4 +115,35 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 		}
 
 	}
+}
+
+
+function getFormConfirmNomenclature(&$form, &$product, $fk_nomenclature_used, $action, $qty_reference=1)
+{
+    global $langs,$db;
+    
+	$formconfirm = '';
+	if ($action == 'create_stock')
+    {
+		require_once DOL_DOCUMENT_ROOT.'/product/class/html.formproduct.class.php';
+		
+		$qty = GETPOST('nomenclature_qty_to_create', 'int');
+		if (empty($qty)) $qty = $qty_reference;
+		
+		$formproduct = new FormProduct($db);
+		$formproduct->loadWarehouses($product->id, '', '', true);
+		
+        $text = '';
+		$formquestion = array(
+			array('type' => 'hidden'	,'name' => 'fk_product'					,'value' => $product->id)
+			,array('type' => 'hidden'	,'name' => 'fk_nomenclature_used'		,'value' => $fk_nomenclature_used)
+			,array('type' => 'text'		,'name' => 'nomenclature_qty_to_create'	,'label' => $langs->trans('NomenclatureHowManyQty')				,'value' => $qty, 'moreattr' => 'size="5"')
+			,array('type' => 'other'	,'name' => 'fk_warehouse_to_make'		,'label' => $langs->trans('NomenclatureSelectWarehouseToMake')	,'value' => $formproduct->selectWarehouses(GETPOST('fk_warehouse_to_make'), 'fk_warehouse_to_make', 'warehouseopen,warehouseinternal', 0, 0, 0, '', 0, 0, null, 'minwidth200'))
+			,array('type' => 'other'	,'name' => 'fk_warehouse_needed'		,'label' => $langs->trans('NomenclatureSelectWarehouseNeeded')	,'value' => $formproduct->selectWarehouses(GETPOST('fk_warehouse_needed'), 'fk_warehouse_needed', 'warehouseopen,warehouseinternal', 0, 0, 0, '', 0, 0, null, 'minwidth200'))
+		);
+		
+        $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?fk_product=' . $product->id, $langs->trans('NomenclatureCreateStock', $product->ref), $text, 'confirm_create_stock', $formquestion, 0, 1, 'auto');
+    }
+    
+    return $formconfirm;
 }

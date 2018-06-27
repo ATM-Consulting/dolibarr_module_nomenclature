@@ -66,7 +66,7 @@ class Actionsnomenclature
 
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
-		global $langs,$conf;
+		global $langs,$conf,$form;
 		$TContext = explode(':', $parameters['context']);		
 		
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
@@ -136,6 +136,24 @@ class Actionsnomenclature
 				
 			}
 			
+		}
+		else if (in_array('stockproductcard', $TContext) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
+		{
+			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', 1);
+			
+			dol_include_once('/nomenclature/config.php');
+			dol_include_once('/nomenclature/class/nomenclature.class.php');
+			
+			$PDOdb = new TPDOdb;
+			$nomenclature = new TNomenclature;
+			$nomenclature->loadByObjectId($PDOdb, $object->id, 'product');
+			
+			$qty_theo_nomenclature = $nomenclature->getQtyManufacturable();
+			
+			$this->resprints = '<tr class="nomenclature_stock_theorique">';
+			$this->resprints.= '<td>'.$form->textwithpicto($langs->trans('NomenclatureStockTheorique'), $langs->trans('NomenclatureStockTheoriqueHelp')).'</td>';
+			$this->resprints.= '<td>'.price2num($object->stock_theorique+$qty_theo_nomenclature, 'MS').'</td>';
+			$this->resprints.= '</tr>';
 		}
 
 		return 0; // or return 1 to replace standard code

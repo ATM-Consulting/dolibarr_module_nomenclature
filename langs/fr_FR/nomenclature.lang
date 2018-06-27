@@ -18,6 +18,9 @@ WillUseProductWorkstationIfNotSpecified=Utilisera la définition globale du prod
 QtyPrepare=Temps de préparation
 QtyFabrication=Temps de fabrication
 nb_days_before_beginning=Délai avant démarrage
+nb_days_before_beginningHelp=En nombre de jours entier
+QtyPrepareHelp=En centième d'heure, ce temps ne sera pas multiplié par la quantité lors de la fabrication
+QtyFabricationHelp=En centième d'heure
 Worstations=Postes de travail
 AmountCost=Coût de revient
 AmountCostWithCharge=Coût de revient chargé
@@ -48,6 +51,7 @@ ListUseNomenclaure=Liste des nomenclatures utilisant ce produit
 
 AddCoef=Ajouter un coefficient
 ModifyCoef=Modifier un coefficient
+ModifyCoefWS=Modifier un coefficient de main d'oeuvre
 CreateCoef=Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel=Libellé : 
 NomenclatureCreateCode=Code type : 
@@ -61,6 +65,7 @@ NomenclatureErrorAddCoefDoublon=Erreur : le code renseigné existe déjà en bas
 NomenclatureErrorCantDelete=Erreur : impossible de supprimer l'enregistrement car une/plusieurs liaison(s) enfant(s) existe(s).
 
 CoefList=Liste des coefficients
+CoefListWorkstation=Liste des coefficients de main d'oeuvre
 nomenclatureCoefUpdated=Coefficients mis à jour
 nomenclatureApplyAllCoefOnPriceError=Impossible de mettre les prix à jour, le statut du document n'est pas en brouillon
 
@@ -113,6 +118,8 @@ NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Autoriser l'édition d'un coefficient de m
 NOMENCLATURE_USE_CUSTOM_BUYPRICE=Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
 NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité produit sur chaque ligne
 NOMENCLATURE_USE_LOSS_PERCENT=Activer le calcul automatique de la quantité en fonction du pourcentage de perte
+NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=Sur l'onglet coefficient des propositions, empêcher le recalcul des lignes dont le prix vente a été forcé manuellement
+NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Ne pas utiliser le prix de vente nomenclature lors de l'ajout d'une ligne propal/commande/facture
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -138,3 +145,26 @@ LossPercent=Pourcentage de perte
 BuyingPriceCustom=Prix d'achat personnalisé<br />(prioritaire sur la conf)
 CoefMarge=Coef. de marge
 qty_base=Qté base
+NomenclatureLineType=Type coef
+
+NomenclatureCreateXQty=Produire x quantité
+
+NomenclatureCreateStock=Créer une entrée en stock (%s)
+NomenclatureHowManyQty=Quantité à produire :
+NomenclatureSelectWarehouseToMake=Entrepôt cible du produit final :
+NomenclatureSelectWarehouseNeeded=Entrepôt cible des composants:
+
+NomenclatureErrorEmptyQtyToStock=Erreur : quantité non renseignée
+NomenclatureErrorNoWarehouseSelectedToMake=Erreur : aucun entrepôt sélectionné pour le stockage du produit fini
+NomenclatureErrorNoWarehouseSelectedNeeded=Erreur : aucun entrepôt sélectionné le déstockage des composants
+NomenclatureErrorInvalidNomenclatureType=Erreur : seul les nomenclatures de type "produit" peuvent générer un mouvement de stock
+
+NomenclatureStockProductFrom=Entrée via nomenclature [%s]
+NomenclatureDestockProductFrom=Sortie via nomenclature [%s]
+
+NomenclatureMvtOk=Mouvements de stock ok
+
+NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Activer la fonctionnalité de mouvement de stock depuis l'onglet "Nomenclature" d'un produit (nécessite que le module stock soit activé)
+
+NomenclatureStockTheorique=Stock virtuel + nomemclature
+NomenclatureStockTheoriqueHelp=Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants

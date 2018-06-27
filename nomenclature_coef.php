@@ -145,32 +145,15 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
     
     // List of coef
 	$background_title = '#f2f2f2';
-    echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
-    
 	$background_line = '#eeeeff';
-	if (!empty($TCoefObject))
+
+	echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
+	_printCoef($object, $TCoefObject, 'nomenclature', $background_line);
+	
+	if(!empty($conf->workstation->enabled))
 	{
-		foreach ($TCoefObject as $type=>&$coef)
-		{
-			$name ='TNomenclatureCoefObject['.$type.'][tx_object]';
-			
-			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : $background_line  ).'">';
-			echo '<td>&nbsp;'.$coef->label.( $coef->rowid>0 ? '' : img_help(1,$langs->trans('CoefGenericSaveForSpecific') ) ).'</td>';
-			echo '<td>'.$coef->description.'</td>';
-			echo '<td>';
-			
-			// Si on est sur une propal et que son statut est > à brouillon alors on affiche juste la valeur
-			if ($object->element == 'propal' && $object->statut > 0)
-			{
-				echo $coef->tx_object;
-			}
-			else
-			{
-				print '<input name="'.$name.'" value="'.$coef->tx_object.'" size="5" />';
-			}
-			echo '</td>';
-			echo '</tr>';
-		}
+		echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefListWorkstation") . '</b></td></tr>';
+		_printCoef($object, $TCoefObject, 'workstation', $background_line);
 	}
 	
 	if ($fiche == 'propal' && !empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
@@ -220,7 +203,8 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 		if ($fiche == 'propal') echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
 		else echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
 		
-		if($coef->rowid>0) {
+		$firstCoef = current($TCoefObject);
+		if(get_class($firstCoef) == 'TNomenclatureCoefObject') {
 			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
 		}
 	}
@@ -236,6 +220,39 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	llxFooter();
 }
 
+function _printCoef(&$object, &$TCoefObject, $type_coef, $background_line)
+{
+	global $langs;
+	
+	if (!empty($TCoefObject))
+	{
+		foreach ($TCoefObject as $type=>&$coef)
+		{
+			if ($coef->type != $type_coef) continue;
+			
+			$basename ='TNomenclatureCoefObject['.$type.']';
+			
+			echo '<tr style="background:'.( $coef->rowid>0 ? 'white' : $background_line  ).'">';
+			echo '<td>&nbsp;'.$coef->label.( $coef->rowid>0 ? '' : img_help(1,$langs->trans('CoefGenericSaveForSpecific') ) ).'</td>';
+			echo '<td>'.$coef->description.'</td>';
+			echo '<td>';
+			
+			// Si on est sur une propal et que son statut est > à brouillon alors on affiche juste la valeur
+			if ($object->element == 'propal' && $object->statut > 0)
+			{
+				echo $coef->tx_object;
+			}
+			else
+			{
+				print '<input type="text" name="'.$basename.'[tx_object]" value="'.$coef->tx_object.'" size="5" />';
+				print '<input type="hidden" name="'.$basename.'[type]" value="'.$coef->type.'" />';
+			}
+			echo '</td>';
+			echo '</tr>';
+		}
+	}
+}
+
 function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 {
 	dol_include_once('/core/lib/functions.lib.php');
@@ -244,7 +261,7 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$type_object = GETPOST('fiche', 'alpha');
 	
 	$TNomenclatureCoefObject = GETPOST('TNomenclatureCoefObject');
-//	var_dump($TNomenclatureCoefObject);
+//	var_dump($TNomenclatureCoefObject);exit;
 	if (!empty($TNomenclatureCoefObject)) 
 	{
 		foreach ($TNomenclatureCoefObject as $code_type => &$coef)
@@ -269,6 +286,7 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_type)
 {
 //	dol_include_once('/nomenclature/nomenclature.php');
+	global $conf;
 	
 	$id = GETPOST('id', 'int');
 	
@@ -293,7 +311,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	
 	foreach ($object->lines as $line)
 	{
-		if ($line->product_type == 9) continue;
+		if ($line->product_type == 9 || (!empty($conf->global->NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE) && !empty($line->array_options['options_pv_force']))) continue;
 		
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
