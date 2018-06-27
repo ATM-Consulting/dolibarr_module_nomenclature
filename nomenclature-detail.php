@@ -40,7 +40,7 @@ global $db,$langs,$conf,$PDOdb;
 	if($object_type == 'propal') {
 		dol_include_once('/core/lib/propal.lib.php');
 		$head = propal_prepare_head($object);
-		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), 0, 'propal');
+		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), -1, 'propal');
 
 		/*
 		 * Propal synthese pour rappel
@@ -68,7 +68,7 @@ global $db,$langs,$conf,$PDOdb;
 	else if($object_type == 'commande') {
                 dol_include_once('/core/lib/order.lib.php');
                 $head = commande_prepare_head($object);
-                dol_fiche_head($head, 'nomenclature', $langs->trans('CustomerOrder'), 0, 'order');
+                dol_fiche_head($head, 'nomenclature', $langs->trans('CustomerOrder'), -1, 'order');
 
                 /*
                  * Propal synthese pour rappel
