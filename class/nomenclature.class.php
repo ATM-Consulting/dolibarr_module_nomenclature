@@ -1082,7 +1082,7 @@ class TNomenclatureDet extends TObjetStd
 	// Récupération des différents tarifs (tarifs fourn, PMP) de la même manière que Dolibarr, puis adaptationp our le cas nomenclature
 	function printSelectProductFournisseurPrice($k, $nomenclature_id=0, $nomenclature_type='product') {
 		
-		global $langs;
+		global $langs, $conf;
 		
 		?>
 		<script type="text/javascript">
@@ -1101,7 +1101,14 @@ class TNomenclatureDet extends TObjetStd
 
     				/* setup of margin calculation */
     	      		var defaultbuyprice = '<?php
-    	      		if (isset($conf->global->MARGIN_TYPE))
+    	      		
+    	      		if (!empty($conf->global->NOMENCLATURE_COST_TYPE))
+    	      		{
+    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == '1')   print 'bestsupplierprice';
+    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == 'pmp') print 'pmp';
+    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == 'costprice') print 'costprice';
+    	      		}
+    	      		elseif (isset($conf->global->MARGIN_TYPE))
     	      		{
     	      		    if ($conf->global->MARGIN_TYPE == '1')   print 'bestsupplierprice';
     	      		    if ($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
@@ -1127,7 +1134,7 @@ class TNomenclatureDet extends TObjetStd
     			      		{
     			      			if (this.price > 0) {
     				      			defaultkey = this.id; defaultprice = this.price; pmppriceid = this.id; pmppricevalue = this.price;
-    			      				//console.log("pmppricevalue="+pmppricevalue);
+    			      				console.log("pmppricevalue="+pmppricevalue);
     			      			}
     			      		}
     	      			}
@@ -1164,8 +1171,9 @@ class TNomenclatureDet extends TObjetStd
     	      		// Préselection de la liste avec la valeur en base si existante
     	      		<?php if(!empty($this->fk_fournprice)) { ?>
     	      			select_fournprice.val('<?php echo $this->fk_fournprice; ?>');
+		      		<?php }else{ ?>
+		      			select_fournprice.val(defaultbuyprice);
 		      		<?php } ?>
-    	      		
     	      		/* At loading, no product are yet selected, so we hide field of buying_price */
     	      		//$("#buying_price").hide();
 
