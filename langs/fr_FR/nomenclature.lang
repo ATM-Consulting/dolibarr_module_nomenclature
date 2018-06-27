@@ -171,4 +171,6 @@ NomenclatureStockTheorique=Stock virtuel + nomemclature
 NomenclatureStockTheoriqueHelp=Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants
 
 Projectfeedback=Retours matériels
-
+QtyAllowed=Quantité allouée
+QtyConsume=Quantité consommé
+QtyReturn=Quantité non consommé

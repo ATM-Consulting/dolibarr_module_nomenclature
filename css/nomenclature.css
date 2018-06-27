@@ -12,3 +12,7 @@ span.pricePMP {
 .accordion{
 	margin-bottom:2em;
 }
+
+.accordion-body-table{
+	padding:0 !important;
+}
