@@ -156,7 +156,9 @@ class modnomenclature extends DolibarrModules
         	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
-         );
+            ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
+            
+        );
 
         // Dictionaries
 	    if (! isset($conf->nomenclature->enabled))
@@ -234,7 +236,14 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][4] = 'global';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $this->rights[$r][5] = 'massUpdate';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $r++;
-
+        
+        
+        $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Personnaliser les coefficients d\'un produit';  // Permission label
+        $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
+        $this->rights[$r][4] = 'product';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][5] = 'updatecoef';
+        $r++;
 
 		// Main menu entries
 		$this->menu = array();			// List of menus to add

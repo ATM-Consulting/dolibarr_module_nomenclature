@@ -98,7 +98,7 @@ class TNomenclature extends TObjetStd
 	 * @param int $fk_origin		rowid propal ou commande
 	 * @return float
 	 */
-	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
+	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0,$fk_product = 0) {
 
 		global $db,$langs,$conf;
 
@@ -154,6 +154,15 @@ class TNomenclature extends TObjetStd
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
 		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
+		// vérifier l'éxistance de coef produit : non prioritaire au coef de l'objet
+		$this->CoefProduct = array();
+		if(!empty($fk_product)){
+		    $product = new Product($db);
+		    $product->fetch($fk_product);
+		    $this->CoefProduct = TNomenclatureCoefObject::loadCoefObject($PDOdb, $product, 'product'); //Coef du produit
+		}
+		
+		
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
 
@@ -199,6 +208,7 @@ class TNomenclature extends TObjetStd
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
 			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
+			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
 			

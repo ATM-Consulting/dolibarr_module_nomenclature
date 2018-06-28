@@ -63,6 +63,8 @@ NomenclatureDeleteSuccess=Suppression de l'enregistrement
 NomenclatureErrorAddCoef=Erreur : ajout d'un coefficient impossible.
 NomenclatureErrorAddCoefDoublon=Erreur : le code renseigné existe déjà en base de donnée.
 NomenclatureErrorCantDelete=Erreur : impossible de supprimer l'enregistrement car une/plusieurs liaison(s) enfant(s) existe(s).
+DefaultCoeficientList=Liste des cofficients par défaut pour ce produit
+NomenclatureSuccessSaveCoef=Sauvegarde effectuée
 
 CoefList=Liste des coefficients
 CoefListWorkstation=Liste des coefficients de main d'oeuvre
