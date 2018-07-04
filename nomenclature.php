@@ -308,6 +308,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
 	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
 	}
+	
+	if(count($TNomenclature) === 1){ $accordeonActiveIndex = 0 ;}
+	
 	print '</div>';
 	print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: true, active:'.$accordeonActiveIndex.'}); } );</script>';
 	
@@ -866,6 +869,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						
 						<div class="inline-block divButAction">
 							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction nomenclature_bt_add_product" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+							<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 						</div>
 					</div>
 				</div>

@@ -283,7 +283,7 @@ class modnomenclature extends DolibarrModules
 
 		 $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
                     		     'type'=>'left',			                // This is a Left menu entry
-                    		     'titre'=>'Nomenclaturelist',
+                    		     'titre'=>'NomenclatureList',
                     		     'mainmenu'=>'products',
                     		     'leftmenu'=>'nomenclature',
                     		     'url'=>'/nomenclature/list.php',

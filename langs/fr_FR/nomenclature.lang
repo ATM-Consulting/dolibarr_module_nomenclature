@@ -176,4 +176,6 @@ CreateOn=Date de création
 ObjectType=Type de documents
 name=Nom
 ListMessageNothingToShow=Aucun résultat
-Nomenclaturelist=Liste des nomenclatures
+NomenclatureList=Liste des nomenclatures
+NomenclatureName=Nom de la nomenclature
+is_default=Par defaut
