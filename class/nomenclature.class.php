@@ -23,8 +23,11 @@ class TNomenclature extends TObjetStd
         $this->_init_vars();
 
         $this->start();
-
+        
         $this->setChild('TNomenclatureDet', 'fk_nomenclature');
+        $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
+        
+        
         if($conf->workstation->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
@@ -1626,4 +1629,40 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		setEventMessages($langs->trans('workstationThmUpdated'), null);
 	}
 	
+}
+
+class TNomenclatureFeedback extends TObjetStd
+{
+    
+    function __construct()
+    {
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_feedback');
+        $this->add_champs('fk_nomenclature',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('qty',array('type'=>'float'));
+        $this->add_champs('note',array('type'=>'text'));
+        
+        $this->_init_vars();
+        
+        $this->start();
+        
+        $this->qty=1;
+        $this->fk_nomenclature=0;
+        $this->note='';
+    }
+    
+    function reinit()
+    {
+        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def
+        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE}=time();
+        
+    }
+     
+    
+    function save(&$PDOdb)
+    {
+        $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
+        parent::save($PDOdb);
+    }
+    
 }
