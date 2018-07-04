@@ -156,7 +156,8 @@ class modnomenclature extends DolibarrModules
         	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
-            ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
+            	,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
+		,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->stock->enabled && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
             
         );
 
@@ -236,14 +237,7 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][4] = 'global';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $this->rights[$r][5] = 'massUpdate';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $r++;
-        
-        
-        $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
-        $this->rights[$r][1] = 'Personnaliser les coefficients d\'un produit';  // Permission label
-        $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'product';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'updatecoef';
-        $r++;
+
 
 		// Main menu entries
 		$this->menu = array();			// List of menus to add
@@ -276,25 +270,12 @@ class modnomenclature extends DolibarrModules
 									'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
 									'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-									'perms'=>'1',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+									'perms'=>'$user->rights->nomenclature->global->massUpdate',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 									'target'=>'',
-									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
+									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
 
-		 $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-                    		     'type'=>'left',			                // This is a Left menu entry
-                    		     'titre'=>'NomenclatureList',
-                    		     'mainmenu'=>'products',
-                    		     'leftmenu'=>'nomenclature',
-                    		     'url'=>'/nomenclature/list.php',
-                    		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-                    		     'position'=>100,
-                    		     'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-                    		     'perms'=>'$user->rights->nomenclature->global->massUpdate',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
-                    		     'target'=>'',
-                    		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
-		 $r++;
-		 
+
 		// Exports
 		$r=1;
 
@@ -334,7 +315,7 @@ class modnomenclature extends DolibarrModules
 
 		return $this->_init($sql, $options);
 	}
- 
+
 	/**
 	 *		Function called when module is disabled.
 	 *      Remove from database constants, boxes and permissions from Dolibarr database.
