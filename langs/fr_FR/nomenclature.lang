@@ -170,3 +170,10 @@ NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Activer la fonctionnalité de mouvement 
 
 NomenclatureStockTheorique=Stock virtuel + nomemclature
 NomenclatureStockTheoriqueHelp=Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants
+
+Updated=Date de Mise à jour
+CreateOn=Date de création
+ObjectType=Type de documents
+name=Nom
+ListMessageNothingToShow=Aucun résultat
+Nomenclaturelist=Liste des nomenclatures

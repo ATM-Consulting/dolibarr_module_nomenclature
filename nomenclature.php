@@ -865,7 +865,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						?>
 						
 						<div class="inline-block divButAction">
-							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction nomenclature_bt_add_product" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
 						</div>
 					</div>
 				</div>
