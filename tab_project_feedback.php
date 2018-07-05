@@ -29,10 +29,16 @@ require_once DOL_DOCUMENT_ROOT.'/projet/class/task.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/project.lib.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 dol_include_once('/commande/class/commande.class.php');
+dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 
 // GET POST
 $id = (int)GETPOST('id');
 $action=GETPOST('action','alpha');
+
+$TQty = GETPOST('qty', 'array');
+$fk_entrepot = GETPOST('fk_entrepot', 'int');
+$origin = GETPOST('origin', 'aZ09');
+$fk_origin = GETPOST('fk_origin', 'int');
 
 // Load translation files required by the page
 $langs->loadLangs(array('projects', 'companies', 'nomenclature@nomenclature'));
@@ -61,6 +67,7 @@ $socid=GETPOST('socid','int');
 $result = restrictedArea($user, 'projet', $object->id,'projet&project');
 
 
+
 /*
  * Actions
  */
@@ -71,8 +78,12 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook))
 {
-    
-    
+    // TODO: desabling edit mode if $conf->stock->enabled and a corresponding expedition exists
+    if($action=='save'){
+        
+        saveFeedbackForm();
+        
+    }
 }
 
 
@@ -82,6 +93,7 @@ if (empty($reshook))
  */
 
 llxHeader('', $langs->trans('Projectfeedback'));
+
 
 
 // To verify role of users
@@ -128,11 +140,39 @@ $res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'commande c WHERE c.fk
 if($res && $res->num_rows>0)
 {
     print '<div class="accordion" >';
+    $idion=0;// $i pour un accordeon => idion
     while ($obj = $db->fetch_object($res))
     {
-        $commande = new Commande($db);
-        if($commande->fetch($obj->rowid) > 0){
-            _drawlines($commande, $object_type);
+        
+        $targetObject = new Commande($db);
+        if($targetObject->fetch($obj->rowid) > 0){
+            
+            $targetObject->fetchObjectLinked();
+            
+            // Ajout des params liés au projet
+            $TParam = array(
+                'hiddenFields' => array(
+                    'id' => $object->id,
+                    'fk_origin' => $targetObject->id,
+                    'origin' => $targetObject->element,
+                ),
+            );
+            
+            if(!empty($fk_origin) && $fk_origin == $targetObject->id){ $accordeonActiveIndex = $idion; }
+            $idion++;
+            
+            print '<h3  class="accordion-title">'. $langs->trans('Order') . ' : ' .$targetObject->ref. '</h3>';
+            print '<div class="accordion-body-table" >';
+            
+            $editMode = true;
+            if (!empty($targetObject->linkedObjectsIds['shipping']) > 0)
+            {
+                $editMode = false;
+                print '<div class="info clearboth"  >'.$langs->trans('FeedbackDisableShippingExists').'</div>';
+            }
+            
+            feedback_drawlines($targetObject, $object_type,$TParam, $editMode);
+            print '</div>';
         }
     }
     print '</div>';
@@ -140,30 +180,7 @@ if($res && $res->num_rows>0)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: true}); } );</script>';
+print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: false, active:'.$accordeonActiveIndex.'}); } );</script>';
 
 llxFooter();
 
@@ -174,82 +191,3 @@ $db->close();
 /*
  * LIB DE FACTORISATION
  */
-
-function _getDetails(&$object, $object_type) {
-    global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
-    
-    $PDOdb = new TPDOdb;
-    
-    
-    $TProduct = array();
-    $TWorkstation = array();
-    
-    foreach($object->lines as $k=>&$line) {
-        
-        if($line->product_type == 9) continue;
-        
-        $nomenclature = new TNomenclature;
-        $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
-        
-        $nomenclature->fetchCombinedDetails($PDOdb);
-        
-        foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
-            
-            if(!isset($TProduct[$fk_product])) {
-                $TProduct[$fk_product] = $det;
-            }
-            else{
-                $TProduct[$fk_product]->qty += $det->qty;
-            }
-        }
-        
-    }
-    
-    return array($TProduct);
-    
-    
-}
-
-function _drawlines(&$object, $object_type) {
-    global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
-    
-
-    list($TProduct,$TWorkstation) = _getDetails($object, $object_type);
-    
-    $langs->load('workstation@workstation');
-    
-    $formDoli=new Form($db);
-    $formCore=new TFormCore;
-    
-    print '<h3  class="accordion-title">'. $langs->trans('Order') . ' : ' .$object->ref. '</h3>';
-    print '<div class="accordion-body-table" >';
-    ?>
-    
-	<table class="border" width="100%">
-		<tr class="liste_titre">
-			<td class="liste_titre"><?php echo $langs->trans('Product') ?></td>
-			<td class="liste_titre" align="center"><?php echo $langs->trans('QtyAllowed') ?></td>
-		</tr>
-	<?php
-		
-		dol_include_once('/product/class/product.class.php');
-		
-		foreach($TProduct as $fk_product=> &$det) {
-			
-			$product=new Product($db);
-			$product->fetch($fk_product);
-			
-			echo '<tr>
-				<td>'.$product->getNomUrl(1).' - '.$product->label.'</td>
-				<td align="center">'.price($det->qty).'</td>
-			</tr>
-			';
-			
-		}
-	
-	?>
-	</table>
-	</div>
-	<?php
-	
-}

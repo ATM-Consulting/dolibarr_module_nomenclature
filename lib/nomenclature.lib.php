@@ -147,3 +147,232 @@ function getFormConfirmNomenclature(&$form, &$product, $fk_nomenclature_used, $a
     
     return $formconfirm;
 }
+
+
+
+
+function feedback_getDetails(&$object, $object_type) {
+    global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
+    
+    $PDOdb = new TPDOdb;
+    
+    
+    $TProduct = array();
+    $TWorkstation = array();
+    
+    foreach($object->lines as $k=>&$line) {
+        
+        if($line->product_type == 9) continue;
+        
+        $nomenclature = new TNomenclature;
+        $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
+        
+        $nomenclature->fetchCombinedDetails($PDOdb);
+        
+        foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
+            
+            if(!isset($TProduct[$fk_product])) {
+                $TProduct[$fk_product] = $det;
+            }
+            else{
+                $TProduct[$fk_product]->qty += $det->qty;
+            }
+        }
+        
+    }
+    
+    return array($TProduct);
+    
+    
+}
+
+function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode = false) {
+    global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
+    
+    $fk_entrepot = GETPOST('fk_entrepot', 'int');
+    
+    dol_include_once('/product/class/product.class.php');
+    
+    list($TProduct,$TWorkstation) = feedback_getDetails($object, $object_type);
+    
+    $langs->load('workstation@workstation');
+    $PDOdb = new TPDOdb;
+    $formDoli=new Form($db);
+    
+    
+    if(empty($TParam['action'])){
+        $TParam['action'] = $_SERVER['PHP_SELF'];
+    }
+    
+    
+    
+    print '<form name="'.$object_type.'-'.$object->id.'" action="'.$TParam['action'].'"  method="post" >';
+    
+
+    
+    
+    if(!empty($TParam['hiddenFields'])){
+        foreach ($TParam['hiddenFields'] as $fiefldName => $fiefldParam){
+            
+            if(!empty($fiefldParam['output'])){
+                print $fiefldParam['output'];
+            }
+            else {
+                
+                if(is_array($fiefldParam)){
+                    $value = $fiefldParam['value'];
+                }
+                else{
+                    $value = $fiefldParam;
+                }
+                
+                print '<input type="hidden" name="'.$fiefldName.'" value="'.$value.'"  />';
+            }
+        }
+    }
+    
+    print '<table class="border" width="100%">';
+    print '	<tr class="liste_titre">';
+    print '		<td class="liste_titre">'.$langs->trans('Product').'</td>';
+    print '		<td class="liste_titre" align="center">'.$langs->trans('QtyAllowed').'</td>';
+    print '		<td class="liste_titre" align="center">'.$langs->trans('QtyReturn').'</td>';
+    print '	</tr>';
+    
+    
+    if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK))
+    {
+        dol_include_once('product/class/html.formproduct.class.php');
+        $formproduct=new FormProduct($db);
+        
+        print '	<tr>';
+        print '		<td class="liste_titre"></td>';
+        print '		<td class="liste_titre" align="center"></td>';
+        print '		<td class="liste_titre" align="center">';
+        print $formproduct->selectWarehouses($fk_entrepot,'fk_entrepot');
+        print '		</td>';
+        print '	</tr>';
+    }
+    
+    foreach($TProduct as $fk_product=> &$det) {
+        
+        $product=new Product($db);
+        $product->fetch($fk_product);
+        
+        $feedback = new TNomenclatureFeedback();
+        $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
+        
+        print '<tr>';
+        print '   <td>'.$product->getNomUrl(1).' - '.$product->label.'</td>';
+        print '   <td align="center">'.price($det->qty).'</td>';
+        
+        
+        print '   <td align="center">';
+        
+        if($editMode){
+            print '<input type="number" min="0" max="'.$det->qty.'" name="qty['.$det->fk_nomenclature.']['.$det->fk_product.']" data-id="'.$feedback->id.'" value="'.$feedback->qty.'" /></td>';
+        }
+        else{
+            print $feedback->qty;
+        }
+        print '</tr>';
+        
+    }
+    
+    
+    print '</table>';
+    if($editMode){
+        print '<p class="right">';
+        print '<button type="submit" name="action" value="save" class="butAction"  >'.$langs->trans('Save').'</button>';
+        print '</p>';
+    }
+    print '</form>';
+    
+    
+    
+}
+
+function saveFeedbackForm($origin=false){
+    
+    global $langs, $conf, $db, $user;
+    
+    $TQty = GETPOST('qty', 'array');
+    $fk_entrepot = GETPOST('fk_entrepot', 'int');
+    $origin = GETPOST('origin', 'aZ09');
+    $fk_origin = GETPOST('fk_origin', 'int');
+    
+    $countError = 0;
+    $countSave  = 0;
+    
+    if($conf->stock->enabled){
+        dol_include_once('product/stock/class/mouvementstock.class.php');
+    }
+    
+    if(!empty($TQty))
+    {
+        $PDOdb = new TPDOdb;
+        foreach ( $TQty as $fk_nomenclature => $TProduct){
+            
+            foreach ( $TProduct as $fk_product => $qty){
+                $feedback = new TNomenclatureFeedback();
+                if(!$feedback->loadByProduct($PDOdb, $origin, $fk_origin, $fk_product, $fk_nomenclature)){
+                    
+                    $feedback->fk_nomenclature  = $fk_nomenclature;
+                    $feedback->fk_product       = $fk_product;
+                    $feedback->fk_origin        = $fk_origin;
+                    $feedback->origin           = $origin;
+                    $feedback->note             = '';
+                }
+                
+                // Store last qty for stock movements
+                $lastQty = $feedback->qty ;
+                $feedback->qty = $qty;
+                
+                if($feedback->save($PDOdb))
+                {
+                    
+                    
+                    $errors = array();
+                    
+                    if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->stock->enabled) && !empty($fk_entrepot)){
+                        $mouvementStock = new MouvementStock($db);
+                        
+                        if(!empty($origin)){
+                            $mouvementStock->origin = $origin;
+                        }
+                        
+                        $qtyDelta = abs($feedback->qty - $lastQty) ;
+                        
+                        if(!empty($qtyDelta)){
+                            $label = $langs->trans('nomenclatureStockFeedback');
+                            if($lastQty < $feedback->qty){
+                                $mouvementStock->reception($user, $fk_product, $fk_entrepot, $qtyDelta, 0, $label);
+                            }
+                            else{
+                                $mouvementStock->livraison($user, $fk_product, $fk_entrepot, $qtyDelta, 0, $label);
+                            }
+                        }
+                    }
+                    
+                    
+                    $countSave ++;
+                }
+                else {
+                    $countError ++;
+                }
+            }
+            
+        }
+    }
+    
+    if($countSave>0){
+        setEventMessage($langs->trans('FeedbackSaved', $countSave));
+    }
+    
+    if($countError>0){
+        setEventMessage($langs->trans('FeedBackSaveErrors', $countError), 'errors');
+    }
+    
+    if(empty($countSave) && empty($countError)){
+        setEventMessage($langs->trans('NothingWasDo'), 'warnings');
+    }
+}

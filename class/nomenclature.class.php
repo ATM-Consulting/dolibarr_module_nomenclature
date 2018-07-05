@@ -1636,33 +1636,46 @@ class TNomenclatureFeedback extends TObjetStd
     
     function __construct()
     {
+        $this->element          = 'nomenclaturefeedback';
+        
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_feedback');
-        $this->add_champs('fk_nomenclature',array('type'=>'integer', 'index'=>true));
-        $this->add_champs('qty',array('type'=>'float'));
-        $this->add_champs('note',array('type'=>'text'));
+        $this->add_champs('fk_origin,fk_nomenclature,fk_product',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('origin' , array('type'=>'string'));
+        $this->add_champs('qty' , array('type'=>'float'));
+        $this->add_champs('note', array('type'=>'text'));
         
         $this->_init_vars();
         
         $this->start();
         
-        $this->qty=1;
-        $this->fk_nomenclature=0;
-        $this->note='';
+        $this->origin           = '';
+        $this->fk_origin        = 0;
+        $this->qty              = 0;
+        $this->fk_nomenclature  = 0;
+        $this->fk_product       = 0;
+        $this->note             = '';
     }
     
     function reinit()
     {
-        $this->{OBJETSTD_MASTERKEY} = 0; // le champ id est toujours def
-        $this->{OBJETSTD_DATECREATE}=time(); // ces champs dates aussi
-        $this->{OBJETSTD_DATEUPDATE}=time();
+        $this->{OBJETSTD_MASTERKEY}  = 0; // le champ id est toujours def
+        $this->{OBJETSTD_DATECREATE} = time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE} = time();
         
     }
      
-    
-    function save(&$PDOdb)
-    {
-        $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
-        parent::save($PDOdb);
+    function loadByProduct(&$db, $origin, $fk_origin, $fk_product, $fk_nomenclature) {
+        $sql = "SELECT ".OBJETSTD_MASTERKEY." FROM ".$this->get_table()." WHERE fk_nomenclature=".intval($fk_nomenclature)." AND fk_product=".intval($fk_product)." AND fk_origin=".intval($fk_origin)." AND origin=".$db->quote($origin)." LIMIT 1";
+        
+        $db->Execute($sql);
+        
+        
+        if($db->Get_line()) {
+            return $this->load($db, $db->Get_field(OBJETSTD_MASTERKEY), false);
+        }
+        else {
+            return false;
+        }
     }
     
 }

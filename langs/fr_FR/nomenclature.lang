@@ -122,7 +122,8 @@ NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité prod
 NOMENCLATURE_USE_LOSS_PERCENT=Activer le calcul automatique de la quantité en fonction du pourcentage de perte
 NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=Sur l'onglet coefficient des propositions, empêcher le recalcul des lignes dont le prix vente a été forcé manuellement
 NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Ne pas utiliser le prix de vente nomenclature lors de l'ajout d'une ligne propal/commande/facture
-NOMENCLATURE_FEEDBACK=Ajouter un onglet retour produit sur les projets/chantiers (nécessite que le module stock soit activé)
+NOMENCLATURE_FEEDBACK=Ajouter un onglet retour produit sur les projets/chantiers
+NOMENCLATURE_FEEDBACK_USE_STOCK=Effectuer les mouvements de stock lors des retours chantier (nécessite que le module stock soit activé)
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -171,3 +172,13 @@ NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Activer la fonctionnalité de mouvement 
 
 NomenclatureStockTheorique=Stock virtuel + nomemclature
 NomenclatureStockTheoriqueHelp=Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants
+
+QtyAllowed=Quantité autorisée
+QtyReturn=Quantité retournée
+Projectfeedback=Retour chantier
+FeedbackSaved=Sauvegardé : %s 
+FeedBackSaveErrors=Erreur(s) lors de la sauvegarde : %s 
+NothingWasDo=Il ne s'est rien passé...
+FeedbackDisableShippingExists=Les retours de chantier sont désactivés car une expédition existe pour la commande liée
+nomenclatureStockFeedback=Correction du stock sur retour de chantier
+

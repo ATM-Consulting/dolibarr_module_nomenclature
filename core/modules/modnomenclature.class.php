@@ -156,8 +156,8 @@ class modnomenclature extends DolibarrModules
         	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
-            	,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
-		,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->stock->enabled && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
+            ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
+		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
             
         );
 
