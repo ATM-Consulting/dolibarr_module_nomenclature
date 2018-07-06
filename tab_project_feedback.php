@@ -177,6 +177,9 @@ if($res && $res->num_rows>0)
     }
     print '</div>';
 }
+else {
+    print '<div class="info" >'.$langs->trans('NoFeedbackObjectLinked').'</div>';
+}
 
 if(empty($accordeonActiveIndex)){ $accordeonActiveIndex = 0; }
 

@@ -184,5 +184,5 @@ FeedbackDisableShippingExists=Les retours de chantier sont désactivés car une 
 nomenclatureStockFeedback=Correction du stock sur retour de chantier
 nomenclatureStockChantier=Approvisionnement du chantier
 nomenclatureStockInitChantier=Mouvement de stock pour approvisionnement du chantier effectué
-StockNotInit=Movement de stock vers le chantier non initialisé.
-
+StockNotInit=Movement de stock vers le chantier non initialisé. Ils seront créés lors de l'enregistrement
+NoFeedbackObjectLinked=Actuellement ce project n'a pas de commande liée.
