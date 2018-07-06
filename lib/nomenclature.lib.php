@@ -253,15 +253,27 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         print '	</tr>';
     }
     
+    
     foreach($TProduct as $fk_product=> &$det) {
         
         $product=new Product($db);
         $product->fetch($fk_product);
         
         $feedback = new TNomenclatureFeedback();
-        $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
+        $resfecth = $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
         
-        print '<tr>';
+        $firstStockMovement= false;
+        if(!$resfecth){
+            $firstStockMovement = true; // nécessite un mouvement de stock vers le chantier
+        }
+        
+        $class = '';
+        if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && $firstStockMovement && $editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
+            $class = 'stockisnotinit';
+            $legende = true; // affiche la légende en bas
+        }
+        
+        print '<tr class="'.$class.'">';
         print '   <td>'.$product->getNomUrl(1).' - '.$product->label.'</td>';
         print '   <td align="center">'.price($det->qty).'</td>';
         
@@ -269,11 +281,14 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         print '   <td align="center">';
         
         if($editMode){
-            print '<input type="number" min="0" max="'.$det->qty.'" name="qty['.$det->fk_nomenclature.']['.$det->fk_product.']" data-id="'.$feedback->id.'" value="'.$feedback->qty.'" /></td>';
+            
+            print '<input type="hidden" name="start-qty['.$det->fk_nomenclature.']['.$det->fk_product.']"  value="'.$det->qty.'" />';
+            print '<input type="number" min="0" max="'.$det->qty.'" name="qty['.$det->fk_nomenclature.']['.$det->fk_product.']" data-id="'.$feedback->id.'" value="'.$feedback->qty.'" />';
         }
         else{
             print $feedback->qty;
         }
+        print '</td>';
         print '</tr>';
         
     }
@@ -287,40 +302,64 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     }
     print '</form>';
     
-    
+    // Parfois, les légendes c'est bien ;-)
+    if(!empty($legende) ){
+        print '<fieldset>';
+        print '<legend>'.$langs->trans('Legend').'</legend>';
+        print '<span class="stockisnotinit" ></span>';
+        print $langs->trans('StockNotInit');
+        print '</fieldset>';
+    }
     
 }
 
-function saveFeedbackForm($origin=false){
+function saveFeedbackForm(){
     
     global $langs, $conf, $db, $user;
     
     $TQty = GETPOST('qty', 'array');
+    $TStartQty = GETPOST('start-qty', 'array');
     $fk_entrepot = GETPOST('fk_entrepot', 'int');
-    $origin = GETPOST('origin', 'aZ09');
+    $originType = GETPOST('origin', 'aZ09');
     $fk_origin = GETPOST('fk_origin', 'int');
+    
     
     $countError = 0;
     $countSave  = 0;
+    $countInit  = 0;
     
     if($conf->stock->enabled){
         dol_include_once('product/stock/class/mouvementstock.class.php');
     }
     
+    $origin=false;
+    if(!empty($originType) && !empty($fk_origin)){
+        if($originType == 'commande'){
+            $origin = new Commande($db);
+            $origin->fetch($fk_origin);
+        }
+    }
+    
+    
     if(!empty($TQty))
     {
+        
         $PDOdb = new TPDOdb;
         foreach ( $TQty as $fk_nomenclature => $TProduct){
             
             foreach ( $TProduct as $fk_product => $qty){
                 $feedback = new TNomenclatureFeedback();
-                if(!$feedback->loadByProduct($PDOdb, $origin, $fk_origin, $fk_product, $fk_nomenclature)){
+                
+                $firstStockMovement = false;
+                if(!$feedback->loadByProduct($PDOdb, $originType, $fk_origin, $fk_product, $fk_nomenclature)){
                     
                     $feedback->fk_nomenclature  = $fk_nomenclature;
                     $feedback->fk_product       = $fk_product;
                     $feedback->fk_origin        = $fk_origin;
-                    $feedback->origin           = $origin;
+                    $feedback->origin           = $originType;
                     $feedback->note             = '';
+                    
+                    $firstStockMovement = true;
                 }
                 
                 // Store last qty for stock movements
@@ -340,6 +379,15 @@ function saveFeedbackForm($origin=false){
                             $mouvementStock->origin = $origin;
                         }
                         
+                        // Affectation du stock au chantier
+                        if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && $firstStockMovement && !empty($TStartQty[$fk_nomenclature][$fk_product])){
+                            $label = $langs->trans('nomenclatureStockChantier');
+                            $mouvementStock->livraison($user, $fk_product, $fk_entrepot, $TStartQty[$fk_nomenclature][$fk_product], 0, $label);
+                            $countInit ++;
+                        }
+                        
+                        
+                        // Modification des mouvements de stock
                         $qtyDelta = abs($feedback->qty - $lastQty) ;
                         
                         if(!empty($qtyDelta)){
@@ -375,4 +423,10 @@ function saveFeedbackForm($origin=false){
     if(empty($countSave) && empty($countError)){
         setEventMessage($langs->trans('NothingWasDo'), 'warnings');
     }
+    
+    if($countInit>0){
+        setEventMessage($langs->trans('nomenclatureStockInitChantier'));
+    }
+    
+    
 }

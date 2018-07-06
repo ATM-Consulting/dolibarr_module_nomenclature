@@ -16,3 +16,19 @@ span.pricePMP {
 .accordion-body-table{
 	padding:0 !important;
 }
+
+tr.stockisnotinit td, span.stockisnotinit{
+    background-color: #efe3b8;
+}
+
+span.stockisnotinit{
+	height:10px;
+	width :10px;
+	display: inline-block;
+	border: 1px solid #AAAAAA ;
+	margin: 0 10px 0 0;
+}
+
+fieldset{
+	margin-top : 1em;
+}

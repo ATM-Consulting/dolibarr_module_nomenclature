@@ -124,6 +124,7 @@ NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=Sur l'onglet coefficient des propositions
 NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Ne pas utiliser le prix de vente nomenclature lors de l'ajout d'une ligne propal/commande/facture
 NOMENCLATURE_FEEDBACK=Ajouter un onglet retour produit sur les projets/chantiers
 NOMENCLATURE_FEEDBACK_USE_STOCK=Effectuer les mouvements de stock lors des retours chantier (nécessite que le module stock soit activé)
+NOMENCLATURE_FEEDBACK_INIT_STOCK=Lors de l'enregistrement des retours chantiers, créer aussi le mouvement de stock d'approvisionement du chantier si il n'a pas été fait.
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -181,4 +182,7 @@ FeedBackSaveErrors=Erreur(s) lors de la sauvegarde : %s
 NothingWasDo=Il ne s'est rien passé...
 FeedbackDisableShippingExists=Les retours de chantier sont désactivés car une expédition existe pour la commande liée
 nomenclatureStockFeedback=Correction du stock sur retour de chantier
+nomenclatureStockChantier=Approvisionnement du chantier
+nomenclatureStockInitChantier=Mouvement de stock pour approvisionnement du chantier effectué
+StockNotInit=Movement de stock vers le chantier non initialisé.
 
