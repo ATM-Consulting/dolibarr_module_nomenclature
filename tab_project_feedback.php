@@ -178,9 +178,9 @@ if($res && $res->num_rows>0)
     print '</div>';
 }
 
+if(empty($accordeonActiveIndex)){ $accordeonActiveIndex = 0; }
 
-
-print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: false, active:'.$accordeonActiveIndex.'}); } );</script>';
+print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: false, active: '.$accordeonActiveIndex.' }); } );</script>';
 
 llxFooter();
 
