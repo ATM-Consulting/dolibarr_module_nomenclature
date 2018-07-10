@@ -78,7 +78,7 @@ if (empty($reshook))
  */
 
 
-$title = $langs->trans('Nomenclature');
+$title = $langs->trans('Nomenclatures');
 $arrayofjs = array('/core/js/listview.js');
 llxHeader('', $title, '', '', 0, 0, $arrayofjs);
 
