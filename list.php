@@ -47,6 +47,7 @@ $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
 $page = (GETPOST("page",'int')?GETPOST("page", 'int'):0);
+$type = (GETPOST("type",'alpha')?GETPOST("type", 'alpha'):0);
 if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
 $offset = $limit * $page;
 $pageprev = $page - 1;
@@ -102,8 +103,8 @@ $TParam['title'] = array(
     
     'is_default'  => $langs->trans('is_default'),
     'qty_reference' => $langs->trans('nomenclatureQtyReference'),
-    'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMP'),
-    'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOF'),
+    'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
+    'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOFQty'),
     'totalPRCMO'  => $langs->trans('Total'),
     
     'date_cre' => $langs->trans('CreateOn'),
@@ -167,6 +168,24 @@ $TParam['eval'] = array(
     'ref'=>'linkToNomenclature(\'@val@\', @rowid@, \'@object_type@\', \'@fk_object@\')',
     'is_default' => 'yesNo(\'@is_default@\')',
     
+    
+    // prix d'achat total
+    //'BuyPrice' => 'nomenclature_getBuyPrice(@rowid@)',
+    
+    // prix de vente conseillé total
+    //'SellPrice' => 'nomenclature_getSellPrice(@rowid@)',
+    
+    // Prix de revient chargé (on affiche tjr le chargé)
+    'totalPRCMO' => 'nomenclature_totalPRCMO(@rowid@)',
+    
+    // Coût de revient chargé théorique pour %s exemplaire(s)
+    'totalPRCMO_PMP' => 'nomenclature_totalPRCMO_PMP(@rowid@)',
+    
+    // TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
+    'totalPRCMO_OF' => 'nomenclature_totalPRCMO_OF(@rowid@)',
+    
+    
+    
 );
 
 // Query MYSQL
@@ -209,10 +228,10 @@ $db->close();
  * LIB DE FACTORISATION
  */
 function _objectTypeList(){
-    global $langs,$db;
+    global $db;
     
     $sql = "SELECT DISTINCT object_type FROM `" . MAIN_DB_PREFIX . "nomenclature`";
-    
+    $TResult = array();
     $res = $db->query($sql);
     if ($res)
     {
@@ -222,7 +241,7 @@ function _objectTypeList(){
         }
         return $TResult;
     }
-    return array();
+    return $TResult;
 }
 
 function linkToNomenclature($label = '',$nomenclature_id = '', $object_type = '', $object_id = '' ){
@@ -246,6 +265,104 @@ function yesNo($id=0){
     if(!empty($array[$id])) return $array[$id];
     return $array[0];
 }
+
+
+function nomenclature_cache($id=0, $usecache=1){
+    
+    global $PDOdb, $n_cache;
+    
+    if(!empty($id) ){
+        
+        if($usecache && !empty($n_cache[$id])){
+            return $n_cache[$id];
+        }
+        
+        
+        $n=new TNomenclature ;
+        if($n->load($PDOdb, $id)){
+            
+            $n_cache[$id]=$n;
+            return $n;
+        }
+        else{
+            return 0;
+        }
+    }
+    else{
+        return 0;
+    }
+    
+}
+
+
+// prix d'achat total
+function nomenclature_getBuyPrice($id=0){
+    $n = nomenclature_cache($id);
+    if(!empty($n)){
+        return price($n->getBuyPrice());
+    }
+    
+    return '--';
+}
+
+
+// prix de vente conseillé total
+function nomenclature_getSellPrice($id=0){
+    $n = nomenclature_cache($id);
+    if(!empty($n)){
+        return price($n->getSellPrice());
+    }
+    
+    return '--';
+}
+
+
+// Prix de revient chargé (on affiche tjr le chargé)
+function nomenclature_totalPRCMO($id=0){
+    $n = nomenclature_cache($id);
+    if(!empty($n)){
+        return price(price2num($n->totalPRCMO,'MT'));
+    }
+    
+    return '--';
+}
+
+// Prix de revient chargé 
+function nomenclature_totalPR($id=0){
+    $n = nomenclature_cache($id);
+    if(!empty($n)){
+        return price(price2num($n->totalPR,'MT'));
+    }
+    
+    return '--';
+}
+
+
+// TotalAmountCostWithChargePMP=Coût de revient chargé théorique pour %s exemplaire(s)
+function nomenclature_totalPRCMO_PMP($id=0){
+    $n = nomenclature_cache($id);
+    if(!empty($n)){
+        return price(price2num($n->totalPRCMO_PMP,'MT'));
+    }
+    
+    return '--';
+}
+
+// TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
+function nomenclature_totalPRCMO_OF($id=0){
+    $n = nomenclature_cache($id);
+    if(!empty($n)){
+        return price(price2num($n->totalPRCMO_OF,'MT'));
+    }
+    
+    return '--';
+}
+
+
+
+
+
+
 
 
 
