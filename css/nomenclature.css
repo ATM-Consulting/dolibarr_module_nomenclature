@@ -32,3 +32,8 @@ span.stockisnotinit{
 fieldset{
 	margin-top : 1em;
 }
+
+.qty-used-impact{
+	color: #e2720f;
+	
+}

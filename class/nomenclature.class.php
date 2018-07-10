@@ -1641,7 +1641,7 @@ class TNomenclatureFeedback extends TObjetStd
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_feedback');
         $this->add_champs('fk_origin,fk_nomenclature,fk_product',array('type'=>'integer', 'index'=>true));
         $this->add_champs('origin' , array('type'=>'string'));
-        $this->add_champs('qty' , array('type'=>'float'));
+        $this->add_champs('stockAllowed,qtyUsed' , array('type'=>'float'));
         $this->add_champs('note', array('type'=>'text'));
         
         $this->_init_vars();
@@ -1650,7 +1650,8 @@ class TNomenclatureFeedback extends TObjetStd
         
         $this->origin           = '';
         $this->fk_origin        = 0;
-        $this->qty              = 0;
+        $this->qtyUsed          = 0;
+        $this->stockAllowed     = 0;
         $this->fk_nomenclature  = 0;
         $this->fk_product       = 0;
         $this->note             = '';
