@@ -101,6 +101,7 @@ $TParam['title'] = array(
     'title' => $langs->trans('NomenclatureName'),
     
     'is_default'  => $langs->trans('is_default'),
+    'qty_reference' => $langs->trans('nomenclatureQtyReference'),
     'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMP'),
     'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOF'),
     'totalPRCMO'  => $langs->trans('Total'),
@@ -119,6 +120,9 @@ $TParam['position'] = array(
             'title' => 'left',
             
             'is_default'  => 'center',
+            
+            'qty_reference' => 'right',
+            
             'totalPRCMO_PMP'  => 'right',
             'totalPRCMO_OF'  => 'right',
             'totalPRCMO'  => 'right',
@@ -137,20 +141,24 @@ $TParam['sortorder'] = 'ASC';
 $TParam['type'] = array (
     'date_cre' => 'date', // [datetime], [hour], [money], [number], [integer]
     'date_maj' => 'datetime',
+    'qty_reference' => 'number',
     'totalPRCMO_PMP' => 'money',
     'totalPRCMO_OF'  => 'money',
     'totalPRCMO'     => 'money',
 );
 
 $TParam['search'] = array (
-    'object_type' => array('search_type'=> _objectTypeList(), 'table'=>'n', 'fieldname'=>'object_type' ),
-    'title' => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'title'),
-    'ref' => array('search_type'=>true, 'table'=>'p', 'fieldname'=>'ref'),
-    'is_default' => array('search_type'=>array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') )),
+    'object_type'    => array('search_type'=> _objectTypeList(), 'table'=>'n', 'fieldname'=>'object_type' ),
+    'title'          => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'title'),
+    'ref'            => array('search_type'=>true, 'table'=>'p', 'fieldname'=>'ref'),
+    'is_default'     => array('search_type'=>array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') )),
     
+    'qty_reference'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'qty_reference'),
     'totalPRCMO_PMP' => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_PMP'),
     'totalPRCMO_OF'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_OF'),
     'totalPRCMO'     => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO'),
+    'date_cre'       => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'date_cre'),
+    'date_maj'       => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'date_maj'),
 );
 
 $TParam['eval'] = array(
@@ -162,7 +170,7 @@ $TParam['eval'] = array(
 );
 
 // Query MYSQL
-$sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO ";
+$sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO, n.qty_reference ";
 $sql.= " FROM `" . MAIN_DB_PREFIX . "nomenclature` n   ";
 $sql.= " JOIN `" . MAIN_DB_PREFIX . "product` p ON (p.rowid = n.fk_object)   ";
 $sql.= " WHERE  n.object_type = 'product' AND n.fk_nomenclature_parent = 0 ";

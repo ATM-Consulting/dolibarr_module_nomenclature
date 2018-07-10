@@ -148,8 +148,8 @@ class modnomenclature extends DolibarrModules
 		// 'stock'            to add a tab in stock view
 		// 'thirdparty'       to add a tab in third party view
 		// 'user'             to add a tab in user view
-        $this->tabs = array(
-            'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
+		$this->tabs = array(
+		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
             ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->tiers->updatecoef:/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
         	,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
         	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
@@ -272,9 +272,22 @@ class modnomenclature extends DolibarrModules
 									'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 									'perms'=>'$user->rights->nomenclature->global->massUpdate',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 									'target'=>'',
-									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
+									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
-
+		 
+		 $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=product',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+		     'type'=>'left',			                // This is a Left menu entry
+		     'titre'=>'Nomenclatures',
+		     'mainmenu'=>'products',
+		     'leftmenu'=>'nomenclature',
+		     'url'=>'/nomenclature/list.php',
+		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+		     'position'=>100,
+		     'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+		     'perms'=>'$user->rights->nomenclature->read',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+		     'target'=>'',
+		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
+		 $r++;
 
 		// Exports
 		$r=1;

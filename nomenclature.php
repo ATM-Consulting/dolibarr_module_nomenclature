@@ -380,7 +380,22 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
-	print '<h3 class="accordion-title">'. $langs->trans('Nomenclature').' n°'.$n->getId().' '. $n->title.' '. $n->qty_reference.'</h3>';
+	
+	
+	print '<h3 class="accordion-title">';
+	print $langs->trans('Nomenclature').' n°'.$n->getId();
+	print ' '.$n->title;
+	
+	print ' - '.$langs->trans('nomenclatureQtyReference').' '. $n->qty_reference;
+	
+	$price_buy = $n->getBuyPrice(); // prix d'achat total
+	print ' - '.$langs->trans('TotalAmountCostWithCharge').' '. price($price_buy);
+	
+	$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
+	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell);
+	
+	print '</h3>';
+	
 	print '<div id="nomenclature'.$n->id.'" class="tabBar accordion-body">';
 	
 	$json = GETPOST('json', 'int');
