@@ -192,6 +192,7 @@ nomenclatureStockInitChantier=Mouvement de stock pour approvisionnement du chant
 StockNotInit=Mouvements de stock vers le chantier non initialisés. Ils seront créés lors de l'enregistrement
 NoFeedbackObjectLinked=Actuellement ce project n'a pas de commande liée.
 ApplyPlanned=Mettre en conformité avec la quantité prévue
+DoStockFeedBack=recupérer en stock
 
 # LIST 
 is_default=Utilisée par default

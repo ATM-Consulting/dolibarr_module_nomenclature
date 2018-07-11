@@ -234,6 +234,8 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     }
     
     print '<table class="border" width="100%">';
+    
+    print '<theader>';
     print '	<tr class="liste_titre">';
     print '		<td class="liste_titre">'.$langs->trans('Product').'</td>';
     print '		<td class="liste_titre" align="center">'.$langs->trans('QtyPlanned').'</td>';
@@ -259,7 +261,6 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     print $langs->trans('QtyNewConsume').'</td>';
     //print '		<td class="liste_titre" align="center">'.$langs->trans('QtyReturn').'</td>';
     print '	</tr>';
-    
     
     if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK))
     {
@@ -288,8 +289,10 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         
         print '	</tr>';
     }
+    print '</theader>';
     
     
+    print '<tbody>';
     foreach($TProduct as $fk_product=> &$det) {
         
         $product=new Product($db);
@@ -367,6 +370,20 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         print '</tr>';
         
     }
+    print '</tbody>';
+    
+    
+    if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK))
+    {
+        print '<tfooter>';
+        print '<tr>';
+        print '<td class="liste_titre" colspan="4" ></td>';
+        print '<td class="liste_titre" align="center"><span class="pointer" id="DoStockFeedBack" ><i class="fa fa-recycle"></i> '.$langs->trans('DoStockFeedBack').'</span></td>';
+        print '<td class="liste_titre"  ></td>';
+        print '</tr>';
+        print '</tfooter>';
+    }
+    
     
     
     print '</table>';
@@ -386,105 +403,9 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         print '</fieldset>';
     }
     
-    // Pour info la fonction getNumber sert juste à eviter un bug d'affichage pourris genre 5.56 - 0 = 5.5599999999999
-    print '<script type="text/javascript" >
-            $( function() { 
-                $( ".qtyConsume" ).bind("keyup change", function(e) {
-                    var datakey = $(this).data("targetkey");
-                    updateImpact(datakey);
-                });
-
-
-                $( ".stockAllowed" ).bind("keyup change", function(e) {
-                    var datakey = $(this).data("targetkey");
-                    updateImpact(datakey);
-                });
-
-
-
-                $( ".loadPlanned" ).click(function(e) {
-                    var datakey = $(this).data("targetkey");
-                     $("#qty-consume" + datakey ).val(  $("#diff-qty" + datakey).val()  ).trigger("change");
-                });
-
-
-                $( ".loadAllPlanned" ).click(function(e) {
-                    $( ".loadPlanned" ).each(function(e) {
-                        var datakey = $(this).data("targetkey");
-                         $("#qty-consume" + datakey ).val(  $("#diff-qty" + datakey).val()  ).trigger("change");
-                    });
-                });
-
-
-                $( ".loadAllowed" ).click(function(e) {
-                    var datakey = $(this).data("targetkey");
-
-                    var qty = $("#start-qty" + datakey).val();
-                    var stockAllowed =$("#stockAllowed" + datakey ).val();
-
-                    if(stockAllowed < qty){
-                        $("#stockAllowed" + datakey ).val(  qty  ).trigger("change");
-                    }
-                });
-
-                $( ".loadAllAllowed" ).click(function(e) {
-                    $( ".stockAllowed" ).each(function(e) {
-                        var datakey = $(this).data("targetkey");
-
-                        var qty = $("#start-qty" + datakey).val();
-                        var stockAllowed =$("#stockAllowed" + datakey ).val();
-
-                        if(stockAllowed < qty){
-                            $("#stockAllowed" + datakey ).val(  qty  ).trigger("change");
-                        }
-                    });
-                });
-
-
-                // Forces signing on a number, returned as a string
-                function getNumberSigned(theNumber)
-                {
-                    if(theNumber < 0){
-                        return theNumber.toString();
-                    }else{
-                        return "+" + theNumber;
-                    }
-                }
-
-                function getNumber(theNumber)
-                {
-                    return Math.round(parseFloat(theNumber)*10000)/10000;
-                }
-
-                function updateImpact(datakey){
-                    var NOMENCLATURE_FEEDBACK_INIT_STOCK = '.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)?1:0).'
-                    var line = $("#line" + datakey);
-                    var newstockallowed = parseFloat( $("#stockAllowed"  + datakey ).val());
-                    var stockallowed    = parseFloat(line.data("stockallowed"));
-                    var impactallowed   = getNumberSigned( newstockallowed - stockallowed );
-                    if(newstockallowed - stockallowed == 0){ impactallowed = ""; }
-                    $("#qty-allowed-impact" + datakey).html( impactallowed );
-
-
-                    var consume         = parseFloat( $("#qty-consume" + datakey).val());
-                    var qtyused         = parseFloat(line.data("qtyused")); 
-                    var finalused       = getNumber(   qtyused + consume  );
-                    var impactdispo     = getNumberSigned(  (newstockallowed - stockallowed ) - (finalused - qtyused) ) + " (" + (newstockallowed - finalused) + ")";
-                    
-                    if((newstockallowed - stockallowed ) - (finalused - qtyused)  == 0){ impactdispo = ""; }
-                    $("#qty-diff-impact" + datakey).html( impactdispo );
-
-                    var impactused      = getNumberSigned( consume ) + " (" + finalused + ")";
-                    if(consume == 0){ impactused      = ""; }
-                    $("#qty-used-impact" + datakey).html( impactused );
-
-                    // update imput limitation
-                    $("#stockAllowed"  + datakey ).attr("min",finalused);
-
-                }
-
-            });
-           </script>';
+    
+    
+    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/feedback.js',2).'"  ></script>';
     
 }
 
