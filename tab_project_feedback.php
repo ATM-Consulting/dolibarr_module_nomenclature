@@ -39,7 +39,7 @@ $TQty = GETPOST('qty', 'array');
 $fk_entrepot = GETPOST('fk_entrepot', 'int');
 $origin = GETPOST('origin', 'aZ09');
 $fk_origin = GETPOST('fk_origin', 'int');
-
+$ref = GETPOST('ref', 'aZ09');
 // Load translation files required by the page
 $langs->loadLangs(array('projects', 'companies', 'nomenclature@nomenclature'));
 $langs->load('workstation@workstation');
