@@ -58,7 +58,7 @@ $( function() {
         });
     });
     
-    $( "#DoStockFeedBack" ).click(function(e) {
+    $( ".DoStockFeedBack" ).click(function(e) {
 
         var formid = $(this).parents('form').attr("id");
     	

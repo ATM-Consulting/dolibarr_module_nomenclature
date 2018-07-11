@@ -378,7 +378,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         print '<tfooter>';
         print '<tr>';
         print '<td class="liste_titre" colspan="4" ></td>';
-        print '<td class="liste_titre" align="center"><span class="pointer" id="DoStockFeedBack" ><i class="fa fa-recycle"></i> '.$langs->trans('DoStockFeedBack').'</span></td>';
+        print '<td class="liste_titre" align="center"><span class="pointer DoStockFeedBack" ><i class="fa fa-recycle"></i> '.$langs->trans('DoStockFeedBack').'</span></td>';
         print '<td class="liste_titre"  ></td>';
         print '</tr>';
         print '</tfooter>';
