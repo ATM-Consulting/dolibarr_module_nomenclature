@@ -208,7 +208,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     
     
     
-    print '<form name="'.$object_type.'-'.$object->id.'" action="'.$TParam['action'].'"  method="post" >';
+    print '<form id="'.$object_type.'-'.$object->id.'" name="'.$object_type.'-'.$object->id.'" action="'.$TParam['action'].'"  method="post" >';
     
 
     

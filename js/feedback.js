@@ -21,7 +21,10 @@ $( function() {
 
 
     $( ".loadAllPlanned" ).click(function(e) {
-        $( ".loadPlanned" ).each(function(e) {
+
+        var formid = $(this).parents('form').attr("id");
+    	
+        $( "#" + formid + " .loadPlanned" ).each(function(e) {
             var datakey = $(this).data("targetkey");
              $("#qty-consume" + datakey ).val(  $("#diff-qty" + datakey).val()  ).trigger("change");
         });
@@ -40,7 +43,10 @@ $( function() {
     });
 
     $( ".loadAllAllowed" ).click(function(e) {
-        $( ".stockAllowed" ).each(function(e) {
+
+        var formid = $(this).parents('form').attr("id");
+    	
+        $( "#" + formid + " .stockAllowed" ).each(function(e) {
             var datakey = $(this).data("targetkey");
 
             var qty = $("#start-qty" + datakey).val();
@@ -53,7 +59,10 @@ $( function() {
     });
     
     $( "#DoStockFeedBack" ).click(function(e) {
-        $( ".stockAllowed" ).each(function(e) {
+
+        var formid = $(this).parents('form').attr("id");
+    	
+        $( "#" + formid + " .stockAllowed" ).each(function(e) {
             var datakey = $(this).data("targetkey");
             updateFeedBack(datakey);
         });
@@ -78,6 +87,7 @@ $( function() {
 
     function updateImpact(datakey){
         var line = $("#line" + datakey);
+        
         var newstockallowed = parseFloat( $("#stockAllowed"  + datakey ).val());
         var stockallowed    = parseFloat(line.data("stockallowed"));
         var impactallowed   = getNumberSigned( newstockallowed - stockallowed );
