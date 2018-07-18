@@ -127,6 +127,8 @@ NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Ne pas utiliser le prix de vente n
 NOMENCLATURE_FEEDBACK=Ajouter un onglet retour produit sur les projets/chantiers
 NOMENCLATURE_FEEDBACK_USE_STOCK=Effectuer les mouvements de stock lors des retours chantier (nécessite que le module stock soit activé)
 NOMENCLATURE_FEEDBACK_INIT_STOCK=Gérer l'affectation de stock à un chantier
+NOMENCLATURE_FEEDBACK_OBJECT=Type d'object utilisé pour le retour chantier
+NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE=Ne pas permettre la modification de l'entrepot
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -190,7 +192,7 @@ nomenclatureStockFeedback=Correction du stock sur retour de chantier
 nomenclatureStockChantier=Approvisionnement du chantier
 nomenclatureStockInitChantier=Mouvement de stock pour approvisionnement du chantier effectué
 StockNotInit=Mouvements de stock vers le chantier non initialisés. Ils seront créés lors de l'enregistrement
-NoFeedbackObjectLinked=Actuellement ce project n'a pas de commande liée.
+NoFeedbackObjectLinked=Actuellement ce project n'est lié à aucune %s.
 ApplyPlanned=Mettre en conformité avec la quantité prévue
 DoStockFeedBack=recupérer en stock
 

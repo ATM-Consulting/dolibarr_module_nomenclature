@@ -439,48 +439,35 @@ print '</form>';
 print '</td></tr>';
 
 
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("Projectfeedback").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-print '</tr>';
+
+_print_title('Projectfeedback');
+
+_print_on_off('NOMENCLATURE_FEEDBACK');
+
+_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK');
+
+_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
+
+_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK');
+
+
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK").'</td>';
+print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_OBJECT").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK">';
-print ajax_constantonoff('NOMENCLATURE_FEEDBACK');
+print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_OBJECT">';
+$array = array(
+    'propal' => $langs->trans('Proposal'),
+    'commande' => $langs->trans('Commande'),
+);
+print $form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
+print '<input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
 print '</form>';
 print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_USE_STOCK").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_USE_STOCK">';
-print ajax_constantonoff('NOMENCLATURE_FEEDBACK_USE_STOCK');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_INIT_STOCK").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_INIT_STOCK">';
-print ajax_constantonoff('NOMENCLATURE_FEEDBACK_INIT_STOCK');
-print '</form>';
-print '</td></tr>';
-
 
 
 print '</table>';
@@ -593,3 +580,94 @@ if(!empty($conf->workstation->enabled)) {
 llxFooter();
 
 $db->close();
+
+
+
+function _print_title($title="")
+{
+    global $langs;
+    print '<tr class="liste_titre">';
+    print '<td>'.$langs->trans($title).'</td>'."\n";
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="center" ></td>'."\n";
+    print '</tr>';
+}
+
+function _print_on_off($confkey, $title = false, $desc ='')
+{
+    global $var, $bc, $langs, $conf;
+    $var=!$var;
+    
+    print '<tr '.$bc[$var].'>';
+    print '<td>'.($title?$title:$langs->trans($confkey));
+    if(!empty($desc))
+    {
+        print '<br><small>'.$langs->trans($desc).'</small>';
+    }
+    print '</td>';
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="center" width="300">';
+    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+    print ajax_constantonoff($confkey);
+    print '</form>';
+    print '</td></tr>';
+}
+
+function _print_input_form_part($confkey, $title = false, $desc ='', $metas = array(), $type='input', $help = false)
+{
+    global $var, $bc, $langs, $conf, $db;
+    $var=!$var;
+    
+    $form=new Form($db);
+    
+    $defaultMetas = array(
+        'name' => $confkey
+    );
+    
+    if($type!='textarea'){
+        $defaultMetas['type']   = 'text';
+        $defaultMetas['value']  = $conf->global->{$confkey};
+    }
+    
+    
+    $metas = array_merge ($defaultMetas, $metas);
+    $metascompil = '';
+    foreach ($metas as $key => $values)
+    {
+        $metascompil .= ' '.$key.'="'.$values.'" ';
+    }
+    
+    print '<tr '.$bc[$var].'>';
+    print '<td>';
+    
+    if(!empty($help)){
+        print $form->textwithtooltip( ($title?$title:$langs->trans($confkey)) , $langs->trans($help),2,1,img_help(1,''));
+    }
+    else {
+        print $title?$title:$langs->trans($confkey);
+    }
+    
+    if(!empty($desc))
+    {
+        print '<br><small>'.$langs->trans($desc).'</small>';
+    }
+    
+    print '</td>';
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="right" width="300">';
+    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="set_'.$confkey.'">';
+    if($type=='textarea'){
+        print '<textarea '.$metascompil.'  >'.dol_htmlentities($conf->global->{$confkey}).'</textarea>';
+    }
+    else {
+        print '<input '.$metascompil.'  />';
+    }
+    
+    print '<input type="submit" class="butAction" value="'.$langs->trans("Modify").'">';
+    print '</form>';
+    print '</td></tr>';
+}

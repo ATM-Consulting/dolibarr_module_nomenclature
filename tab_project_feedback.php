@@ -134,17 +134,30 @@ dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
  * NOMENCLATURE
  */
 
-$object_type='commande';
+$TAcceptedType = array('commande', 'propal');
+$object_type=in_array($conf->global->NOMENCLATURE_FEEDBACK_OBJECT,$TAcceptedType)?$conf->global->NOMENCLATURE_FEEDBACK_OBJECT:'commande';
+
 // Get list of order linked to this project
-$res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'commande c WHERE c.fk_projet = '.$object->id);
+if($object_type == 'commande'){
+    $res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'commande c WHERE c.fk_projet = '.$object->id);
+}
+elseif($object_type == 'propal'){
+    $res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'propal p WHERE p.fk_projet = '.$object->id);
+}
+
 if($res && $res->num_rows>0)
 {
     print '<div class="accordion" >';
     $idion=0;// $i pour un accordeon => idion
     while ($obj = $db->fetch_object($res))
     {
+        if($object_type == 'commande'){
+            $targetObject = new Commande($db);
+        }
+        elseif($object_type == 'propal'){
+            $targetObject = new Propal($db);
+        }
         
-        $targetObject = new Commande($db);
         if($targetObject->fetch($obj->rowid) > 0){
             
             $targetObject->fetchObjectLinked();
@@ -178,7 +191,15 @@ if($res && $res->num_rows>0)
     print '</div>';
 }
 else {
-    print '<div class="info" >'.$langs->trans('NoFeedbackObjectLinked').'</div>';
+    
+    if($object_type == 'commande'){
+        $langTargetObject = $langs->trans('commande');
+    }
+    elseif($object_type == 'propal'){
+        $langTargetObject = $langs->trans('Proposal');
+    }
+    
+    print '<div class="info" >'.$langs->trans('NoFeedbackObjectLinked',$langTargetObject).'</div>';
 }
 
 if(empty($accordeonActiveIndex)){ $accordeonActiveIndex = 0; }

@@ -41,3 +41,12 @@ fieldset{
 .pointer{
 	cursor: pointer;
 }
+
+.liste_total{
+	background: #eaeaea;
+}
+
+.liste_total td.liste_total_cell{
+	    font-weight: bold;
+}
+
