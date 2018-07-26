@@ -103,9 +103,9 @@ $TParam['title'] = array(
     
     'is_default'  => $langs->trans('is_default'),
     'qty_reference' => $langs->trans('nomenclatureQtyReference'),
-    'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
+    //'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
     'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOFQty'),
-    'totalPRCMO'  => $langs->trans('Total'),
+    //'totalPRCMO'  => $langs->trans('Total'),
     
     'date_cre' => $langs->trans('CreateOn'),
     'date_maj' => $langs->trans('Updated'),
@@ -157,7 +157,7 @@ $TParam['search'] = array (
     'qty_reference'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'qty_reference'),
     'totalPRCMO_PMP' => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_PMP'),
     'totalPRCMO_OF'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_OF'),
-    'totalPRCMO'     => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO'),
+    //'totalPRCMO'     => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO'),
     'date_cre'       => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'date_cre'),
     'date_maj'       => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'date_maj'),
 );
@@ -182,7 +182,7 @@ $TParam['eval'] = array(
     'totalPRCMO_PMP' => 'nomenclature_totalPRCMO_PMP(@rowid@)',
     
     // TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
-    'totalPRCMO_OF' => 'nomenclature_totalPRCMO_OF(@rowid@)',
+    'totalPRCMO_OF' => 'nomenclature_totalPRCMO(@rowid@)',//'nomenclature_totalPRCMO_OF(@rowid@)',
     
     
     
