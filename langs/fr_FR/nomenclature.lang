@@ -203,3 +203,8 @@ CreateOn=Date de création
 Updated=Dernière modification
 NomenclatureList=Liste des nomenclatures/ouvrages
 ListMessageNothingToShow=Aucun résultat, vérifiez vos filtres ou ajoutez une nomenclature.
+
+#Search by category
+SearchByCategory=Recherche par catégorie
+NothingHere=Pas de sous-catégorie ou de produit
+DoASearch=Faites une recherche/Pas de résultat pour votre recherche
