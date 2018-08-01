@@ -298,6 +298,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             print '<tr class="'.$class.'" id="line'.$domKeySuffix.'" data-stockAllowed="'.$feedback->stockAllowed.'"  data-qtyused="'.$feedback->qtyUsed.'" '.$dataKey.'  >';
             print '   <td>'.$product->getNomUrl(1).' - '.$product->label.'</td>';
             print '   <td align="center">'.price($det->qty).'</td>';
+            print '   <td align="left">'.$product->getLabelOfUnit().'</td>';
             
             
             print '   <td align="left">';
@@ -403,14 +404,14 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         }
         
         print '<tr class="liste_total"  >';
-        print '<td class="liste_total_cell"  align="right">'.$langs->trans('Total').'</td>';
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['qty']).'</td>';
-        print '<td class="liste_total_cell" align="left"></td>';
-        print '<td class="liste_total_cell"  align="center">'.price($TtotalType['feedback_qtyUsed']).'</td>';
+        
+        $colspan = 6;
         if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
-            print '<td class="liste_total_cell" align="center" >'.price($TtotalType['feedback_diffqty']).'</td>';
+            $colspan++;
         }
-        print '<td class="liste_total_cell" align="left"></td>';
+        
+        print '<td class="liste_total_cell"  align="right" colspan="'.$colspan.'" >'.$langs->trans('Total').'</td>';
+
         print '<td class="liste_total_cell" align="center">'.price($TtotalType['calculate_price']).'</td>';
         print '<td class="liste_total_cell" align="center">'.price($TtotalType['charged_price']).'</td>';
         print '<td class="liste_total_cell" align="center">'.price($TtotalType['price']).'</td>';
@@ -481,7 +482,7 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     print '<tr class="liste_titre">';
     $nbCols = 4;
     print '<td class="liste_titre">'.$productTypeTitle.'</td>';
-    print '<td class="liste_titre" align="center">'.$langs->trans('QtyPlanned').'</td>';
+    print '<td class="liste_titre" align="center" colspan="2">'.$langs->trans('QtyPlanned').'</td>';
     
     if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK && $conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
         $nbCols ++;
