@@ -377,9 +377,9 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             
             $calculate_price = price2num($det->calculate_price,'MT');
             $price_charge = price2num($det->charged_price,'MT');
-            print '<td class="liste_titre" align="center">'.price($calculate_price).'</td>';
-            print '<td class="liste_titre" align="center">'.price($price_charge).'</td>';
-            print '<td class="liste_titre" align="center">'.price($det->price).'</td>';
+            print '<td class="liste_titre" align="center">'.price($calculate_price, 0, '', 1, -1, -1, 'auto').'</td>';
+            print '<td class="liste_titre" align="center">'.price($price_charge, 0, '', 1, -1, -1, 'auto').'</td>';
+            print '<td class="liste_titre" align="center">'.price($det->price, 0, '', 1, -1, -1, 'auto').'</td>';
             
             $TtotalType['calculate_price'] += $calculate_price;
             $TtotalType['charged_price'] += $price_charge;
@@ -412,11 +412,10 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         
         print '<td class="liste_total_cell"  align="right" colspan="'.$colspan.'" >'.$langs->trans('Total').'</td>';
 
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['calculate_price']).'</td>';
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['charged_price']).'</td>';
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['price']).'</td>';
+        print '<td class="liste_total_cell" align="center">'.price($TtotalType['calculate_price'], 0, '', 1, -1, -1, 'auto').'</td>';
+        print '<td class="liste_total_cell" align="center">'.price($TtotalType['charged_price'], 0, '', 1, -1, -1, 'auto').'</td>';
+        print '<td class="liste_total_cell" align="center">'.price($TtotalType['price'], 0, '', 1, -1, -1, 'auto').'</td>';
         print '</tr>';
-        
         
         
         
