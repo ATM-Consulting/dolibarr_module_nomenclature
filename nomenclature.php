@@ -313,7 +313,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	
 	print '</div>';
 	print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: true, active:'.$accordeonActiveIndex.'}); } );</script>';
-	
+	print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',2).'"></script>';
 
 
 	$liste = new TListviewTBS('listeUse');
@@ -881,7 +881,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
 						}
 						?>
-						
+						<span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
 						<div class="inline-block divButAction">
 							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction nomenclature_bt_add_product" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
 							<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
