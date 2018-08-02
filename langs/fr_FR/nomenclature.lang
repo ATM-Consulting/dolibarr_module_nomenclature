@@ -204,6 +204,9 @@ Updated=Dernière modification
 NomenclatureList=Liste des nomenclatures/ouvrages
 ListMessageNothingToShow=Aucun résultat, vérifiez vos filtres ou ajoutez une nomenclature.
 
+RealStock=Stock réel
+TheoreticalStock=Stock théorique
+
 #Search by category
 SearchByCategory=Recherche par catégorie
 NothingHere=Pas de sous-catégorie ou de produit
