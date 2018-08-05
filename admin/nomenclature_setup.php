@@ -71,7 +71,8 @@ if ($action == 'add' || $action == 'edit')
 			$nomenclatureCoef = new TNomenclatureCoef;
 
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
-
+			else $nomenclatureCoef->type = GETPOST('line_type');
+			
 			$nomenclatureCoef->label = $label;
 			$nomenclatureCoef->description = $desc;
 			$nomenclatureCoef->code_type = $code;
@@ -91,6 +92,7 @@ if ($action == 'add' || $action == 'edit')
 }
 
 $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+$TCoefWS = TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
 
 /*
  * Actions
@@ -374,6 +376,18 @@ print '</form>';
 print '</td></tr>';
 
 $var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE">';
+print ajax_constantonoff('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE');
+print '</form>';
+print '</td></tr>';
+
+$var=!$var;
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE\">";
@@ -418,8 +432,10 @@ print '<td align="right" width="650">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="add">';
+print '<label>'.$langs->trans('NomenclatureLineType').'</label>&nbsp;';
+print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'))).'&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
-print '<input type="text" name="label" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" />&nbsp;&nbsp;';
+print '<input type="text" name="label" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" /><br />';
 print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
 print '<input type="text" name="code_type" value="'.($action == 'add' && !empty($code) ? $code : '').'"  size="15" />&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
@@ -431,7 +447,7 @@ print '</td></tr>';
 print '</table>';
 
 
-
+// Coef lignes nomenclature
 $var=false;
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -441,10 +457,10 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
 foreach ($TCoef as $coef)
 {
-
+	
 	$allow_to_delete = ($coef->code_type!='coef_marge');
-
-
+	
+	
 	$var=!$var;
 	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 	print '<tr '.$bc[$var].'>';
@@ -466,6 +482,43 @@ foreach ($TCoef as $coef)
 
 print '</table>';
 
+
+
+// Coef lignes msin d'oeuvre (module workstation)
+if(!empty($conf->workstation->enabled)) {
+
+	$var=false;
+	print '<table class="noborder" width="100%">';
+	print '<tr class="liste_titre">';
+	print '<td>'.$langs->trans("ModifyCoefWS").'</td>'."\n";
+	print '<td align="center" width="20">&nbsp;</td>';
+	print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+	
+	foreach ($TCoefWS as &$coef)
+	{
+		
+		$var=!$var;
+		print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+		print '<tr '.$bc[$var].'>';
+		print '<td><input type="text" name="label" value="'.$coef->label.'"  size="25" />&nbsp;<input type="text" name="desc" value="'.$coef->description.'" size="60" /></td>';
+		print '<td align="center" width="20">&nbsp;</td>';
+		print '<td align="right" width="650">';
+		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+		print '<input type="hidden" name="action" value="edit">';
+		print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
+		print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
+		print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
+		print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
+		print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
+		print '<input type="submit" class="button" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
+		print '<input type="submit" class="button" name="delete" value="'.$langs->trans("Delete").'">';
+		print '</td></tr>';
+		print '</form>';
+	}
+	
+	print '</table>';
+
+}
 
 
 

@@ -269,6 +269,7 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_type)
 {
 //	dol_include_once('/nomenclature/nomenclature.php');
+	global $conf;
 	
 	$id = GETPOST('id', 'int');
 	
@@ -293,7 +294,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 	
 	foreach ($object->lines as $line)
 	{
-		if ($line->product_type == 9) continue;
+		if ($line->product_type == 9 || (!empty($conf->global->NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE) && !empty($line->array_options['options_pv_force']))) continue;
 		
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);

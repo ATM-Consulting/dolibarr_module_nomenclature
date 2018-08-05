@@ -356,7 +356,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
     echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
     echo $formCore->hidden('qty_ref', $qty_ref);
     echo $formCore->hidden('qty_price', $qty_price);
-
+    
     $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
     
 	?>
@@ -853,6 +853,7 @@ console.log(name);
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('QtyFabrication').img_info($langs->trans('QtyFabricationHelp')); ?></th>
                    <?php }?>
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
+                   <th class="liste_titre" width="5%"><?php echo $langs->trans('Type'); ?></th>
                  <?php if($user->rights->nomenclature->showPrice) {
                  	?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php }
 
@@ -900,6 +901,9 @@ console.log(name);
                            <td ><?php
                            		echo $ws->nb_hour_calculate.'h';
 						   ?></td>
+                           <td>
+                           	<?php echo $formCore->combo('', 'TNomenclatureWorkstation['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb, false, 'workstation'), $ws->code_type, 1, '', '', 'select_coef'); ?>
+                           </td>
 
                            <?php
 
@@ -946,7 +950,7 @@ console.log(name);
 
 				?></tbody><tfoot><?php
 
-					$colspan = 4;
+					$colspan = 5;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) $colspan--;

@@ -51,6 +51,7 @@ ListUseNomenclaure=Liste des nomenclatures utilisant ce produit
 
 AddCoef=Ajouter un coefficient
 ModifyCoef=Modifier un coefficient
+ModifyCoefWS=Modifier un coefficient de main d'oeuvre
 CreateCoef=Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel=Libellé : 
 NomenclatureCreateCode=Code type : 
@@ -116,6 +117,7 @@ NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Autoriser l'édition d'un coefficient de m
 NOMENCLATURE_USE_CUSTOM_BUYPRICE=Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
 NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité produit sur chaque ligne
 NOMENCLATURE_USE_LOSS_PERCENT=Activer le calcul automatique de la quantité en fonction du pourcentage de perte
+NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=Sur l'onglet coefficient des propositions, empêcher le recalcul des lignes dont le prix vente a été forcé manuellement
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -141,3 +143,4 @@ LossPercent=Pourcentage de perte
 BuyingPriceCustom=Prix d'achat personnalisé<br />(prioritaire sur la conf)
 CoefMarge=Coef. de marge
 qty_base=Qté base
+NomenclatureLineType=Type coef
