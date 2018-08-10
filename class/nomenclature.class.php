@@ -1269,7 +1269,7 @@ class TNomenclatureCoef extends TObjetStd
         $this->add_champs('label,description',array('type'=>'varchar', 'length'=>255));
 		$this->add_champs('code_type,type',array('type'=>'varchar', 'length'=>30, 'index'=>true)); // type = nomenclature ou workstation
         $this->add_champs('tx',array('type'=>'float'));
-        $this->add_champs('entity',array('type'=>'int', 'index'=>true));
+        $this->add_champs('entity',array('type'=>'int', 'index'=>true, 'default'=>1));
 
         $this->_init_vars();
 
