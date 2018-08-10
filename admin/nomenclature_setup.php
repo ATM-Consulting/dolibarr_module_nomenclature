@@ -77,6 +77,7 @@ if ($action == 'add' || $action == 'edit')
 			$nomenclatureCoef->description = $desc;
 			$nomenclatureCoef->code_type = $code;
 			$nomenclatureCoef->tx = $tx;
+			$nomenclatureCoef->entity = $conf->entity;
 
 			$rowid = $nomenclatureCoef->save($PDOdb);
 
