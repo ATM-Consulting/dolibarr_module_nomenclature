@@ -224,7 +224,7 @@ if($object_type != 'product') {
     $n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, GETPOST('fk_origin'));
     _fiche_nomenclature($PDOdb, $n, $product, $object, $fk_object, $object_type, $qty_ref);
-
+    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',2).'"></script>';
 }
 else{
 	_show_product_nomenclature($PDOdb, $product, $object);
