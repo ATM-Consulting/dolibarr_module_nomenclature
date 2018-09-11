@@ -1075,10 +1075,12 @@ class TNomenclatureDet extends TObjetStd
 
     static function getTType(&$PDOdb, $blankRow = false, $type='nomenclature')
 	{
+		global $conf;
+		
 		$res = array();
 		if ($blankRow) $res = array('' => '');
 
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE type = "'.$type.'" ORDER BY rowid';
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity.' AND type = "'.$type.'" ORDER BY rowid';
 		$resql = $PDOdb->Execute($sql);
 
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
@@ -1288,6 +1290,7 @@ class TNomenclatureCoef extends TObjetStd
         $this->add_champs('label,description',array('type'=>'varchar', 'length'=>255));
 		$this->add_champs('code_type,type',array('type'=>'varchar', 'length'=>30, 'index'=>true)); // type = nomenclature ou workstation
         $this->add_champs('tx',array('type'=>'float'));
+        $this->add_champs('entity',array('type'=>'int', 'index'=>true, 'default'=>1));
 
         $this->_init_vars();
 
@@ -1302,8 +1305,9 @@ class TNomenclatureCoef extends TObjetStd
 
 	static function loadCoef(&$PDOdb, $type='nomenclature')
 	{
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE type = "'.$type.'" ORDER BY rowid';
+		global $conf;
 		
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity.' AND type = "'.$type.'" ORDER BY rowid';
 		$TRes = $PDOdb->ExecuteAsArray($sql);
 		$TResult = array();
 
@@ -1320,13 +1324,13 @@ class TNomenclatureCoef extends TObjetStd
 
 	static function getFirstCodeType(&$PDOdb = false)
 	{
-		global $cacheFirstCodeType;
+		global $conf,$cacheFirstCodeType;
 
 		if(isset($cacheFirstCodeType))return $cacheFirstCodeType;
 
 		if (!$PDOdb) $PDOdb = new TPDOdb;
 
-		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef');
+		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity);
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			$row = $PDOdb->Get_line();
@@ -1339,8 +1343,9 @@ class TNomenclatureCoef extends TObjetStd
 
     function save(&$PDOdb)
     {
+    	global $conf;
 
-    		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity.' AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
 		$res = $PDOdb->Execute($sql);
 
 		if ($res && $PDOdb->Get_Recordcount() > 0)
