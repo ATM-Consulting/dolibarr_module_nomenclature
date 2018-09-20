@@ -87,7 +87,7 @@ class Actionsnomenclature
 					{
 						$lineid = empty($line->id) ? $line->rowid : $line->id;
 						
-						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.','.$line->qty.','.(int) $line->fk_product.',\\\''.$object->element.'\\\', '.$object->id.')">'.img_picto($langs->trans('Nomenclature'),'object_list').'</a>\');';
+						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.','.$line->qty.','.(int) $line->fk_product.',\\\''.$object->element.'\\\', '.$object->id.')">'.img_picto($langs->trans('Nomenclature'),'object_list').'</a>\'); '."\n";
 					}
 			  	}
 				
