@@ -4,3 +4,11 @@ span.priceOF {
 span.pricePMP {
 	color:#55cc11;
 }
+
+.accordion-body{
+	background: #f8f8f8 !important;
+}
+
+.accordion{
+	margin-bottom:2em;
+}

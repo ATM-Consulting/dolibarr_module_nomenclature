@@ -282,6 +282,26 @@ class Interfacenomenclaturetrigger
 				}
 			}
 			
+		} elseif($action == 'LINEPROPAL_UPDATE') {
+			// récupération du prix calculé :
+			$pv_force = false;
+			$n = new TNomenclature;
+			$n->loadByObjectId($PDOdb, $object->id , 'propal', true,$object->fk_product,$object->qty);
+			
+			$id = $n->getId();
+			if (!empty($id) || !empty($n->fk_nomenclature_parent)) {
+			
+				$n->setPrice($PDOdb, $object->qty, $object->id, 'propal', $object->fk_propal);
+				
+				$pv_calcule = round($n->totalPV / $object->qty, 5); // round car selon les cas, les nombres sont identiques mais sont consiférés comme différents (genr après la virgule il y a un 0000000000000000000000000001 qu'on ne voit pas)
+				$pv_manuel = round($object->subprice, 5);
+				//var_dump(round($pv_calcule,5) != round($pv_manuel,3),round($pv_calcule,5), round($pv_manuel,5));exit;
+				if($pv_calcule != $pv_manuel) $pv_force = true;
+				
+			}
+				
+			$object->array_options['options_pv_force'] = $pv_force;
+			$object->insertExtraFields();
 		}
 
 		return 0;
@@ -304,7 +324,11 @@ class Interfacenomenclaturetrigger
 
 		if (!empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC)) {
 			$sell_price_to_use=$object->subprice;
-		} else {
+		}
+		else if (!empty($conf->global->NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE)){
+		    $sell_price_to_use = 0;
+		}
+		else {
 			$sell_price_to_use=$n->totalPV / $object->qty; // ça doit rester un prix unitaire
 		}
 		
