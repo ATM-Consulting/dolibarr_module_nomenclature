@@ -83,7 +83,7 @@ class Actionsnomenclature
 					<?php
 
 					$picto = img_picto($langs->trans('Nomenclature'),'object_list');
-				
+
 					foreach($object->lines as &$line)
 					{
 						if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
@@ -95,7 +95,7 @@ class Actionsnomenclature
 							?>
 							td = $('#row-<?php echo $lineid; ?> td.linecoldescription');
 
-							if(td.length === 0) td = $('#row-<?php echo $lineid; ?> td:nth-child(lineColDescriptionPos)');
+							if(td.length === 0) td = $('#row-<?php echo $lineid; ?> td:nth-child('+lineColDescriptionPos+')');
 
 							td.append('<a href="javascript:showLineNomenclature(<?php echo $showLineNomenclatureParams; ?>)"><?php echo $picto; ?></a>');
 							<?php
