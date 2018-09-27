@@ -374,21 +374,24 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             print '</td>';
             
             
+            if(!empty($conf->global->NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY))
+            {
+               
+                $calculate_price = price2num($det->calculate_price,'MT');
+                $price_charge = price2num($det->charged_price,'MT');
+                print '<td class="liste_titre" align="center">'.price($calculate_price, 0, '', 1, -1, -1, 'auto').'</td>';
+                print '<td class="liste_titre" align="center">'.price($price_charge, 0, '', 1, -1, -1, 'auto').'</td>';
+                print '<td class="liste_titre" align="center">'.price($det->price, 0, '', 1, -1, -1, 'auto').'</td>';
+                
+                $TtotalType['calculate_price'] += $calculate_price;
+                $TtotalType['charged_price'] += $price_charge;
+                $TtotalType['price'] += $det->price;
+                $TtotalType['feedback_qtyUsed'] += $feedback->qtyUsed;
+                $TtotalType['feedback_stockAllowed'] += $feedback->stockAllowed;
+                $TtotalType['feedback_diffqty'] += ($feedback->stockAllowed - $feedback->qtyUsed);
+                $TtotalType['qty'] += $det->qty;
             
-            $calculate_price = price2num($det->calculate_price,'MT');
-            $price_charge = price2num($det->charged_price,'MT');
-            print '<td class="liste_titre" align="center">'.price($calculate_price, 0, '', 1, -1, -1, 'auto').'</td>';
-            print '<td class="liste_titre" align="center">'.price($price_charge, 0, '', 1, -1, -1, 'auto').'</td>';
-            print '<td class="liste_titre" align="center">'.price($det->price, 0, '', 1, -1, -1, 'auto').'</td>';
-            
-            $TtotalType['calculate_price'] += $calculate_price;
-            $TtotalType['charged_price'] += $price_charge;
-            $TtotalType['price'] += $det->price;
-            $TtotalType['feedback_qtyUsed'] += $feedback->qtyUsed;
-            $TtotalType['feedback_stockAllowed'] += $feedback->stockAllowed;
-            $TtotalType['feedback_diffqty'] += ($feedback->stockAllowed - $feedback->qtyUsed);
-            $TtotalType['qty'] += $det->qty;
-            
+            }
             
             
             print '</tr>';
@@ -396,27 +399,29 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             
         }
         
-        // ajout de $TtotalType dans $Ttotal
-        foreach( $Ttotal as $key => $value){
-            if(in_array($key, $TtotalType)){
-                $Ttotal[$key] += $TtotalType[$key];
+        if(!empty($conf->global->NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY))
+        {
+            // ajout de $TtotalType dans $Ttotal
+            foreach( $Ttotal as $key => $value){
+                if(in_array($key, $TtotalType)){
+                    $Ttotal[$key] += $TtotalType[$key];
+                }
             }
+            
+            print '<tr class="liste_total"  >';
+            
+            $colspan = 6;
+            if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
+                $colspan++;
+            }
+            
+            print '<td class="liste_total_cell"  align="right" colspan="'.$colspan.'" >'.$langs->trans('Total').'</td>';
+    
+            print '<td class="liste_total_cell" align="center">'.price($TtotalType['calculate_price'], 0, '', 1, -1, -1, 'auto').'</td>';
+            print '<td class="liste_total_cell" align="center">'.price($TtotalType['charged_price'], 0, '', 1, -1, -1, 'auto').'</td>';
+            print '<td class="liste_total_cell" align="center">'.price($TtotalType['price'], 0, '', 1, -1, -1, 'auto').'</td>';
+            print '</tr>';
         }
-        
-        print '<tr class="liste_total"  >';
-        
-        $colspan = 6;
-        if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
-            $colspan++;
-        }
-        
-        print '<td class="liste_total_cell"  align="right" colspan="'.$colspan.'" >'.$langs->trans('Total').'</td>';
-
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['calculate_price'], 0, '', 1, -1, -1, 'auto').'</td>';
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['charged_price'], 0, '', 1, -1, -1, 'auto').'</td>';
-        print '<td class="liste_total_cell" align="center">'.price($TtotalType['price'], 0, '', 1, -1, -1, 'auto').'</td>';
-        print '</tr>';
-        
         
         
         
@@ -507,11 +512,12 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     //print '		<td class="liste_titre" align="center">'.$langs->trans('QtyReturn').'</td>';
     
     
-    
-    print '<td class="liste_titre" align="center">'.$langs->trans('AmountCost').'</td>';
-    print '<td class="liste_titre" align="center">'.$langs->trans('AmountCostWithCharge').'</td>';
-    print '<td class="liste_titre" align="center">'.$langs->trans('PV').'</td>';
-    
+    if(!empty($conf->global->NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY))
+    {
+        print '<td class="liste_titre" align="center">'.$langs->trans('AmountCost').'</td>';
+        print '<td class="liste_titre" align="center">'.$langs->trans('AmountCostWithCharge').'</td>';
+        print '<td class="liste_titre" align="center">'.$langs->trans('PV').'</td>';
+    }
     
     print '	</tr>';
 }
