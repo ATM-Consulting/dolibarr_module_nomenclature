@@ -71,27 +71,38 @@ class Actionsnomenclature
 		
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
-		    
-			if($object->brouillon == 1) {
-				?>
+			if($object->brouillon == 1 && count($object->lines) > 0)
+			{
+			?>
 				<script type="text/javascript" src="<?php echo dol_buildpath('/nomenclature/js/nomenclature.js.php',1); ?>"></script>
 				<script type="text/javascript"> 
 				$(document).ready(function() {
-				    <?php
-				
-			  	foreach($object->lines as &$line) 
-			  	{
-			  		if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
-					
-					if($line->fk_product>0 || !empty($conf->global->NOMENCLATURE_ALLOW_FREELINE)) 
+
+					var lineColDescriptionPos = <?php echo (! empty($conf->global->MAIN_VIEW_LINE_NUMBER) ? 2 : 1); ?>;
+					var td;
+					<?php
+
+					$picto = img_picto($langs->trans('Nomenclature'),'object_list');
+
+					foreach($object->lines as &$line)
 					{
-						$lineid = empty($line->id) ? $line->rowid : $line->id;
-						
-						print '$("#row-'.$lineid.' td:first").append(\'<a href="javascript:showLineNomenclature('.$lineid.','.$line->qty.','.(int) $line->fk_product.',\\\''.$object->element.'\\\', '.$object->id.')">'.img_picto($langs->trans('Nomenclature'),'object_list').'</a>\');';
+						if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
+
+						if($line->fk_product>0 || !empty($conf->global->NOMENCLATURE_ALLOW_FREELINE))
+						{
+							$lineid = empty($line->id) ? $line->rowid : $line->id;
+							$showLineNomenclatureParams = $lineid . ', ' . $line->qty . ', ' . (int) $line->fk_product . ', \\\''.$object->element.'\\\', '.$object->id;
+							?>
+							td = $('#row-<?php echo $lineid; ?> td.linecoldescription');
+
+							if(td.length === 0) td = $('#row-<?php echo $lineid; ?> td:nth-child('+lineColDescriptionPos+')');
+
+							td.append('<a href="javascript:showLineNomenclature(<?php echo $showLineNomenclatureParams; ?>)"><?php echo $picto; ?></a>');
+							<?php
+						}
 					}
-			  	}
-				
-				?> });
+					?>
+				});
 				</script>
 				<style type="text/css">
 					.ui-autocomplete {
