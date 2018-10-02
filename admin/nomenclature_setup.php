@@ -33,6 +33,7 @@ require '../config.php';
 dol_include_once('/core/lib/admin.lib.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 dol_include_once('/nomenclature/class/nomenclature.class.php');
+dol_include_once('abricot/includes/lib/admin.lib.php');
 
 // Translations
 $langs->load("nomenclature@nomenclature");
@@ -147,7 +148,7 @@ dol_fiche_head(
     $head,
     'settings',
     $langs->trans("Module104580Name"),
-    0,
+    1,
     "nomenclature@nomenclature"
 );
 
@@ -160,6 +161,7 @@ print '<tr class="liste_titre">';
 print '<td>'.$langs->trans("Parameters").'</td>'."\n";
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+print '</tr>';
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';
@@ -435,6 +437,37 @@ print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form bec
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN">';
 print ajax_constantonoff('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN');
+print '</form>';
+print '</td></tr>';
+
+
+
+setup_print_title('Projectfeedback');
+
+setup_print_on_off('NOMENCLATURE_FEEDBACK');
+
+setup_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK');
+
+setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
+
+setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK');
+
+
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_OBJECT").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_OBJECT">';
+$array = array(
+    'propal' => $langs->trans('Proposal'),
+    'commande' => $langs->trans('Commande'),
+);
+print $form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
+print '<input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
 print '</form>';
 print '</td></tr>';
 

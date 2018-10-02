@@ -28,7 +28,9 @@ TotalAmountCost=Coût de revient
 TotalAmountCostWithCharge=Coût de revient chargé pour %s exemplaire(s)
 TotalAmountCostWithChargeUnit=Coût de revient chargé pour 1 exemplaire
 TotalAmountCostWithChargePMP=Coût de revient chargé théorique pour %s exemplaire(s)
+TotalAmountCostWithChargePMPQty=Coût de revient chargé théorique pour qté de référence
 TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
+TotalAmountCostWithChargeOFQty=Coût de revient chargé réel pour qté de référence
 AmountCostWithChargeCustom=Coût perso
 PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
@@ -63,6 +65,8 @@ NomenclatureDeleteSuccess=Suppression de l'enregistrement
 NomenclatureErrorAddCoef=Erreur : ajout d'un coefficient impossible.
 NomenclatureErrorAddCoefDoublon=Erreur : le code renseigné existe déjà en base de donnée.
 NomenclatureErrorCantDelete=Erreur : impossible de supprimer l'enregistrement car une/plusieurs liaison(s) enfant(s) existe(s).
+DefaultCoeficientList=Liste des cofficients par défaut pour ce produit
+NomenclatureSuccessSaveCoef=Sauvegarde effectuée
 
 CoefList=Liste des coefficients
 CoefListWorkstation=Liste des coefficients de main d'oeuvre
@@ -120,6 +124,11 @@ NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Autoriser l'édition de l'unité prod
 NOMENCLATURE_USE_LOSS_PERCENT=Activer le calcul automatique de la quantité en fonction du pourcentage de perte
 NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=Sur l'onglet coefficient des propositions, empêcher le recalcul des lignes dont le prix vente a été forcé manuellement
 NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Ne pas utiliser le prix de vente nomenclature lors de l'ajout d'une ligne propal/commande/facture
+NOMENCLATURE_FEEDBACK=Ajouter un onglet retour produit sur les projets/chantiers
+NOMENCLATURE_FEEDBACK_USE_STOCK=Effectuer les mouvements de stock lors des retours chantier (nécessite que le module stock soit activé)
+NOMENCLATURE_FEEDBACK_INIT_STOCK=Gérer l'affectation de stock à un chantier
+NOMENCLATURE_FEEDBACK_OBJECT=Type d'object utilisé pour le retour chantier
+NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE=Ne pas permettre la modification de l'entrepot
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -168,3 +177,37 @@ NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Activer la fonctionnalité de mouvement 
 
 NomenclatureStockTheorique=Stock virtuel + nomemclature
 NomenclatureStockTheoriqueHelp=Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants
+
+QtyAllowed=Quantité affectée au  chantier
+QtyPlanned=Quantité prévue
+QtyNotUsed=Quantité disponible sur chantier
+QtyNewConsume=Quantité supplémentaire consommée
+QtyReturn=Quantité retournée
+Projectfeedback=Retour chantier
+FeedbackSaved=Sauvegardé : %s 
+FeedBackSaveErrors=Erreur(s) lors de la sauvegarde : %s 
+NothingWasDo=Il ne s'est rien passé...
+FeedbackDisableShippingExists=Les retours de chantier sont désactivés car une expédition existe pour la commande liée
+nomenclatureStockFeedback=Correction du stock sur retour de chantier
+nomenclatureStockChantier=Approvisionnement du chantier
+nomenclatureStockInitChantier=Mouvement de stock pour approvisionnement du chantier effectué
+StockNotInit=Mouvements de stock vers le chantier non initialisés. Ils seront créés lors de l'enregistrement
+NoFeedbackObjectLinked=Actuellement ce project n'est lié à aucune %s.
+ApplyPlanned=Mettre en conformité avec la quantité prévue
+DoStockFeedBack=recupérer en stock
+
+# LIST 
+is_default=Utilisée par default
+NomenclatureName=Nom
+CreateOn=Date de création
+Updated=Dernière modification
+NomenclatureList=Liste des nomenclatures/ouvrages
+ListMessageNothingToShow=Aucun résultat, vérifiez vos filtres ou ajoutez une nomenclature.
+
+RealStock=Stock réel
+TheoreticalStock=Stock théorique
+
+#Search by category
+SearchByCategory=Recherche par catégorie
+NothingHere=Pas de sous-catégorie ou de produit
+DoASearch=Faites une recherche/Pas de résultat pour votre recherche
