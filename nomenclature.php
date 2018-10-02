@@ -224,7 +224,7 @@ if($object_type != 'product') {
     $n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, GETPOST('fk_origin'));
     _fiche_nomenclature($PDOdb, $n, $product, $object, $fk_object, $object_type, $qty_ref);
-    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',2).'"></script>';
+    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',1).'"></script>';
 }
 else{
 	_show_product_nomenclature($PDOdb, $product, $object);
@@ -313,7 +313,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	
 	print '</div>';
 	print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: true, active:'.$accordeonActiveIndex.'}); } );</script>';
-	print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',2).'"></script>';
+	print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',1).'"></script>';
 
 
 	$liste = new TListviewTBS('listeUse');

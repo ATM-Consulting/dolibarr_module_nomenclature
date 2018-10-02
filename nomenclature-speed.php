@@ -33,7 +33,7 @@
 	
 	// redirrection sur une vue global non modifiable
 	if( ($object->fk_statut>0 || $object->statut>0) && in_array($object_type, array('propal','commande')) ) {
-	    $url = dol_buildpath('/nomenclature/nomenclature-detail.php' , 2).'?id='.$object->id.'&object='.$object_type;
+	    $url = dol_buildpath('/nomenclature/nomenclature-detail.php' , 1).'?id='.$object->id.'&object='.$object_type;
 	    header('Location: '.$url);
 	    exit;
 	}

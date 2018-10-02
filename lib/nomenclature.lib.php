@@ -467,7 +467,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     
     
     
-    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/feedback.js',2).'"  ></script>';
+    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/feedback.js',1).'"  ></script>';
     
 }
 

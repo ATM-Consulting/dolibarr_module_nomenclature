@@ -166,7 +166,7 @@ $TParam['eval'] = array(
     // array of customized field function
     'title'=>'linkToNomenclature(\'@val@\', @rowid@, \'@object_type@\', \'@fk_object@\')',
     'ref'=>'linkToNomenclature(\'@val@\', @rowid@, \'@object_type@\', \'@fk_object@\')',
-    'is_default' => 'yesNo(\'@is_default@\')',
+    'is_default' => '_yesNo(\'@is_default@\')',
     
     
     // prix d'achat total
@@ -241,6 +241,7 @@ function _objectTypeList(){
         }
         return $TResult;
     }
+    else { dol_print_error($db); }
     return $TResult;
 }
 
@@ -249,23 +250,22 @@ function linkToNomenclature($label = '',$nomenclature_id = '', $object_type = ''
     if(empty($object_type)) return $label;
     
     if($object_type == 'product'){
-        $url = dol_buildpath('nomenclature/nomenclature.php',2).'?fk_nomenclature='.intval($nomenclature_id ).'&amp;fk_product='.intval($object_id).'#nomenclature'.intval($nomenclature_id );
+        $url = dol_buildpath('nomenclature/nomenclature.php',1).'?fk_nomenclature='.intval($nomenclature_id ).'&amp;fk_product='.intval($object_id).'#nomenclature'.intval($nomenclature_id );
     }
     else {
-        $url = dol_buildpath('nomenclature/nomenclature-detail.php',2).'?id='.intval($object_id).'&amp;object='.$object_type;
+        $url = dol_buildpath('nomenclature/nomenclature-detail.php',1).'?id='.intval($object_id).'&amp;object='.$object_type;
     }
     
     return '<a href="'.$url.'" target="_self" >'.(empty($label)?'N/A':$label).'</label>';
 }
 
-function yesNo($id=0){
+function _yesNo($id=0){
     global $langs;
     
     $array = array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') );
     if(!empty($array[$id])) return $array[$id];
     return $array[0];
 }
-
 
 function nomenclature_cache($id=0, $usecache=1){
     
