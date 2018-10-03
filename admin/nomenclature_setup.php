@@ -375,7 +375,7 @@ if (empty($conf->global->NOMENCLATURE_COST_TYPE) || $conf->global->NOMENCLATURE_
 print '/> ';
 print $langs->trans('Disabled');
 print '</td>';
-print '<td align="center" width="300"><input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
+print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Modify").'" >';
 print '</td></tr>';
 print '</form>';
 
