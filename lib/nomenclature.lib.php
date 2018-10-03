@@ -300,10 +300,10 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             print '   <td data-col="qty" align="center">'.price($det->qty).'</td>';
             print '   <td data-col="unit" align="left">'.$product->getLabelOfUnit().'</td>';
             
+            print '   <td data-col="stockAllowed" align="left">';
             
             if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
                 
-                print '   <td data-col="stockAllowed" align="left">';
                 if($editMode){
                     print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllowed" '.$dataKey.' ');
                     $qtyConsumeValue = 0;//!empty($qtyConsume[$det->fk_nomenclature][$det->fk_product])?$qtyConsume[$det->fk_nomenclature][$det->fk_product]:0;
@@ -318,25 +318,25 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
                 print ' <span class="qty-used-impact" id="qty-allowed-impact'.$domKeySuffix.'" ></span>';
                 print '<br/>';
                 
-            
-            
-            
-            
-                if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && ( empty($feedback->fk_warehouse) || empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)) )
-                {
-                    $formproduct=new FormProduct($db);
-                    print $formproduct->selectWarehouses($fk_entrepot,'entrepot-'.$det->fk_nomenclature.'-'.$det->fk_product,'warehouseopen',0,0,$det->fk_product);
-                }
-                elseif(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && !empty($feedback->fk_warehouse))
-                {
-                    $entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
-                    if($entrepot){
-                        print '<small>'.$entrepot->libelle.'</small>';
-                    }
-                }
-            
-                print '	</td>';
+                
             }
+            
+            
+            
+            if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && ( empty($feedback->fk_warehouse) || empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)) )
+            {
+                $formproduct=new FormProduct($db);
+                print $formproduct->selectWarehouses($fk_entrepot,'entrepot-'.$det->fk_nomenclature.'-'.$det->fk_product,'warehouseopen',0,0,$det->fk_product);
+            }
+            elseif(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && !empty($feedback->fk_warehouse))
+            {
+                $entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
+                if($entrepot){
+                    print '<small>'.$entrepot->libelle.'</small>';
+                }
+            }
+            
+            print '	</td>';
             
             
             
@@ -488,14 +488,17 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     print '<td class="liste_titre">'.$productTypeTitle.'</td>';
     print '<td class="liste_titre" align="center" colspan="2">'.$langs->trans('QtyPlanned').'</td>';
     
+    print '<td class="liste_titre" align="left">';
     if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK && $conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
         $nbCols ++;
-        print '<td class="liste_titre" align="left">';
+        
         if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
             print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllAllowed" ');
         }
-        print $langs->trans('QtyAllowed').'</td>';
+        print $langs->trans('QtyAllowed');
     }
+    print '</td>';
+    
     print '<td class="liste_titre" align="center">'.$langs->trans('QtyUsed').'</td>';
     
     if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
