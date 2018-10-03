@@ -8,6 +8,12 @@ nomenclatureAbout = A propos du module nomenclature
 
 nomenclatureAllowFreeLine=Autoriser l'ajout de nomenclature sur un service ou ligne libre
 
+GlobalParameters=Paramètres généraux
+BTPParameters=Paramètres BTP
+
+NomenclatureImportTitle=Importer des nomenclatures
+helpNomenclatureImportFile=Numéro nomenclature,Ref produit, Ref Composant, Qté, Qté de référence, Code type (MO pour Poste de travail)
+
 AddNomenclature=Ajouter une nomenclature
 AddProductNomenclature=Ajouter le produit
 SaveNomenclature=Enregistrer

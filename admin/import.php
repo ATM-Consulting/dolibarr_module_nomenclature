@@ -34,10 +34,13 @@ function _card(&$PDOdb) {
 	    "nomenclature@nomenclature"
 	);
 
+	
+	print '<h3>'.$langs->trans('NomenclatureImportTitle').'</h3>';
+	
 	$formCore=new TFormCore('auto','formImport','post',true);
 
-	echo $formCore->fichier('Fichier source'.img_help(1, 'Numéro nomenclature,Ref produit, Ref Composant, Qté, Qté de référence, Code type (MO pour Poste de travail)') , 'file1', '', 40);
-	echo $formCore->btsubmit('Voir', 'bt_view');
+	echo $formCore->fichier('Fichier source'.img_help(1, $langs->trans('helpNomenclatureImportFile')) , 'file1', '', 40);
+	echo $formCore->btsubmit('Voir', 'bt_view', '','butAction');
 
 	_import_to_session();
 
@@ -118,7 +121,7 @@ function _show_tab_session(&$PDOdb) {
 	if(!$save) {
 		$formCore=new TFormCore;
 		echo '<div class="tabsAction">';
-		echo $formCore->btsubmit('Sauvegarder', 'bt_save');
+		echo $formCore->btsubmit('Sauvegarder', 'bt_save', '','butAction');
 		echo '</div>';
 	}
 	else {

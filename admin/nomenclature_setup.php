@@ -442,38 +442,6 @@ print '</td></tr>';
 
 
 
-setup_print_title('Projectfeedback');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK');
-
-
-if(empty($conf->global->NOMENCLATURE_FEEDBACK_OBJECT)){
-    dolibarr_set_const($db, 'NOMENCLATURE_FEEDBACK_OBJECT', 'propal', 'chaine', 0, '', $conf->entity);
-}
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_OBJECT").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_OBJECT">';
-$array = array(
-    'propal' => $langs->trans('Proposal'),
-    'commande' => $langs->trans('Commande'),
-);
-print $form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
-print '</form>';
-print '</td></tr>';
-
-
 print '</table>';
 
 $var=false;

@@ -7,3 +7,7 @@ nomenclatureSetup = nomenclature module setup
 nomenclatureAbout = About nomenclature
 
 NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Use flat cost as buy price
+
+
+GlobalParameters=Global parameters
+BTPParameters=Construction parameters
