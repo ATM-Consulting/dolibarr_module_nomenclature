@@ -10,6 +10,7 @@ nomenclatureAllowFreeLine=Autoriser l'ajout de nomenclature sur un service ou li
 
 GlobalParameters=Paramètres généraux
 BTPParameters=Paramètres BTP
+CoeffParameters=Coefficients
 
 NomenclatureImportTitle=Importer des nomenclatures
 helpNomenclatureImportFile=Numéro nomenclature,Ref produit, Ref Composant, Qté, Qté de référence, Code type (MO pour Poste de travail)
