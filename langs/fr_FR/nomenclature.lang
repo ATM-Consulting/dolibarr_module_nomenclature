@@ -66,6 +66,9 @@ CreateCoef=Renseigner son libellé et son code de base de données (pas d'espace
 NomenclatureCreateLabel=Libellé : 
 NomenclatureCreateCode=Code type : 
 NomenclatureCreateTx=Coef :
+NomenclatureCoeffLabel=Libellé
+NomenclatureCoeffDesc=Description
+NomenclatureCreateCode=Code
 
 NomenclatureSuccessAddCoef=Ajout d'un nouveau coefficient
 NomenclatureDeleteSuccess=Suppression de l'enregistrement
