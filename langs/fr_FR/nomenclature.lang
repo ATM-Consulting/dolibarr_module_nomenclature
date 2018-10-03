@@ -196,6 +196,7 @@ StockNotInit=Mouvements de stock vers le chantier non initialisés. Ils seront c
 NoFeedbackObjectLinked=Actuellement ce project n'est lié à aucune %s.
 ApplyPlanned=Mettre en conformité avec la quantité prévue
 DoStockFeedBack=recupérer en stock
+NoNomenclature=Aucune nomenclature ou ouvrage
 
 # LIST 
 is_default=Utilisée par default

@@ -444,12 +444,14 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     print '</tbody>';
     print '</table>';
     
-    
-    
-    
-    
-    
-    if($editMode){
+    if(empty($TProductsClassed))
+    {
+        // display message
+        print '<div class="info" >';
+        print $langs->trans('NoNomenclature');
+        print '</div>';
+    }
+    elseif($editMode){
         print '<p class="right">';
         print '<button type="submit" name="action" value="save" class="butAction"  >'.$langs->trans('Save').'</button>';
         print '</p>';
