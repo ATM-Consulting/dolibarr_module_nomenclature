@@ -296,14 +296,14 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             $dataKey = 'data-targetkey="'.$domKeySuffix.'"';
             
             print '<tr class="'.$class.'" id="line'.$domKeySuffix.'" data-stockAllowed="'.$feedback->stockAllowed.'"  data-qtyused="'.$feedback->qtyUsed.'" '.$dataKey.'  >';
-            print '   <td>'.$product->getNomUrl(1).' - '.$product->label.'</td>';
-            print '   <td align="center">'.price($det->qty).'</td>';
-            print '   <td align="left">'.$product->getLabelOfUnit().'</td>';
+            print '   <td data-col="label" >'.$product->getNomUrl(1).' - '.$product->label.'</td>';
+            print '   <td data-col="qty" align="center">'.price($det->qty).'</td>';
+            print '   <td data-col="unit" align="left">'.$product->getLabelOfUnit().'</td>';
             
             
-            print '   <td align="left">';
             if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
                 
+                print '   <td data-col="stockAllowed" align="left">';
                 if($editMode){
                     print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllowed" '.$dataKey.' ');
                     $qtyConsumeValue = 0;//!empty($qtyConsume[$det->fk_nomenclature][$det->fk_product])?$qtyConsume[$det->fk_nomenclature][$det->fk_product]:0;
@@ -318,29 +318,29 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
                 print ' <span class="qty-used-impact" id="qty-allowed-impact'.$domKeySuffix.'" ></span>';
                 print '<br/>';
                 
-            }
             
             
             
-            if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && ( empty($feedback->fk_warehouse) || empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)) )
-            {
-                $formproduct=new FormProduct($db);
-                print $formproduct->selectWarehouses($fk_entrepot,'entrepot-'.$det->fk_nomenclature.'-'.$det->fk_product,'warehouseopen',0,0,$det->fk_product);
-            }
-            elseif(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && !empty($feedback->fk_warehouse))
-            {
-                $entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
-                if($entrepot){
-                    print '<small>'.$entrepot->libelle.'</small>';
+            
+                if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && ( empty($feedback->fk_warehouse) || empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)) )
+                {
+                    $formproduct=new FormProduct($db);
+                    print $formproduct->selectWarehouses($fk_entrepot,'entrepot-'.$det->fk_nomenclature.'-'.$det->fk_product,'warehouseopen',0,0,$det->fk_product);
                 }
+                elseif(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && !empty($feedback->fk_warehouse))
+                {
+                    $entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
+                    if($entrepot){
+                        print '<small>'.$entrepot->libelle.'</small>';
+                    }
+                }
+            
+                print '	</td>';
             }
             
-            print '	</td>';
             
             
-            
-            
-            print '   <td align="center">'.price($feedback->qtyUsed).' <span class="qty-used-impact" id="qty-used-impact'.$domKeySuffix.'" ></span></td>';
+            print '   <td data-col="qtyUsedImpact" align="center">'.price($feedback->qtyUsed).' <span class="qty-used-impact" id="qty-used-impact'.$domKeySuffix.'" ></span></td>';
             
             if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
                 
@@ -349,11 +349,11 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
                 if( $dispo < 0){
                     $class= 'error';
                 }
-                print '<td  align="center" ><span class="'.$class.'"  >'.price($feedback->stockAllowed - $feedback->qtyUsed).'</span>';
+                print '<td  data-col="qtyUsedImpact" align="center" ><span class="'.$class.'"  >'.price($feedback->stockAllowed - $feedback->qtyUsed).'</span>';
                 print ' <span class="qty-used-impact" id="qty-diff-impact'.$domKeySuffix.'" ></span></td>';
             }
             
-            print '   <td align="left">';
+            print '   <td data-col="qtyUsed"  align="left">';
             
             if($editMode){
                 
@@ -429,7 +429,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         {
             //print '<tfooter>';
             print '<tr>';
-            print '<td class="liste_titre" colspan="4" ></td>';
+            print '<td class="liste_titre" colspan="5" ></td>';
             print '<td class="liste_titre" align="center"><span class="pointer DoStockFeedBack" ><i class="fa fa-recycle"></i> '.$langs->trans('DoStockFeedBack').'</span></td>';
             print '<td class="liste_titre"  ></td>';
             print '</tr>';

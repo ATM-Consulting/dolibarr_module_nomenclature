@@ -13,6 +13,7 @@ AddProductNomenclature=Ajouter le produit
 SaveNomenclature=Enregistrer
 nomenclatureIsDefault=Définir par défaut
 nomenclatureQtyReference=Qté de référence
+Proposal=Proposition commerciale
 
 WillUseProductWorkstationIfNotSpecified=Utilisera la définition globale du produit si non précisée
 QtyPrepare=Temps de préparation

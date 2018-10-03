@@ -453,7 +453,9 @@ setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
 setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK');
 
 
-
+if(empty($conf->global->NOMENCLATURE_FEEDBACK_OBJECT)){
+    dolibarr_set_const($db, 'NOMENCLATURE_FEEDBACK_OBJECT', 'propal', 'chaine', 0, '', $conf->entity);
+}
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_OBJECT").'</td>';
