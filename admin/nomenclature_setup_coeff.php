@@ -158,6 +158,7 @@ $form=new Form($db);
 
 
 
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 $var=false;
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -167,25 +168,25 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("CreateCoef").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="650">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+print '<td><strong>'.$langs->trans("CreateCoef").'</strong></br>';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="add">';
 print '<label>'.$langs->trans('NomenclatureLineType').'</label>&nbsp;';
 print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'))).'&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
 print '<input type="text" name="label" placeholder="'.$langs->trans('NomenclatureCoeffLabel').'" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" /><br />';
+print '</td>';
+print '<td align="center" >&nbsp;</td>';
+print '<td align="right" width="650">';
 print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
 print '<input type="text" name="code_type" value="'.($action == 'add' && !empty($code) ? $code : '').'"  size="15" />&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
 print '<input type="text" name="tx" value="'.($action == 'add' && !empty($tx) ? $tx : '').'"  size="5" />&nbsp;&nbsp;';
 print '<input type="submit" class="butAction" value="'.$langs->trans("Add").'">';
-print '</form>';
 print '</td></tr>';
 
 print '</table>';
+print '</form>';
 
 
 // Coef lignes nomenclature
@@ -216,7 +217,7 @@ foreach ($TCoef as $coef)
 	print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
 	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
 	print '<input type="submit" class="butAction" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
-	if($allow_to_delete) print '<input type="submit" class="butAction" name="delete" value="'.$langs->trans("Delete").'">';
+	if($allow_to_delete) print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
 	print '</td></tr>';
 	print '</form>';
 }
@@ -252,7 +253,7 @@ if(!empty($conf->workstation->enabled)) {
 		print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
 		print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
 		print '<input type="submit" class="butAction" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
-		print '<input type="submit" class="butAction" name="delete" value="'.$langs->trans("Delete").'">';
+		print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
 		print '</td></tr>';
 		print '</form>';
 	}
