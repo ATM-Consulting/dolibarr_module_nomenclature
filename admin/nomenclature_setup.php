@@ -358,22 +358,27 @@ print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("NOMENCLATURE_COST_TYPE").'</td>';
 print '<td width="600">';
+
 print '<input id="input_nomenclature_cost_type_1" type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === '1') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_1" >'.$langs->trans('CostType1').'</label>';
+
 print '<br><input id="input_nomenclature_cost_type_pmp" type="radio" name="NOMENCLATURE_COST_TYPE" value="pmp" ';
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'pmp') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_pmp" >'.$langs->trans('CostType2').'</label>';
+
 print '<br><input id="input_nomenclature_cost_type_costprice" type="radio" name="NOMENCLATURE_COST_TYPE" value="costprice" ';
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'costprice') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_costprice" >'.$langs->trans('CostType3').'</label>';
+
 print '<br><input id="input_nomenclature_cost_type_disable" type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
 if (empty($conf->global->NOMENCLATURE_COST_TYPE) || $conf->global->NOMENCLATURE_COST_TYPE === 'disable') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_disable" >'.$langs->trans('Disabled').'</label>';
+
 print '</td>';
 print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Modify").'" >';
 print '</td></tr>';
@@ -393,6 +398,8 @@ print ajax_constantonoff('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN');
 print '</form>';
 print '</td></tr>';
 
+
+setup_print_on_off('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE', false, 'NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help');
 
 
 print '</table>';

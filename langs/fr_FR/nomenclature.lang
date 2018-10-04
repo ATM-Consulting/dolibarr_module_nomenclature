@@ -140,6 +140,8 @@ NOMENCLATURE_FEEDBACK_USE_STOCK=Effectuer les mouvements de stock lors des retou
 NOMENCLATURE_FEEDBACK_INIT_STOCK=Gérer l'affectation de stock à un chantier
 NOMENCLATURE_FEEDBACK_OBJECT=Type d'object utilisé pour le retour chantier
 NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE=Ne pas permettre la modification de l'entrepot
+NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE=Lors d'un clic sur le bouton "Appliquer le prix de vente" fermer la fenêtre une fois l'action effectuée.
+NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help=Cette option nécessite de vider le cache de votre navigateur pour être prise en compte.
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné

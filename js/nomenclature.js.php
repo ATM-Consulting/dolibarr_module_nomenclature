@@ -66,6 +66,12 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 									url: url
 									,success: function(html) {
 										$('#id-right > .fiche').replaceWith($(html).find('#id-right > .fiche'));
+										
+<?php  	                                if(!empty($conf->global->NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE))
+										{
+										    print "\n".'$("#dialog-nomenclature").dialog(\'close\'); '."\n";
+										} 
+?>
 									}
 								});
 							}
