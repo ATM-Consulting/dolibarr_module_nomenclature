@@ -47,54 +47,7 @@ if (! $user->admin) {
 // Parameters
 $action = GETPOST('action', 'alpha');
 
-if ($action == 'add' || $action == 'edit')
-{
-	$id = GETPOST('rowid', 'int');
 
-	if (GETPOST('delete'))
-	{
-		$nomenclatureCoef = new TNomenclatureCoef;
-		$nomenclatureCoef->load($PDOdb, $id);
-		$res = $nomenclatureCoef->delete($PDOdb);
-
-		if ($res > 0) setEventMessages($langs->trans('NomenclatureDeleteSuccess'), null);
-		else setEventMessages($langs->trans('NomenclatureErrorCantDelete'), null, 'errors');
-	}
-	else
-	{
-		$label = GETPOST('label', 'alpha');
-		$desc = GETPOST('desc', 'alpha');
-		$code = GETPOST('code_type', 'alpha');
-		$tx = GETPOST('tx', 'alpha');
-
-		if ($label && $code && $tx)
-		{
-			$nomenclatureCoef = new TNomenclatureCoef;
-
-			if ($id) $nomenclatureCoef->load($PDOdb, $id);
-			else $nomenclatureCoef->type = GETPOST('line_type');
-			
-			$nomenclatureCoef->label = $label;
-			$nomenclatureCoef->description = $desc;
-			$nomenclatureCoef->code_type = $code;
-			$nomenclatureCoef->tx = $tx;
-			$nomenclatureCoef->entity = $conf->entity;
-
-			$rowid = $nomenclatureCoef->save($PDOdb);
-
-			if ($rowid) setEventMessages($langs->trans('NomenclatureSuccessAddCoef'), null);
-			else setEventMessages($langs->trans('NomenclatureErrorAddCoefDoublon'), null, 'errors');
-		}
-		else
-		{
-			setEventMessages($langs->trans('NomenclatureErrorAddCoef'), null, 'errors');
-		}
-	}
-
-}
-
-$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
-$TCoefWS = TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
 
 /*
  * Actions
@@ -405,24 +358,29 @@ print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("NOMENCLATURE_COST_TYPE").'</td>';
 print '<td width="600">';
-print '<input type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
+
+print '<input id="input_nomenclature_cost_type_1" type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === '1') print 'checked ';
 print '/> ';
-print $langs->trans('CostType1');
-print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="pmp" ';
+print '<label for="input_nomenclature_cost_type_1" >'.$langs->trans('CostType1').'</label>';
+
+print '<br><input id="input_nomenclature_cost_type_pmp" type="radio" name="NOMENCLATURE_COST_TYPE" value="pmp" ';
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'pmp') print 'checked ';
 print '/> ';
-print $langs->trans('CostType2');
-print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="costprice" ';
+print '<label for="input_nomenclature_cost_type_pmp" >'.$langs->trans('CostType2').'</label>';
+
+print '<br><input id="input_nomenclature_cost_type_costprice" type="radio" name="NOMENCLATURE_COST_TYPE" value="costprice" ';
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'costprice') print 'checked ';
 print '/> ';
-print $langs->trans('CostType3');
-print '<br><input type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
+print '<label for="input_nomenclature_cost_type_costprice" >'.$langs->trans('CostType3').'</label>';
+
+print '<br><input id="input_nomenclature_cost_type_disable" type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
 if (empty($conf->global->NOMENCLATURE_COST_TYPE) || $conf->global->NOMENCLATURE_COST_TYPE === 'disable') print 'checked ';
 print '/> ';
-print $langs->trans('Disabled');
+print '<label for="input_nomenclature_cost_type_disable" >'.$langs->trans('Disabled').'</label>';
+
 print '</td>';
-print '<td align="center" width="300"><input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
+print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Modify").'" >';
 print '</td></tr>';
 print '</form>';
 
@@ -441,141 +399,12 @@ print '</form>';
 print '</td></tr>';
 
 
-
-setup_print_title('Projectfeedback');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
-
-setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK');
-
-
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_OBJECT").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_OBJECT">';
-$array = array(
-    'propal' => $langs->trans('Proposal'),
-    'commande' => $langs->trans('Commande'),
-);
-print $form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
-print '<input type="submit" class="button" value="'.$langs->trans("Modify").'" class="button">';
-print '</form>';
-print '</td></tr>';
+setup_print_on_off('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE', false, 'NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help');
 
 
 print '</table>';
 
-$var=false;
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("AddCoef").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("CreateCoef").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="right" width="650">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="add">';
-print '<label>'.$langs->trans('NomenclatureLineType').'</label>&nbsp;';
-print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'))).'&nbsp;&nbsp;';
-print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
-print '<input type="text" name="label" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" /><br />';
-print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
-print '<input type="text" name="code_type" value="'.($action == 'add' && !empty($code) ? $code : '').'"  size="15" />&nbsp;&nbsp;';
-print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
-print '<input type="text" name="tx" value="'.($action == 'add' && !empty($tx) ? $tx : '').'"  size="5" />&nbsp;&nbsp;';
-print '<input type="submit" class="button" value="'.$langs->trans("Add").'">';
-print '</form>';
-print '</td></tr>';
-
-print '</table>';
-
-
-// Coef lignes nomenclature
-$var=false;
-print '<table class="noborder" width="100%">';
-print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("ModifyCoef").'</td>'."\n";
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-
-foreach ($TCoef as $coef)
-{
-	
-	$allow_to_delete = ($coef->code_type!='coef_marge');
-	
-	
-	$var=!$var;
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-	print '<tr '.$bc[$var].'>';
-	print '<td><input type="text" name="label" value="'.$coef->label.'"  size="25" />&nbsp;<input type="text" name="desc" value="'.$coef->description.'" size="60" /></td>';
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="right" width="650">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="edit">';
-	print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
-	print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
-	print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
-	print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
-	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
-	print '<input type="submit" class="button" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
-	if($allow_to_delete) print '<input type="submit" class="button" name="delete" value="'.$langs->trans("Delete").'">';
-	print '</td></tr>';
-	print '</form>';
-}
-
-print '</table>';
-
-
-
-// Coef lignes msin d'oeuvre (module workstation)
-if(!empty($conf->workstation->enabled)) {
-
-	$var=false;
-	print '<table class="noborder" width="100%">';
-	print '<tr class="liste_titre">';
-	print '<td>'.$langs->trans("ModifyCoefWS").'</td>'."\n";
-	print '<td align="center" width="20">&nbsp;</td>';
-	print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-	
-	foreach ($TCoefWS as &$coef)
-	{
-		
-		$var=!$var;
-		print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-		print '<tr '.$bc[$var].'>';
-		print '<td><input type="text" name="label" value="'.$coef->label.'"  size="25" />&nbsp;<input type="text" name="desc" value="'.$coef->description.'" size="60" /></td>';
-		print '<td align="center" width="20">&nbsp;</td>';
-		print '<td align="right" width="650">';
-		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-		print '<input type="hidden" name="action" value="edit">';
-		print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
-		print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
-		print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
-		print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
-		print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
-		print '<input type="submit" class="button" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
-		print '<input type="submit" class="button" name="delete" value="'.$langs->trans("Delete").'">';
-		print '</td></tr>';
-		print '</form>';
-	}
-	
-	print '</table>';
-
-}
 
 
 

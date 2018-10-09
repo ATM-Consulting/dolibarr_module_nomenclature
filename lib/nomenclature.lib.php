@@ -31,12 +31,22 @@ function nomenclatureAdminPrepareHead()
 
     $h = 0;
     $head = array();
-
+    
     $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_setup.php", 1);
-    $head[$h][1] = $langs->trans("Parameters");
+    $head[$h][1] = $langs->trans("GlobalParameters");
     $head[$h][2] = 'settings';
     $h++;
-	
+    
+    $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_setup_coeff.php", 1);
+    $head[$h][1] = $langs->trans("CoeffParameters");
+    $head[$h][2] = 'settings_coeff';
+    $h++;
+    
+    $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_setup_btp.php", 1);
+    $head[$h][1] = $langs->trans("BTPParameters");
+    $head[$h][2] = 'settings_btp';
+    $h++;
+    
     $head[$h][0] = dol_buildpath("/nomenclature/admin/import.php", 1);
     $head[$h][1] = $langs->trans("Import");
     $head[$h][2] = 'import';
@@ -296,12 +306,12 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             $dataKey = 'data-targetkey="'.$domKeySuffix.'"';
             
             print '<tr class="'.$class.'" id="line'.$domKeySuffix.'" data-stockAllowed="'.$feedback->stockAllowed.'"  data-qtyused="'.$feedback->qtyUsed.'" '.$dataKey.'  >';
-            print '   <td>'.$product->getNomUrl(1).' - '.$product->label.'</td>';
-            print '   <td align="center">'.price($det->qty).'</td>';
-            print '   <td align="left">'.$product->getLabelOfUnit().'</td>';
+            print '   <td data-col="label" >'.$product->getNomUrl(1).' - '.$product->label.'</td>';
+            print '   <td data-col="qty" align="center">'.price($det->qty).'</td>';
+            print '   <td data-col="unit" align="left">'.$product->getLabelOfUnit().'</td>';
             
+            print '   <td data-col="stockAllowed" align="left">';
             
-            print '   <td align="left">';
             if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
                 
                 if($editMode){
@@ -317,6 +327,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
                 
                 print ' <span class="qty-used-impact" id="qty-allowed-impact'.$domKeySuffix.'" ></span>';
                 print '<br/>';
+                
                 
             }
             
@@ -339,8 +350,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             
             
             
-            
-            print '   <td align="center">'.price($feedback->qtyUsed).' <span class="qty-used-impact" id="qty-used-impact'.$domKeySuffix.'" ></span></td>';
+            print '   <td data-col="qtyUsedImpact" align="center">'.price($feedback->qtyUsed).' <span class="qty-used-impact" id="qty-used-impact'.$domKeySuffix.'" ></span></td>';
             
             if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
                 
@@ -349,11 +359,11 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
                 if( $dispo < 0){
                     $class= 'error';
                 }
-                print '<td  align="center" ><span class="'.$class.'"  >'.price($feedback->stockAllowed - $feedback->qtyUsed).'</span>';
+                print '<td  data-col="qtyUsedImpact" align="center" ><span class="'.$class.'"  >'.price($feedback->stockAllowed - $feedback->qtyUsed).'</span>';
                 print ' <span class="qty-used-impact" id="qty-diff-impact'.$domKeySuffix.'" ></span></td>';
             }
             
-            print '   <td align="left">';
+            print '   <td data-col="qtyUsed"  align="left">';
             
             if($editMode){
                 
@@ -429,7 +439,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         {
             //print '<tfooter>';
             print '<tr>';
-            print '<td class="liste_titre" colspan="4" ></td>';
+            print '<td class="liste_titre" colspan="5" ></td>';
             print '<td class="liste_titre" align="center"><span class="pointer DoStockFeedBack" ><i class="fa fa-recycle"></i> '.$langs->trans('DoStockFeedBack').'</span></td>';
             print '<td class="liste_titre"  ></td>';
             print '</tr>';
@@ -444,12 +454,14 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     print '</tbody>';
     print '</table>';
     
-    
-    
-    
-    
-    
-    if($editMode){
+    if(empty($TProductsClassed))
+    {
+        // display message
+        print '<div class="info" >';
+        print $langs->trans('NoNomenclature');
+        print '</div>';
+    }
+    elseif($editMode){
         print '<p class="right">';
         print '<button type="submit" name="action" value="save" class="butAction"  >'.$langs->trans('Save').'</button>';
         print '</p>';
@@ -488,14 +500,17 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     print '<td class="liste_titre">'.$productTypeTitle.'</td>';
     print '<td class="liste_titre" align="center" colspan="2">'.$langs->trans('QtyPlanned').'</td>';
     
+    print '<td class="liste_titre" align="left">';
     if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK && $conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
         $nbCols ++;
-        print '<td class="liste_titre" align="left">';
+        
         if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
             print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllAllowed" ');
         }
-        print $langs->trans('QtyAllowed').'</td>';
+        print $langs->trans('QtyAllowed');
     }
+    print '</td>';
+    
     print '<td class="liste_titre" align="center">'.$langs->trans('QtyUsed').'</td>';
     
     if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
