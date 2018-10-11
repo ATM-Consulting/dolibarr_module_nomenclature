@@ -185,6 +185,7 @@ QtyNotUsed=Quantité disponible sur chantier
 QtyNewConsume=Quantité supplémentaire consommée
 QtyReturn=Quantité retournée
 Projectfeedback=Retour chantier
+QtyUsed=Quantité utilisée
 FeedbackSaved=Sauvegardé : %s 
 FeedBackSaveErrors=Erreur(s) lors de la sauvegarde : %s 
 NothingWasDo=Il ne s'est rien passé...
