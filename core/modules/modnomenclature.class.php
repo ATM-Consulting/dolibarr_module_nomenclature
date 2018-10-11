@@ -119,6 +119,7 @@ class modnomenclature extends DolibarrModules
 		$this->const[] = array('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH','chaine','1','',0,'current');
 		$this->const[] = array('NOMENCLATURE_USE_TIME_PREPARE','chaine','1','',0,'current');
 		$this->const[] = array('NOMENCLATURE_USE_TIME_DOING','chaine','1','',0,'current');
+		$this->const[] = array('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE','chaine','1','',0,'current');
 		
 			//array('NOMENCLATURE_COEF_FOURNITURE','chaine','1.1','Coef. de frais généraux (stockage, appro, ...) sur Fourniture',1),
 			//array('NOMENCLATURE_COEF_CONSOMMABLE','chaine','1.05','Coef. de frais généraux (stockage, appro, ...) sur consmmable',1),

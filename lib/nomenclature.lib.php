@@ -31,12 +31,22 @@ function nomenclatureAdminPrepareHead()
 
     $h = 0;
     $head = array();
-
+    
     $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_setup.php", 1);
-    $head[$h][1] = $langs->trans("Parameters");
+    $head[$h][1] = $langs->trans("GlobalParameters");
     $head[$h][2] = 'settings';
     $h++;
-	
+    
+    $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_setup_coeff.php", 1);
+    $head[$h][1] = $langs->trans("CoeffParameters");
+    $head[$h][2] = 'settings_coeff';
+    $h++;
+    
+    $head[$h][0] = dol_buildpath("/nomenclature/admin/nomenclature_setup_btp.php", 1);
+    $head[$h][1] = $langs->trans("BTPParameters");
+    $head[$h][2] = 'settings_btp';
+    $h++;
+    
     $head[$h][0] = dol_buildpath("/nomenclature/admin/import.php", 1);
     $head[$h][1] = $langs->trans("Import");
     $head[$h][2] = 'import';
