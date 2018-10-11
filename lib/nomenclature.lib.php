@@ -181,7 +181,7 @@ function feedback_getDetails(&$object, $object_type) {
         $coef_qty_price = $nomenclature->setPrice($PDOdb, $nomenclature->qty_reference, '', $object_type, $object->id,$line->fk_product);
         
         foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
-            
+            $det->qty = floatval($det->qty) * floatval($line->qty);
             if(!isset($TProduct[$fk_product])) {
                 $TProduct[$fk_product] = $det;
             }
