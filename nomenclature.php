@@ -300,6 +300,12 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	$idion = 0;
 	foreach($TNomenclature as $iN => &$n) {
 	    
+	    // default open
+	    if(!empty($n->is_default)){
+	        $accordeonActiveIndex = $idion;
+	    }
+	    
+	    // open if edited
 	    $fk_nomenclature=(int)GETPOST('fk_nomenclature');
 	    
 	    if(!empty($fk_nomenclature) && $fk_nomenclature == $n->id){ $accordeonActiveIndex = $idion; }
