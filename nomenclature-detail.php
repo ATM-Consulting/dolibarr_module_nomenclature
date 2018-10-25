@@ -40,7 +40,7 @@ global $db,$langs,$conf,$PDOdb;
 	if($object_type == 'propal') {
 		dol_include_once('/core/lib/propal.lib.php');
 		$head = propal_prepare_head($object);
-		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), 0, 'propal');
+		dol_fiche_head($head, 'nomenclature', $langs->trans('Proposal'), -1, 'propal');
 
 		/*
 		 * Propal synthese pour rappel
@@ -68,7 +68,7 @@ global $db,$langs,$conf,$PDOdb;
 	else if($object_type == 'commande') {
                 dol_include_once('/core/lib/order.lib.php');
                 $head = commande_prepare_head($object);
-                dol_fiche_head($head, 'nomenclature', $langs->trans('CustomerOrder'), 0, 'order');
+                dol_fiche_head($head, 'nomenclature', $langs->trans('CustomerOrder'), -1, 'order');
 
                 /*
                  * Propal synthese pour rappel
@@ -158,10 +158,12 @@ function _drawlines(&$object, $object_type) {
 	$formCore=new TFormCore;
 	
 	?>
-	<table class="border" width="100%">
+	<table class="noorder tagtable liste" width="100%">
 		<tr class="liste_titre">
-			<td class="liste_titre"><?php echo $langs->trans('Product') ?></td>
-			<td class="liste_titre"><?php echo $langs->trans('Qty') ?></td>
+			<th class="liste_titre"><?php echo $langs->trans('Product') ?></th>
+			<th class="liste_titre" align="right"><?php echo $langs->trans('QtyNeed') ?></th>
+			<th class="liste_titre" align="right"><?php echo $langs->trans('RealStock') ?></th>
+			<th class="liste_titre" align="right"><?php echo $langs->trans('TheoreticalStock') ?></th>
 		</tr>
 	<?php
 		
@@ -171,10 +173,13 @@ function _drawlines(&$object, $object_type) {
 			
 			$product=new Product($db);
 			$product->fetch($fk_product);
+			$product->load_stock();
 			
-			echo '<tr>
+			echo '<tr class="oddeven">
 				<td>'.$product->getNomUrl(1).' - '.$product->label.'</td>
 				<td align="right">'.price($det->qty).'</td>
+				<td align="right">'.price($product->stock_reel).'</td>
+				<td align="right">'.price($product->stock_theorique).'</td>
 			</tr>
 			';
 			
@@ -182,16 +187,18 @@ function _drawlines(&$object, $object_type) {
 	
 	?>
 	<tr class="liste_titre">
-		<td class="liste_titre"><?php echo $langs->trans('WorkStation') ?></td>
-		<td class="liste_titre"><?php echo $langs->trans('Qty') ?></td>
+		<th class="liste_titre"><?php echo $langs->trans('WorkStation') ?></th>
+		<th class="liste_titre" align="right"><?php echo $langs->trans('Qty') ?></th>
+		<th class="liste_titre"  colspan="2" ></th>
 	</tr>
 	<?php
 		$total_heure = 0;
 		foreach($TWorkstation as &$ws) {
 			
-			echo '<tr>
+			echo '<tr class="oddeven" >
 				<td>'.$ws->workstation->getNomUrl(1).'</td>
 				<td align="right">'.price($ws->nb_hour).' h</td>
+				<td align="right" colspan="2" ></td>
 			</tr>
 			';
 			
@@ -199,8 +206,9 @@ function _drawlines(&$object, $object_type) {
 		}
 		
 	?>
-	<tr  style="font-weight:bold">
+	<tr  class="liste_total" style="font-weight:bold">
 		<td align="right">Total : </td><td align="right"><?php echo price($total_heure) ?> h</td>
+		<td align="right" colspan="2" ></td>
 	</tr>
 	</table>
 	<?php

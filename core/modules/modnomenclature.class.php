@@ -59,7 +59,7 @@ class modnomenclature extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '2.1.2';
+		$this->version = '2.2.1';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -119,6 +119,7 @@ class modnomenclature extends DolibarrModules
 		$this->const[] = array('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH','chaine','1','',0,'current');
 		$this->const[] = array('NOMENCLATURE_USE_TIME_PREPARE','chaine','1','',0,'current');
 		$this->const[] = array('NOMENCLATURE_USE_TIME_DOING','chaine','1','',0,'current');
+		$this->const[] = array('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE','chaine','1','',0,'current');
 		
 			//array('NOMENCLATURE_COEF_FOURNITURE','chaine','1.1','Coef. de frais généraux (stockage, appro, ...) sur Fourniture',1),
 			//array('NOMENCLATURE_COEF_CONSOMMABLE','chaine','1.05','Coef. de frais généraux (stockage, appro, ...) sur consmmable',1),
@@ -148,13 +149,18 @@ class modnomenclature extends DolibarrModules
 		// 'stock'            to add a tab in stock view
 		// 'thirdparty'       to add a tab in third party view
 		// 'user'             to add a tab in user view
-        $this->tabs = array(
-            'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
+		$this->tabs = array(
+		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
             ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->tiers->updatecoef:/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
-            ,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
-            ,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
-            ,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
-         );
+        	,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
+        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
+        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
+        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
+        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
+            ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
+		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
+            
+        );
 
         // Dictionaries
 	    if (! isset($conf->nomenclature->enabled))
@@ -267,9 +273,22 @@ class modnomenclature extends DolibarrModules
 									'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 									'perms'=>'$user->rights->nomenclature->global->massUpdate',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 									'target'=>'',
-									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
+									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
-
+		 
+		 $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=product',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+		     'type'=>'left',			                // This is a Left menu entry
+		     'titre'=>'Nomenclatures',
+		     'mainmenu'=>'products',
+		     'leftmenu'=>'nomenclature',
+		     'url'=>'/nomenclature/list.php',
+		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+		     'position'=>100,
+		     'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+		     'perms'=>'$user->rights->nomenclature->read',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+		     'target'=>'',
+		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
+		 $r++;
 
 		// Exports
 		$r=1;

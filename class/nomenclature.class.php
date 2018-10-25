@@ -23,8 +23,11 @@ class TNomenclature extends TObjetStd
         $this->_init_vars();
 
         $this->start();
-
+        
         $this->setChild('TNomenclatureDet', 'fk_nomenclature');
+        $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
+        
+        
         if($conf->workstation->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
@@ -98,7 +101,7 @@ class TNomenclature extends TObjetStd
 	 * @param int $fk_origin		rowid propal ou commande
 	 * @return float
 	 */
-	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0) {
+	function setPrice(&$PDOdb, $qty_ref, $fk_object, $object_type,$fk_origin = 0,$fk_product = 0) {
 
 		global $db,$langs,$conf;
 
@@ -154,6 +157,15 @@ class TNomenclature extends TObjetStd
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
 		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
+		// vérifier l'éxistance de coef produit : non prioritaire au coef de l'objet
+		$this->CoefProduct = array();
+		if(!empty($fk_product)){
+		    $product = new Product($db);
+		    $product->fetch($fk_product);
+		    $this->CoefProduct = TNomenclatureCoefObject::loadCoefObject($PDOdb, $product, 'product'); //Coef du produit
+		}
+		
+		
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
 
@@ -199,6 +211,7 @@ class TNomenclature extends TObjetStd
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
 			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
+			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
 			
@@ -1084,7 +1097,7 @@ class TNomenclatureDet extends TObjetStd
 	// Récupération des différents tarifs (tarifs fourn, PMP) de la même manière que Dolibarr, puis adaptationp our le cas nomenclature
 	function printSelectProductFournisseurPrice($k, $nomenclature_id=0, $nomenclature_type='product') {
 		
-		global $langs;
+		global $langs, $conf;
 		
 		?>
 		<script type="text/javascript">
@@ -1103,7 +1116,14 @@ class TNomenclatureDet extends TObjetStd
 
     				/* setup of margin calculation */
     	      		var defaultbuyprice = '<?php
-    	      		if (isset($conf->global->MARGIN_TYPE))
+    	      		
+    	      		if (!empty($conf->global->NOMENCLATURE_COST_TYPE))
+    	      		{
+    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == '1')   print 'bestsupplierprice';
+    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == 'pmp') print 'pmp';
+    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == 'costprice') print 'costprice';
+    	      		}
+    	      		elseif (isset($conf->global->MARGIN_TYPE))
     	      		{
     	      		    if ($conf->global->MARGIN_TYPE == '1')   print 'bestsupplierprice';
     	      		    if ($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
@@ -1129,7 +1149,7 @@ class TNomenclatureDet extends TObjetStd
     			      		{
     			      			if (this.price > 0) {
     				      			defaultkey = this.id; defaultprice = this.price; pmppriceid = this.id; pmppricevalue = this.price;
-    			      				//console.log("pmppricevalue="+pmppricevalue);
+    			      				console.log("pmppricevalue="+pmppricevalue);
     			      			}
     			      		}
     	      			}
@@ -1166,8 +1186,9 @@ class TNomenclatureDet extends TObjetStd
     	      		// Préselection de la liste avec la valeur en base si existante
     	      		<?php if(!empty($this->fk_fournprice)) { ?>
     	      			select_fournprice.val('<?php echo $this->fk_fournprice; ?>');
+		      		<?php }else{ ?>
+		      			select_fournprice.val(defaultbuyprice);
 		      		<?php } ?>
-    	      		
     	      		/* At loading, no product are yet selected, so we hide field of buying_price */
     	      		//$("#buying_price").hide();
 
@@ -1613,4 +1634,56 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		setEventMessages($langs->trans('workstationThmUpdated'), null);
 	}
 	
+}
+
+class TNomenclatureFeedback extends TObjetStd
+{
+    
+    function __construct()
+    {
+        $this->element          = 'nomenclaturefeedback';
+        
+        $this->set_table(MAIN_DB_PREFIX.'nomenclature_feedback');
+        $this->add_champs('fk_origin,fk_nomenclature,fk_product',array('type'=>'integer', 'index'=>true));
+        $this->add_champs('fk_warehouse',array('type'=>'integer'));
+        $this->add_champs('origin' , array('type'=>'string'));
+        $this->add_champs('stockAllowed,qtyUsed' , array('type'=>'float'));
+        $this->add_champs('note', array('type'=>'text'));
+        
+        $this->_init_vars();
+        
+        $this->start();
+        
+        $this->origin           = '';
+        $this->fk_origin        = 0;
+        $this->qtyUsed          = 0;
+        $this->stockAllowed     = 0;
+        $this->fk_nomenclature  = 0;
+        $this->fk_warehouse     = 0;
+        $this->fk_product       = 0;
+        $this->note             = '';
+    }
+    
+    function reinit()
+    {
+        $this->{OBJETSTD_MASTERKEY}  = 0; // le champ id est toujours def
+        $this->{OBJETSTD_DATECREATE} = time(); // ces champs dates aussi
+        $this->{OBJETSTD_DATEUPDATE} = time();
+        
+    }
+     
+    function loadByProduct(&$db, $origin, $fk_origin, $fk_product, $fk_nomenclature) {
+        $sql = "SELECT ".OBJETSTD_MASTERKEY." FROM ".$this->get_table()." WHERE fk_nomenclature=".intval($fk_nomenclature)." AND fk_product=".intval($fk_product)." AND fk_origin=".intval($fk_origin)." AND origin=".$db->quote($origin)." LIMIT 1";
+        
+        $db->Execute($sql);
+        
+        
+        if($db->Get_line()) {
+            return $this->load($db, $db->Get_field(OBJETSTD_MASTERKEY), false);
+        }
+        else {
+            return false;
+        }
+    }
+    
 }

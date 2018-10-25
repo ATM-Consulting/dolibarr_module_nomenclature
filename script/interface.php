@@ -22,7 +22,23 @@ function _get(&$PDOdb, $case) {
             __out(_get_nomenclature_line());
             
             break;
-        
+        case 'categories':
+            $fk_parent = (int)GETPOST('fk_parent');
+            $keyword= GETPOST('keyword');
+            
+            dol_include_once('/categories/class/categorie.class.php');
+            dol_include_once('/product/class/product.class.php');
+            
+            $Tab =array(
+                'TCategory'=>_categories($fk_parent, $keyword)
+                ,'TProduct'=>_products($fk_parent)
+            );
+            
+            $Tab['default_price_level'] = 1;
+            
+            __out($Tab,'json');
+            
+            break;
     }
     
 }
@@ -61,6 +77,30 @@ function _setRang(&$PDOdb, $TRank,$type) {
 		
 	}
 	
+}
+
+function _products($fk_parent=0) {
+    global $db,$conf,$langs;
+    
+    if(empty($fk_parent)) return array();
+    
+    $parent = new Categorie($db);
+    $parent->fetch($fk_parent);
+    $TProd = $parent->getObjectsInCateg('product');
+    
+    if (!empty($conf->global->SPC_DISPLAY_DESC_OF_PRODUCT))
+    {
+        require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
+        foreach ($TProd as &$o) $o->description = dol_html_entity_decode($o->description, ENT_QUOTES);
+    }
+    if(!empty($conf->global->PRODUCT_USE_UNITS)){
+        foreach ($TProd as &$o){
+            $unit = $o->getLabelOfUnit();
+            $o->unit = $langs->trans($unit);
+        }
+    }
+    
+    return $TProd;
 }
 
 function _get_nomenclature_line() {
@@ -193,4 +233,35 @@ function _putHierarchie(&$PDOdb, $THierarchie,$fk_object=0,$object_type='') {
 	_putHierarchieNomenclature($PDOdb,$THierarchie,$fk_object,$object_type);
 	
 	
+}
+
+
+function _categories($fk_parent=0, $keyword='') {
+    global $db,$conf;
+    $TFille=array();
+    if(!empty($keyword)) {
+        $resultset = $db->query("SELECT rowid FROM ".MAIN_DB_PREFIX."categorie WHERE label LIKE '%".addslashes($keyword)."%' ORDER BY label");
+        while($obj = $db->fetch_object($resultset)) {
+            $cat = new Categorie($db);
+            $cat->fetch($obj->rowid);
+            $TFille[] = $cat;
+        }
+    }
+    else {
+        $parent = new Categorie($db);
+        if(empty($fk_parent)) {
+            if(empty($conf->global->SPC_DO_NOT_LOAD_PARENT_CAT)) {
+                $TFille = $parent->get_all_categories(0,true);
+            }
+            
+        }
+        else {
+            $parent->fetch($fk_parent);
+            $TFille = $parent->get_filles();
+        }
+        
+    }
+    
+    
+    return $TFille;
 }

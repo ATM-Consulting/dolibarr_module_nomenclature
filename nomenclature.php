@@ -224,7 +224,7 @@ if($object_type != 'product') {
     $n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, GETPOST('fk_origin'));
     _fiche_nomenclature($PDOdb, $n, $product, $object, $fk_object, $object_type, $qty_ref);
-
+    print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',1).'"></script>';
 }
 else{
 	_show_product_nomenclature($PDOdb, $product, $object);
@@ -316,9 +316,12 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
 	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
 	}
+	
+	if(count($TNomenclature) === 1){ $accordeonActiveIndex = 0 ;}
+	
 	print '</div>';
 	print '<script>$( function() { $( ".accordion" ).accordion({header: ".accordion-title",  collapsible: true, active:'.$accordeonActiveIndex.'}); } );</script>';
-	
+	print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',1).'"></script>';
 
 
 	$liste = new TListviewTBS('listeUse');
@@ -385,7 +388,22 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
-	print '<h3 class="accordion-title">'. $langs->trans('Nomenclature').' n°'.$n->getId().' '. $n->title.' '. $n->qty_reference.'</h3>';
+	
+	
+	print '<h3 class="accordion-title">';
+	print $langs->trans('Nomenclature').' n°'.$n->getId();
+	print ' '.$n->title;
+	
+	print ' - '.$langs->trans('nomenclatureQtyReference').' '. $n->qty_reference;
+	
+	$price_buy = $n->getBuyPrice(); // prix d'achat total
+	print ' - '.$langs->trans('TotalAmountCostWithCharge').' '. price($price_buy);
+	
+	$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
+	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell);
+	
+	print '</h3>';
+	
 	print '<div id="nomenclature'.$n->id.'" class="tabBar accordion-body">';
 	
 	$json = GETPOST('json', 'int');
@@ -871,9 +889,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
 						}
 						?>
-						
+						<span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
 						<div class="inline-block divButAction">
-							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction nomenclature_bt_add_product" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+							<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 						</div>
 					</div>
 				</div>
@@ -1173,8 +1192,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					<?php if ($json == 1) { ?>
                    		<style type="text/css">
                    			.dialogSouldBeZindexed {
-                   				z-index:101 !important;  /* Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
-                   				/* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs) */
+                   				z-index:210 !important;  /* 101 Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
+                   				/* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs) 
+                   				Avec la v8 de dolibarr le menu du haut passe devant le bouton close de la boite de dialogue (plus possibl ede fermer), je passe le z-index de 101 à 210 
+                   				*/
                    				overflow:visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
                    			}
                    		</style>
