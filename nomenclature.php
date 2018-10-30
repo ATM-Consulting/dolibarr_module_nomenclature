@@ -179,7 +179,12 @@ if (empty($reshook))
 		        $det->rang = $k+1;
 		    }
 	
-			setEventMessage($langs->trans('NomenclatureSaved'));
+		    // prevent multiple event from ajax call
+		    if(empty($_SESSION['dol_events']['mesgs']) || (!empty($_SESSION['dol_events']['mesgs']) && in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])) )
+		    {
+		        setEventMessage($langs->trans('NomenclatureSaved'));
+		    }
+			
 			
 			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
 
