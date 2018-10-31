@@ -499,8 +499,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					var val_qty_base = $(line).find("input[name*=qty_base]").val();
 					var val_loss_percent = $(line).find("input[name*=loss_percent]").val();
 					
-					$(this).closest('tr').find('td.ligne_col_qty').find("input[name*=qty]").val(Math.round(((val_qty_base / ((100 - val_loss_percent)/100)) * 100)) / 100);
-
+					var newQty = val_qty_base * ( 1 +  val_loss_percent / 100 );
+					newQty = Math.round(newQty*100)/100;
+					$(this).closest('tr').find('td.ligne_col_qty').find("input[name*=qty]").val(newQty);
 				}
 				
 			});
