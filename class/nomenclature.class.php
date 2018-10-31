@@ -1065,7 +1065,17 @@ class TNomenclatureDet extends TObjetStd
 
     }
 
-	//renvoi la nomenclature par defaut du produit de la ligne
+	/**
+	 * renvoi la nomenclature par defaut du produit de la ligne
+	 * TODO c'est une métode useless !!!
+	 *
+	 * @param      $PDOdb
+	 * @param      $nomenclatureDet
+	 * @param      $qty_to_make
+	 * @param bool $recursive
+	 * @return bool|mixed|TNomenclature
+	 * @deprecated
+	 */
 	static function getArboNomenclatureDet(&$PDOdb, &$nomenclatureDet, $qty_to_make, $recursive = false)
 	{
 		//$defaultNomenclature = self::getDefaultNomenclature($PDOdb, $nomenclatureDet->fk_product, $qty_to_make);
