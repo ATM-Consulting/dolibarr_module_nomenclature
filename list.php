@@ -103,6 +103,7 @@ $TParam['title'] = array(
     
     'is_default'  => $langs->trans('is_default'),
     'qty_reference' => $langs->trans('nomenclatureQtyReference'),
+    'SellPrice'     => $langs->trans('PriceConseil'),
     //'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
     'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOFQty'),
     //'totalPRCMO'  => $langs->trans('Total'),
@@ -123,7 +124,7 @@ $TParam['position'] = array(
             'is_default'  => 'center',
             
             'qty_reference' => 'right',
-            
+            'SellPrice'     => 'right',
             'totalPRCMO_PMP'  => 'right',
             'totalPRCMO_OF'  => 'right',
             'totalPRCMO'  => 'right',
@@ -173,7 +174,7 @@ $TParam['eval'] = array(
     //'BuyPrice' => 'nomenclature_getBuyPrice(@rowid@)',
     
     // prix de vente conseillé total
-    //'SellPrice' => 'nomenclature_getSellPrice(@rowid@)',
+    'SellPrice' => 'nomenclature_getSellPrice(@rowid@)',
     
     // Prix de revient chargé (on affiche tjr le chargé)
     'totalPRCMO' => 'nomenclature_totalPRCMO(@rowid@)',
@@ -280,7 +281,7 @@ function nomenclature_cache($id=0, $usecache=1){
         
         $n=new TNomenclature ;
         if($n->load($PDOdb, $id)){
-            
+            $n->setPrice($PDOdb,$n->qty_reference, $n->fk_object, $n->object_type);
             $n_cache[$id]=$n;
             return $n;
         }
