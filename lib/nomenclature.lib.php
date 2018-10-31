@@ -501,7 +501,7 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     print '<td class="liste_titre" align="center" colspan="2">'.$langs->trans('QtyPlanned').'</td>';
     
     print '<td class="liste_titre" align="left">';
-    if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK && $conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
+    if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
         $nbCols ++;
         
         if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
