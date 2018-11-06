@@ -152,50 +152,32 @@ class Interfacenomenclaturetrigger
 				foreach ( $propal->lines as $line ) {
 					if ($line->rang == $object->rang) {
 						$fk_line_origin = $line->id;
+						$line_origin = $line;
 						break;
 					}
 				}
-				
-				// On cherche la nomenclature de la ligne de propal originale
-				// si pas de perso, alors ce sera celle du produit lié
-				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . 'nomenclature
-				WHERE (
-					object_type = "propal"
-					AND fk_object = ' . $fk_line_origin . '
-			  	)
-				';
 
-				$resql = $db->query($sql);
-				$TIDNomenclature = array ();
-				$res = $db->fetch_object($resql);
-				if (! empty($res->rowid)) {
-					// On charge la nomenclature
+				if (!empty($line_origin))
+				{
 					$n = new TNomenclature();
-					$n->load($PDOdb, $res->rowid);
-					if ($n->rowid > 0) {
-						// On en crée une nouvelle pour la commande en récupérant toutes les données de l'ancienne
-						$n_commande = new TNomenclature();
-						$n_commande->fk_nomenclature_parent = $res->rowid;
-						$n_commande->object_type = 'commande';
-						$n_commande->fk_object = $object->rowid;
+					$n->loadByObjectId($PDOdb, $line_origin->id, $propal->element,true, $line_origin->fk_product, $line_origin->qty, $propal->id, true);
 
-						if (! empty($n->TNomenclatureDet)) {
-							foreach ( $n->TNomenclatureDet as $TDetValues ) {
-								$k = $n_commande->addChild($PDOdb, 'TNomenclatureDet');
-								$n_commande->TNomenclatureDet[$k]->set_values($TDetValues);
-							}
+					if ($n->getId() > 0 || $n->fk_nomenclature_parent > 0)
+					{
+						if ($n->getId() == 0) $need_set_price = true;
+						else $need_set_price = false;
+
+						$n->fk_object = $object->id;
+						$n->object_type = 'commande'; // pas commandedet !
+						$n->cloneObject($PDOdb);
+						if ($need_set_price)
+						{
+							$n->setPrice($PDOdb, $this->qty_reference, $this->fk_object, $this->object_type, $object->fk_commande);
+							$n->save($PDOdb);
 						}
-						if (! empty($n->TNomenclatureWorkstation)) {
-							foreach ( $n->TNomenclatureWorkstation as $TDetValues ) {
-
-								$k = $n_commande->addChild($PDOdb, 'TNomenclatureWorkstation');
-								$n_commande->TNomenclatureWorkstation[$k]->set_values($TDetValues);
-							}
-						}
-
-						$n_commande->save($PDOdb);
 					}
 				}
+
 			}
 			$this->_setPrice($PDOdb, $object, $object->fk_commande, 'commande');
 
