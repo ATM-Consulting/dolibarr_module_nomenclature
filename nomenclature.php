@@ -180,7 +180,7 @@ if (empty($reshook))
 		    }
 	
 		    // prevent multiple event from ajax call
-		    if(empty($_SESSION['dol_events']['mesgs']) || (!empty($_SESSION['dol_events']['mesgs']) && in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])) )
+		    if(empty($_SESSION['dol_events']['mesgs']) || (!empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])) )
 		    {
 		        setEventMessage($langs->trans('NomenclatureSaved'));
 		    }
