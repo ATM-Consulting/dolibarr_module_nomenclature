@@ -16,7 +16,7 @@ NomenclatureImportTitle=Importer des nomenclatures
 helpNomenclatureImportFile=Numéro nomenclature,Ref produit, Ref Composant, Qté, Qté de référence, Code type (MO pour Poste de travail)
 
 AddNomenclature=Ajouter une nomenclature
-AddProductNomenclature=Ajouter le produit
+AddProductNomenclature=Ajouter le produit/service
 SaveNomenclature=Enregistrer
 nomenclatureIsDefault=Définir par défaut
 nomenclatureQtyReference=Qté de référence
