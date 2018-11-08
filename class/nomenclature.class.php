@@ -1173,6 +1173,10 @@ class TNomenclatureDet extends TObjetStd
     		      				else if (pmppricevalue > 0) { defaultkey = pmppriceid; defaultprice = pmppricevalue; }
     			      		}
     	      			}
+    	      			
+    	      			if(this.price == ''){
+			      			this.price = 0;
+			      		}
     	        		options += '<option value="'+this.id+'" price="'+this.price+'">'+this.label+'</option>';
     	      		});
 
@@ -1202,11 +1206,19 @@ class TNomenclatureDet extends TObjetStd
     	      		/* At loading, no product are yet selected, so we hide field of buying_price */
     	      		//$("#buying_price").hide();
 
+    	      		if(select_fournprice.closest('tr').find('input[name*="buying_price"]').val() == '')
+    	      		{
+    	      			console.log("init fournprice_predef");
+    	        		var pricevalue = select_fournprice.find('option:selected').attr("price");
+    	      			select_fournprice.closest('tr').find('input[name*="buying_price"]').attr('placeholder',pricevalue);
+    	      		}
+    	      		
     			    select_fournprice.change(function() {
     		      		console.log("change on fournprice_predef");
     	      			var linevalue=$(this).find('option:selected').val();
     	        		var pricevalue = $(this).find('option:selected').attr("price");
     	        		$(this).closest('tr').find('input[name*="buying_price"]').val(pricevalue);
+    	        		$(this).closest('tr').find('input[name*="buying_price"]').attr('placeholder','');
     				});
     	    	}
     	  	},
