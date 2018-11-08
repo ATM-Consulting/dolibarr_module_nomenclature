@@ -324,19 +324,21 @@ class Interfacenomenclaturetrigger
 			$commande = new Commande($db);
 			$commande->fetch($fk_parent);
 
-			$commande->updateline($object->id,$object->desc,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$n->totalPRCMO / $object->qty); // Le prix de revient doit aussi rester unitaire
+			$commande->updateline($object->id,$object->desc,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$n->totalPRCMO / $object->qty,$object->label, $object->special_code, 0, $object->fk_unit, $object->multicurrency_subprice); // Le prix de revient doit aussi rester unitaire
+
 		}
 
 		else if($object_type=='propal') {
 			$propal = new Propal($db);
 			$propal->fetch($fk_parent);
-			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice,$n->totalPRCMO / $object->qty);
-
+			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice, $n->totalPRCMO / $object->qty, $object->label, $object->type, $object->date_start, $object->date_end, 0, $object->fk_unit);
+			
+			
 		}else if ($object_type == 'facture') {
 
 			$facture = new Facture($db);
 			$facture->fetch($fk_parent);
-			$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', 0, $object->product_type, 0, 0, $object->fk_fournprice, $n->totalPRC / $object->qty,'',0,0,100);
+			$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', 0, $object->product_type, 0, 0, $object->fk_fournprice, $n->totalPRC / $object->qty,$object->label, $object->special_code, 0, $object->situation_percent, $object->fk_unit);
 		}
 
 	}
