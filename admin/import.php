@@ -60,13 +60,14 @@ function _show_tab_session(&$PDOdb) {
 	//var_dump($Tab);
 	if (!empty($Tab))
 	{
-
+		$TRefNotFound=array();
 	    $nb_not_here = 0;
-		foreach($Tab as $fk_product=>$TNomenclature) {
+		foreach($Tab as $product_ref=> $TNomenclature) {
 
 			$p=new Product($db);
-			if($p->fetch(0,$fk_product)<=0) {
+			if($p->fetch(0,$product_ref)<=0) {
 			    $nb_not_here++;
+				$TRefNotFound[] = $product_ref;
 			    continue;
 			}
 
@@ -111,7 +112,18 @@ function _show_tab_session(&$PDOdb) {
 
 		}
 
-		echo '<p>'.$nb_not_here.' nomenclature(s) non importée(s) car produit(s) non présent(s)</p>';
+		if ($nb_not_here > 0)
+		{
+			echo '<div class="error">';
+			echo '<p>'.$nb_not_here.' nomenclature(s) non importée(s) car produit(s) non présent(s)</p>';
+			echo '<ul>';
+			foreach ($TRefNotFound as $k => $ref)
+			{
+				echo '<li>'.$ref.'</li>';
+			}
+			echo '</ul>';
+			echo '</div>';
+		}
 
 	}
 
@@ -188,8 +200,8 @@ function _import_to_session() {
 			$fk_product_composant = $row[2]; // produit ou code WS
 			if(empty($fk_product_composant)) continue;
 
-			$qty = (double)$row[3];
-			$qty_ref = (double)$row[4];
+			$qty = (double) price2num($row[3]);
+			$qty_ref = (double) price2num($row[4]);
 			$type = $row[5];
 
 			if(empty($Tab[$fk_product]))$Tab[$fk_product]=array();
