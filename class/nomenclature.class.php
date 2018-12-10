@@ -1,5 +1,11 @@
 <?php
 
+if (!class_exists('TObjetStd'))
+{
+	define('INC_FROM_DOLIBARR', true);
+	$res = require_once dirname(__FILE__).'/../config.php';
+}
+
 dol_include_once('/workstation/class/workstation.class.php');
 
 class TNomenclature extends TObjetStd

@@ -120,7 +120,8 @@ global $db,$langs,$conf,$PDOdb;
 		function editLine(fk_line) {
 	
 			url="<?php 
-				if($object_type=='propal') echo dol_buildpath('/comm/propal.php?id='.$object->id,1);
+				if((float) DOL_VERSION >= 4.0 && $object_type=='propal') echo dol_buildpath('/comm/propal/card.php?id='.$object->id,1);
+				elseif($object_type=='propal') echo dol_buildpath('/comm/propal.php?id='.$object->id,1);
 				else if($object_type=='commande')echo dol_buildpath('/commande/card.php?id='.$object->id,1);
 			?>&action=editline&lineid="+fk_line;	
 			
