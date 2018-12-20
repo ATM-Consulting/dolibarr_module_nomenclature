@@ -15,10 +15,10 @@ global $db;
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
-if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE) || isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE)) 
+if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE) || isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
 {
 	$sql = 'ALTER TABLE '.MAIN_DB_PREFIX.'nomenclaturedet CHANGE product_type code_type VARCHAR(30)';
-	$db->query($sql);	
+	$db->query($sql);
 }
 
 $PDOdb=new TPDOdb;
@@ -47,9 +47,9 @@ if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE))
 	$o->code_type = "coef_fourniture";
 	$o->tx = $conf->global->NOMENCLATURE_COEF_FOURNITURE;
 	$o->save($PDOdb);
-	
+
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_FOURNITURE', $conf->entity);
-	
+
 	$sql = 'UPDATE '.MAIN_DB_PREFIX.'nomenclaturedet SET code_type = "coef_fourniture" WHERE code_type IN ("1", "2")';
 	$db->query($sql);
 }
@@ -62,9 +62,9 @@ if (isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
 	$o->code_type = "coef_consommable";
 	$o->tx = $conf->global->NOMENCLATURE_COEF_CONSOMMABLE;
 	$o->save($PDOdb);
-	
+
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_CONSOMMABLE', $conf->entity);
-	
+
 	$sql = 'UPDATE '.MAIN_DB_PREFIX.'nomenclaturedet SET code_type = "coef_consommable" WHERE code_type = "3"';
 	$db->query($sql);
 }
@@ -77,14 +77,14 @@ if (isset($conf->global->NOMENCLATURE_COEF_MARGE))
 	$o->code_type = "coef_marge";
 	$o->tx = $conf->global->NOMENCLATURE_COEF_MARGE;
 	$o->save($PDOdb);
-	
+
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_MARGE', $conf->entity);
 }
-else 
+else
 {
 	$o=new TNomenclatureCoef($db);
 	$o->loadBy($PDOdb, 'coef_marge', 'code_type');
-	
+
 	if ($o->getId() > 0) null; //OK le coef exist donc on ne fait rien
 	else
 	{
@@ -95,6 +95,7 @@ else
 		$o->code_type = "coef_marge";
 		$o->type = "nomenclature";
 		$o->tx = 1.1;
+		$o->entity = $conf->entity;
 		$o->save($PDOdb);
 	}
 }
@@ -103,7 +104,7 @@ else
  * Fin récup
  */
 
- 
+
 $o=new TNomenclatureCoefObject($db);
 $o->init_db_by_vars($PDOdb);
 
@@ -117,7 +118,7 @@ $o->init_db_by_vars($PDOdb);
 
 
 
-// MAJ Champ type de la table llx_nomenclature_coef pour utiliser par défaut la valeur "nomenclature" 
+// MAJ Champ type de la table llx_nomenclature_coef pour utiliser par défaut la valeur "nomenclature"
 $db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef SET type = "nomenclature" WHERE type IS NULL');
 $db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef_object SET type = "nomenclature" WHERE type IS NULL');
 

@@ -73,7 +73,7 @@ if ($action == 'add' || $action == 'edit')
 
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
 			else $nomenclatureCoef->type = GETPOST('line_type');
-			
+
 			$nomenclatureCoef->label = $label;
 			$nomenclatureCoef->description = $desc;
 			$nomenclatureCoef->code_type = $code;
@@ -196,13 +196,12 @@ print '<tr class="liste_titre">';
 print '<td>'.$langs->trans("ModifyCoef").'</td>'."\n";
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-
 foreach ($TCoef as $coef)
 {
-	
+
 	$allow_to_delete = ($coef->code_type!='coef_marge');
-	
-	
+
+
 	$var=!$var;
 	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 	print '<tr '.$bc[$var].'>';
@@ -235,10 +234,10 @@ if(!empty($conf->workstation->enabled)) {
 	print '<td>'.$langs->trans("ModifyCoefWS").'</td>'."\n";
 	print '<td align="center" width="20">&nbsp;</td>';
 	print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
-	
+
 	foreach ($TCoefWS as &$coef)
 	{
-		
+
 		$var=!$var;
 		print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 		print '<tr '.$bc[$var].'>';
@@ -257,7 +256,7 @@ if(!empty($conf->workstation->enabled)) {
 		print '</td></tr>';
 		print '</form>';
 	}
-	
+
 	print '</table>';
 
 }

@@ -29,11 +29,11 @@ class TNomenclature extends TObjetStd
         $this->_init_vars();
 
         $this->start();
-        
+
         $this->setChild('TNomenclatureDet', 'fk_nomenclature');
         $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
-        
-        
+
+
         if($conf->workstation->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
@@ -59,36 +59,36 @@ class TNomenclature extends TObjetStd
             $det->reinit();
         }
     }
-	
+
 	function cloneObject(&$PDOdb, $fk_object=0)
 	{
 		if ($this->object_type !== 'product' && $fk_object > 0)
 		{
 			$this->fk_object = $fk_object; // On conserve le type de l'objet (propal) mais pas le fk_
 		}
-		
+
 		return parent::cloneObject($PDOdb);
 	}
 
 	/**
 	 * Renvoi le prix d'achat de la nomenclature
-	 * 
+	 *
 	 * @param	int		$qty_ref	permet de renvoyer le cout "unitaire" (depuis une ligne de document, cette qty est celle de la ligne de document, mais depuis l'onglet "Ouvrage" c'est normalement qty_reference de la nomenclature même)
 	 * @return type
 	 */
 	function getBuyPrice($qty_ref=1)
 	{
 		global $conf;
-		
+
 		if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) $price_buy =  price2num($this->totalMO + $this->totalPRC, 'MT');
 		else $price_buy =  price2num($this->totalMO + $this->totalPR, 'MT');
-		
+
 		return $price_buy / $qty_ref;
 	}
-	
+
 	/**
 	 * Renvoi le prix de vente de la nomenclature
-	 * 
+	 *
 	 * @param	int		$qty_line	permet de renvoyer le prix de vente "unitaire" (depuis une ligne de document, cette qty est celle de la ligne de document, mais depuis l'onglet "Ouvrage" c'est normalement qty_reference de la nomenclature même)
 	 * @return type
 	 */
@@ -99,7 +99,7 @@ class TNomenclature extends TObjetStd
 
 	/**
 	 * Doit calculer au global et non unitairement
-	 * 
+	 *
 	 * @param TPDOdb $PDOdb
 	 * @param float $qty_ref		qty de référence pour calculer un coefficient avec l'attribut qty_reference de la nomenclature (devrait s'appeler autrement du genre qty_produite ou qty_de_production)
 	 * @param int $fk_object		not used
@@ -116,12 +116,12 @@ class TNomenclature extends TObjetStd
 		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($this->nested_price_level>$max_level){
 			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
-			
+
 			return false;
-		} 	
+		}
 
 		if (empty($qty_ref)) $qty_ref = $this->qty_reference; // si vide alors le save provient de l'onglet "Ouvrage" depuis un produit
-		
+
 		$coef_qty_price = $qty_ref / $this->qty_reference; // $this->qty_reference = qty produite pour une unité de nomenclature (c'est une qté de production)
 
 	    switch ($object_type)
@@ -129,16 +129,16 @@ class TNomenclature extends TObjetStd
            case 'propal':
                	require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
                	require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
-				
+
 				$object = new Propal($db);
 	  		 	$object->fetch($fk_origin);
 				$object->fetch_thirdparty();
-				
+
 				break;
 		   case 'commande':
 			   require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 			   require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
-			   
+
 			   $commande = new Commande($db);
 			   if ($commande->fetch($fk_origin) > 0)
 			   {
@@ -154,9 +154,9 @@ class TNomenclature extends TObjetStd
 			   {
 				   dol_print_error($db);
 			   }
-			   
+
 			   break;
-			   
+
 			  // TODO le cas "facture" semble exister sur un déclanchement de trigger LINEBILL_INSERT, il faudrait potentiellement remonter à la commande d'origin puis à la propal d'origin pour récup les coef custom
         }
 
@@ -170,8 +170,8 @@ class TNomenclature extends TObjetStd
 		    $product->fetch($fk_product);
 		    $this->CoefProduct = TNomenclatureCoefObject::loadCoefObject($PDOdb, $product, 'product'); //Coef du produit
 		}
-		
-		
+
+
 		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
 
@@ -184,9 +184,9 @@ class TNomenclature extends TObjetStd
 					$det->calculate_price = $perso_price * $det->qty * $coef_qty_price;
 				}
 				else{
-					$det->calculate_price = $perso_price * $coef_qty_price;	
+					$det->calculate_price = $perso_price * $coef_qty_price;
 				}
-				
+
 				$perso_price = 0;
 			}
 			else{
@@ -209,28 +209,28 @@ class TNomenclature extends TObjetStd
 			    else { //comportement initial en cas de non-configuration (on prend le premier prix fournisseur qui vient...)
 			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true) * $det->qty * $coef_qty_price;
 			    }
-				
+
 			}
 
 			$totalPR+= $det->calculate_price ;
-		
+
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
 			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
 			else $coef = 1;
-			
+
 			// Coefficient appliqué sur le coût de revient (coeff de marge par ligne)
 			$coef2 = 1;
 			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
 				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
 			}
-			
+
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
 			$det->pv = empty($perso_price) ? $det->charged_price * $coef2 : $perso_price * $coef_qty_price;
-			
+
 			$totalPRC+= $det->charged_price;
 			$totalPV += $det->pv;
 
@@ -239,7 +239,7 @@ class TNomenclature extends TObjetStd
 				$totalPR_PMP+= $det->calculate_price_pmp ;
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$det->pv_pmp = empty($perso_price) ? $det->charged_price_pmp * $coef2 : $perso_price * $coef_qty_price;
-				
+
 				$totalPRC_PMP+= $det->charged_price_pmp;
 				$totalPV_PMP+= $det->pv_pmp;
 
@@ -248,7 +248,7 @@ class TNomenclature extends TObjetStd
 					$totalPR_OF+= $det->calculate_price_of ;
 					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
 					$det->pv_of = empty($perso_price) ? $det->charged_price_of * $coef2 : $perso_price * $coef_qty_price;
-					
+
 					$totalPRC_OF += $det->charged_price_of;
 					$totalPV_OF += $det->pv_of;
 				}
@@ -257,7 +257,7 @@ class TNomenclature extends TObjetStd
 			}
 
 		}
-		
+
 		$this->totalPR = $totalPR;
 		$this->totalPRC = $totalPRC;
 
@@ -279,7 +279,7 @@ class TNomenclature extends TObjetStd
 			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
 
 			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
-			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF'); // [FIXME] - dois je prendre en compte le coef dans ce cas pour être appliqué ? 
+			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF'); // [FIXME] - dois je prendre en compte le coef dans ce cas pour être appliqué ?
 				$total_mo_of+=empty($ws->price) ? $ws->calculate_price_of : $ws->price;
 			}
 
@@ -368,7 +368,7 @@ class TNomenclature extends TObjetStd
 		}
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
-		
+
 		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 
@@ -397,7 +397,7 @@ class TNomenclature extends TObjetStd
 		else {
 
 			global $langs;
-			
+
 			setEventMessage($langs->trans('CantAddProductBecauseOfAnInfiniteLoop', 'errors'));
 
 			$det->to_delete = true;
@@ -409,7 +409,7 @@ class TNomenclature extends TObjetStd
 
 	function infinitLoop(&$PDOdb, $level = 1) {
 		global $conf;
-		
+
 		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($level > $max_level) return true;
 
@@ -530,15 +530,15 @@ class TNomenclature extends TObjetStd
 		$this->setAll();
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_origin);
-		
+
         return $res;
 
     }
-	
+
 	function loadThmObject(&$PDOdb, $object_type, $fk_object_parent)
 	{
 		global $db,$conf,$TNomenclatureWorkstationThmObject;
-		
+
 		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
 		{
 			// 1 : on charge le coef custom (si existant) des TNomenclatureWorkstation
@@ -555,17 +555,17 @@ class TNomenclature extends TObjetStd
 					{
 						$workstationThmObject = $TNomenclatureWorkstationThmObject[$nomenclatureWs->fk_workstation];
 					}
-					
+
 					if ($workstationThmObject->getId() > 0)
 					{
 						$TNomenclatureWorkstationThmObject[$nomenclatureWs->fk_workstation] = $workstationThmObject;
 						$nomenclatureWs->workstation->thm = $workstationThmObject->thm_object;
 					}
-					
+
 					$nomenclatureWs->thmobjectloaded = true;
 				}
 			}
-			
+
 			// 2 : on charge les coef custom des TNomenclatureDet qui possède une nomenclature (récusrive)
 			require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 			foreach ($this->TNomenclatureDet as &$det)
@@ -578,7 +578,7 @@ class TNomenclature extends TObjetStd
 					if ($res) $n->loadThmObject($PDOdb, $object_type, $fk_object_parent, true);
 				}
 			}
-			
+
 		}
 	}
 
@@ -756,20 +756,20 @@ class TNomenclature extends TObjetStd
 	 */
 	public static function noProductOfThisType($details,$type){
 		global $db;
-		
+
 		foreach ($details as &$lineNomen)
 		{
 			//Conversion du tableau en objet
 			$product = new Product($db);
 			$product->fetch($lineNomen['fk_product']);
-			
+
 			if($product->type==$type){
 				return false;
 			}else if(!empty($lineNomen['childs']) && !TNomenclature::noProductOfThisType($lineNomen['childs'],$type)){
-				
+
 				return false;
 			}
-			
+
 		}
 		return true;
 	}
@@ -784,23 +784,23 @@ class TNomenclature extends TObjetStd
 	function addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed)
 	{
 		global $db,$langs,$user,$conf;
-		
+
 		if (empty($conf->stock->enabled)) return 1;
-		
+
 		require_once DOL_DOCUMENT_ROOT.'/product/stock/class/mouvementstock.class.php';
-		
+
 		$error = 0;
-		
+
 		if (empty($qty)) { $error++; $this->errors[] = $langs->trans('NomenclatureErrorEmptyQtyToStock'); }
 		if (empty($fk_warehouse_to_make) | $fk_warehouse_to_make < 0) { $error++; $this->errors[] = $langs->trans('NomenclatureErrorNoWarehouseSelectedToMake'); }
 		if (empty($fk_warehouse_needed) | $fk_warehouse_needed < 0) { $error++; $this->errors[] = $langs->trans('NomenclatureErrorNoWarehouseSelectedNeeded'); }
 		if ($this->object_type != 'product') { $error++; $this->errors[] = $langs->trans('NomenclatureErrorInvalidNomenclatureType'); }
-		
+
 		if (empty($error))
 		{
 			$action = 'destockNeeded';
 			if ($qty < 0) $action = 'stockNeeded';
-			
+
 			$qty_abs = abs($qty); // Qté du produit final à déplacer
 			$coef = $qty_abs / $this->qty_reference; // Coef pour les composants (l'attribut qty des lignes équivaut à la fabrication de qty_reference de la nomenclature)
 
@@ -808,7 +808,7 @@ class TNomenclature extends TObjetStd
 			$mouvS->origin = new stdClass();
 			$mouvS->origin->element = 'product';
 			$mouvS->origin->id = $this->fk_object;
-			
+
 			$db->begin();
 			if($action === 'destockNeeded')
 			{
@@ -818,7 +818,7 @@ class TNomenclature extends TObjetStd
 					$result=$mouvS->livraison($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
 					if ($result <= 0) $error++;
 				}
-				
+
 				// Then STOCK the parent (to_make)
 				$result=$mouvS->reception($user, $this->fk_object, $fk_warehouse_to_make, $qty_abs, $this->totalPRCMO, $langs->trans('NomenclatureStockProductFrom', $this->getId()));
 				if ($result <= 0) $error++;
@@ -831,7 +831,7 @@ class TNomenclature extends TObjetStd
 					$result=$mouvS->reception($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
 					if ($result <= 0) $error++;
 				}
-				
+
 				// Then DESTOCK the parent (to_make)
 				$result=$mouvS->livraison($user, $this->fk_object, $fk_warehouse_to_make, $qty_abs, $this->totalPRCMO, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
 				if ($result <= 0) $error++;
@@ -848,13 +848,13 @@ class TNomenclature extends TObjetStd
 				return -2;
 			}
 		}
-		
+
 		return -1;
 	}
-	
+
 	/**
 	 * Renvoi la quantité potentiellement fabricable du produit final par rapport au stock théorique ou reel des composants
-	 * 
+	 *
 	 * @param string $attr_stock	attribut d'un objet Product (stock_theorique | stock_reel)
 	 * @return float
 	 */
@@ -862,9 +862,9 @@ class TNomenclature extends TObjetStd
 	{
 		global $db;
 		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
-		
+
 		$coef = 1 / $this->qty_reference;
-		
+
 		$qty_theo = null;
 		foreach ($this->TNomenclatureDet as &$det)
 		{
@@ -873,11 +873,11 @@ class TNomenclature extends TObjetStd
 			{
 				$product->load_stock();
 				$qty = $product->{$attr_stock} / $det->qty * $coef;
-				
+
 				if ($qty < $qty_theo || is_null($qty_theo)) $qty_theo = $qty;
 			}
 		}
-		
+
 		return $qty_theo;
 	}
 }
@@ -891,7 +891,7 @@ class TNomenclatureDet extends TObjetStd
     function __construct()
     {
     	global $conf;
-    	
+
         $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang,fk_unit',array('type'=>'integer', 'index'=>true));
@@ -909,13 +909,13 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
         if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->code_type2 = $this->code_type;
-        
+
     }
-    
+
     function save(&$PDOdb) {
-    	
+
     	global $db, $conf;
-    	
+
     	// Enregistrement de l'unité du produit dans la ligne de nomclature
     	if(!empty($conf->global->PRODUCT_USE_UNITS) && empty($this->fk_unit) && !empty($this->fk_product)) {
     		require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
@@ -924,9 +924,9 @@ class TNomenclatureDet extends TObjetStd
     			$this->fk_unit = $prod->fk_unit;
     		}
     	}
-    	
+
     	return parent::save($PDOdb);
-    	
+
     }
 
     function reinit() {
@@ -971,9 +971,9 @@ class TNomenclatureDet extends TObjetStd
 
 	function getPMPPrice() {
 		global $db,$conf,$user,$langs;
-		
+
 		if (empty($this->fk_product)) return 0;
-		
+
 		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 
 		$p=new Product($db);
@@ -982,19 +982,19 @@ class TNomenclatureDet extends TObjetStd
 		return $p->pmp;
 
 	}
-	
+
 	function getCostPrice() {
 	    global $db,$conf,$user,$langs;
-		
+
 		if (empty($this->fk_product)) return 0;
-		
+
 		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
-	    
+
 	    $p=new Product($db);
 	    $p->fetch($this->fk_product);
 
 	    return $p->cost_price;
-	    
+
 	}
 
 	/*
@@ -1018,7 +1018,7 @@ class TNomenclatureDet extends TObjetStd
 		        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY unitprice ASC LIMIT 1 ");
 		    }
-			
+
 
 			if($obj = $PDOdb->Get_line()) {
 				$price_supplier = $obj->price / $obj->quantity;
@@ -1032,7 +1032,7 @@ class TNomenclatureDet extends TObjetStd
 			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY unitprice ASC LIMIT 1 ");
 			    }
-				
+
 
 				if($obj = $PDOdb->Get_line()) {
 					$price_supplier = $obj->price / $obj->quantity;
@@ -1040,15 +1040,15 @@ class TNomenclatureDet extends TObjetStd
 
 			}
 		}
-        
-		
+
+
 		// Si aucun prix fournisseur de disponible
 		if ((empty($price_supplier) && (double) DOL_VERSION >= 3.9) || $force_cost_price)
 		{
 			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
 			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
 		}
-		
+
 		if (!$force_cost_price)
 		{
 			if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
@@ -1062,9 +1062,9 @@ class TNomenclatureDet extends TObjetStd
 					$child_price = $n->totalPRCMO / $qty;
 					//var_dump($child_price,$n);exit;
 				}
-			}	
+			}
 		}
-		
+
 
 		if(empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)) return empty($price_supplier) ? $child_price : $price_supplier;
 		else  return empty($child_price) ? $price_supplier : $child_price;
@@ -1092,11 +1092,11 @@ class TNomenclatureDet extends TObjetStd
     static function getTType(&$PDOdb, $blankRow = false, $type='nomenclature')
 	{
 		global $conf;
-		
+
 		$res = array();
 		if ($blankRow) $res = array('' => '');
 
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity.' AND type = "'.$type.'" ORDER BY rowid';
+		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND type = "'.$type.'" ORDER BY rowid';
 		$resql = $PDOdb->Execute($sql);
 
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
@@ -1109,15 +1109,15 @@ class TNomenclatureDet extends TObjetStd
 
 		return $res;
 	}
-	
+
 	// Récupération des différents tarifs (tarifs fourn, PMP) de la même manière que Dolibarr, puis adaptationp our le cas nomenclature
 	function printSelectProductFournisseurPrice($k, $nomenclature_id=0, $nomenclature_type='product') {
-		
+
 		global $langs, $conf;
-		
+
 		?>
 		<script type="text/javascript">
-		
+
 		$.post('<?php echo DOL_URL_ROOT; ?>/fourn/ajax/getSupplierPrices.php?bestpricefirst=1', { 'idprod': <?php echo $this->fk_product; ?> }, function(data) {
     	    	if (data && data.length > 0)
     	    	{
@@ -1132,7 +1132,7 @@ class TNomenclatureDet extends TObjetStd
 
     				/* setup of margin calculation */
     	      		var defaultbuyprice = '<?php
-    	      		
+
     	      		if (!empty($conf->global->NOMENCLATURE_COST_TYPE))
     	      		{
     	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == '1')   print 'bestsupplierprice';
@@ -1179,7 +1179,7 @@ class TNomenclatureDet extends TObjetStd
     		      				else if (pmppricevalue > 0) { defaultkey = pmppriceid; defaultprice = pmppricevalue; }
     			      		}
     	      			}
-    	      			
+
     	      			if(this.price == ''){
 			      			this.price = 0;
 			      		}
@@ -1189,12 +1189,12 @@ class TNomenclatureDet extends TObjetStd
     	      		console.log("finally selected defaultkey="+defaultkey+" defaultprice="+defaultprice);
 
     	      		<?php if(empty($nomenclature_id) || $nomenclature_type !== 'product') { ?>
-    	      		
+
     	      			var select_fournprice = $('select[name=TNomenclature\\[<?php echo $k; ?>\\]\\[fk_fournprice\\]]');
 					<?php } else { ?>
 						var select_fournprice = $('div#nomenclature<?php echo $nomenclature_id; ?> select[name=TNomenclature\\[<?php echo $k; ?>\\]\\[fk_fournprice\\]]');
 					<?php } ?>
-	
+
     	      		select_fournprice.html(options);
 
     	      		// Pour l'instant on laisee l'utilisateur choisir à la main le prix d'achat
@@ -1218,7 +1218,7 @@ class TNomenclatureDet extends TObjetStd
     	        		var pricevalue = select_fournprice.find('option:selected').attr("price");
     	      			select_fournprice.closest('tr').find('input[name*="buying_price"]').attr('placeholder',pricevalue);
     	      		}
-    	      		
+
     			    select_fournprice.change(function() {
     		      		console.log("change on fournprice_predef");
     	      			var linevalue=$(this).find('option:selected').val();
@@ -1231,11 +1231,11 @@ class TNomenclatureDet extends TObjetStd
     	  	'json');
 
 		</script>
-		
+
 		<?php
-		
+
 	}
-	
+
 }
 
 
@@ -1307,7 +1307,7 @@ class TNomenclatureWorkstation extends TObjetStd
         $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
         parent::save($PDOdb);
     }
-	
+
 }
 
 class TNomenclatureCoef extends TObjetStd
@@ -1334,8 +1334,8 @@ class TNomenclatureCoef extends TObjetStd
 	static function loadCoef(&$PDOdb, $type='nomenclature')
 	{
 		global $conf;
-		
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity.' AND type = "'.$type.'" ORDER BY rowid';
+
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND type = "'.$type.'" ORDER BY rowid';
 		$TRes = $PDOdb->ExecuteAsArray($sql);
 		$TResult = array();
 
@@ -1358,7 +1358,7 @@ class TNomenclatureCoef extends TObjetStd
 
 		if (!$PDOdb) $PDOdb = new TPDOdb;
 
-		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity);
+		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0)');
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			$row = $PDOdb->Get_line();
@@ -1373,7 +1373,7 @@ class TNomenclatureCoef extends TObjetStd
     {
     	global $conf;
 
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity = '.$conf->entity.' AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
 		$res = $PDOdb->Execute($sql);
 
 		if ($res && $PDOdb->Get_Recordcount() > 0)
@@ -1450,22 +1450,22 @@ class TNomenclatureCoefObject extends TObjetStd
 	}
 
 	static function deleteCoefsObject(&$PDOdb, $fk_object, $type_object) {
-		
-		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid 
+
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid
 				FROM ".MAIN_DB_PREFIX."nomenclature_coef_object
 				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
 				");
-		
+
 		foreach($Tab as &$row) {
-			
+
 			$c = new TNomenclatureCoefObject;
 			$c->load($PDOdb, $row->rowid);
 			$c->delete($PDOdb);
-			
+
 		}
-		
+
 	}
-	
+
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
@@ -1539,7 +1539,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
         $this->start();
 		$this->label = '';
     }
-	
+
 	function loadByFkWorkstationByFkObjectByType(&$PDOdb, $fk_workstation, $fk_object_parent, $type)
 	{
 		$PDOdb->Execute('SELECT rowid FROM '.$this->get_table().' WHERE fk_object = '.$fk_object_parent.' AND fk_workstation = '.$fk_workstation.' AND type_object = "'.$type.'"');
@@ -1551,21 +1551,21 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 
 		return false;
 	}
-	
+
 	/**
 	 * Méthode pour supprimer tous les THM custom associés à la propal
-	 * 
+	 *
 	 * @param type $PDOdb
 	 * @param type $fk_object
 	 * @param type $type_object
 	 */
 	static function deleteAllThmObject(&$PDOdb, $fk_object, $type_object)
 	{
-		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid 
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid
 				FROM ".MAIN_DB_PREFIX."nomenclature_workstation_thm_object
 				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
 				");
-		
+
 		foreach($Tab as &$row)
 		{
 			$c = new TNomenclatureWorkstationThmObject;
@@ -1573,10 +1573,10 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 			$c->delete($PDOdb);
 		}
 	}
-	
+
 	/**
 	 * Methode pour récupérer le tableau des THM custom associés à la propal
-	 * 
+	 *
 	 * @param type $PDOdb
 	 * @param type $object
 	 * @param type $type_object
@@ -1585,11 +1585,11 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 	static function loadAllThmObject(&$PDOdb, &$object, $type_object)
 	{
 		$TThmObject = array();
-		
+
 		// 1 : on récupère tous les Poste de travail existants
 		dol_include_once('/workstation/class/workstation.class.php');
 		$TWorkstation = TWorkstation::getAllWorkstationObject($PDOdb);
-		
+
 		// 2 : on va chercher les coef custom
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_workstation_thm_object
 				WHERE fk_object = '.(int)$object->id.'
@@ -1603,7 +1603,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		{
 			$o = new TNomenclatureWorkstationThmObject;
 			$o->load($PDOdb, $row->rowid);
-			
+
 			$o->label = $TWorkstation[$o->fk_workstation]->name;
 			$TThmObject[$o->fk_workstation] = $o;
 		}
@@ -1624,16 +1624,16 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 
 				$TThmObject[$o->fk_workstation] = $o;
 			}
-			
+
 		}
-		
+
 		ksort($TThmObject);
 		return $TThmObject;
 	}
-	
+
 	/**
 	 * Methode pour mettre à jour les THM liés à l'objet (n'applique pas le nouveau THM sur les lignes du document)
-	 * 
+	 *
 	 * @param type $PDOdb
 	 * @param type $object
 	 * @param type $TNomenclatureWorkstationThmObject
@@ -1641,47 +1641,47 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 	static function updateAllThmObject(&$PDOdb, &$object, $TNomenclatureWorkstationThmObject)
 	{
 		global $langs;
-		
-		if (!empty($TNomenclatureWorkstationThmObject)) 
+
+		if (!empty($TNomenclatureWorkstationThmObject))
 		{
 			foreach ($TNomenclatureWorkstationThmObject as $fk_workstation => &$thm)
 			{
 				// TODO loadByFkWorkstation
 				$o = new TNomenclatureWorkstationThmObject;
 				$o->loadByFkWorkstationByFkObjectByType($PDOdb, $fk_workstation, $object->id, $object->element);
-				
+
 				$o->fk_object = $object->id;
 				$o->type_object = $object->element;
 				$o->fk_workstation = $fk_workstation;
 				$o->thm_object = $thm;
-				
+
 				$o->save($PDOdb);
 			}
 		}
-		
+
 		setEventMessages($langs->trans('workstationThmUpdated'), null);
 	}
-	
+
 }
 
 class TNomenclatureFeedback extends TObjetStd
 {
-    
+
     function __construct()
     {
         $this->element          = 'nomenclaturefeedback';
-        
+
         $this->set_table(MAIN_DB_PREFIX.'nomenclature_feedback');
         $this->add_champs('fk_origin,fk_nomenclature,fk_product',array('type'=>'integer', 'index'=>true));
         $this->add_champs('fk_warehouse',array('type'=>'integer'));
         $this->add_champs('origin' , array('type'=>'string'));
         $this->add_champs('stockAllowed,qtyUsed' , array('type'=>'float'));
         $this->add_champs('note', array('type'=>'text'));
-        
+
         $this->_init_vars();
-        
+
         $this->start();
-        
+
         $this->origin           = '';
         $this->fk_origin        = 0;
         $this->qtyUsed          = 0;
@@ -1691,21 +1691,21 @@ class TNomenclatureFeedback extends TObjetStd
         $this->fk_product       = 0;
         $this->note             = '';
     }
-    
+
     function reinit()
     {
         $this->{OBJETSTD_MASTERKEY}  = 0; // le champ id est toujours def
         $this->{OBJETSTD_DATECREATE} = time(); // ces champs dates aussi
         $this->{OBJETSTD_DATEUPDATE} = time();
-        
+
     }
-     
+
     function loadByProduct(&$db, $origin, $fk_origin, $fk_product, $fk_nomenclature) {
         $sql = "SELECT ".OBJETSTD_MASTERKEY." FROM ".$this->get_table()." WHERE fk_nomenclature=".intval($fk_nomenclature)." AND fk_product=".intval($fk_product)." AND fk_origin=".intval($fk_origin)." AND origin=".$db->quote($origin)." LIMIT 1";
-        
+
         $db->Execute($sql);
-        
-        
+
+
         if($db->Get_line()) {
             return $this->load($db, $db->Get_field(OBJETSTD_MASTERKEY), false);
         }
@@ -1713,5 +1713,5 @@ class TNomenclatureFeedback extends TObjetStd
             return false;
         }
     }
-    
+
 }
