@@ -401,6 +401,8 @@ print '</td></tr>';
 
 setup_print_on_off('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE', false, 'NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help');
 
+setup_print_on_off('NOMENCLATURE_HIDE_STOCK_COLUMNS');
+
 
 print '</table>';
 
