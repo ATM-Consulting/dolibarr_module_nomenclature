@@ -44,6 +44,7 @@ PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
 
 NomenclatureSaved=Nomenclature enregistrée
+NomenclatureNBSaved = %s Nomenclatures enregistrées
 WorkstationAlreadyAssociated=Ce poste de charge est déjà associé à cette nomenclature
 
 NomenclatureLineSaved=Nomenclature spécifique sauvegardée
