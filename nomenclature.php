@@ -278,7 +278,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	</script><?php
 
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
-	
+
+    if (GETPOST('optioncss') !== 'print')
+    {
 	?>
 	<div class="tabsAction">
 		<div class="inline-block divButAction">
@@ -299,8 +301,10 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	    </div>
 	</div>
 	<?php
-	
-	print '<div  class="accordion" >';
+    }
+
+    if (GETPOST('optioncss') !== 'print') print '<div  class="accordion" >';
+    else print '<div class="no-accordion">';
 	$accordeonActiveIndex = 'false';
 	$idion = 0;
 	foreach($TNomenclature as $iN => &$n) {
@@ -882,7 +886,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
            </td>
 
         </tr>
-        
+
+        <?php if (GETPOST('optioncss') !== 'print') { ?>
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
@@ -904,8 +909,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				</div>
 			</td>
         </tr>
-        
-        
+        <?php } ?>
+
         <?php
        if(!empty($conf->workstation->enabled)) {
 
@@ -1172,6 +1177,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		        }
 		}
 
+		if (GETPOST('optioncss') !== 'print')
+        {
 		?><tr>
             <td align="right" colspan="5">
                 <div class="tabsAction">
@@ -1245,6 +1252,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				</div>
 			</td>
         </tr>
+        <?php } ?>
     </table>
     
     <?php
