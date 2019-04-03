@@ -1301,7 +1301,7 @@ function headerProduct(&$object) {
 }
 
 function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
-global $db,$langs;
+    global $db,$langs,$conf;
 
 	$max_nested_aff_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL) ? 7 : $conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL;
 	if($level > $max_nested_aff_level) {
