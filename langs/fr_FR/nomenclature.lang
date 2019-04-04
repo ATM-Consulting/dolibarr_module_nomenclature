@@ -44,6 +44,7 @@ PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
 
 NomenclatureSaved=Nomenclature enregistrée
+NomenclatureNBSaved = %s Nomenclatures enregistrées
 WorkstationAlreadyAssociated=Ce poste de charge est déjà associé à cette nomenclature
 
 NomenclatureLineSaved=Nomenclature spécifique sauvegardée
@@ -227,3 +228,4 @@ TheoreticalStock=Stock théorique
 SearchByCategory=Recherche par catégorie
 NothingHere=Pas de sous-catégorie ou de produit
 DoASearch=Faites une recherche/Pas de résultat pour votre recherche
+NOMENCLATURE_DETAILS_TAB_REWRITE=Séparer les produits des services dans l'onglet de détail des ouvrages
