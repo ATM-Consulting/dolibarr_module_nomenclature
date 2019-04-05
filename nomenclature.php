@@ -546,7 +546,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									print '<th class="liste_titre" width="5%">'.$langs->trans('Availability').'</th>';
 								}
 						   
-						   		if(!empty($conf->stock->enabled)) {
+								if(!empty($conf->stock->enabled) && empty($conf->global->NOMENCLATURE_HIDE_STOCK_COLUMNS)) {
 								   ?>
 		
 		                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
@@ -662,7 +662,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									}
 
 								
-								if(!empty($conf->stock->enabled)) {
+								if(!empty($conf->stock->enabled) && empty($conf->global->NOMENCLATURE_HIDE_STOCK_COLUMNS)) {
 	                               ?>
 	                               <td>
 	                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
