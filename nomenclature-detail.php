@@ -34,16 +34,6 @@ if($action == 'save') {
         $fk_productToEdit = $TKey[0];
         $TValue = array_shift($TNomenclature);
 
-        $pf = new ProductFournisseur($db);
-        $pf->fetch($fk_productToEdit);
-        $pf->fetch_product_fournisseur_price($TValue['fk_fournprice']);
-
-
-        // Update fourn price
-        $fourn = new stdClass;
-        $fourn->id = $pf->fourn_id; // In the function below, we just need the 'id' attribute of $fourn
-        $res = $pf->update_buyprice($pf->fourn_qty, $TValue['buying_price'], $user, $pf->price_base_type, $fourn, $pf->fk_availability, $pf->ref_supplier, $pf->fourn_tva_tx);
-
         // Update price of every product of Nomenclature in the proposal/order
         $className = ucfirst($object_type);
         $object = new $className($db);  // 'Propal' or 'Commande'
@@ -51,8 +41,21 @@ if($action == 'save') {
 
         $nbUpdate = 0;
         foreach($object->lines as $line) {
+            if(TSubtotal::isModSubtotalLine($line)) continue;
+
             $n = new TNomenclature;
-            $n->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
+            $n->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty, $object->id);
+
+            if($n->rowid == 0 && (count($n->TNomenclatureDet) + count($n->TNomenclatureWorkstation)) > 0) {
+                // Charger une nomenclature en local ça peut aider des fois !
+                if(!$n->iExist) $n->reinit();
+                $n->object_type = $object_type;
+                $n->fk_object = $line->id;
+
+                $n->setPrice($PDOdb, 1, null, $object_type, $object->id);
+                $n->save($PDOdb);
+            }
+
             $n->fetchCombinedDetails($PDOdb);
 
             foreach($n->TNomenclatureDetCombined as $fk_product => $det) {
