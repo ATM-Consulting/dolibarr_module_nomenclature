@@ -255,7 +255,8 @@ function _getDetails(&$object, $object_type) {
 
                     $det->type = $p->type;
                     $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
-                    $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
+                    if(! isset($TProduct[$firstParentTitleId]['products'][$det->fk_product])) $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
+                    else $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
 
                     // Total unit
                     if(! isset($TProduct[$firstParentTitleId]['total']['unit'][$det->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$det->unit] = $det->qty;
