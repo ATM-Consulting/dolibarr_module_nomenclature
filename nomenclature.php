@@ -278,7 +278,9 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	</script><?php
 
 	$TNomenclature = TNomenclature::get($PDOdb, $product->id);
-	
+
+    if (GETPOST('optioncss') !== 'print')
+    {
 	?>
 	<div class="tabsAction">
 		<div class="inline-block divButAction">
@@ -299,8 +301,10 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	    </div>
 	</div>
 	<?php
-	
-	print '<div  class="accordion" >';
+    }
+
+    if (GETPOST('optioncss') !== 'print') print '<div  class="accordion" >';
+    else print '<div class="no-accordion">';
 	$accordeonActiveIndex = 'false';
 	$idion = 0;
 	foreach($TNomenclature as $iN => &$n) {
@@ -542,7 +546,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									print '<th class="liste_titre" width="5%">'.$langs->trans('Availability').'</th>';
 								}
 						   
-						   		if(!empty($conf->stock->enabled)) {
+								if(!empty($conf->stock->enabled) && empty($conf->global->NOMENCLATURE_HIDE_STOCK_COLUMNS)) {
 								   ?>
 		
 		                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
@@ -660,7 +664,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									}
 
 								
-								if(!empty($conf->stock->enabled)) {
+								if(!empty($conf->stock->enabled) && empty($conf->global->NOMENCLATURE_HIDE_STOCK_COLUMNS)) {
 	                               ?>
 	                               <td>
 	                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
@@ -903,7 +907,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
            </td>
 
         </tr>
-        
+
+        <?php if (GETPOST('optioncss') !== 'print') { ?>
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
@@ -925,8 +930,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				</div>
 			</td>
         </tr>
-        
-        
+        <?php } ?>
+
         <?php
        if(!empty($conf->workstation->enabled)) {
 
@@ -1203,6 +1208,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		        }
 		}
 
+		if (GETPOST('optioncss') !== 'print')
+        {
 		?><tr>
             <td align="right" colspan="5">
                 <div class="tabsAction">
@@ -1276,6 +1283,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				</div>
 			</td>
         </tr>
+        <?php } ?>
     </table>
     <?php
 
@@ -1331,7 +1339,7 @@ function headerProduct(&$object) {
 }
 
 function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
-global $db,$langs;
+    global $db,$langs,$conf;
 
 	$max_nested_aff_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL) ? 7 : $conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL;
 	if($level > $max_nested_aff_level) {

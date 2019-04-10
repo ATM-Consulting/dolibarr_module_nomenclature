@@ -401,12 +401,18 @@ print '</td></tr>';
 
 setup_print_on_off('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE', false, 'NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help');
 
+setup_print_on_off('NOMENCLATURE_HIDE_STOCK_COLUMNS');
+
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("NOMENCLATURE_DETAILS_TAB_REWRITE").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="300">';
+print ajax_constantonoff('NOMENCLATURE_DETAILS_TAB_REWRITE');
+print '</td></tr>';
 
 print '</table>';
-
-
-
-
 
 llxFooter();
 

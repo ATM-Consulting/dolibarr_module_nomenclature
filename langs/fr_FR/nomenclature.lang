@@ -47,6 +47,7 @@ PriceConseil=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
 
 NomenclatureSaved=Nomenclature enregistrée
+NomenclatureNBSaved = %s Nomenclatures enregistrées
 WorkstationAlreadyAssociated=Ce poste de charge est déjà associé à cette nomenclature
 
 NomenclatureLineSaved=Nomenclature spécifique sauvegardée
@@ -145,6 +146,7 @@ NOMENCLATURE_FEEDBACK_OBJECT=Type d'object utilisé pour le retour chantier
 NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE=Ne pas permettre la modification de l'entrepot
 NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE=Lors d'un clic sur le bouton "Appliquer le prix de vente" fermer la fenêtre une fois l'action effectuée.
 NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help=Cette option nécessite de vider le cache de votre navigateur pour être prise en compte.
+NOMENCLATURE_HIDE_STOCK_COLUMNS=Cacher les colonnes "Stock physique" et "Stock virtuel" sur les nomenclatures
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
@@ -229,3 +231,4 @@ TheoreticalStock=Stock théorique
 SearchByCategory=Recherche par catégorie
 NothingHere=Pas de sous-catégorie ou de produit
 DoASearch=Faites une recherche/Pas de résultat pour votre recherche
+NOMENCLATURE_DETAILS_TAB_REWRITE=Séparer les produits des services dans l'onglet de détail des ouvrages
