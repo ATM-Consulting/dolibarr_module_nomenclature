@@ -526,7 +526,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	        </tr><?php
         }
 
-        ?><tr>
+        ?><tr id="" >
            <td colspan="5">
                <?php
 
@@ -558,16 +558,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                   <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
-                           <?php if($user->rights->nomenclature->showPrice) {
-                           	?><th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th>
-                           		<th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th><?php
-                           		?><th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php
-                           		if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
-                           		?>
+                           <?php if($user->rights->nomenclature->showPrice) { ?>
+                               <th class="liste_titre col_amountCostUnit" align="right" width="5%"><?php echo $langs->trans('AmountCostUnit'); ?></th>
+                               <th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th>
+                               <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th>
+
+                               <th class="liste_titre col_amountCostWithChargeUnit" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeUnit'); ?></th>
+                               <th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th>
+                               <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) { ?>
                            			<th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('CoefMarge'); ?></th>
                            			<th class="liste_titre col_coef2" width="5%"><?php echo $langs->trans('PV'); ?></th>
-                           		<?php }
-                           		?><th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
+                               <?php } ?>
+                               <th class="liste_titre col_amountCostWithChargeCustom" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeCustom'); ?></th><?php
                            }
                            ?>
                            <th class="liste_titre" width="1%">&nbsp;</th>
@@ -715,6 +717,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                            	$price = price2num($det->calculate_price,'MT');
 									$price_charge = price2num($det->charged_price,'MT');
 
+
+                                    print '<td class="col_amountCostUnit"  >';
+                                    echo $det->qty>0?price(round($price/$det->qty , 2)) : '';
+                                    print '</td>';
+
+
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price( $price ).img_help(1,$langs->trans('PricePA'));
@@ -741,7 +749,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                               </td>
 								   
 								   <?php
-                                	
+
+
+
+                                   print '<td class="col_amountCostWithChargeUnit"  >';
+                                   echo $det->qty>0?price(round($price_charge/$det->qty, 2)) : '';
+                                   print '</td>';
+
 									echo '<td align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($price_charge);
@@ -820,8 +834,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        <tr class="liste_total">
                            <td ><?php echo $langs->trans('Total'); ?></td>
                            <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
+                           <td class="col_amountCostUnit" align="right"></td>
                            <td align="right"><?php echo price(price2num($n->totalPR,'MT')); ?></td>
                            <td align="right"></td>
+
+                           <td class="col_amountCostWithChargeUnit" align="right"></td>
                            <td align="right"><?php echo price(price2num($n->totalPRC,'MT')); ?></td>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
                            			print '<td align="right"></td>';
@@ -838,8 +855,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                       <tr class="liste_total">
 	                           <td ><?php echo $langs->trans('TotalPricePMP'); ?></td>
 	                           <td class="total_colspan" colspan="<?php echo $colspan; ?>">&nbsp;</td>
+                               <td class="col_amountCostUnit" align="right"></td>
 	                           <td align="right"><?php echo price(price2num($n->totalPR_PMP,'MT')); ?></td>
 	                           <td align="right"></td>
+                               <td class="col_amountCostUnit" align="right"></td>
 	                           <td align="right"><?php echo price(price2num($n->totalPRC_PMP,'MT')); ?></td>
 	                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 	                           			print '<td align="right"></td>';
@@ -856,8 +875,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                       ?><tr class="liste_total">
 		                           <td ><?php echo $langs->trans('TotalPriceOF'); ?></td>
 		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
+                                   <td class="col_amountCostUnit" align="right"></td>
 		                           <td align="right"><?php echo price(price2num($n->totalPR_OF,'MT')); ?></td>
 		                           <td align="right"></td>
+                                   <td class="col_amountCostUnit" align="right"></td>
 		                           <td align="right"><?php echo price(price2num($n->totalPRC_OF,'MT')); ?></td>
 		                           <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 		                           			print '<td align="right"></td>';
@@ -1084,11 +1105,21 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
 				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
 		        ?>
+
+
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCost', $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
                        <td style="font-weight: bolder; text-align: right;"><?php echo price($PR); ?></td>
 		        </tr>
+                <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                <tr class="liste_total" >
+                    <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostUnit'); ?></td>
+                    <td colspan="3">&nbsp;</td>
+                    <td style="font-weight: bolder; text-align: right;"><?php echo price($PR/ (!empty($qty_ref)?$qty_ref:1)); ?></td>
+                </tr>
+                <?php } ?>
+
 		        <tr class="liste_total" >
                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
                        <td colspan="3">&nbsp;</td>
@@ -1254,7 +1285,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         </tr>
         <?php } ?>
     </table>
-    
     <?php
 
     $formCore->end();
