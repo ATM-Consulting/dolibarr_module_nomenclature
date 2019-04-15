@@ -64,7 +64,7 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('propalcard', $TContext)) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
             if($action == 'nomenclatureUpdateCoeff') {
                 if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
 
@@ -215,7 +215,7 @@ class Actionsnomenclature
         $TContext = explode(':', $parameters['context']);
         $line = &$parameters['line'];
 
-        if(in_array('propalcard', $TContext)) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
             ?>
@@ -235,7 +235,7 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('propalcard', $TContext)) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
 
