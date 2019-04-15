@@ -9,6 +9,7 @@ require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
 require_once DOL_DOCUMENT_ROOT.'/fourn/class/fournisseur.product.class.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
+dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 if(! class_exists('TSubtotal')) dol_include_once('/subtotal/class/subtotal.class.php');
 
 $langs->load('nomenclature@nomenclature');
@@ -68,6 +69,11 @@ if($action == 'save') {
                     $nbUpdate++;
                 }
             }
+
+            $n->save($PDOdb);
+            $n->setPrice($PDOdb, 1, null, $object_type, $object->id);
+
+            _updateObjectLine($n, $object_type, $line->id, $object->id, true);
         }
 
         if(! empty($nbUpdate)) {
