@@ -232,3 +232,4 @@ SearchByCategory=Recherche par catégorie
 NothingHere=Pas de sous-catégorie ou de produit
 DoASearch=Faites une recherche/Pas de résultat pour votre recherche
 NOMENCLATURE_DETAILS_TAB_REWRITE=Séparer les produits des services dans l'onglet de détail des ouvrages
+UpdateTitleCoeff=Mettre à jour les coefficients des nomenclatures

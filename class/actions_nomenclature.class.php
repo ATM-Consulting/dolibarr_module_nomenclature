@@ -59,10 +59,49 @@ class Actionsnomenclature
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	function doActions($parameters, &$object, &$action, $hookmanager)
-	{
+    function doActions($parameters, &$object, &$action, $hookmanager) {
+        global $conf;
 
-	}
+        $TContext = explode(':', $parameters['context']);
+
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+            if($action == 'nomenclatureUpdateCoeff') {
+                if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+
+                if(! class_exists('TNomenclatureCoefObject')) dol_include_once('/nomenclature/class/nomenclature.class.php');
+                if(! class_exists('TSubtotal')) dol_include_once('/subtotal/class/subtotal.class.php');
+
+                $PDOdb = new TPDOdb;
+
+                $titleLineId = GETPOST('fk_line', 'int');
+
+                // On récupère les lignes appartenant au titre sur lequel on a cliqué (récursivement)
+                $TLine = TSubtotal::getLinesFromTitleId($object, $titleLineId);
+                foreach($TLine as $line) {
+                    $n = new TNomenclature;
+                    $n->loadByObjectId($PDOdb, $line->id, $object->element, true, $line->fk_product, $line->qty, $object->id);
+                    $n->fetchCombinedDetails($PDOdb);
+
+                    foreach($n->TNomenclatureDetCombined as $fk_product => $det) {
+                        // On récupère les coeffs qu'il faut pour chaque ligne de nomenclature
+                        $tx_custom = GETPOST($det->code_type, 'int');
+                        $tx_custom2 = GETPOST($det->code_type2, 'int');
+
+                        $shouldISave = false;
+                        if($det->tx_custom != $tx_custom) {
+                            $det->tx_custom = $tx_custom;
+                            $shouldISave = true;
+                        }
+                        if($det->tx_custom2 != $tx_custom2) {
+                            $det->tx_custom2 = $tx_custom2;
+                            $shouldISave = true;
+                        }
+                        if($shouldISave) $det->save($PDOdb);
+                    }
+                }
+            }
+        }
+    }
 
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
@@ -169,5 +208,88 @@ class Actionsnomenclature
 
 		return 0; // or return 1 to replace standard code
 	}
+
+	function printObjectLine($parameters, &$object, &$action, $hookmanager) {
+	    global $conf, $langs;
+
+        $TContext = explode(':', $parameters['context']);
+        $line = &$parameters['line'];
+
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+            if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+            dol_include_once('/nomenclature/class/nomenclature.class.php');
+            ?>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    let icon = '<i class="fa fa-line-chart" aria-hidden="true" title="<?php echo $langs->trans('UpdateTitleCoeff'); ?>" style="cursor: pointer;" data-lineid="<?php echo $line->id; ?>"></i>';
+                    let tr = $('#tablelines tr[rel=subtotal][data-issubtotal=title][data-id=<?php echo $line->id; ?>]');
+                    $(tr).children('td.linecoledit').prepend(icon + '&nbsp;');
+                });
+            </script>
+            <?php
+        }
+    }
+
+    function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager) {
+	    global $conf, $langs;
+
+        $TContext = explode(':', $parameters['context']);
+
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+            if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+            dol_include_once('/nomenclature/class/nomenclature.class.php');
+
+            $PDOdb = new TPDOdb;
+
+            $TCoeff = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal');
+            ?>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    function buildDialog(fk_line) {
+                        let dialog = $('div#nomenclatureUpdateCoeff');
+                        $(dialog).children().remove();
+                        $(dialog).append('<form id="updateCoeff" method="POST" action="<?php echo $_SERVER['PHP_SELF'].'?id='.$object->id; ?>">');
+                        $('#updateCoeff').append('<input type="hidden" name="action" value="nomenclatureUpdateCoeff" />');
+                        $('#updateCoeff').append('<input type="hidden" name="fk_line" value="'+fk_line+'" />');
+                        $('#updateCoeff').append('<table class="noborder">');
+
+                        <?php
+                        $out = '';
+                        foreach($TCoeff as $code => $coeff) {
+                            $out .= '<tr>';
+                            $out .= '<td>'.$coeff->label.'</td>';
+                            $out .= '<td><input type="text" name="'.$code.'" value="'.$coeff->tx.'" size="10" /></td>';
+                            $out .= '</tr>';
+                        }
+                        print "$(dialog).find('table').append('".$out."');";
+                        ?>
+
+                        $(dialog).dialog({
+                            modal: true
+                            ,title: '<?php echo $langs->trans('CoefList'); ?>'
+                            ,minWidth: 400
+                            ,minHeight: 200
+                            ,buttons: [
+                                { text: "<?php echo $langs->trans('Update'); ?>", click: function() { $(this).find('form#updateCoeff').submit(); $(this).dialog("close"); } }
+                                , { text: "<?php echo $langs->trans('Cancel'); ?>", click: function() { $(this).dialog("close"); } }
+                            ]
+                        });
+                    }
+
+                    $('#tablelines td.linecoledit i.fa-line-chart').on('click', function() {
+                        let fk_line = $(this).data('lineid');
+                        buildDialog(fk_line);
+                    });
+                });
+            </script>
+            <?php
+        }
+    }
+
+    function printCommonFooter() {
+	    print '<div id="nomenclatureUpdateCoeff" style="display: none;">';
+
+	    print '</div>';
+    }
 
 }
