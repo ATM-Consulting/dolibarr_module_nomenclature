@@ -1013,32 +1013,33 @@ class TNomenclatureDet extends TObjetStd
 		if (!$force_cost_price)
 		{
 		    if(!$best_one){
-		        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+		        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
 		    } else {
-		        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
-					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY unitprice ASC LIMIT 1 ");
+		        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent, ((price / quantity) * (1 -  remise_percent / 100 )) as unitfinalprice  FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY unitfinalprice ASC LIMIT 1 ");
 		    }
+
 
 
 			if($obj = $PDOdb->Get_line()) {
 				$price_supplier = $obj->price / $obj->quantity;
+                $price_supplier = $price_supplier * (1 - $obj->remise_percent / 100);
 			}
 
 			if($searchforhigherqtyifnone && empty($price_supplier)) {
 			    if(!$best_one){
-			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+			        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent FROM ".MAIN_DB_PREFIX."product_fournisseur_price
 						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
 			    } else {
-			        $PDOdb->Execute("SELECT rowid, price, quantity FROM ".MAIN_DB_PREFIX."product_fournisseur_price
-						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY unitprice ASC LIMIT 1 ");
+			        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent, ((price / quantity) * (1 -  remise_percent / 100 )) as unitfinalprice FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY unitfinalprice ASC LIMIT 1 ");
 			    }
-
 
 				if($obj = $PDOdb->Get_line()) {
 					$price_supplier = $obj->price / $obj->quantity;
+                    $price_supplier = $price_supplier * (1 - $obj->remise_percent / 100);
 				}
-
 			}
 		}
 

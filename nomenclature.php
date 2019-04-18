@@ -719,7 +719,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                                     print '<td class="col_amountCostUnit"  >';
-                                    echo  price(round($det->buying_price * $det->qty , 2));
+                                    if(!empty($det->qty)){
+                                        echo   price(round($price / $det->qty, 2));
+                                    }
                                     print '</td>';
 
 
@@ -1214,7 +1216,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                 </div>
             </td>
         </tr>
-        
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
@@ -1244,9 +1246,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								<input id="nomenclature_bt_clone_nomenclature" type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
 							</div>
 						</div>
-						
+
                    <?php }
-				   
+
 					if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
 					{
 						print '<div class="inline-block divButAction">';
@@ -1254,7 +1256,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						print '</div>';
 					}
 					?>
-						
+
 					<div class="inline-block divButAction">
 						<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 					</div>
