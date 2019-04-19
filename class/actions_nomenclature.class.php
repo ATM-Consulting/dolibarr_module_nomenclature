@@ -65,7 +65,7 @@ class Actionsnomenclature
         $TContext = explode(':', $parameters['context']);
 
         if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
-            if($action == 'nomenclatureUpdateCoeff') {
+            if($action == 'nomenclatureUpdateCoeff' && $object->statut == 0) {
                 if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
 
                 if(! class_exists('TNomenclatureCoefObject')) dol_include_once('/nomenclature/class/nomenclature.class.php');
@@ -215,7 +215,8 @@ class Actionsnomenclature
         $TContext = explode(':', $parameters['context']);
         $line = &$parameters['line'];
 
-        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+        // C'est mieux de vérifier si l'objet est en brouillon...
+        if($object->statut == 0 && (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
             ?>
@@ -235,7 +236,8 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+        // C'est mieux de vérifier si l'objet est en brouillon...
+        if($object->statut == 0 && (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
 
