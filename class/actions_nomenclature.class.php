@@ -68,6 +68,7 @@ class Actionsnomenclature
             if($action == 'nomenclatureUpdateCoeff' && $object->statut == 0) {
                 if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
 
+                if(! function_exists('_updateObjectLine')) dol_include_once('/nomenclature/lib/nomenclature.lib.php');
                 if(! class_exists('TNomenclatureCoefObject')) dol_include_once('/nomenclature/class/nomenclature.class.php');
                 if(! class_exists('TSubtotal')) dol_include_once('/subtotal/class/subtotal.class.php');
 
@@ -98,6 +99,11 @@ class Actionsnomenclature
                         }
                         if($shouldISave) $det->save($PDOdb);
                     }
+
+                    $n->save($PDOdb);
+                    $n->setPrice($PDOdb, 1, null, $object->element, $object->id);
+
+                    _updateObjectLine($n, $object->element, $line->id, $object->id, true);
                 }
             }
         }
