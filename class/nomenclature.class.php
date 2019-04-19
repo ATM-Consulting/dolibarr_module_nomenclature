@@ -657,7 +657,7 @@ class TNomenclature extends TObjetStd
     	global $langs;
 
         $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature
-		 WHERE fk_object=".(int) $fk_object." AND object_type='".$object_type."'");
+		 WHERE fk_object=".(int) $fk_object." AND object_type='".$object_type."' ORDER BY is_default DESC, rowid ASC ");
         $TNom=array();
 
         foreach($Tab as $row) {

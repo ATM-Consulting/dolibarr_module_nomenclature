@@ -120,7 +120,8 @@ if (empty($reshook))
 			$n->load($PDOdb, $fk_nomenclature);
 			$n->delete($PDOdb);
 	
-			cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
+			$res = cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
+
 		}
 		else
 		{
