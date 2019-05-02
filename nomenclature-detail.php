@@ -187,7 +187,7 @@ dol_fiche_head($head, 'nomenclature', $title, -1, $picto);
 
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '&object='.$object_type);
 
-print_barre_liste('liste des produits liés aux nomenclatures du devis', 0, $_SERVER['PHP_SELF']);
+print_barre_liste('Liste produits et MO nécessaires', 0, $_SERVER['PHP_SELF']);
 
 list($TProduct, $TWorkstation) = _getDetails($object, $object_type);
 print_table($TProduct, $TWorkstation, $object_type);
