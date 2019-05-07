@@ -73,7 +73,7 @@ if($action == 'save') {
             }
 
             $n->save($PDOdb);
-            $n->setPrice($PDOdb, 1, null, $object_type, $object->id);
+            $n->setPrice($PDOdb, $line->qty, null, $object_type, $object->id);
 
             _updateObjectLine($n, $object_type, $line->id, $object->id, true);
         }
