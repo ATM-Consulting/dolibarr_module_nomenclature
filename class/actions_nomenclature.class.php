@@ -101,7 +101,7 @@ class Actionsnomenclature
                     }
 
                     $n->save($PDOdb);
-                    $n->setPrice($PDOdb, 1, null, $object->element, $object->id);
+                    $n->setPrice($PDOdb, $line->qty, null, $object->element, $object->id);
 
                     _updateObjectLine($n, $object->element, $line->id, $object->id, true);
                 }
