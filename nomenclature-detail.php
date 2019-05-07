@@ -55,7 +55,7 @@ if($action == 'save') {
                 $n->object_type = $object_type;
                 $n->fk_object = $line->id;
 
-                $n->setPrice($PDOdb, 1, null, $object_type, $object->id);
+                $n->setPrice($PDOdb, $line->qty, null, $object_type, $object->id);
                 $n->save($PDOdb);
             }
 
