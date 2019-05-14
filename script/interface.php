@@ -39,6 +39,9 @@ function _get(&$PDOdb, $case) {
             __out($Tab,'json');
             
             break;
+        case 'coefs':
+            print json_encode(getAllCoefs(GETPOST('fk_line', 'int'), GETPOST('element')));
+            break;
     }
     
 }
@@ -264,4 +267,34 @@ function _categories($fk_parent=0, $keyword='') {
     
     
     return $TFille;
+}
+
+/**
+ * @param int $fk_line      Id of line
+ * @param string $element   'propal' or 'commande'
+ */
+function getAllCoefs($fk_line, $element = 'propal') {
+    global $db;
+    $PDOdb = new TPDOdb;
+
+    $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+    $TCoefCodeType = array_keys($TCoef);
+
+    $TRes = array();
+    $sql = 'SELECT '.implode(', ', $TCoefCodeType);
+    if($element == 'propal') $sql .= ' FROM '.MAIN_DB_PREFIX.'propaldet_extrafields';
+    else $sql .= ' FROM '.MAIN_DB_PREFIX.'commandedet_extrafields'; // Order
+    $sql .= ' WHERE fk_object = '.$fk_line;
+
+    $resql = $db->query($sql);
+    if(! $resql) {
+        dol_print_error($db);
+        exit;
+    }
+
+    if($obj = $db->fetch_object($resql)) {
+        foreach($obj as $k => $v) $TRes[$k] = array('label' => $TCoef[$k]->label, 'value' => price2num(price($v)));
+    }
+
+    return $TRes;
 }

@@ -60,7 +60,7 @@ class Actionsnomenclature
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
     function doActions($parameters, &$object, &$action, $hookmanager) {
-        global $conf;
+        global $conf, $db;
 
         $TContext = explode(':', $parameters['context']);
 
@@ -105,6 +105,18 @@ class Actionsnomenclature
 
                     _updateObjectLine($n, $object->element, $line->id, $object->id, true);
                 }
+
+                if($object->element == 'propal') $titleLine = new PropaleLigne($db);
+                else $titleLine = new OrderLine($db);
+                $titleLine->fetch($titleLineId);
+                if(empty($titleLine->array_options)) $titleLine->fetch_optionals();
+
+                $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+
+                foreach($TCoef as $coef) {
+                    $titleLine->array_options['options_'.$coef->code_type] = GETPOST($coef->code_type);
+                }
+                $titleLine->insertExtraFields();
             }
         }
     }
@@ -249,28 +261,58 @@ class Actionsnomenclature
 
             $PDOdb = new TPDOdb;
 
-            $TCoeff = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, 'propal');
+            $TCoeff = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object->element);
             ?>
             <script type="text/javascript">
                 $(document).ready(function() {
                     function buildDialog(fk_line) {
+                        let element = '<?php echo $object->element; ?>';
+
+
                         let dialog = $('div#nomenclatureUpdateCoeff');
                         $(dialog).children().remove();
                         $(dialog).append('<form id="updateCoeff" method="POST" action="<?php echo $_SERVER['PHP_SELF'].'?id='.$object->id; ?>">');
                         $('#updateCoeff').append('<input type="hidden" name="action" value="nomenclatureUpdateCoeff" />');
                         $('#updateCoeff').append('<input type="hidden" name="fk_line" value="'+fk_line+'" />');
+                        $('#updateCoeff').append('<input type="hidden" name="element" value="'+element+'" />');
                         $('#updateCoeff').append('<table class="noborder">');
 
-                        <?php
-                        $out = '';
-                        foreach($TCoeff as $code => $coeff) {
-                            $out .= '<tr>';
-                            $out .= '<td>'.$coeff->label.'</td>';
-                            $out .= '<td><input type="text" name="'.$code.'" value="'.$coeff->tx.'" size="10" /></td>';
-                            $out .= '</tr>';
-                        }
-                        print "$(dialog).find('table').append('".$out."');";
-                        ?>
+                        $.ajax({
+                            url: '<?php echo dol_buildpath('/nomenclature/script/interface.php', 1); ?>',
+                            data: {
+                                json: 1,
+                                get: 'coefs',
+                                fk_line: fk_line,
+                                element: element
+                            },
+                            dataType: 'json',
+                            type: 'POST'
+                        }).done(function(data) {
+                            if(data !== undefined && ! Array.isArray(data)) {
+                                // Custom values already applied from line fk_line
+                                let out = '';
+                                for (let code_type in data) {
+                                    out += '<tr>';
+                                    out += '<td>'+data[code_type]['label']+'</td>';
+                                    out += '<td><input type="text" name="'+code_type+'" value="'+data[code_type]['value']+'" size="10" /></td>';
+                                    out += '</tr>';
+                                }
+                                $(dialog).find('table').append(out);
+                            }
+                            else {
+                                // Default values from object
+                                <?php
+                                $out = '';
+                                foreach($TCoeff as $code => $coeff) {
+                                    $out .= '<tr>';
+                                    $out .= '<td>'.$coeff->label.'</td>';
+                                    $out .= '<td><input type="text" name="'.$code.'" value="'.$coeff->tx.'" size="10" /></td>';
+                                    $out .= '</tr>';
+                                }
+                                print "$(dialog).find('table').append('".$out."');";
+                                ?>
+                            }
+                        });
 
                         $(dialog).dialog({
                             modal: true
