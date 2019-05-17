@@ -120,7 +120,8 @@ if (empty($reshook))
 			$n->load($PDOdb, $fk_nomenclature);
 			$n->delete($PDOdb);
 	
-			cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
+			$res = cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product'), $fk_object, $object_type);
+
 		}
 		else
 		{
@@ -719,7 +720,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                                     print '<td class="col_amountCostUnit"  >';
-                                    echo $det->qty>0?price(round($price/$det->qty , 2)) : '';
+                                    if(!empty($det->qty)){
+                                        echo   price(round($price / $det->qty, 2));
+                                    }
                                     print '</td>';
 
 
@@ -753,7 +756,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                                    print '<td class="col_amountCostWithChargeUnit"  >';
-                                   echo $det->qty>0?price(round($price_charge/$det->qty, 2)) : '';
+                                   echo $coef_qty_price>0?price(round($price_charge/$coef_qty_price, 2)) : '';
                                    print '</td>';
 
 									echo '<td align="right" valign="middle">';
@@ -1105,78 +1108,64 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
 				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
 		        ?>
+            <tr  data-row="TotalRow" >
+
+            </tr>
+
+                <table class="liste det-table" style="width: 100%" >
+                    <thead>
+                    <tr class="liste_total" >
+                        <th ></th>
+                        <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                        <th style="text-align: right;" ><?php echo $langs->trans('TotalUnit'); ?></th>
+                        <?php } ?>
+                        <th style="text-align: right;" ><?php echo $langs->trans('TotalForX', $qty_ref); ?></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="liste_total" data-row="TotalAmountCost" >
+                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCost'); ?></td>
+
+                        <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                            <td style="font-weight: bolder; text-align: right;"><?php echo price($PR/ (!empty($qty_ref)?$qty_ref:1)); ?></td>
+                        <?php } ?>
+
+                        <td style="font-weight: bolder; text-align: right;"><?php echo price($PR); ?></td>
+                    </tr>
 
 
-		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCost', $qty_ref); ?></td>
-                       <td colspan="3">&nbsp;</td>
-                       <td style="font-weight: bolder; text-align: right;"><?php echo price($PR); ?></td>
-		        </tr>
-                <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
-                <tr class="liste_total" >
-                    <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostUnit'); ?></td>
-                    <td colspan="3">&nbsp;</td>
-                    <td style="font-weight: bolder; text-align: right;"><?php echo price($PR/ (!empty($qty_ref)?$qty_ref:1)); ?></td>
-                </tr>
-                <?php } ?>
+                    <tr class="liste_total" data-row="TotalAmountCostWithCharge" >
+                        <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge'); ?></td>
 
-		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithCharge', $qty_ref); ?></td>
-                       <td colspan="3">&nbsp;</td>
-                       <td style="font-weight: bolder; text-align: right;"><?php echo price($PR_coef); ?></td>
-                       	<?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
-		        </tr><?php
+                        <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                            <td style="font-weight: bolder; text-align: right;"><?php echo price($PR_coef/$qty_ref); ?></td>
+                        <?php } ?>
 
-				// On affiche aussi à l'unité
-		        if($qty_ref!=1 && !empty($qty_ref)) {
-	        	?>
-				<tr class="liste_total" >
-					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeUnit'); ?></td>
-					<td colspan="3">&nbsp;</td>
-					<td style="font-weight: bolder; text-align: right;">
-					<?php echo price($PR_coef/$qty_ref); ?>
-					</td>
-				</tr>
-        	    <?php
-		        }
+                        <td style="font-weight: bolder; text-align: right;"><?php echo price($PR_coef); ?></td>
+                        <?php echo $formCore->hidden('price_buy', round($price_buy,2)); ?>
+                    </tr>
 
-		       if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 
-					  ?><tr class="liste_total" >
-		                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', $qty_ref); ?></td>
-		                       <td colspan="3">&nbsp;</td>
-		                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price(price2num($n->totalPRCMO_PMP,'MT')); ?></span></td>
-				      </tr><?php
+                <?php
+		       if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) { ?>
 
-				      if(!empty($conf->of->enabled)) {
-					      	?><tr class="liste_total" >
-			                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', $qty_ref); ?></td>
-			                       <td colspan="3">&nbsp;</td>
-			                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price(price2num($n->totalPRCMO_OF,'MT')); ?></span></td>
-					      	</tr><?php
+                   <tr class="liste_total" data-row="TotalAmountCostWithChargePMP" >
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP'); ?></td>
+                       <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                           <td style="font-weight: bolder; text-align: right;"><?php echo price(price2num($n->totalPRCMO_PMP/$qty_ref,'MT')); ?></td>
+                       <?php } ?>
+                       <td style="font-weight: bolder; text-align: right;"><span class="pricePMP"><?php echo price(price2num($n->totalPRCMO_PMP,'MT')); ?></span></td>
+                   </tr>
 
-				      }
-
-				      if($qty_ref!=1 && !empty($qty_ref)) {
-	      				?>
-	      				<tr class="liste_total" >
-	      					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargePMP', 1); ?></td>
-	      					<td colspan="3">&nbsp;</td>
-	      					<td style="font-weight: bolder; text-align: right;">
-	      					<?php echo price(price2num($n->totalPRCMO_PMP/$qty_ref,'MT')); ?>
-	      					</td>
-	      				</tr>
-
-	      				<tr class="liste_total" >
-	      					<td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF', 1); ?></td>
-	      					<td colspan="3">&nbsp;</td>
-	      					<td style="font-weight: bolder; text-align: right;">
-	      					<?php echo price(price2num($n->totalPRCMO_OF/$qty_ref,'MT')); ?>
-	      					</td>
-	      				</tr>
+                   <tr class="liste_total" data-row="TotalAmountCostWithChargeOF" >
+                       <td style="font-weight: bolder;"><?php echo $langs->trans('TotalAmountCostWithChargeOF'); ?></td>
+                       <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                           <td style="font-weight: bolder; text-align: right;"><?php echo price(price2num($n->totalPRCMO_OF/$qty_ref,'MT')); ?></td>
+                       <?php } ?>
+                       <td style="font-weight: bolder; text-align: right;"><span class="priceOF"><?php echo price(price2num($n->totalPRCMO_OF,'MT')); ?></span></td>
+                   </tr>
 
 	              	    <?php
-	      		     }
 		        }
 
 		        if(!empty($conf->global->NOMENCLATURE_HIDE_ADVISED_PRICE))
@@ -1185,27 +1174,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				}
 				else {
 		        ?>
-		        <tr class="liste_total" >
-                       <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100, $qty_ref); ?></td>
-                       <td colspan="3">&nbsp;</td>
-                       <td style="font-weight: bolder; text-align: right;">
-                       	<?php echo price($price_to_sell); ?>
-                       	<?php echo $formCore->hidden('price_to_sell', $price_to_sell); ?>
-                       </td>
-		        </tr>
-				
-					<?php 
-					// On affiche aussi à l'unité
-					if($qty_ref!=1 && !empty($qty_ref)) { 
-					?>
-					<tr class="liste_total" >
-						   <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseilUnit', ($marge->tx_object -1)* 100); ?></td>
-						   <td colspan="3">&nbsp;</td>
-						   <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell / $qty_ref); ?></td>
-					</tr>
-					<?php } ?>
+
+
+
+                    <tr class="liste_total"  data-row="PriceConseil" >
+                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100); ?></td>
+                        <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
+                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell / $qty_ref); ?></td>
+                        <?php } ?>
+
+                        <td style="font-weight: bolder; text-align: right;">
+                            <?php echo price($price_to_sell); ?>
+                            <?php echo $formCore->hidden('price_to_sell', $price_to_sell); ?>
+                        </td>
+                    </tr>
+
+
 		        <?php
 		        }
+
+				print '</tbody></table>';
 		}
 
 		if (GETPOST('optioncss') !== 'print')
@@ -1229,7 +1217,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                 </div>
             </td>
         </tr>
-        
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
@@ -1259,9 +1247,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								<input id="nomenclature_bt_clone_nomenclature" type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
 							</div>
 						</div>
-						
+
                    <?php }
-				   
+
 					if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
 					{
 						print '<div class="inline-block divButAction">';
@@ -1269,7 +1257,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						print '</div>';
 					}
 					?>
-						
+
 					<div class="inline-block divButAction">
 						<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
 					</div>
