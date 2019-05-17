@@ -405,12 +405,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	print ' '.$n->title;
 	
 	print ' - '.$langs->trans('nomenclatureQtyReference').' '. $n->qty_reference;
-	
+
 	$price_buy = $n->getBuyPrice(); // prix d'achat total
 	print ' - '.$langs->trans('TotalAmountCostWithCharge').' '. price($price_buy);
-	
-	$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
-	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell);
+
+	$price_to_sell =  $n->getSellPrice($qty_ref); // prix de vente conseillé total
+	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell*$qty_ref);
 	
 	print '</h3>';
 	
@@ -845,7 +845,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <td align="right"><?php echo price(price2num($n->totalPRC,'MT')); ?></td>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
                            			print '<td align="right"></td>';
-                           			?><td align="right"><?php echo price(price2num($n->totalPV,'MT')); ?></td><?php
+                           			?><td align="right"><?php echo price(price2num($n->getSellPrice($qty_ref)*$qty_ref,'MT')); ?></td><?php
                            		  } ?>
                            <td align="right"><?php /*echo price(round($total_produit_coef_final,2));*/ ?></td>
                            <td align="right"></td>
@@ -1106,7 +1106,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				$PR = price2num($n->totalPR,'MT');
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
-				$price_to_sell =  $n->getSellPrice(); // prix de vente conseillé total
+				$price_to_sell =  $n->getSellPrice($qty_ref); // prix de vente conseillé total
 		        ?>
             <tr  data-row="TotalRow" >
 
@@ -1180,11 +1180,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                     <tr class="liste_total"  data-row="PriceConseil" >
                         <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100); ?></td>
                         <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
-                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell / $qty_ref); ?></td>
+                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell); ?></td>
                         <?php } ?>
 
                         <td style="font-weight: bolder; text-align: right;">
-                            <?php echo price($price_to_sell); ?>
+                            <?php echo price($price_to_sell*$qty_ref); ?>
                             <?php echo $formCore->hidden('price_to_sell', $price_to_sell); ?>
                         </td>
                     </tr>
