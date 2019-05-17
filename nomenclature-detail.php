@@ -20,6 +20,8 @@ $id = GETPOST('id', 'int');
 $ref = GETPOST('ref');
 $action = GETPOST('action', 'none', 2); // Check only $_POST
 
+$hookmanager->initHooks(array('nomenclatureproductservicelist'));
+
 if(GETPOST('save') == 'ok') setEventMessage($langs->trans('Saved'));
 
 $form = new Form($db);
@@ -53,7 +55,7 @@ if($action == 'save') {
                 $n->object_type = $object_type;
                 $n->fk_object = $line->id;
 
-                $n->setPrice($PDOdb, 1, null, $object_type, $object->id);
+                $n->setPrice($PDOdb, $line->qty, null, $object_type, $object->id);
                 $n->save($PDOdb);
             }
 
@@ -71,7 +73,7 @@ if($action == 'save') {
             }
 
             $n->save($PDOdb);
-            $n->setPrice($PDOdb, 1, null, $object_type, $object->id);
+            $n->setPrice($PDOdb, $line->qty, null, $object_type, $object->id);
 
             _updateObjectLine($n, $object_type, $line->id, $object->id, true);
         }
@@ -185,6 +187,8 @@ dol_fiche_head($head, 'nomenclature', $title, -1, $picto);
 
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '&object='.$object_type);
 
+print_barre_liste('Liste produits et MO nécessaires', 0, $_SERVER['PHP_SELF']);
+
 list($TProduct, $TWorkstation) = _getDetails($object, $object_type);
 print_table($TProduct, $TWorkstation, $object_type);
 
@@ -262,7 +266,12 @@ function _getDetails(&$object, $object_type) {
                     $det->type = $p->type;
                     $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
                     if(! isset($TProduct[$firstParentTitleId]['products'][$det->fk_product])) $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
-                    else $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
+                    else {
+                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
+                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->calculate_price += $det->calculate_price;
+                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->charged_price += $det->charged_price;
+                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->pv += $det->pv;
+                    }
 
                     // Total unit
                     if(! isset($TProduct[$firstParentTitleId]['total']['unit'][$det->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$det->unit] = $det->qty;
@@ -392,7 +401,7 @@ function print_table($TData, $TWorkstation, $object_type) {
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
                 <th class="liste_titre" width="40%"><?php echo $langs->trans('Product'); ?></th>
-                <th class="liste_titre" align="right"><?php echo $langs->trans('QtyNeed'); ?></th>
+                <th class="liste_titre" align="right"><?php echo $langs->trans('Quantity'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('Unit'); ?></th>
                 <?php
                 if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
@@ -403,6 +412,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                 <th class="liste_titre" align="right"><?php echo $langs->trans('AmountCost'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('AmountCostWithCharge'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('PV'); ?></th>
+                <th></th>
             </tr>
             <?php
 
@@ -426,10 +436,10 @@ function print_table($TData, $TWorkstation, $object_type) {
                         $label .= $product->getNomUrl(1).' - ';
                         $qty = $line->qty;
                         $unit = $langs->trans($line->unit);
-                        $calculate_price = price($line->calculate_price);
-                        $charged_price = price($line->charged_price);
-                        $buying_price = price($line->buying_price); // TODO En mode edit de ligne, le transformer en input type text comme sur les nomenclatures
-                        $pv = price($line->pv);
+                        $calculate_price = price(price2num($line->calculate_price, 'MT'));
+                        $charged_price = price(price2num($line->charged_price, 'MT'));
+                        $buying_price = price(price2num($line->buying_price, 'MT')); // TODO En mode edit de ligne, le transformer en input type text comme sur les nomenclatures
+                        $pv = price(price2num($line->pv, 'MT'));
                     }
 
                     $label .= $product->label;
@@ -605,6 +615,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                     print '<td align="right">'.$calculate_price.'</td>';
                     print '<td align="right">'.$charged_price.'</td>';
                     print '<td align="right">'.$pv.'</td>';
+                    print '<td></td>';
                     print '</tr>';
                 }
 
@@ -615,13 +626,13 @@ function print_table($TData, $TWorkstation, $object_type) {
 
                 print '<td align="right">';
                 foreach($TBlock['total']['unit'] as $unit => $total_unit) {
-                    print '<div>'.price($total_unit).'</div>';
+                    print "<div>".price(price2num($total_unit, 'MT'))."</div>\n";
                 }
                 print '</td>';
 
                 print '<td align="right">';
                 foreach($TBlock['total']['unit'] as $unit => $total_unit) {
-                    print '<div>'.$langs->trans($unit).'</div>';
+                    print "<div>".$langs->trans($unit)."</div>\n";
                 }
                 print '</td>';
 
@@ -629,9 +640,10 @@ function print_table($TData, $TWorkstation, $object_type) {
                     print '<td align="right" colspan="2"></td>';
                 }
 
-                print '<td align="right">'.price($TBlock['total']['calculate_price']).'</td>';
-                print '<td align="right">'.price($TBlock['total']['charged_price']).'</td>';
-                print '<td align="right">'.price($TBlock['total']['pv']).'</td>';
+                print '<td align="right">'.price(price2num($TBlock['total']['calculate_price'], 'MT')).'</td>';
+                print '<td align="right">'.price(price2num($TBlock['total']['charged_price'], 'MT')).'</td>';
+                print '<td align="right">'.price(price2num($TBlock['total']['pv'], 'MT')).'</td>';
+                print '<td></td>';
                 print '</tr>';
             }
 
@@ -640,7 +652,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                 <tr class="liste_titre">
                     <th class="liste_titre"><?php echo $langs->trans('WorkStation'); ?></th>
                     <th class="liste_titre" align="right"><?php echo $langs->trans('Qty'); ?></th>
-                    <th class="liste_titre" colspan="2"></th>
+                    <th class="liste_titre" colspan="3"></th>
                 </tr>
                 <?php
 
@@ -649,7 +661,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                     echo '<tr class="oddeven">
                     <td>'.$ws->workstation->getNomUrl(1).'</td>
                     <td align="right">'.price($ws->nb_hour).' h</td>
-                    <td align="right" colspan="2"></td>
+                    <td align="right" colspan="3"></td>
                 </tr>
                 ';
 
@@ -660,7 +672,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                 <tr class="liste_total" style="font-weight: bold;">
                     <td align="right">Total :</td>
                     <td align="right"><?php echo price($total_heure); ?> h</td>
-                    <td align="right" colspan="2"></td>
+                    <td align="right" colspan="3"></td>
                 </tr>
                 <?php
             }

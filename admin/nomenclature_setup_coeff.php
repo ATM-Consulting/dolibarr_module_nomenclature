@@ -30,6 +30,7 @@
 
 // Libraries
 require '../config.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 dol_include_once('/core/lib/admin.lib.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 dol_include_once('/nomenclature/class/nomenclature.class.php');
@@ -55,6 +56,12 @@ if ($action == 'add' || $action == 'edit')
 	{
 		$nomenclatureCoef = new TNomenclatureCoef;
 		$nomenclatureCoef->load($PDOdb, $id);
+
+		// On delete l'extrafield si on delete le coeff
+		$e = new ExtraFields($db);
+		$e->delete($nomenclatureCoef->code_type, 'propaldet');
+		$e->delete($nomenclatureCoef->code_type, 'commandedet');
+
 		$res = $nomenclatureCoef->delete($PDOdb);
 
 		if ($res > 0) setEventMessages($langs->trans('NomenclatureDeleteSuccess'), null);
@@ -69,6 +76,13 @@ if ($action == 'add' || $action == 'edit')
 
 		if ($label && $code && $tx)
 		{
+		    // On crée l'extrafield commandedet & propaldet
+            if($action == 'add') {
+                $e = new ExtraFields($db);
+                $e->addExtraField($code, $label, 'price', 100, '24,8', 'propaldet', 0, 0, '', '', 0, '', 0);
+                $e->addExtraField($code, $label, 'price', 100, '24,8', 'commandedet', 0, 0, '', '', 0, '', 0);
+            }
+
 			$nomenclatureCoef = new TNomenclatureCoef;
 
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
