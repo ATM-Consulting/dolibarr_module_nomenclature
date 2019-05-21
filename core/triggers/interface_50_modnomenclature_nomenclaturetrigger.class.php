@@ -182,9 +182,15 @@ class Interfacenomenclaturetrigger
 			$this->_setPrice($PDOdb, $object, $object->fk_commande, 'commande');
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
-		} elseif ($action === 'PROPAL_CLONE' || $action === 'ORDER_CLONE') {
-
-			if ($action === 'PROPAL_CLONE')
+		}
+		elseif ((floatval(DOL_VERSION) <= 7.0 && in_array($action, array('PROPAL_CLONE', 'ORDER_CLONE'))) ||
+                (floatval(DOL_VERSION) >= 8.0 && ! empty($object->context) && in_array('createfromclone', $object->context) && in_array($action, array('PROPAL_CREATE', 'ORDER_CREATE')))) {
+            /**
+             * A partir de la version 8.0 de Dolibarr, les Triggers "*_CLONE" ont été supprimés
+             * Dans les Triggers "*_CREATE", il faut se fier à $object->context pour savoir si c'est un clone ou pas...
+             */
+            $TOrigin = explode('_', $action);
+			if ($TOrigin[0] == 'PROPAL')
 				$origin = 'propal';
 			else
 				$origin = 'commande';
