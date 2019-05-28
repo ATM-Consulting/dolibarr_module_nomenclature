@@ -268,7 +268,7 @@ function _getDetails(&$object, $object_type) {
 		    $det->qty = $det->qty*$line->qty;
                     if(! isset($TProduct[$firstParentTitleId]['products'][$det->fk_product])) $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
                     else {
-                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += ($det->qty*$line->qty);
+                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
                         $TProduct[$firstParentTitleId]['products'][$det->fk_product]->calculate_price += $det->calculate_price;
                         $TProduct[$firstParentTitleId]['products'][$det->fk_product]->charged_price += $det->charged_price;
                         $TProduct[$firstParentTitleId]['products'][$det->fk_product]->pv += $det->pv;
