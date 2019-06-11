@@ -815,9 +815,10 @@ class TNomenclature extends TObjetStd
 				// DESTOCK components (needed)
 				foreach ($this->TNomenclatureDet as &$det)
 				{
-					if(empty($det->qty*$coef)) continue;
+				    $val = $det->qty*$coef;
+					if(empty($val)) continue;
 					$result=$mouvS->livraison($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
-					if ($result <= 0) $error++;
+					if ($result < 0 || ($result == 0 && empty($det->fk_product))) $error++;
 				}
 
 				// Then STOCK the parent (to_make)
