@@ -117,7 +117,7 @@ class Interfacenomenclaturetrigger
 		// Users
 		global $db, $conf;
 
-		define('INC_FROM_DOLIBARR', true);
+		if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
 		dol_include_once('/nomenclature/config.php');
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
 		$PDOdb = new TPDOdb();
@@ -291,6 +291,25 @@ class Interfacenomenclaturetrigger
 			$object->array_options['options_pv_force'] = $pv_force;
 			$object->insertExtraFields();
 		}
+        elseif ($action === 'ORDER_VALIDATE' || $action === 'PROPAL_VALIDATE')
+        {
+            $PDOdb = new TPDOdb();
+
+            foreach ($object->lines as $line)
+            {
+                $n = new TNomenclature;
+                $n->loadByObjectId($PDOdb, $line->id, $object->element, true, $line->fk_product, $line->qty, $object->id); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+//
+                if ($n->getId() == 0)
+                {
+                    $n->fk_object = $line->id;
+                    $n->object_type = $object->element;
+                    $n->setPrice($PDOdb, $line->qty, $line->id, $object->element, $object->id);
+                    $n->save($PDOdb);
+                }
+            }
+
+        }
 
 		return 0;
 	}
