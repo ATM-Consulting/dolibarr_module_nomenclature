@@ -515,6 +515,36 @@ class TNomenclature extends TObjetStd
 
 	}
 
+    /**
+     * @param $fk_product Product within the nomenclature
+     * @return array : id of all the objects with nomenclature which contains the product
+     */
+    function getNomenclaturesByProduct($fk_product) {
+        $res = array();
+        if (! empty($fk_product)){
+	        global  $db;
+            $sql="SELECT n.fk_object
+	            FROM ".MAIN_DB_PREFIX."nomenclaturedet nd
+                LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (n.rowid=nd.fk_nomenclature)
+                WHERE nd.fk_product=".$fk_product." AND n.object_type='product'";
+            $resql = $db->query($sql);
+            if ($resql) {
+              $num = $db->num_rows($resql);
+                $i = 0;
+                if ($num){
+                    while ($i<$num){
+                        $obj = $db->fetch_object($resql);
+                        if ($obj){
+                            array_push($res, $obj->fk_object);
+                        }
+                        $i++;
+                    }
+                }
+           }
+        }
+	    return $res;
+    }
+
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1, $fk_origin=0) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()."
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
