@@ -529,16 +529,8 @@ class TNomenclature extends TObjetStd
                 WHERE nd.fk_product=".$fk_product." AND n.object_type='product'";
             $resql = $db->query($sql);
             if ($resql) {
-              $num = $db->num_rows($resql);
-                $i = 0;
-                if ($num){
-                    while ($i<$num){
-                        $obj = $db->fetch_object($resql);
-                        if ($obj){
-                            array_push($res, $obj->fk_object);
-                        }
-                        $i++;
-                    }
+                while ($obj = $db->fetch_object($resql)){
+                    array_push($res, $obj->fk_object);
                 }
            }
         }
