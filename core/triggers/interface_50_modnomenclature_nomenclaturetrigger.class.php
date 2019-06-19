@@ -313,10 +313,11 @@ class Interfacenomenclaturetrigger
 		elseif ($action == 'SUPPLIER_PRODUCT_BUYPRICE_UPDATE'){
             $nomenclature = new TNomenclature();
             $objIds = $nomenclature->getNomenclaturesByProduct($object->id);
-            foreach ($objIds as $obj) { //$obj : ID Produit avec nomenclature ayant le produit modifié.
+            foreach ($objIds as $obj) { //$obj : Product ID
                 $nomenclature->loadByObjectId($PDOdb,$obj,'product');
                 foreach ($nomenclature->TNomenclatureDet as $line){
-                    if($line->fk_product == $object->id && $line->buying_price == $object->fourn_unitprice){
+                    // Same product, same fourn and unchanged price
+                    if($line->fk_product == $object->id && $object->product_fourn_price_id == $line->fk_fournprice && $line->buying_price == $line->fk_fournprice){
                         $line->buying_price = $_REQUEST['price'];
                         $nomenclature->save($PDOdb);
                     }
