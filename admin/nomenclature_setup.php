@@ -159,6 +159,18 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST');
 print '</td></tr>';
 
+if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST){ //@TODO : refresh & message à l'activation
+    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="recalculate_nomenclatures">';
+    print '<tr '.$bc[$var].'>';
+    print '<td align="right">'.$langs->trans("Recalculate").'</td>';
+    print '<td width="600">';
+    print '</td>';
+    print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Recalculate").'" >';
+    print '</td></tr>';
+    print '</form>';
+}
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';

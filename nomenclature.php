@@ -706,13 +706,22 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								<?php
 								
 							   if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
-							   		
-							   		?><td nowrap><select id="TNomenclature[<?php echo $k; ?>][fk_fournprice]" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select><?php
-							   		echo $formCore->texte('', 'TNomenclature['.$k.'][buying_price]', empty($det->buying_price) ? '' : $det->buying_price, 7,100).'</td>';
-							   		$det->printSelectProductFournisseurPrice($k, $n->rowid, $n->object_type);
-									
+							       $c = new TNomenclature();
+                                    //Conf active and Product has a nomenclature
+							       if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST && $c->loadByObjectId($PDOdb, $n->TNomenclatureDet[$k]->fk_product, 'product')){
+                                    echo '<td nowrap>';
+                                    echo $formCore->texte('', 'TNomenclature['.$k.'][buying_price]',empty($det->buying_price) ? '' : $det->buying_price, 7,100);
+                                    echo '</td>';
+                                    }
+							       else{
+                                    ?><td nowrap>
+                                    <select id="TNomenclature[<?php echo $k; ?>][fk_fournprice]" name="TNomenclature[<?php echo $k; ?>][fk_fournprice]" class="flat"></select><?php
+                                    echo $formCore->texte('', 'TNomenclature['.$k.'][buying_price]', empty($det->buying_price) ? '' : $det->buying_price, 7,100);
+                                    echo '</td>';
+                                    $det->printSelectProductFournisseurPrice($k, $n->rowid, $n->object_type);
+							       }
+
 							   }
-							   
 	                            if($user->rights->nomenclature->showPrice) {
 
 	                            	$price = price2num($det->calculate_price,'MT');

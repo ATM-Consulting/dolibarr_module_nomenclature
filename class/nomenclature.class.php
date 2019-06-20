@@ -60,7 +60,24 @@ class TNomenclature extends TObjetStd
         }
     }
 
-	function cloneObject(&$PDOdb, $fk_object=0)
+    function save(&$PDOdb)
+    {
+        global $conf, $db;
+
+        parent::save($PDOdb);
+
+        if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST && $this->object_type == 'product'){
+            $prod = new Product($db);
+            $test = new TNomenclature();
+            $prod->fetch($this->fk_object);
+            $test->loadByObjectId($PDOdb,$prod->id,'product',false,$prod->id);
+            $test->setPrice($PDOdb,$this->qty_reference,$prod->id,'object');
+            $test->updateTotalPR($PDOdb,$prod,$this->totalPR);
+        }
+    }
+
+
+    function cloneObject(&$PDOdb, $fk_object=0)
 	{
 		if ($this->object_type !== 'product' && $fk_object > 0)
 		{
@@ -382,12 +399,20 @@ class TNomenclature extends TObjetStd
 	}
 
 	function addProduct($PDOdb, $fk_new_product) {
-
+        global $conf;
 
 		$k = $this->addChild($PDOdb, 'TNomenclatureDet');
         $det = &$this->TNomenclatureDet[$k];
         $det->rang = $k;
         $det->fk_product = $fk_new_product;
+
+        if($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST){
+            $nome = new TNomenclature();
+            if ($nome->loadByObjectId($PDOdb, $fk_new_product, 'product')){
+                $nome->setPrice($PDOdb,1,$fk_new_product,'product');
+                $det->buying_price = $nome->totalPR;
+            }
+        }
 
 		$this->save($PDOdb);
 
@@ -536,6 +561,42 @@ class TNomenclature extends TObjetStd
         }
 	    return $res;
     }
+
+    /** Update unit price of the nomenclature which contains the product (Recursive)
+     * @param $PDOdb
+     * @param $product product in the nomenclatures
+     * @param $price new price to apply
+     * @param int $verifFourn Check fourn (1 : yes)
+     * @return int 1 : ok
+     */
+    function updateTotalPR(&$PDOdb, $product, $price, $checkFourn = 0){
+        //var_dump($product);
+        global $db;
+        $prod = new Product($db);
+        $objIds = $this->getNomenclaturesByProduct($product->id); // Récupérer toutes les nomenclatures qui contiennent ce produit
+        foreach ($objIds as $obj) { // Pour chacun des objets obtenus
+            if ($obj > 0 && $this->loadByObjectId($PDOdb, $obj,'product')){ // Si objet correct et a une nomenclature
+                $prod->fetch($obj);
+                foreach ($this->TNomenclatureDet as $line) { // Pour chacune des lignes de la nomenclature
+                    if ($line->fk_product == $product->id) { //Vérif du fournisseur
+                        if ($checkFourn == 1){
+                            if ($product->product_fourn_price_id == $line->fk_fournprice)
+                                $line->buying_price = $price; // changer le prix unitaire de la ligne
+                        }
+                        else {
+                            $line->buying_price = $price; // changer le prix unitaire de la ligne
+                        }
+                    }
+                }
+                $this->save($PDOdb);
+                $this->setPrice($PDOdb,$this->qty_reference,$this->fk_object,'product');
+                $priceRec = $this->totalPR;
+                $this->updateTotalPR($PDOdb, $prod, $priceRec);
+            }
+        }
+        return 1;
+    }
+
 
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1, $fk_origin=0) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()."
