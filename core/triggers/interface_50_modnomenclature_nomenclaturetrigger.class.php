@@ -310,10 +310,13 @@ class Interfacenomenclaturetrigger
             }
 
         }
-
+		elseif ($action == 'SUPPLIER_PRODUCT_BUYPRICE_UPDATE'){
+            $price = $_REQUEST['price'];
+            $n = new TNomenclature;
+            $n->updateTotalPR($PDOdb, $object, $price, 1);
+        }
 		return 0;
 	}
-
 
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
 		global $db,$conf,$user,$langs;
