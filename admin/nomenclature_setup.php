@@ -34,6 +34,7 @@ dol_include_once('/core/lib/admin.lib.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 dol_include_once('abricot/includes/lib/admin.lib.php');
+dol_include_once('/product/class/product.class.php');
 
 // Translations
 $langs->load("nomenclature@nomenclature");
@@ -82,6 +83,20 @@ if (preg_match('/del_(.*)/',$action,$reg))
 	{
 		dol_print_error($db);
 	}
+}
+
+if ($action == 'recalculate_nomenclature'){
+    global $db;
+    $nome = new TNomenclature();
+    $product = new Product($db);
+    $nomeIds = $nome->getAllIdsNomenclature();
+    foreach ($nomeIds as $nomeId){
+        $nome->load($PDOdb,$nomeId);
+        $product->fetch($nome->fk_object);
+        $nome->setPrice($PDOdb,$nome->qty_reference,$nome->fk_object,'product');
+        $nome->updateTotalPR($PDOdb,$product,$nome->totalPR);
+    }
+    setEventMessage($langs->trans('RecalculateNomenclatureDone'));
 }
 
 /*
@@ -159,18 +174,16 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST');
 print '</td></tr>';
 
-if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST){ //@TODO : refresh & message à l'activation
-    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-    print '<input type="hidden" name="action" value="recalculate_nomenclatures">';
-    print '<tr '.$bc[$var].'>';
-    print '<td align="right">'.$langs->trans("Recalculate").'</td>';
-    print '<td width="600">';
-    print '</td>';
-    print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Recalculate").'" >';
-    print '</td></tr>';
-    print '</form>';
-}
+
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+print '<input type="hidden" name="action" value="recalculate_nomenclature">';
+print '<tr class="recalculate_nomenclature" '.$bc[$var].'>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="right" width="600">'.$langs->trans("RecalculateNomenclatureDesc");
+print '</td>';
+print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("RecalculateNomenclature").'" >';
+print '</td></tr>';
+print '</form>';
 
 $var=!$var;
 print '<tr '.$bc[$var].'>';
@@ -329,7 +342,6 @@ if(!empty($conf->global->PRODUCT_USE_UNITS)) {
 	$var=!$var;
 	print '<tr '.$bc[$var].'>';
 	print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT").'</td>';
-	print '<td align="center" width="20">&nbsp;</td>';
 	print '<td align="center" width="300">';
 	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
@@ -425,6 +437,28 @@ print ajax_constantonoff('NOMENCLATURE_DETAILS_TAB_REWRITE');
 print '</td></tr>';
 
 print '</table>';
+
+?>
+<script type="text/javascript">
+    $(document).ready(function () {
+        <?php
+            if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)
+                {
+                    print '$(".recalculate_nomenclature").show();';
+                }
+            else{
+                    print '$(".recalculate_nomenclature").hide();';
+                }
+        ?>
+    $("#del_NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST").click(function () {
+        $(".recalculate_nomenclature").hide();
+    });
+    $("#set_NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST").click(function () {
+        $(".recalculate_nomenclature").show();
+    });
+    });
+</script>
+
 
 llxFooter();
 

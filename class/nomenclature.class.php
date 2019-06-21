@@ -76,6 +76,18 @@ class TNomenclature extends TObjetStd
         }
     }
 
+    function getAllIdsNomenclature(){
+        $res = array();
+        global  $db;
+        $sql="SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE object_type='product'";
+        $resql = $db->query($sql);
+        if ($resql) {
+            while ($obj = $db->fetch_object($resql)){
+                array_push($res, $obj->rowid);
+            }
+        }
+        return $res;
+    }
 
     function cloneObject(&$PDOdb, $fk_object=0)
 	{
