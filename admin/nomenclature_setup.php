@@ -97,6 +97,8 @@ if ($action == 'recalculate_nomenclature'){
         $nome->updateTotalPR($PDOdb,$product,$nome->totalPR);
     }
     setEventMessage($langs->trans('RecalculateNomenclatureDone'));
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit;
 }
 
 /*
@@ -459,6 +461,7 @@ print '</table>';
     });
 </script>
 
+<?php
 
 llxFooter();
 
