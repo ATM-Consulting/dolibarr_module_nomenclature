@@ -342,4 +342,23 @@ class Actionsnomenclature
 	    print '</div>';
     }
 
+    function getForecastTHM($parameters, &$object, &$action, $hookmanager) {
+        global $conf, $langs, $db;
+
+        dol_include_once('/nomenclature/class/nomenclature.class.php');
+        $PDOdb = new TPDOdb;
+        $TContext = explode(':', $parameters['context']);
+
+        if(in_array('projectOverview', $TContext) && ! empty($conf->global->DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION)) {
+            $task = $parameters['task'];
+            $Tab = explode('-', $task->ref);
+            $fk_nomenclatureDet = substr($Tab[0], strlen($conf->global->DOC2PROJECT_TASK_REF_PREFIX));
+
+            $nd = new TNomenclatureDet;
+            $nd->load($PDOdb, $fk_nomenclatureDet);
+
+            return $nd->buying_price;
+        }
+    }
+
 }
