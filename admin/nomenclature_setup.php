@@ -439,6 +439,7 @@ print ajax_constantonoff('NOMENCLATURE_DETAILS_TAB_REWRITE');
 print '</td></tr>';
 
 setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
+setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
 
 print '</table>';
 

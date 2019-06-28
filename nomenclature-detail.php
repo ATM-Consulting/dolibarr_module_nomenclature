@@ -223,6 +223,45 @@ function _getDetails(&$object, $object_type) {
                 }
             }
 
+			if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE) && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
+			{
+				if (empty($TUnits) && !$alreadySearched)
+				{
+					$langs->load('products');
+
+					$sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
+					$sql.= ' WHERE active > 0';
+
+					$resql = $db->query($sql);
+					if($resql && $db->num_rows($resql) > 0)
+					{
+						while($obj = $db->fetch_object($resql))
+						{
+							$unitLabel = $obj->label;
+
+							$TUnits[$obj->rowid] = strtolower($unitLabel);
+						}
+					}
+				}
+
+				$tmpline = new stdClass();
+				$tmpline->fk_product = $line->fk_product;
+				$tmpline->qty = $line->qty;
+				$tmpline->calculate_price = $line->total_ht;
+				$tmpline->charged_price = $line->total_ht;
+				$tmpline->pv = $line->total_ht;
+				$tmpline->unit = $TUnits[$line->fk_unit];
+
+				if(! isset($TProduct[$line->fk_product])) $TProduct[$line->fk_product] = $tmpline;
+				else {
+					$TProduct[$line->fk_product]->qty += $tmpline->qty;
+					$TProduct[$line->fk_product]->calculate_price += $tmpline->calculate_price;
+					$TProduct[$line->fk_product]->charged_price += $tmpline->charged_price;
+					$TProduct[$line->fk_product]->pv += $tmpline->pv;
+				}
+
+			}
+
             foreach($nomenclature->TNomenclatureWorkstationCombined as $fk_ws => $ws) {
                 if(isset($TWorkstation[$fk_ws])) {
                     $TWorkstation[$fk_ws]->nb_hour += $ws->nb_hour;
@@ -308,11 +347,8 @@ function _getDetails(&$object, $object_type) {
 							while($obj = $db->fetch_object($resql))
 							{
 								$unitLabel = $obj->label;
-								if (! empty($langs->tab_translate['unit'.$obj->code]))	// check if Translation is available before
-								{
-									$unitLabel = $langs->trans('unit'.$obj->code)!=$obj->label?$langs->trans('unit'.$obj->code):$obj->label;
-								}
-								$TUnits[$obj->rowid] = $unitLabel;
+
+								$TUnits[$obj->rowid] = strtolower($unitLabel);
 							}
 						}
 					}
@@ -332,6 +368,22 @@ function _getDetails(&$object, $object_type) {
 						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->charged_price += $tmpline->charged_price;
 						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->pv += $tmpline->pv;
 					}
+
+					// Total unit
+					if(! isset($TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit] = $tmpline->qty;
+					else $TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit] += $tmpline->qty;
+
+					// Total calculate_price
+					if(! isset($TProduct[$firstParentTitleId]['total']['calculate_price'])) $TProduct[$firstParentTitleId]['total']['calculate_price'] = $tmpline->calculate_price;
+					else $TProduct[$firstParentTitleId]['total']['calculate_price'] += $tmpline->calculate_price;
+
+					// Total charged_price
+					if(! isset($TProduct[$firstParentTitleId]['total']['charged_price'])) $TProduct[$firstParentTitleId]['total']['charged_price'] = $tmpline->charged_price;
+					else $TProduct[$firstParentTitleId]['total']['charged_price'] += $tmpline->charged_price;
+
+					// Total pv
+					if(! isset($TProduct[$firstParentTitleId]['total']['pv'])) $TProduct[$firstParentTitleId]['total']['pv'] = $tmpline->pv;
+					else $TProduct[$firstParentTitleId]['total']['pv'] += $tmpline->pv;
 
 				}
 
@@ -443,10 +495,13 @@ function print_table($TData, $TWorkstation, $object_type) {
         $index_block = GETPOST('index_block', 'int');
         $fk_product_toEdit = GETPOST('fk_product', 'int');
 
+        $colspan = "";
+        if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) $colspan = 'colspan="2"';
+
         ?>
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
-                <th class="liste_titre" width="40%"><?php echo $langs->trans('Product'); ?></th>
+                <th class="liste_titre" width="40%" <?php echo $colspan; ?> ><?php echo $langs->trans('Product'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('Quantity'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('Unit'); ?></th>
                 <?php
@@ -493,7 +548,19 @@ function print_table($TData, $TWorkstation, $object_type) {
                     if(! empty($color)) $style = ' style="background: '.$color.'"';
 
                     print '<tr class="oddeven"'.$style.'>';
-                    print '<td>'.$label.'</td>';
+                    if (empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) print '<td>'.$label.'</td>';
+                    else{
+						if(get_class($product) == 'PropaleLigne')
+						{
+							print '<td>'.$product->label.'</td><td></td>';
+						}
+						else
+						{
+							print '<td>'.$product->getNomUrl(1).'</td>';
+							print '<td>'.$product->label.'</td>';
+						}
+
+					}
                     print '<td align="right">'.$qty.'</td>';
                     print '<td align="right">'.$unit.'</td>';
 
@@ -668,7 +735,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                 if($k == 'gl_total') print '<tr style="font-weight: bold;">';
                 else print '<tr class="liste_total">';
 
-                print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'">'.$langs->trans('Total').' :</td>';
+                print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'" '.$colspan.'>'.$langs->trans('Total').' :</td>';
 
                 print '<td align="right">';
                 foreach($TBlock['total']['unit'] as $unit => $total_unit) {
