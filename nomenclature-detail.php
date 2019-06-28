@@ -435,7 +435,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                         $product->load_stock();
 
                         $label .= $product->getNomUrl(1).' - ';
-                        $qty = $line->qty;
+                        $qty = price($line->qty);
                         $unit = $langs->trans($line->unit);
                         $calculate_price = price(price2num($line->calculate_price, 'MT'));
                         $charged_price = price(price2num($line->charged_price, 'MT'));
