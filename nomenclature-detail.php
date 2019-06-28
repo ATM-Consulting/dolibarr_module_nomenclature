@@ -196,11 +196,13 @@ dol_fiche_end();
 llxFooter();
 
 function _getDetails(&$object, $object_type) {
-    global $db, $PDOdb, $conf;
+    global $db, $PDOdb, $conf, $langs;
     dol_include_once('/subtotal/class/subtotal.class.php');
 
     $TProduct = array();
     $TWorkstation = array();
+    $TUnits = array();
+	$alreadySearched = false;
 
     foreach($object->lines as $k => &$line) {
         if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
@@ -265,7 +267,7 @@ function _getDetails(&$object, $object_type) {
 
                     $det->type = $p->type;
                     $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
-		    $det->qty = $det->qty*$line->qty;
+		    		$det->qty = $det->qty*$line->qty;
                     if(! isset($TProduct[$firstParentTitleId]['products'][$det->fk_product])) $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
                     else {
                         $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
@@ -290,6 +292,49 @@ function _getDetails(&$object, $object_type) {
                     if(! isset($TProduct[$firstParentTitleId]['total']['pv'])) $TProduct[$firstParentTitleId]['total']['pv'] = $det->pv;
                     else $TProduct[$firstParentTitleId]['total']['pv'] += $det->pv;
                 }
+
+				if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE) && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
+				{
+					if (empty($TUnits) && !$alreadySearched)
+					{
+						$langs->load('products');
+
+						$sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
+						$sql.= ' WHERE active > 0';
+
+						$resql = $db->query($sql);
+						if($resql && $db->num_rows($resql) > 0)
+						{
+							while($obj = $db->fetch_object($resql))
+							{
+								$unitLabel = $obj->label;
+								if (! empty($langs->tab_translate['unit'.$obj->code]))	// check if Translation is available before
+								{
+									$unitLabel = $langs->trans('unit'.$obj->code)!=$obj->label?$langs->trans('unit'.$obj->code):$obj->label;
+								}
+								$TUnits[$obj->rowid] = $unitLabel;
+							}
+						}
+					}
+
+					$tmpline = new stdClass();
+					$tmpline->fk_product = $line->fk_product;
+					$tmpline->qty = $line->qty;
+					$tmpline->calculate_price = $line->total_ht;
+					$tmpline->charged_price = $line->total_ht;
+					$tmpline->pv = $line->total_ht;
+					$tmpline->unit = $TUnits[$line->fk_unit];
+
+					if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
+					else {
+						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->qty += $tmpline->qty;
+						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->calculate_price += $tmpline->calculate_price;
+						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->charged_price += $tmpline->charged_price;
+						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->pv += $tmpline->pv;
+					}
+
+				}
+
                 uasort($TProduct[$firstParentTitleId]['products'], 'sortByProductType');
 
                 foreach($nomenclature->TNomenclatureWorkstationCombined as $fk_ws => $ws) {

@@ -159,6 +159,7 @@ NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE=Ne pas permettre la modification de l'entre
 NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE=Lors d'un clic sur le bouton "Appliquer le prix de vente" fermer la fenêtre une fois l'action effectuée.
 NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help=Cette option nécessite de vider le cache de votre navigateur pour être prise en compte.
 NOMENCLATURE_HIDE_STOCK_COLUMNS=Cacher les colonnes "Stock physique" et "Stock virtuel" sur les nomenclatures
+NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE=Inclure les produits qui ne sont pas dans une nomenclature sur le détail de nomenclature d'un devis
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné

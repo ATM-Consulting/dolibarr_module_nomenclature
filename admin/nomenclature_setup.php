@@ -438,6 +438,8 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_DETAILS_TAB_REWRITE');
 print '</td></tr>';
 
+setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
+
 print '</table>';
 
 ?>
