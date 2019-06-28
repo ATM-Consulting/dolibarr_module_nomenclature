@@ -161,6 +161,8 @@ NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help=Cette option nécessite de v
 NOMENCLATURE_HIDE_STOCK_COLUMNS=Cacher les colonnes "Stock physique" et "Stock virtuel" sur les nomenclatures
 NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE=Inclure les produits qui ne sont pas dans une nomenclature sur le détail de nomenclature d'un devis
 NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL=Séparer la référence et le libellé produit sur le détail de nomenclature d'un devis
+NOMENCLATURE_HIDE_SUBTOTALS=Cacher les sous-totaux sur le détail de nomenclature d'un devis
+NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES=Cacher les titres et sous-totaux sur le détail de nomenclature d'un devis
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné

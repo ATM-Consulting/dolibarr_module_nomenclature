@@ -518,7 +518,11 @@ function print_table($TData, $TWorkstation, $object_type) {
             <?php
 
             foreach($TData as $k => $TBlock) {
+
                 foreach($TBlock['products'] as $fk_product => $line) {
+
+                	if (!empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES) && strpos($fk_product, 'T_') !== false) continue;
+
                     $label = $qty = $unit = $calculate_price = $charged_price = $buying_price = $pv = $color = '';
 
                     if(is_null($line->fk_product)) {    // Title line
@@ -732,32 +736,36 @@ function print_table($TData, $TWorkstation, $object_type) {
                     print '</tr>';
                 }
 
-                if($k == 'gl_total') print '<tr style="font-weight: bold;">';
-                else print '<tr class="liste_total">';
+                if (empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS) && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+				{
+					if($k == 'gl_total') print '<tr style="font-weight: bold;">';
+					else print '<tr class="liste_total">';
 
-                print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'" '.$colspan.'>'.$langs->trans('Total').' :</td>';
+					print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'" '.$colspan.'>'.$langs->trans('Total').' :</td>';
 
-                print '<td align="right">';
-                foreach($TBlock['total']['unit'] as $unit => $total_unit) {
-                    print "<div>".price(price2num($total_unit, 'MT'))."</div>\n";
-                }
-                print '</td>';
+					print '<td align="right">';
+					foreach($TBlock['total']['unit'] as $unit => $total_unit) {
+						print "<div>".price(price2num($total_unit, 'MT'))."</div>\n";
+					}
+					print '</td>';
 
-                print '<td align="right">';
-                foreach($TBlock['total']['unit'] as $unit => $total_unit) {
-                    print "<div>".$langs->trans($unit)."</div>\n";
-                }
-                print '</td>';
+					print '<td align="right">';
+					foreach($TBlock['total']['unit'] as $unit => $total_unit) {
+						print "<div>".$langs->trans($unit)."</div>\n";
+					}
+					print '</td>';
 
-                if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
-                    print '<td align="right" colspan="2"></td>';
-                }
+					if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+						print '<td align="right" colspan="2"></td>';
+					}
 
-                print '<td align="right">'.price(price2num($TBlock['total']['calculate_price'], 'MT')).'</td>';
-                print '<td align="right">'.price(price2num($TBlock['total']['charged_price'], 'MT')).'</td>';
-                print '<td align="right">'.price(price2num($TBlock['total']['pv'], 'MT')).'</td>';
-                print '<td></td>';
-                print '</tr>';
+					print '<td align="right">'.price(price2num($TBlock['total']['calculate_price'], 'MT')).'</td>';
+					print '<td align="right">'.price(price2num($TBlock['total']['charged_price'], 'MT')).'</td>';
+					print '<td align="right">'.price(price2num($TBlock['total']['pv'], 'MT')).'</td>';
+					print '<td></td>';
+					print '</tr>';
+				}
+
             }
 
             if(! empty($TWorkstation)) {

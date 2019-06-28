@@ -438,6 +438,12 @@ print '<td align="center" width="300">';
 print ajax_constantonoff('NOMENCLATURE_DETAILS_TAB_REWRITE');
 print '</td></tr>';
 
+if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
+{
+	setup_print_on_off('NOMENCLATURE_HIDE_SUBTOTALS');
+	setup_print_on_off('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES');
+}
+
 setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
 setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
 
