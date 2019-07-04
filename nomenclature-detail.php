@@ -205,11 +205,13 @@ function getUnits(){
 
     $resql = $db->query($sql);
 
-    while($obj = $db->fetch_object($resql))
-    {
-        $unitLabel = $obj->label;
+    if ($resql){
+        while($obj = $db->fetch_object($resql))
+        {
+            $unitLabel = $obj->label;
 
-        $TUnits[$obj->rowid] = strtolower($unitLabel);
+            $TUnits[$obj->rowid] = strtolower($unitLabel);
+        }
     }
     return $TUnits;
 }
