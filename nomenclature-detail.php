@@ -196,27 +196,23 @@ dol_fiche_end();
 llxFooter();
 
 
-function getUnits($alreadySearched = false){
+function getUnits(){
     global $langs,$db;
-    if (!$alreadySearched)
+    $langs->load('products');
+
+    $sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
+    $sql.= ' WHERE active > 0';
+
+    $resql = $db->query($sql);
+    if($resql && $db->num_rows($resql) > 0)
     {
-        $langs->load('products');
-
-        $sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
-        $sql.= ' WHERE active > 0';
-
-        $resql = $db->query($sql);
-        if($resql && $db->num_rows($resql) > 0)
+        while($obj = $db->fetch_object($resql))
         {
-            while($obj = $db->fetch_object($resql))
-            {
-                $unitLabel = $obj->label;
+            $unitLabel = $obj->label;
 
-                $TUnits[$obj->rowid] = strtolower($unitLabel);
-            }
+            $TUnits[$obj->rowid] = strtolower($unitLabel);
         }
     }
-    return $TUnits;
 }
 
 function _getDetails(&$object, $object_type) {
@@ -227,7 +223,7 @@ function _getDetails(&$object, $object_type) {
     $TWorkstation = array();
     $TUnits = array();
 	$alreadySearched = false;
-	if (empty($TUnits)) getUnits($alreadySearched);
+	if (empty($TUnits) && !$alreadySearched) getUnits();
 
     foreach($object->lines as $k => &$line) {
         if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
@@ -344,7 +340,7 @@ function _getDetails(&$object, $object_type) {
                     }
                 }
 				else{ // Produit simple de la ligne
-				    $TUnits = getUnits($alreadySearched);
+                    if (empty($TUnits) && !$alreadySearched) getUnits();
                     if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE)) {
                         $tmpline = new stdClass();
                         $tmpline->fk_product = $line->fk_product;
