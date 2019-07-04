@@ -198,6 +198,7 @@ llxFooter();
 
 function getUnits(){
     global $langs,$db;
+    $TUnits = array();
     $langs->load('products');
 
     $sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
