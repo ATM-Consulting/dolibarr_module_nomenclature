@@ -195,6 +195,28 @@ print_table($TProduct, $TWorkstation, $object_type);
 dol_fiche_end();
 llxFooter();
 
+
+function getUnits(){
+    global $langs,$db;
+    $TUnits = array();
+    $langs->load('products');
+
+    $sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
+    $sql.= ' WHERE active > 0';
+
+    $resql = $db->query($sql);
+
+    if ($resql){
+        while($obj = $db->fetch_object($resql))
+        {
+            $unitLabel = $obj->label;
+
+            $TUnits[$obj->rowid] = strtolower($unitLabel);
+        }
+    }
+    return $TUnits;
+}
+
 function _getDetails(&$object, $object_type) {
     global $db, $PDOdb, $conf, $langs;
     dol_include_once('/subtotal/class/subtotal.class.php');
@@ -203,6 +225,7 @@ function _getDetails(&$object, $object_type) {
     $TWorkstation = array();
     $TUnits = array();
 	$alreadySearched = false;
+	$TUnits = getUnits();
 
     foreach($object->lines as $k => &$line) {
         if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
@@ -212,6 +235,7 @@ function _getDetails(&$object, $object_type) {
             $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
 
             $nomenclature->fetchCombinedDetails($PDOdb);
+
 
             foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
 
@@ -225,25 +249,6 @@ function _getDetails(&$object, $object_type) {
 
 			if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE) && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
 			{
-				if (empty($TUnits) && !$alreadySearched)
-				{
-					$langs->load('products');
-
-					$sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
-					$sql.= ' WHERE active > 0';
-
-					$resql = $db->query($sql);
-					if($resql && $db->num_rows($resql) > 0)
-					{
-						while($obj = $db->fetch_object($resql))
-						{
-							$unitLabel = $obj->label;
-
-							$TUnits[$obj->rowid] = strtolower($unitLabel);
-						}
-					}
-				}
-
 				$tmpline = new stdClass();
 				$tmpline->fk_product = $line->fk_product;
 				$tmpline->qty = $line->qty;
@@ -297,94 +302,78 @@ function _getDetails(&$object, $object_type) {
                 $nomenclature->fetchCombinedDetails($PDOdb);
                 $nomenclature->setPrice($PDOdb, $line->qty, null, 'propal');
 
-                foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
-                    unset($det->TChamps, $det->TConstraint);
+                if (! empty($nomenclature->TNomenclatureDetCombined)){ //Produit de line contient une nomenclature
+                    $nome = new TNomenclature();
+                    $nome->loadByObjectId($PDOdb,$line->fk_product,'product');
+                    $nome->fetchCombinedDetails($PDOdb);
+                    $nome->setPrice($PDOdb, $line->qty, null, 'propal');
+                    foreach ($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
+                        $p = new Product($db);
+                        $p->fetch($det->fk_product);
+                        $det->type = $p->type;
+                        $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
+                        $det->qty = $det->qty * $line->qty;
+                        if (!isset($TProduct[$firstParentTitleId]['products'][$det->fk_product]))
+                            $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
+                        else {
+                                $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
+                                $TProduct[$firstParentTitleId]['products'][$det->fk_product]->calculate_price += $det->calculate_price;
+                                $TProduct[$firstParentTitleId]['products'][$det->fk_product]->charged_price += $det->charged_price;
+                                $TProduct[$firstParentTitleId]['products'][$det->fk_product]->pv += $det->pv;
+                        }
 
-                    $p = new Product($db);
-                    $p->fetch($det->fk_product);
-                    $p->load_stock();
+                        // Total unit
+                        if (!isset($TProduct[$firstParentTitleId]['total']['unit'][$det->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$det->unit] = $det->qty;
+                        else $TProduct[$firstParentTitleId]['total']['unit'][$det->unit] += $det->qty;
 
-                    $det->type = $p->type;
-                    $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
-		    		$det->qty = $det->qty*$line->qty;
-                    if(! isset($TProduct[$firstParentTitleId]['products'][$det->fk_product])) $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
-                    else {
-                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->qty += $det->qty;
-                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->calculate_price += $det->calculate_price;
-                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->charged_price += $det->charged_price;
-                        $TProduct[$firstParentTitleId]['products'][$det->fk_product]->pv += $det->pv;
+                        // Total calculate_price
+                        if (!isset($TProduct[$firstParentTitleId]['total']['calculate_price'])) $TProduct[$firstParentTitleId]['total']['calculate_price'] = $det->calculate_price;
+                        else $TProduct[$firstParentTitleId]['total']['calculate_price'] += $det->calculate_price;
+
+                        // Total charged_price
+                        if (!isset($TProduct[$firstParentTitleId]['total']['charged_price'])) $TProduct[$firstParentTitleId]['total']['charged_price'] = $det->charged_price;
+                        else $TProduct[$firstParentTitleId]['total']['charged_price'] += $det->charged_price;
+
+                        // Total pv
+                        if (!isset($TProduct[$firstParentTitleId]['total']['pv'])) $TProduct[$firstParentTitleId]['total']['pv'] = $det->pv;
+                        else $TProduct[$firstParentTitleId]['total']['pv'] += $det->pv;
                     }
-
-                    // Total unit
-                    if(! isset($TProduct[$firstParentTitleId]['total']['unit'][$det->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$det->unit] = $det->qty;
-                    else $TProduct[$firstParentTitleId]['total']['unit'][$det->unit] += $det->qty;
-
-                    // Total calculate_price
-                    if(! isset($TProduct[$firstParentTitleId]['total']['calculate_price'])) $TProduct[$firstParentTitleId]['total']['calculate_price'] = $det->calculate_price;
-                    else $TProduct[$firstParentTitleId]['total']['calculate_price'] += $det->calculate_price;
-
-                    // Total charged_price
-                    if(! isset($TProduct[$firstParentTitleId]['total']['charged_price'])) $TProduct[$firstParentTitleId]['total']['charged_price'] = $det->charged_price;
-                    else $TProduct[$firstParentTitleId]['total']['charged_price'] += $det->charged_price;
-
-                    // Total pv
-                    if(! isset($TProduct[$firstParentTitleId]['total']['pv'])) $TProduct[$firstParentTitleId]['total']['pv'] = $det->pv;
-                    else $TProduct[$firstParentTitleId]['total']['pv'] += $det->pv;
                 }
+				else{ // Produit simple de la ligne
+                    if (empty($TUnits) && !$alreadySearched) getUnits();
+                    if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE)) {
+                        $tmpline = new stdClass();
+                        $tmpline->fk_product = $line->fk_product;
+                        $tmpline->qty = $line->qty;
+                        $tmpline->calculate_price = $line->total_ht;
+                        $tmpline->charged_price = $line->total_ht;
+                        $tmpline->pv = $line->total_ht;
+                        $tmpline->unit = $TUnits[$line->fk_unit];
 
-				if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE) && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
-				{
-					if (empty($TUnits) && !$alreadySearched)
-					{
-						$langs->load('products');
+                        if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
+                        else {
+                            $TProduct[$firstParentTitleId]['products'][$line->fk_product]->qty += $tmpline->qty;
+                            $TProduct[$firstParentTitleId]['products'][$line->fk_product]->calculate_price += $tmpline->calculate_price;
+                            $TProduct[$firstParentTitleId]['products'][$line->fk_product]->charged_price += $tmpline->charged_price;
+                            $TProduct[$firstParentTitleId]['products'][$line->fk_product]->pv += $tmpline->pv;
+                        }
 
-						$sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
-						$sql.= ' WHERE active > 0';
+                        // Total unit
+                        if(! isset($TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit] = $tmpline->qty;
+                        else $TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit] += $tmpline->qty;
 
-						$resql = $db->query($sql);
-						if($resql && $db->num_rows($resql) > 0)
-						{
-							while($obj = $db->fetch_object($resql))
-							{
-								$unitLabel = $obj->label;
+                        // Total calculate_price
+                        if(! isset($TProduct[$firstParentTitleId]['total']['calculate_price'])) $TProduct[$firstParentTitleId]['total']['calculate_price'] = $tmpline->calculate_price;
+                        else $TProduct[$firstParentTitleId]['total']['calculate_price'] += $tmpline->calculate_price;
 
-								$TUnits[$obj->rowid] = strtolower($unitLabel);
-							}
-						}
-					}
+                        // Total charged_price
+                        if(! isset($TProduct[$firstParentTitleId]['total']['charged_price'])) $TProduct[$firstParentTitleId]['total']['charged_price'] = $tmpline->charged_price;
+                        else $TProduct[$firstParentTitleId]['total']['charged_price'] += $tmpline->charged_price;
 
-					$tmpline = new stdClass();
-					$tmpline->fk_product = $line->fk_product;
-					$tmpline->qty = $line->qty;
-					$tmpline->calculate_price = $line->total_ht;
-					$tmpline->charged_price = $line->total_ht;
-					$tmpline->pv = $line->total_ht;
-					$tmpline->unit = $TUnits[$line->fk_unit];
-
-					if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
-					else {
-						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->qty += $tmpline->qty;
-						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->calculate_price += $tmpline->calculate_price;
-						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->charged_price += $tmpline->charged_price;
-						$TProduct[$firstParentTitleId]['products'][$line->fk_product]->pv += $tmpline->pv;
-					}
-
-					// Total unit
-					if(! isset($TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit])) $TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit] = $tmpline->qty;
-					else $TProduct[$firstParentTitleId]['total']['unit'][$tmpline->unit] += $tmpline->qty;
-
-					// Total calculate_price
-					if(! isset($TProduct[$firstParentTitleId]['total']['calculate_price'])) $TProduct[$firstParentTitleId]['total']['calculate_price'] = $tmpline->calculate_price;
-					else $TProduct[$firstParentTitleId]['total']['calculate_price'] += $tmpline->calculate_price;
-
-					// Total charged_price
-					if(! isset($TProduct[$firstParentTitleId]['total']['charged_price'])) $TProduct[$firstParentTitleId]['total']['charged_price'] = $tmpline->charged_price;
-					else $TProduct[$firstParentTitleId]['total']['charged_price'] += $tmpline->charged_price;
-
-					// Total pv
-					if(! isset($TProduct[$firstParentTitleId]['total']['pv'])) $TProduct[$firstParentTitleId]['total']['pv'] = $tmpline->pv;
-					else $TProduct[$firstParentTitleId]['total']['pv'] += $tmpline->pv;
-
+                        // Total pv
+                        if(! isset($TProduct[$firstParentTitleId]['total']['pv'])) $TProduct[$firstParentTitleId]['total']['pv'] = $tmpline->pv;
+                        else $TProduct[$firstParentTitleId]['total']['pv'] += $tmpline->pv;
+                    }
 				}
 
                 uasort($TProduct[$firstParentTitleId]['products'], 'sortByProductType');
