@@ -484,14 +484,30 @@ function print_table($TData, $TWorkstation, $object_type) {
         $index_block = GETPOST('index_block', 'int');
         $fk_product_toEdit = GETPOST('fk_product', 'int');
 
-        $colspan = "";
-        if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) $colspan = 'colspan="2"';
+		$showTitleCol = false;
+        if ($conf->global->NOMENCLATURE_SHOW_TITLE_IN_COLUMN && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+		{
 
+			foreach ($TData as $k => $tab)
+			{
+				if (array_key_exists('T_'.$k, $tab['products'])) {
+					$lastTitle = '';
+					$showTitleCol = true;
+					break;
+				}
+			}
+		}
         ?>
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
-                <th class="liste_titre" width="40%" <?php echo $colspan; ?> ><?php echo $langs->trans('Product'); ?></th>
-                <th class="liste_titre" align="right"><?php echo $langs->trans('Quantity'); ?></th>
+				<?php if ($showTitleCol) print '<th class="liste_titre" >'.$langs->trans('Title').'</th>'; ?>
+				<?php if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) { ?>
+			<th class="liste_titre" ><?php echo $langs->trans('Ref'); ?></th>
+			<th class="liste_titre" width="30%" ><?php echo $langs->trans('Product'); ?></th>
+				<?php } else { ?>
+			<th class="liste_titre" width="40%" ><?php echo $langs->trans('Product'); ?></th>
+				<?php } ?>
+			<th class="liste_titre" align="right"><?php echo $langs->trans('Quantity'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('Unit'); ?></th>
                 <?php
                 if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
@@ -508,7 +524,9 @@ function print_table($TData, $TWorkstation, $object_type) {
 
             foreach($TData as $k => $TBlock) {
 
-                foreach($TBlock['products'] as $fk_product => $line) {
+            	if ($showTitleCol && $k == "") $lastTitle = '';
+
+            	foreach($TBlock['products'] as $fk_product => $line) {
 
                 	if (!empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES) && strpos($fk_product, 'T_') !== false) continue;
 
@@ -521,6 +539,11 @@ function print_table($TData, $TWorkstation, $object_type) {
                         if($niv == 1) $color = '#adadcf';
                         else if($niv == 2) $color = '#ddddff';
                         else if($niv > 2) $color = 'rgb(238, 238, 255)';
+						if ($showTitleCol)
+						{
+							$lastTitle = $product->label;
+							continue;
+						}
                     }
                     else {  // Product / Service Line
                         $product = new Product($db);
@@ -541,6 +564,7 @@ function print_table($TData, $TWorkstation, $object_type) {
                     if(! empty($color)) $style = ' style="background: '.$color.'"';
 
                     print '<tr class="oddeven"'.$style.'>';
+					if ($showTitleCol) print '<td>'.$lastTitle.'</td>';
                     if (empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) print '<td>'.$label.'</td>';
                     else{
 						if(get_class($product) == 'PropaleLigne')
@@ -730,7 +754,16 @@ function print_table($TData, $TWorkstation, $object_type) {
 					if($k == 'gl_total') print '<tr style="font-weight: bold;">';
 					else print '<tr class="liste_total">';
 
-					print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'" '.$colspan.'>'.$langs->trans('Total').' :</td>';
+					if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) {
+						if ($k == 'gl_total')
+						{
+							print '<td align="left">'.$langs->trans('Total').' :</td><td></td>';
+						}
+						else
+						{
+							print '<td></td><td align="right">'.$langs->trans('Total').' :</td>';
+						}
+					} else print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'" >'.$langs->trans('Total').' :</td>';
 
 					print '<td align="right">';
 					foreach($TBlock['total']['unit'] as $unit => $total_unit) {

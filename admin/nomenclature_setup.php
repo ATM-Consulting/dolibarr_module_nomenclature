@@ -440,6 +440,7 @@ print '</td></tr>';
 
 if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
 {
+	setup_print_on_off('NOMENCLATURE_SHOW_TITLE_IN_COLUMN');
 	setup_print_on_off('NOMENCLATURE_HIDE_SUBTOTALS');
 	setup_print_on_off('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES');
 }
