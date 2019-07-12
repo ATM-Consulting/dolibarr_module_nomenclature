@@ -311,6 +311,7 @@ function _getDetails(&$object, $object_type) {
                         $p = new Product($db);
                         $p->fetch($det->fk_product);
                         $det->type = $p->type;
+                        if (empty($det->fk_unit)) $det->fk_unit = 1;
                         $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
                         $det->qty = $det->qty * $line->qty;
                         if (!isset($TProduct[$firstParentTitleId]['products'][$det->fk_product]))
