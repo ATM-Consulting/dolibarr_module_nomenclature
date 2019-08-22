@@ -226,10 +226,11 @@ if (empty($reshook))
 if($object_type != 'product') {
 
     $langs->load('nomenclature@nomenclature');
-
+    $origin_object_id = GETPOST('fk_origin');
     $n=new TNomenclature;
-    $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, GETPOST('fk_origin'));
-    _fiche_nomenclature($PDOdb, $n, $product, $object, $fk_object, $object_type, $qty_ref);
+    $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, $origin_object_id);
+    $readonly = empty($object->brouillon);
+    _fiche_nomenclature($PDOdb, $n, $product, $object, $fk_object, $object_type, $qty_ref, $readonly);
     print '<script type="text/javascript" src="'.dol_buildpath('nomenclature/js/searchproductcategory.js.php',1).'"></script>';
 }
 else{
@@ -237,6 +238,7 @@ else{
 }
 
 $db->close();
+
 function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	global $user, $langs, $db, $conf;
 
@@ -253,7 +255,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', ($user->societe_id?0:1), 'ref');
 	else headerProduct($product);
-	
+
 	?><script type="text/javascript">
 		function uncheckOther(obj)
 		{
@@ -393,7 +395,17 @@ function get_format_libelle_produit($fk_product = null) {
 	}
 }
 
-function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $object_type='product', $qty_ref=1) {
+/**
+ * @param $PDOdb
+ * @param $n
+ * @param $product
+ * @param $object
+ * @param int $fk_object
+ * @param string $object_type
+ * @param int $qty_ref
+ * @param bool $readonly
+ */
+function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $object_type='product', $qty_ref=1, $readonly=false) {
 	global $langs, $conf, $db, $user, $hookmanager;
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
@@ -424,15 +436,19 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	}
 
     $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
-    echo $formCore->hidden('action', 'save_nomenclature');
-    echo $formCore->hidden('json', $json);
-    echo $formCore->hidden('fk_nomenclature', $n->getId());
-    echo $formCore->hidden('fk_product', $product->id);
-    echo $formCore->hidden('fk_object', $fk_object);
-    echo $formCore->hidden('object_type', $object_type);
-    echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
-    echo $formCore->hidden('qty_ref', $qty_ref);
-    echo $formCore->hidden('qty_price', $qty_price);
+    if ($readonly) {
+        $formCore->Set_typeaff('view'); // $formCore methods will return read-only elements instead of form inputs
+    } else {
+        echo $formCore->hidden('action', 'save_nomenclature');
+        echo $formCore->hidden('json', $json);
+        echo $formCore->hidden('fk_nomenclature', $n->getId());
+        echo $formCore->hidden('fk_product', $product->id);
+        echo $formCore->hidden('fk_object', $fk_object);
+        echo $formCore->hidden('object_type', $object_type);
+        echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
+        echo $formCore->hidden('qty_ref', $qty_ref);
+        echo $formCore->hidden('qty_price', $qty_price);
+    }
     
     $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
     
@@ -523,7 +539,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
 	            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
-                <td align="right" class="liste_titre"><a href="javascript:deleteNomenc(<?php echo $n->getId(); ?>)"><?php echo img_delete($langs->trans('DeleteThisNomenclature')) ?></a></td>
+                <td align="right" class="liste_titre"><?php if (!$readonly) { ?><a href="javascript:deleteNomenc(<?php echo $n->getId(); ?>)"><?php echo img_delete($langs->trans('DeleteThisNomenclature')) ?></a><?php } ?></td>
 	        </tr><?php
         }
 
@@ -595,16 +611,16 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                     $p_nomdet = new Product($db);
                                     if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0)
                                     {
-										echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
+                                        echo $p_nomdet->getNomUrl(1).' '.$p_nomdet->label;
 
-										if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
-	          		    }
-        			    else
-				   {
-						echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
-				  }
+                                        if($p_nomdet->load_stock() < 0) $p_nomdet->load_virtual_stock(); // TODO AA pourquoi ? load_stock le fait et s'il échoue... :/
+                                    } elseif ($readonly) {
+                                        echo $det->title;
+                                    } else {
+                                        echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
+                                    }
 
-				   _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
+                                    _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 
@@ -747,10 +763,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                                 	echo '</td>';
-                                	
-								   }
-								   
-								   ?>
+
+                               }
+                               ?>
 								   
 								   <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
                                
@@ -807,7 +822,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                 			echo '</td>';
 	                            	}
 									echo '<td align="right" valign="middle">';
-                                    echo '<input style="text-align:right;" name="TNomenclature['.$k.'][price]" value="'.price($det->price).'" size="5" />';
+                                    if ($readonly) {
+                                        echo price($det->price);
+                                    } else {
+                                        echo '<input style="text-align:right;" name="TNomenclature[' . $k . '][price]" value="' . price($det->price) . '" size="5" />';
+                                    }
                                 	echo '</td>';
                                ?>
                                
@@ -818,15 +837,20 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
 								
 									// Si la nomenclature a été enregistré puis que les lignes ont été delete, alors l'icone de suppression ne doit pas s'afficher car ce sont les lignes chargé depuis le load_original()
-									if (! empty($n->iExist)) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
+									if (! empty($n->iExist) && !$readonly) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
 								}
 								?></td>
                                
                                
-                               <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
-									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>">
-									<?php echo img_picto('Move','grip'); ?>
-									</a>
+                               <td align="center" class="linecolmove tdlineupdown">
+                                   <?php
+
+                                   $coldisplay++;
+                                   if(!$readonly) { ?>
+                                        <a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>">
+                                        <?php echo img_picto('Move','grip'); ?>
+                                        </a>
+                                   <?php } ?>
 								</td>
                            </tr>
                            <?php
@@ -923,23 +947,25 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         <?php if (GETPOST('optioncss') !== 'print') { ?>
         <tr>
 			<td colspan="5">
-				<div class="tabsAction">
-					<div>
-						<?php
-						if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
-						}
-						else{
-							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
-						}
-						?>
-						<span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
-						<div class="inline-block divButAction">
-							<input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction nomenclature_bt_add_product" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
-							<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
-						</div>
-					</div>
-				</div>
+                <?php if(!$readonly) { ?>
+                    <div class="tabsAction">
+                        <div>
+                            <?php
+                            if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
+                                print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
+                            }
+                            else{
+                                print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
+                            }
+                            ?>
+                            <span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
+                            <div class="inline-block divButAction">
+                                <input id="nomenclature_bt_add_product" type="submit" name="add_nomenclature" class="butAction nomenclature_bt_add_product" value="<?php echo $langs->trans('AddProductNomenclature'); ?>" />
+                                <input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
+                            </div>
+                        </div>
+                    </div>
+                <?php } ?>
 			</td>
         </tr>
         <?php } ?>
@@ -1045,7 +1071,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
 
 								// Si la nomenclature a été enregistré puis que les lignes ont été delete, alors l'icone de suppression ne doit pas s'afficher car ce sont les lignes chargé depuis le load_original()
-								if (! empty($n->iExist)) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
+								if (! empty($n->iExist) && !$readonly) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
 							}
 							?>
 						</td>
@@ -1212,7 +1238,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                 <div class="tabsAction">
                     <?php
 
-                    if($conf->workstation->enabled) {
+                    if($conf->workstation->enabled && !$readonly) {
 
                            echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
                         ?>
@@ -1230,53 +1256,60 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
-					<?php if ($json == 1) { ?>
-                   		<style type="text/css">
-                   			.dialogSouldBeZindexed {
-                   				z-index:210 !important;  /* 101 Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
-                   				/* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs) 
-                   				Avec la v8 de dolibarr le menu du haut passe devant le bouton close de la boite de dialogue (plus possibl ede fermer), je passe le z-index de 101 à 210 
-                   				*/
-                   				overflow:visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
-                   			}
-                   		</style>
-						<div>
-							<?php
-							   //$form=new Form($db);
-							  //print $form->select_produits('', 'fk_clone_from_product', $sql, 0);*/
+					<?php
+                    if (!$readonly) {
+                        if ($json == 1) { ?>
+                            <style type="text/css">
+                                .dialogSouldBeZindexed {
+                                    z-index: 210 !important; /* 101 Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
+                                    /* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs)
+                                    Avec la v8 de dolibarr le menu du haut passe devant le bouton close de la boite de dialogue (plus possibl ede fermer), je passe le z-index de 101 à 210
+                                    */
+                                    overflow: visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
+                                }
+                            </style>
+                            <div>
+                                <?php
+                                //$form=new Form($db);
+                                //print $form->select_produits('', 'fk_clone_from_product', $sql, 0);*/
 
-							  $htmlname = 'fk_clone_from_product';
-							  $urloption='htmlname='.$htmlname.'&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
-							  print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
-							  print $langs->trans("RefOrLabel").' : ';
-							  print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" '.(empty($conf->global->NOMENCLATURE_DISABLE_AUTOFOCUS) ? 'autofocus' : '').' />';
+                                $htmlname = 'fk_clone_from_product';
+                                $urloption = 'htmlname=' . $htmlname . '&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
+                                print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
+                                print $langs->trans("RefOrLabel") . ' : ';
+                                print '<input type="text" size="20" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="" ' . (empty($conf->global->NOMENCLATURE_DISABLE_AUTOFOCUS) ? 'autofocus' : '') . ' />';
 
-							?>
-							<div class="inline-block divButAction">
-								<input id="nomenclature_bt_clone_nomenclature" type="submit" name="clone_nomenclature" class="butAction" value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>" />
-							</div>
-						</div>
+                                ?>
+                                <div class="inline-block divButAction">
+                                    <input id="nomenclature_bt_clone_nomenclature" type="submit"
+                                           name="clone_nomenclature" class="butAction"
+                                           value="<?php echo $langs->trans('CloneNomenclatureFromProduct'); ?>"/>
+                                </div>
+                            </div>
 
-                   <?php }
+                        <?php }
 
-					if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
-					{
-						print '<div class="inline-block divButAction">';
-						print '<a id="nomenclaturecreateqty-'.$n->getId().'" class="butAction" href="'.dol_buildpath('/nomenclature/nomenclature.php', 1).'?fk_product='.$product->id.'&fk_nomenclature_used='.$n->getId().'&qty_reference='.$n->qty_reference.'&action=create_stock">'.$langs->trans('NomenclatureCreateXQty').'</a>';
-						print '</div>';
-					}
-					?>
+                        if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN)) {
+                            print '<div class="inline-block divButAction">';
+                            print '<a id="nomenclaturecreateqty-' . $n->getId() . '" class="butAction" href="' . dol_buildpath('/nomenclature/nomenclature.php', 1) . '?fk_product=' . $product->id . '&fk_nomenclature_used=' . $n->getId() . '&qty_reference=' . $n->qty_reference . '&action=create_stock">' . $langs->trans('NomenclatureCreateXQty') . '</a>';
+                            print '</div>';
+                        }
+                        ?>
 
-					<div class="inline-block divButAction">
-						<input type="submit" name="save_nomenclature" class="butAction" value="<?php echo $langs->trans('SaveNomenclature'); ?>" />
-					</div>
-					<?php if ($json) { ?>
-						<div class="inline-block divButAction">
-							<input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
-						</div>
-					<?php } ?>
-
-					<?php $parameters = array(); $reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $n, $action); ?>
+                        <div class="inline-block divButAction">
+                            <input type="submit" name="save_nomenclature" class="butAction"
+                                   value="<?php echo $langs->trans('SaveNomenclature'); ?>"/>
+                        </div>
+                        <?php if ($json) { ?>
+                            <div class="inline-block divButAction">
+                                <input type="submit" name="apply_nomenclature_price" class="butAction"
+                                       value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>"/>
+                            </div>
+                        <?php }
+                    }
+                    $parameters = array('readonly' => $readonly);
+                    $reshook = $hookmanager->executeHooks('addMoreActionsButtons', $parameters, $n, $action);
+                    ?>
 				</div>
 			</td>
         </tr>
