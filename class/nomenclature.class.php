@@ -11,6 +11,9 @@ dol_include_once('/workstation/class/workstation.class.php');
 class TNomenclature extends TObjetStd
 {
 
+	/** @var null|TPDOdb */
+	public $PDOdb = null;
+
     function __construct()
     {
         global $conf;
@@ -387,6 +390,8 @@ class TNomenclature extends TObjetStd
 	function load(&$PDOdb, $id, $loadProductWSifEmpty = false, $fk_product= 0 , $qty = 1, $object_type='', $fk_object_parent=0) {
 		global $conf;
 
+		$this->PDOdb = $PDOdb;
+
 		$res = parent::load($PDOdb, $id);
 		if($res) {
 			$this->iExist = true;
@@ -509,46 +514,115 @@ class TNomenclature extends TObjetStd
 
 	}
 
-	function fetchCombinedDetails(&$PDOdb) {
+	function fetchCombinedDetails(&$PDOdb, $recursive = false) {
 
-		$this->setCombinedArray();
+		if (!$recursive) $this->setCombinedArray();
 
-		foreach($this->TNomenclatureDet as &$det) {
+		$this->getRecursiveDetInfos($this->TNomenclatureDet, 1, $recursive);
+
+	}
+
+	/**
+	 * @param TNomenclatureDet[] $TNomenclatureDet
+	 * @param integer			 $coef
+	 * @param boolean			 $recursive (le conportement de base n'étant pas récursif on garde pour pas tout casser)
+	 */
+	public function getRecursiveDetInfos($TNomenclatureDet, $coef = 1, $recursive = false)
+	{
+		global $conf;
+
+		foreach($TNomenclatureDet as &$det) {
 
 			$n=new TNomenclature;
-			$n->loadByObjectId($PDOdb, $det->fk_product, 'product',true,$det->fk_product,$det->qty);
+			$n->loadByObjectId($this->PDOdb, $det->fk_product, 'product',true,$det->fk_product,$det->qty);
 			$n->setCombinedArray();
+			$n->setPrice($this->PDOdb, $coef * $det->qty, null, 'propal');
 
-			foreach($n->TNomenclatureDetCombined as &$n_det) {
+			if ($recursive) {
+				// TODO get arbo de chaque ligne $n_det pour appliquer la même méthode
+				$nomenclature = TNomenclature::getDefaultNomenclature($this->PDOdb, $det->fk_product, $coef * $det->qty);
 
-				if($this->TNomenclatureDetCombined[$n_det->fk_product]) {
-					$this->TNomenclatureDetCombined[$n_det->fk_product]->qty+=$n_det->qty * $det->qty;
+				// si non empty de $nomenclature, alors faire un $this->toto($TArbo, $coef*$n_det->qty);
+				if (!empty($nomenclature->TNomenclatureDet)) {
+					$nomenclature->setPrice($this->PDOdb, $coef * $det->qty, null, 'propal');
+					$this->getRecursiveDetInfos($nomenclature->TNomenclatureDet, $coef * $det->qty, $recursive);
 				}
-				else{
-					$this->TNomenclatureDetCombined[$n_det->fk_product] = $n_det;
-					$this->TNomenclatureDetCombined[$n_det->fk_product]->qty *= $det->qty;
+				else
+				{
+					if (!empty($conf->global->NOMENCLATURE_GROUP_DETAIL_BY_LABEL))
+					{
+						if (empty($det->note_private)) $det->note_private = 'empty';
+						if($this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]) {
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->qty+=$coef * $det->qty;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->calculate_price+=$coef * $det->calculate_price;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->pv+=$coef * $det->pv;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->charged_price+=$coef * $det->charged_price;
+
+						}
+						else {
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private] = $det;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->qty *= $coef;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->calculate_price *= $coef;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->pv *= $coef;
+							$this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]->charged_price *= $coef;
+						}
+					}
+					else
+					{
+						if($this->TNomenclatureDetCombined[$det->fk_product]) {
+							$this->TNomenclatureDetCombined[$det->fk_product]->qty+=$coef * $det->qty;
+							$this->TNomenclatureDetCombined[$det->fk_product]->calculate_price+=$coef * $det->calculate_price;
+							$this->TNomenclatureDetCombined[$det->fk_product]->pv+=$coef * $det->pv;
+							$this->TNomenclatureDetCombined[$det->fk_product]->charged_price+=$coef * $det->charged_price;
+
+						}
+						else {
+							$this->TNomenclatureDetCombined[$det->fk_product] = $det;
+							$this->TNomenclatureDetCombined[$det->fk_product]->qty *= $coef;
+							$this->TNomenclatureDetCombined[$det->fk_product]->calculate_price *= $coef;
+							$this->TNomenclatureDetCombined[$det->fk_product]->pv *= $coef;
+							$this->TNomenclatureDetCombined[$det->fk_product]->charged_price *= $coef;
+						}
+					}
+
 				}
 
+				//TODO recupérer récursivement les données des poste de travail
+			}
+			else
+			{
+				foreach($n->TNomenclatureDetCombined as &$n_det) {
+
+					if($this->TNomenclatureDetCombined[$n_det->fk_product]) {
+						$this->TNomenclatureDetCombined[$n_det->fk_product]->qty+=$n_det->qty * $det->qty;
+						$this->TNomenclatureDetCombined[$n_det->fk_product]->calculate_price+=$n_det->calculate_price * $det->qty;
+						$this->TNomenclatureDetCombined[$n_det->fk_product]->pv+=$n_det->pv * $det->qty;
+						$this->TNomenclatureDetCombined[$n_det->fk_product]->charged_price+=$n_det->charged_price * $det->qty;
+					}
+					else{
+						$this->TNomenclatureDetCombined[$n_det->fk_product] = $n_det;
+						$this->TNomenclatureDetCombined[$n_det->fk_product]->qty *= $det->qty;
+					}
+
+				}
+
+				foreach($n->TNomenclatureWorkstationCombined as &$n_ws) {
+					if($this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]) {
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour+=$n_ws->nb_hour* $det->qty;
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_prepare+=$n_ws->nb_hour_prepare* $det->qty;
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_manufacture+=$n_ws->nb_hour_manufacture* $det->qty;
+					}
+					else{
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation] = $n_ws;
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour *= $det->qty;
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_prepare *= $det->qty;
+						$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_manufacture *= $det->qty;
+					}
+				}
 			}
 
-
-			foreach($n->TNomenclatureWorkstationCombined as &$n_ws) {
-				if($this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]) {
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour+=$n_ws->nb_hour* $det->qty;
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_prepare+=$n_ws->nb_hour_prepare* $det->qty;
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_manufacture+=$n_ws->nb_hour_manufacture* $det->qty;
-				}
-				else{
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation] = $n_ws;
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour *= $det->qty;
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_prepare *= $det->qty;
-					$this->TNomenclatureWorkstationCombined[$n_ws->fk_workstation]->nb_hour_manufacture *= $det->qty;
-				}
-			}
 
 		}
-
-
 
 	}
 
