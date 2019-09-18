@@ -128,7 +128,7 @@ class Actionsnomenclature
 		
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
-			if($object->brouillon == 1 && count($object->lines) > 0)
+			if (count($object->lines) > 0)
 			{
 			?>
 				<script type="text/javascript" src="<?php echo dol_buildpath('/nomenclature/js/nomenclature.js.php',1); ?>"></script>
@@ -233,8 +233,7 @@ class Actionsnomenclature
         $TContext = explode(':', $parameters['context']);
         $line = &$parameters['line'];
 
-        // C'est mieux de vérifier si l'objet est en brouillon...
-        if($object->statut == 0 && (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
             ?>
@@ -254,8 +253,7 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        // C'est mieux de vérifier si l'objet est en brouillon...
-        if($object->statut == 0 && (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
 
