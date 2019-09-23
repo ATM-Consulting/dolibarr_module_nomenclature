@@ -327,6 +327,7 @@ class TNomenclature extends TObjetStd
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 		$this->totalPV = ($this->totalMO + $totalPV);
+		if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->totalPV *= $marge->tx_object;
 
 		if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
