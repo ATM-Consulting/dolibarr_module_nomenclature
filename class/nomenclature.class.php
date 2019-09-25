@@ -1477,7 +1477,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
     function save(&$PDOdb)
     {
-        $this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
+        if(!empty($this->nb_hour_prepare) || !empty($this->nb_hour_manufacture))$this->nb_hour  = $this->nb_hour_prepare+$this->nb_hour_manufacture;
         parent::save($PDOdb);
     }
 
