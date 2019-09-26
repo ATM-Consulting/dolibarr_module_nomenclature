@@ -307,7 +307,7 @@ class Actionsnomenclature
                                     $out .= '<td><input type="text" name="'.$code.'" value="'.$coeff->tx.'" size="10" /></td>';
                                     $out .= '</tr>';
                                 }
-                                print "$(dialog).find('table').append('".$out."');";
+                                print "$(dialog).find('table').append('".addslashes($out)."');";
                                 ?>
                             }
                         });
