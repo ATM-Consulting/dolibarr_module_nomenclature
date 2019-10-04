@@ -515,11 +515,11 @@ class TNomenclature extends TObjetStd
 
 	}
 
-	function fetchCombinedDetails(&$PDOdb, $recursive = false) {
+	function fetchCombinedDetails(&$PDOdb, $recursive = false, $coef = 1) {
 
 		if (!$recursive) $this->setCombinedArray();
 
-		$this->getRecursiveDetInfos($this->TNomenclatureDet, 1, $recursive);
+		$this->getRecursiveDetInfos($this->TNomenclatureDet, $coef, $recursive);
 
 	}
 
@@ -534,18 +534,13 @@ class TNomenclature extends TObjetStd
 		if(empty($this->PDOdb)) $this->PDOdb = new TPDOdb;
 		foreach($TNomenclatureDet as &$det) {
 
-			$n=new TNomenclature;
-			$n->loadByObjectId($this->PDOdb, $det->fk_product, 'product',true,$det->fk_product,$det->qty);
-			$n->setCombinedArray();
-			$n->setPrice($this->PDOdb, $coef * $det->qty, null, 'propal');
-
 			if ($recursive) {
 				// TODO get arbo de chaque ligne $n_det pour appliquer la même méthode
 				$nomenclature = TNomenclature::getDefaultNomenclature($this->PDOdb, $det->fk_product, $coef * $det->qty);
 
 				// si non empty de $nomenclature, alors faire un $this->toto($TArbo, $coef*$n_det->qty);
 				if (!empty($nomenclature->TNomenclatureDet)) {
-					$nomenclature->setPrice($this->PDOdb, $coef * $det->qty, null, 'propal');
+					$nomenclature->setPrice($this->PDOdb, $coef, null, 'product');
 					$this->getRecursiveDetInfos($nomenclature->TNomenclatureDet, $coef * $det->qty, $recursive);
 				}
 				else
@@ -592,6 +587,11 @@ class TNomenclature extends TObjetStd
 			}
 			else
 			{
+				$n=new TNomenclature;
+				$n->loadByObjectId($this->PDOdb, $det->fk_product, 'product',true,$det->fk_product,$det->qty);
+				$n->setCombinedArray();
+				$n->setPrice($this->PDOdb, $coef * $det->qty, null, 'propal');
+
 				foreach($n->TNomenclatureDetCombined as &$n_det) {
 
 					if($this->TNomenclatureDetCombined[$n_det->fk_product]) {
