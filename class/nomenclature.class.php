@@ -531,7 +531,7 @@ class TNomenclature extends TObjetStd
 	public function getRecursiveDetInfos($TNomenclatureDet, $coef = 1, $recursive = false, $qtyligne = 1)
 	{
 		global $conf;
-
+		if(empty($this->PDOdb)) $this->PDOdb = new TPDOdb;
 		foreach($TNomenclatureDet as &$det) {
 
 			if ($recursive) {
