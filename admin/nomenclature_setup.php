@@ -447,7 +447,7 @@ if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
 
 setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
 setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
-setup_print_on_off('NOMENCLATURE_CLONE_ON_PROD_CLONE');
+setup_print_on_off('NOMENCLATURE_CLONE_ON_PRODUCT_CLONE');
 
 print '</table>';
 
