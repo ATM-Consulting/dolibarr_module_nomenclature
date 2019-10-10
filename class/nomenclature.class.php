@@ -94,7 +94,7 @@ class TNomenclature extends TObjetStd
 
     function cloneObject(&$PDOdb, $fk_object=0)
 	{
-		if ($this->object_type !== 'product' && $fk_object > 0)
+		if ( $fk_object > 0)
 		{
 			$this->fk_object = $fk_object; // On conserve le type de l'objet (propal) mais pas le fk_
 		}
