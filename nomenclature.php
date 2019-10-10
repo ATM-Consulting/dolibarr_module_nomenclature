@@ -1130,9 +1130,34 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
             ?></td>
-        </tr><?php
+        </tr>
+        <?php
+            if (GETPOST('optioncss') !== 'print') {
+                ?>
+                <tr>
+                    <td align="right" colspan="5">
+                        <div class="tabsAction">
+                            <div>
+                                <?php
+                                if ( $conf->workstation->enabled && ! $readonly ) {
+                                    echo $formCore->combo( '', 'fk_new_workstation', TWorkstation::getWorstations( $PDOdb, false, ! empty( $conf->global->NOMENCLATURE_PRESELECT_FIRST_WS ) ? false : true ), - 1 );
+                                    ?>
+                                    <div class="inline-block divButAction">
+                                        <input type="submit" name="add_workstation" class="butAction"
+                                               value="<?php echo $langs->trans( 'AddWorkstation' ); ?>"/>
+                                        <input type="submit" name="save_nomenclature" class="butAction"
+                                               value="<?php echo $langs->trans( 'SaveNomenclature' ); ?>"/>
+                                    </div>
+                                    <?php
+                                } // end if
+                                ?>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <?php
+            }
         }
-
 
 		if($user->rights->nomenclature->showPrice)
 		{
@@ -1235,26 +1260,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 		if (GETPOST('optioncss') !== 'print')
         {
-		?><tr>
-            <td align="right" colspan="5">
-                <div class="tabsAction">
-                    <?php
-
-                    if($conf->workstation->enabled && !$readonly) {
-
-                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
-                        ?>
-                        <div class="inline-block divButAction">
-                        <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
-                        </div>
-                        <?php
-                    }
-
-                    ?>
-                </div>
-            </td>
-        </tr>
-
+        ?>
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
