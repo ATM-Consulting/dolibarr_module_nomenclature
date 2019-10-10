@@ -316,11 +316,13 @@ class Interfacenomenclaturetrigger
             $n->updateTotalPR($PDOdb, $object, $price, 1);
         }
 
-		if($action == 'PRODUCT_CREATE' && in_array('createfromclone', $object->context)) {
+		if($action == 'PRODUCT_CREATE' && in_array('createfromclone', $object->context) && !empty($conf->global->NOMENCLATURE_CLONE_ON_PROD_CLONE)) {
 			$origin_id = (!empty($object->origin_id) && $object->origin == 'product')?$object->origin_id:GETPOST('id');
 			$TNomenclature = TNomenclature::get($PDOdb, $origin_id);
-			foreach($TNomenclature as $nomenclature) {
-				$nomenclature->cloneObject($PDOdb, $object->id);
+			if(!empty($TNomenclature)) {
+				foreach($TNomenclature as $nomenclature) {
+					$nomenclature->cloneObject($PDOdb, $object->id);
+				}
 			}
 		}
 		return 0;
