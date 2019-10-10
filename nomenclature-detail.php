@@ -187,7 +187,7 @@ dol_fiche_head($head, 'nomenclature', $title, -1, $picto);
 
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '&object='.$object_type);
 
-print_barre_liste('Liste produits et MO nécessaires', 0, $_SERVER['PHP_SELF']);
+print_barre_liste($langs->transnoentities('ListRequired'), 0, $_SERVER['PHP_SELF']);
 
 list($TProduct, $TWorkstation) = _getDetails($object, $object_type);
 print_table($TProduct, $TWorkstation, $object_type);
@@ -454,8 +454,8 @@ function print_table($TData, $TWorkstation, $object_type) {
 
             ?>
             <tr class="liste_titre">
-                <th class="liste_titre"><?php echo $langs->trans('WorkStation'); ?></th>
-                <th class="liste_titre" align="right"><?php echo $langs->trans('Qty'); ?></th>
+                <th class="liste_titre"><?php echo $langs->trans('Workstation'); ?></th>
+                <th class="liste_titre" align="right"><?php echo $langs->trans('QtyNeed'); ?></th>
                 <th class="liste_titre" colspan="2"></th>
             </tr>
             <?php
