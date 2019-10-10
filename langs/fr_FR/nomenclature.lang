@@ -168,6 +168,7 @@ NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL=Séparer la référence et le libell
 NOMENCLATURE_HIDE_SUBTOTALS=Cacher les sous-totaux sur le détail de nomenclature d'un devis
 NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES=Cacher les titres et sous-totaux sur le détail de nomenclature d'un devis
 NOMENCLATURE_SHOW_TITLE_IN_COLUMN=Afficher les titres en colonne sur le détail de nomenclature d'un devis
+NOMENCLATURE_CLONE_ON_PRODUCT_CLONE=Cloner la nomenclature d'un produit lors de son clone
 
 ParamSaved=Enregistrement réalisé avec succès
 CostType1=Meilleur prix fournisseur renseigné
