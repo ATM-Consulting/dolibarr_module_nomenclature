@@ -17,12 +17,15 @@ BTPParameters=Paramètres BTP
 CoeffParameters=Coefficients
 
 NomenclatureImportTitle=Importer des nomenclatures
+importFile=Fichier import
+ImportButton=Importer
 helpNomenclatureImportFile=Numéro nomenclature,Ref produit, Ref Composant, Qté, Qté de référence, Code type (MO pour Poste de travail)
 
 AddNomenclature=Ajouter une nomenclature
 AddProductNomenclature=Ajouter le produit/service
 SaveNomenclature=Enregistrer
 nomenclatureIsDefault=Définir par défaut
+numberShort=n°
 nomenclatureQtyReference=Qté de référence
 Proposal=Proposition commerciale
 
@@ -33,7 +36,7 @@ nb_days_before_beginning=Délai avant démarrage
 nb_days_before_beginningHelp=En nombre de jours entier
 QtyPrepareHelp=En centième d'heure, ce temps ne sera pas multiplié par la quantité lors de la fabrication
 QtyFabricationHelp=En centième d'heure
-Worstations=Postes de travail
+Workstations=Postes de travail
 AmountCost=Prix d'achat
 AmountCostWithCharge=Coût de revient
 AmountCostUnit=Prix d'achat unitaire
@@ -74,6 +77,7 @@ CloneNomenclatureFromProduct=Importer nomenclature
 NomenclatureCloned=Nomenclature(s) importée(s)
 
 ListUseNomenclaure=Liste des nomenclatures utilisant ce produit
+ListRequired=Liste produits et MO nécessaires
 
 AddCoef=Ajouter un coefficient
 ModifyCoef=Modifier un coefficient

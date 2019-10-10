@@ -413,7 +413,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	
 	
 	print '<h3 class="accordion-title">';
-	print $langs->trans('Nomenclature').' n°'.$n->getId();
+	print $langs->trans('Nomenclature').' '.$langs->trans('numberShort').$n->getId();
 	print ' '.$n->title;
 	
 	print ' - '.$langs->trans('nomenclatureQtyReference').' '. $n->qty_reference;
@@ -535,7 +535,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
     <table class="liste" width="100%" id="nomenclature-<?php echo $n->getId(); ?>"><?php
     	if($object_type == 'product') {
 	        ?><tr class="liste_titre">
-	            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' n°'.$n->getId(); ?></td>
+	            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' '.$langs->trans('numberShort').$n->getId(); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
 	            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
@@ -543,7 +543,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	        </tr><?php
         }
 
-        ?><tr id="" >
+        ?>
+        <tr>
            <td colspan="5">
                <?php
 
@@ -973,14 +974,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         <?php
        if(!empty($conf->workstation->enabled)) {
 
-       ?><tr>
+       ?>
+        <tr>
            <td colspan="5"><?php
                ?>
                <table class="liste workstation-table" width="100%">
                	<thead>
                <tr class="liste_titre">
                    <!--<th class="liste_titre"><?php echo $langs->trans('Type'); ?></th>-->
-                   <th class="liste_titre" colspan="1" width="55%"><?php echo $langs->trans('Worstations'); ?></th>
+                   <th class="liste_titre" colspan="1" width="55%"><?php echo $langs->trans('Workstation'); ?></th>
                    <th class="liste_titre" colspan="1" width="5%"></th>
                    <?php if (!empty($conf->global->NOMENCLATURE_USE_TIME_BEFORE_LAUNCH)) {?>
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('nb_days_before_beginning').img_info($langs->trans('nb_days_before_beginningHelp')); ?></th>
@@ -1302,8 +1304,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                         </div>
                         <?php if ($json) { ?>
                             <div class="inline-block divButAction">
-                                <input type="submit" name="apply_nomenclature_price" class="butAction"
-                                       value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>"/>
+                                <input type="submit" name="apply_nomenclature_price" class="butAction" value="<?php echo $langs->trans('ApplyNomenclaturePrice'); ?>" />
                             </div>
                         <?php }
                     }

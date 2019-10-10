@@ -39,8 +39,8 @@ function _card(&$PDOdb) {
 	
 	$formCore=new TFormCore('auto','formImport','post',true);
 
-	echo $formCore->fichier('Fichier source'.img_help(1, $langs->trans('helpNomenclatureImportFile')) , 'file1', '', 40);
-	echo $formCore->btsubmit('Voir', 'bt_view', '','butAction');
+	echo $formCore->fichier($langs->trans('importFile').img_help(1, $langs->trans('helpNomenclatureImportFile')) , 'file1', '', 40);
+	echo $formCore->btsubmit($langs->trans('ImportButton'), 'bt_view', '','butAction');
 
 	_import_to_session();
 
