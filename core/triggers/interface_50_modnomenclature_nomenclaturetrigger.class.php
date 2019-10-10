@@ -283,7 +283,7 @@ class Interfacenomenclaturetrigger
 
 				$pv_calcule = round($n->totalPV / $object->qty, 5); // round car selon les cas, les nombres sont identiques mais sont consiférés comme différents (genr après la virgule il y a un 0000000000000000000000000001 qu'on ne voit pas)
 				$pv_manuel = round($object->subprice, 5);
-				//var_dump(round($pv_calcule,5) != round($pv_manuproduct_el,3),round($pv_calcule,5), round($pv_manuel,5));exit;
+				//var_dump(round($pv_calcule,5) != round($pv_manuel,3),round($pv_calcule,5), round($pv_manuel,5));exit;
 				if($pv_calcule != $pv_manuel) $pv_force = true;
 
 			}
@@ -394,7 +394,7 @@ class Interfacenomenclaturetrigger
 			{
 				$obj = $PDOdb->Get_line();
 
-				$db->query('DELETE FROM '.MAIN_Dproduct_B_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
+				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
 				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
 				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
 			}
