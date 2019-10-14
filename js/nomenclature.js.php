@@ -5,7 +5,7 @@ require('../config.php');
 $langs->load('nomenclature@nomenclature');
 
 // Define javascript type
-top_httphead('text/javascript; charset=UTF-8');
+if(function_exists('top_httphead')) top_httphead('text/javascript; charset=UTF-8');
 // Important: Following code is to avoid page request by browser and PHP CPU at each Dolibarr page access.
 if (empty($dolibarr_nocache)) {
 	header('Cache-Control: max-age=10800, public, must-revalidate');
@@ -18,11 +18,11 @@ var ButtonWhoSubmit;
 function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) {
 
        var bindItem = function () {
-           
+
            $div.find('[type="submit"]').click(function(e){
                     ButtonWhoSubmit = $(this).attr('name');
-               });    
-               
+               });
+
                $div.find('a.tojs').each(function(){
                     $a = $(this);
                     var url = $(this).attr('href');
@@ -35,11 +35,11 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                             $div.html(data);
                             bindItem();
                        });
-                        
+
                     });
-                    
-               });    
-               
+
+               });
+
                $div.find('form').submit(function() {
                    var data = $(this).serialize();
                    data+='&'+ButtonWhoSubmit+'=1';
@@ -50,7 +50,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                        $div.closest('.ui-dialog').effect( "shake", { direction : 'up', times : 1 } );
                        $div.html(data);
                        bindItem();
-                       
+
                        if (ButtonWhoSubmit == 'apply_nomenclature_price')
                        {
                        		var url = false;
@@ -65,43 +65,43 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 							    case 'commande':
 							        url = "<?php echo dol_buildpath('/commande/card.php?id=', 1); ?>"+fk_origin;
 							        break;
-							} 
-							
+							}
+
 							if (url)
 							{
 								$.ajax({
 									url: url
 									,success: function(html) {
 										$('#id-right > .fiche').replaceWith($(html).find('#id-right > .fiche'));
-										
+
 <?php  	                                if(!empty($conf->global->NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE))
 										{
 										    print "\n".'$("#dialog-nomenclature").dialog(\'close\'); '."\n";
-										} 
+										}
 ?>
 									}
 								});
 							}
-							
+
                        }
                    });
-            
+
                     return false;
                });
-                
-           
+
+
        }
 
        var openDialog = function(data) {
-                
-               $("#dialog-nomenclature").remove(); 
-                
+
+               $("#dialog-nomenclature").remove();
+
                $('body').append('<div id="dialog-nomenclature"></div>');
-               
+
                $div = $("#dialog-nomenclature");
                $div.html(data);
                bindItem();
-               
+
                $("#dialog-nomenclature").dialog({
                   resizable: true,
                   modal: true,
@@ -109,27 +109,27 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                   width:'90%',
                   title:"<?php echo $langs->trans('Nomenclature'); ?>",
                   buttons: {
-                    
+
                   }
                });
        };
-       
+
 /* nomenclature/nomenclature.php?fk_product=2&lineid=4&object_type=commande&qty=1 */
        $.ajax({
            url:"<?php echo dol_buildpath('/nomenclature/nomenclature.php',1); ?>"
            ,data: {
                  fk_object: fk_line
                 , qty_ref: qty
-                , fk_product: fk_product  
+                , fk_product: fk_product
                 , object_type: object_type
                 , fk_origin: fk_origin
                 , json : 1
-           } 
+           }
            ,dataType:'html'
        }).done(function(data){
-           
+
            openDialog(data);
-           
+
        }) ;
-       
+
 }
