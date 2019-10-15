@@ -515,11 +515,11 @@ class TNomenclature extends TObjetStd
 
 	}
 
-	function fetchCombinedDetails(&$PDOdb, $recursive = false, $coef = 1) {
+	function fetchCombinedDetails(&$PDOdb, $recursive = false, $coef = 1, $qtyligne = 1) {
 
 		if (!$recursive) $this->setCombinedArray();
 
-		$this->getRecursiveDetInfos($this->TNomenclatureDet, $coef, $recursive);
+		$this->getRecursiveDetInfos($this->TNomenclatureDet, $coef, $recursive, $qtyligne);
 
 	}
 
@@ -528,7 +528,7 @@ class TNomenclature extends TObjetStd
 	 * @param integer			 $coef
 	 * @param boolean			 $recursive (le conportement de base n'étant pas récursif on garde pour pas tout casser)
 	 */
-	public function getRecursiveDetInfos($TNomenclatureDet, $coef = 1, $recursive = false)
+	public function getRecursiveDetInfos($TNomenclatureDet, $coef = 1, $recursive = false, $qtyligne = 1)
 	{
 		global $conf;
 		if(empty($this->PDOdb)) $this->PDOdb = new TPDOdb;
@@ -540,7 +540,8 @@ class TNomenclature extends TObjetStd
 
 				// si non empty de $nomenclature, alors faire un $this->toto($TArbo, $coef*$n_det->qty);
 				if (!empty($nomenclature->TNomenclatureDet)) {
-					$nomenclature->setPrice($this->PDOdb, $coef, null, 'product');
+					if ($qtyligne > 1) $nomenclature->setPrice($this->PDOdb, $coef * $qtyligne, null, 'product');
+					else $nomenclature->setPrice($this->PDOdb, $coef, null, 'product');
 					$this->getRecursiveDetInfos($nomenclature->TNomenclatureDet, $coef * $det->qty, $recursive);
 				}
 				else
