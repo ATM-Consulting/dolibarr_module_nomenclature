@@ -122,9 +122,7 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
 		$PDOdb = new TPDOdb();
 
-		if ($action == 'ORDER_CREATE') {
-			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
-		} elseif ($action == 'LINEPROPAL_INSERT') {
+		if ($action == 'LINEPROPAL_INSERT') {
 			$this->_setPrice($PDOdb, $object, $object->fk_propal, 'propal');
 		} elseif ($action == 'LINEBILL_INSERT' && !empty($conf->global->NOMENCLATURE_USE_ON_INVOICE)) {
 			$this->_setPrice($PDOdb, $object, $object->fk_facture, 'facture');
