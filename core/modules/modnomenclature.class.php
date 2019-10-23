@@ -89,7 +89,13 @@ class modnomenclature extends DolibarrModules
 		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@nomenclature')) // Set here all workflow context managed by module
 		//                        );
 		$this->module_parts = array(
-			'hooks'=>array('propalcard','ordercard', 'stockproductcard', 'projectOverview')
+			'hooks'=>array(
+			    'propalcard'
+                , 'ordercard'
+                , 'stockproductcard'
+                , 'projectOverview'
+                , 'listof'
+            )
             ,'triggers'=>1
             ,'models' => 1
             ,'css'=>array('/nomenclature/css/nomenclature.css')  

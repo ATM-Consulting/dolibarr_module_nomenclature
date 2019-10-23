@@ -821,7 +821,9 @@ class TNomenclature extends TObjetStd
 
         $coef = 1;
         if($qty_ref != $this->qty_reference) {
-            $coef = $qty_ref / $this->qty_reference;
+            // TODO calcul sur le non sécable sans doute pas utile car $qty_ref devrait être un multiple de $this->qty_reference
+            if ($this->non_secable) $coef = ceil($qty_ref / $this->qty_reference);
+            else $coef = $qty_ref / $this->qty_reference;
         }
 
         foreach($this->TNomenclatureDet as &$d)
