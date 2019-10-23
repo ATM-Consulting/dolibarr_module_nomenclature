@@ -95,6 +95,7 @@ class modnomenclature extends DolibarrModules
                 , 'stockproductcard'
                 , 'projectOverview'
                 , 'listof'
+                , 'ofcard'
             )
             ,'triggers'=>1
             ,'models' => 1
