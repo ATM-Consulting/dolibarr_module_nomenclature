@@ -423,7 +423,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	$price_to_sell =  $n->getSellPrice($qty_ref); // prix de vente conseillé total
 	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell*$qty_ref);
-	
+
+	if (GETPOST('json') == 1 && $n->non_secable) print ' ('.$langs->trans('nomenclatureNonSecableForQty', $n->qty_reference).')';
+
 	print '</h3>';
 	
 	print '<div id="nomenclature'.$n->id.'" class="tabBar accordion-body">';
@@ -538,6 +540,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	            <td class="liste_titre"><?php echo $langs->trans('Nomenclature').' '.$langs->trans('numberShort').$n->getId(); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('Title'), 'title', $n->title, 50,255); ?></td>
 	            <td class="liste_titre"><?php echo $formCore->texte($langs->trans('nomenclatureQtyReference'), 'qty_reference', $n->qty_reference, 5,10); ?></td>
+	            <td class="liste_titre"><?php echo $formCore->checkbox('', 'non_secable', array(1 => $langs->trans('nomenclatureNonSecable').' '.img_help(1, $langs->trans('nomenclatureNonSecableHelp'))), $n->non_secable); ?></td>
 	            <td align="right" class="liste_titre"><?php echo $formCore->checkbox('', 'is_default', array(1 => $langs->trans('nomenclatureIsDefault')), $n->is_default, 'onclick="javascript:uncheckOther(this);"') ?></td>
                 <td align="right" class="liste_titre"><?php if (!$readonly) { ?><a href="javascript:deleteNomenc(<?php echo $n->getId(); ?>)"><?php echo img_delete($langs->trans('DeleteThisNomenclature')) ?></a><?php } ?></td>
 	        </tr><?php
@@ -545,7 +548,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
         ?>
         <tr>
-           <td colspan="5">
+           <td colspan="6">
                <?php
 
                $TNomenclatureDet = &$n->TNomenclatureDet;
@@ -947,7 +950,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
         <?php if (GETPOST('optioncss') !== 'print') { ?>
         <tr>
-			<td colspan="5">
+			<td colspan="6">
                 <?php if(!$readonly) { ?>
                     <div class="tabsAction">
                         <div>
@@ -976,7 +979,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
        ?>
         <tr>
-           <td colspan="5"><?php
+           <td colspan="6"><?php
                ?>
                <table class="liste workstation-table" width="100%">
                	<thead>
@@ -1135,7 +1138,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
             if (GETPOST('optioncss') !== 'print') {
                 ?>
                 <tr>
-                    <td align="right" colspan="5">
+                    <td align="right" colspan="6">
                         <div class="tabsAction">
                             <div>
                                 <?php

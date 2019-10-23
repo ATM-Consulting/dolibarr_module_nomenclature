@@ -123,6 +123,19 @@ class Interfacenomenclaturetrigger
 		$PDOdb = new TPDOdb();
 
 		if ($action == 'LINEPROPAL_INSERT') {
+
+            $n = new TNomenclature;
+            $n->loadByObjectId($PDOdb, $object->id, 'propal', true, $object->fk_product, $object->qty, $object->fk_propal); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+            if ($n->getId() == 0)
+            {
+                $n->non_secable = $n->nomenclature_original->non_secable;
+
+                $n->fk_object = $object->id;
+                $n->object_type = 'propal';
+                $n->setPrice($PDOdb, $object->qty, $object->id, 'propal', $object->fk_propal);
+                $n->save($PDOdb);
+            }
+
 			$this->_setPrice($PDOdb, $object, $object->fk_propal, 'propal');
 		} elseif ($action == 'LINEBILL_INSERT' && !empty($conf->global->NOMENCLATURE_USE_ON_INVOICE)) {
 			$this->_setPrice($PDOdb, $object, $object->fk_facture, 'facture');

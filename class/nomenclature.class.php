@@ -10,6 +10,28 @@ dol_include_once('/workstation/class/workstation.class.php');
 
 class TNomenclature extends TObjetStd
 {
+    /** @var string $title */
+    public $title;
+    /** @var integer $fk_object */
+    public $fk_object;
+    /** @var integer $fk_nomenclature_parent */
+    public $fk_nomenclature_parent;
+    /** @var integer $is_default */
+    public $is_default;
+    /** @var float $qty_reference */
+    public $qty_reference;
+    /** @var float $totalPRCMO_PMP */
+    public $totalPRCMO_PMP;
+    /** @var float $totalPRCMO_OF */
+    public $totalPRCMO_OF;
+    /** @var float $totalPRCMO */
+    public $totalPRCMO;
+    /** @var string $object_type */
+    public $object_type;
+    /** @var string $note_private */
+    public $note_private;
+    /** @var integer $non_secable */
+    public $non_secable;
 
 	/** @var null|TPDOdb */
 	public $PDOdb = null;
@@ -28,6 +50,7 @@ class TNomenclature extends TObjetStd
 
         $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
         $this->add_champs('note_private',array('type'=>'text'));
+        $this->add_champs('non_secable',array('type'=>'integer'));
 
         $this->_init_vars();
 
@@ -155,6 +178,9 @@ class TNomenclature extends TObjetStd
 		if (empty($qty_ref)) $qty_ref = $this->qty_reference; // si vide alors le save provient de l'onglet "Ouvrage" depuis un produit
 
 		$coef_qty_price = $qty_ref / $this->qty_reference; // $this->qty_reference = qty produite pour une unité de nomenclature (c'est une qté de production)
+
+        // Si non sécable, alors $coef_qty_price doit être un entier pour multiplier la qté de référence
+        if ($this->non_secable) $coef_qty_price = ceil($qty_ref / $this->qty_reference);
 
 	    switch ($object_type)
         {
@@ -356,6 +382,9 @@ class TNomenclature extends TObjetStd
             	return false;
             }
         }
+
+		$this->nomenclature_original = $n;
+
 //var_dump($n);
         $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
