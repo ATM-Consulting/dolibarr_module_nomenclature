@@ -246,6 +246,75 @@ class Actionsnomenclature
             </script>
             <?php
         }
+        elseif (in_array('listof', $TContext))
+        {
+            if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', 1);
+            dol_include_once('nomenclature/config.php');
+            dol_include_once('nomenclature/class/nomenclature.class.php');
+
+            if (is_object($parameters['commande']))
+            {
+                $PDOdb = new TPDOdb;
+                $commande = $parameters['commande'];
+
+                $n = new TNomenclature;
+                $n->loadByObjectId($PDOdb, $object->fk_commandedet, 'commande', true, $object->rowid, 1, $commande->id); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+
+                if ($n->getId() > 0 && $n->non_secable)
+                {
+                    $qty_to_make = 0;
+                    while ($object->qteCommandee > $qty_to_make)
+                    {
+                        $qty_to_make+= $n->qty_reference;
+                    }
+
+                    $object->qteCommandee = $qty_to_make;
+
+                    print '
+                        <style type="text/css">
+                            #formMakeOk .outline-error {
+                                outline: 1px solid red;
+                            }
+                        </style>
+                        <script type="text/javascript">
+                            $(function() {
+                                var nomenEl = document.getElementById("TQuantites['.$object->fk_commandedet.']");
+                                nomenEl.dataset.step = '.$n->qty_reference.';
+                                
+                                $(nomenEl).keyup(function(ev) {
+                                    console.log("Trigger keyup from nomenclature");
+                                    let value = parseFloat(this.value.replace(",", "."));
+                                    let multiple = value / this.dataset.step;
+
+                                    if (multiple === parseInt(multiple)) {
+                                        $(this).removeClass("outline-error");
+                                        this.dataset.calculNextValue = 0;
+                                    }
+                                    else {
+                                        $(this).addClass("outline-error");
+                                        this.dataset.calculNextValue = 1;
+                                    }
+                                });
+                                
+                                $(nomenEl).blur(function(ev) {
+                                    console.log("Trigger blur from nomenclature");
+                                    if (this.dataset.calculNextValue == 1) {
+                                        let value = parseFloat(this.value.replace(",", "."));
+                                        let step = parseFloat(this.dataset.step);
+                                        let newValue = step;
+                                        if (newValue > 0) {
+                                            while (newValue < value) newValue+= step;
+                                            this.value = newValue;
+                                            $(this).removeClass("outline-error");
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    ';
+                }
+            }
+        }
     }
 
     function addMoreActionsButtons($parameters, &$object, &$action, $hookmanager) {
@@ -334,7 +403,72 @@ class Actionsnomenclature
         }
     }
 
-    function printCommonFooter() {
+    function printCommonFooter($parameters, &$object, &$action, $hookmanager) {
+
+        $TContext = explode(':', $parameters['context']);
+        if (in_array('ofcard', $TContext))
+        {
+            if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', 1);
+            dol_include_once('nomenclature/config.php');
+            dol_include_once('nomenclature/class/nomenclature.class.php');
+
+                $PDOdb = new TPDOdb;
+
+                $n = new TNomenclature;
+                $n->loadByObjectId($PDOdb, GETPOST('fk_product'), 'product', true); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+
+                if ($n->getId() > 0 && $n->non_secable)
+                {
+                    print '
+                        <style type="text/css">
+                            #formOF0 .outline-error {
+                                outline: 1px solid red;
+                            }
+                        </style>
+                        <script type="text/javascript">
+                            $(function() {
+                                var nomenEl = document.getElementById("quantity_to_create");
+                                nomenEl.value = '.$n->qty_reference.';
+                                nomenEl.dataset.step = '.$n->qty_reference.';
+                                
+                                $(nomenEl).keyup(function(ev) {
+                                    console.log("Trigger keyup from nomenclature");
+                                    let value = parseFloat(this.value.replace(",", "."));
+                                    let multiple = value / this.dataset.step;
+            
+                                    if (multiple === parseInt(multiple)) {
+                                        $(this).removeClass("outline-error");
+                                        this.dataset.calculNextValue = 0;
+                                    }
+                                    else {
+                                        $(this).addClass("outline-error");
+                                        this.dataset.calculNextValue = 1;
+                                    }
+                                });
+                                
+                                $(nomenEl).blur(function(ev) {
+                                    console.log("Trigger blur from nomenclature");
+                                    if (this.dataset.calculNextValue == 1) {
+                                        let value = parseFloat(this.value.replace(",", "."));
+                                        let step = parseFloat(this.dataset.step);
+                                        let newValue = step;
+                                        if (newValue > 0) {
+                                            while (newValue < value) newValue+= step;
+                                            this.value = newValue;
+                                            $(this).removeClass("outline-error");
+                                        }
+                                    }
+                                });
+                            });
+                        </script>
+                    ';
+
+                }
+
+
+        }
+
+
 	    print '<div id="nomenclatureUpdateCoeff" style="display: none;">';
 
 	    print '</div>';
