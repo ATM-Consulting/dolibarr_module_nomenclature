@@ -137,7 +137,8 @@ if (empty($reshook))
 			$n->set_values($_POST);
 	
 		    $n->is_default = (int)GETPOST('is_default');
-	
+		    if (!GETPOSTISSET('non_secable')) $n->non_secable = 0;
+
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
 	
 		    if(!empty($_POST['TNomenclature'])) {
