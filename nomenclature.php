@@ -451,6 +451,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
         echo $formCore->hidden('qty_ref', $qty_ref);
         echo $formCore->hidden('qty_price', $qty_price);
+        if ($json) echo $formCore->hidden('non_secable', $n->non_secable);
     }
     
     $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
