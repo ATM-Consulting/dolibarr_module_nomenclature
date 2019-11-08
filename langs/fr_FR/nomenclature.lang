@@ -257,5 +257,7 @@ NOMENCLATURE_DETAILS_TAB_REWRITE=Séparer les produits des services dans l'ongle
 UpdateTitleCoeff=Mettre à jour les coefficients des nomenclatures
 
 nomenclatureNonSecable=Seuil non sécable
-nomenclatureNonSecableHelp=Cette notion permet d'utiliser la quantité de référence comme entière (aucun coef sera calculé pour adapter les quantités de la nomenclature)
+nomenclatureNonSecableHelp=Cette notion permet d'utiliser la quantité de référence comme non sécable dans vos propositions comerciales/ commandes clients. Exemple pour une quantité de référence de 1 : si la ligne de votre devis a pour quantité 3.5, alors la nomenclature associée à cette ligne, calculera un prix pour une quantité de 4
 nomenclatureNonSecableForQty=Seuil non sécable pour une quantité de référence de %s
+
+NomenclatureWarningSeuilNonSecableHelp=Attention : la nomenclature de cette ligne est de type non sécable, seul un multiple de la quantité de référence (%s) est autorisé

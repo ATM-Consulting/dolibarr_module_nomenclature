@@ -262,6 +262,8 @@ class Actionsnomenclature
 
                 if ($n->getId() > 0 && $n->non_secable)
                 {
+                    $langs->load('nomenclature@nomenclature');
+
                     $qty_to_make = 0;
                     while ($object->qteCommandee > $qty_to_make)
                     {
@@ -280,7 +282,8 @@ class Actionsnomenclature
                             $(function() {
                                 var nomenEl = document.getElementById("TQuantites['.$object->fk_commandedet.']");
                                 nomenEl.dataset.step = '.$n->qty_reference.';
-                                
+                                $(nomenEl).after("'.dol_escape_js(img_picto($langs->transnoentities('NomenclatureWarningSeuilNonSecableHelp', $n->qty_reference), 'help')).'");
+// 
                                 $(nomenEl).keyup(function(ev) {
                                     console.log("Trigger keyup from nomenclature");
                                     let value = parseFloat(this.value.replace(",", "."));
