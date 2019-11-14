@@ -868,7 +868,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				       if($user->rights->nomenclature->showPrice) {
 				       		$colspan = 3;
 							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
-							if(!empty($conf->stock->enabled)) $colspan -= 2;
+							if(empty($conf->stock->enabled)) $colspan -= 2;
 							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan += 2;
 							if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) $colspan ++;
