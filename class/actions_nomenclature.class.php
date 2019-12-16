@@ -77,33 +77,43 @@ class Actionsnomenclature
                 $titleLineId = GETPOST('fk_line', 'int');
 
                 // On récupère les lignes appartenant au titre sur lequel on a cliqué (récursivement)
-                $TLine = TSubtotal::getLinesFromTitleId($object, $titleLineId);
+                $TLine = TSubtotal::getLinesFromTitleId($object, $titleLineId, true);
                 foreach($TLine as $line) {
-                    $n = new TNomenclature;
-                    $n->loadByObjectId($PDOdb, $line->id, $object->element, true, $line->fk_product, $line->qty, $object->id);
-                    $n->fetchCombinedDetails($PDOdb);
-
-                    foreach($n->TNomenclatureDetCombined as $fk_product => $det) {
-                        // On récupère les coeffs qu'il faut pour chaque ligne de nomenclature
-                        $tx_custom = GETPOST($det->code_type, 'int');
-                        $tx_custom2 = GETPOST($det->code_type2, 'int');
-
-                        $shouldISave = false;
-                        if($det->tx_custom != $tx_custom) {
-                            $det->tx_custom = $tx_custom;
-                            $shouldISave = true;
+                    if(TSubtotal::isTitle($line)) {
+                        // On met à jour les extrafields des titres correspondant aux coefficiants
+                        $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+                        foreach($TCoef as $coef) {
+                            $line->array_options['options_'.$coef->code_type] = GETPOST($coef->code_type);
                         }
-                        if($det->tx_custom2 != $tx_custom2) {
-                            $det->tx_custom2 = $tx_custom2;
-                            $shouldISave = true;
-                        }
-                        if($shouldISave) $det->save($PDOdb);
+                        $line->insertExtraFields();
                     }
+                    else if(! TSubtotal::isModSubtotalLine($line)) {
+                        $n = new TNomenclature;
+                        $n->loadByObjectId($PDOdb, $line->id, $object->element, true, $line->fk_product, $line->qty, $object->id);
+                        $n->fetchCombinedDetails($PDOdb);
 
-                    $n->save($PDOdb);
-                    $n->setPrice($PDOdb, $line->qty, null, $object->element, $object->id);
+                        foreach($n->TNomenclatureDetCombined as $fk_product => $det) {
+                            // On récupère les coeffs qu'il faut pour chaque ligne de nomenclature
+                            $tx_custom = GETPOST($det->code_type, 'int');
+                            $tx_custom2 = GETPOST($det->code_type2, 'int');
 
-                    _updateObjectLine($n, $object->element, $line->id, $object->id, true);
+                            $shouldISave = false;
+                            if($det->tx_custom != $tx_custom) {
+                                $det->tx_custom = $tx_custom;
+                                $shouldISave = true;
+                            }
+                            if($det->tx_custom2 != $tx_custom2) {
+                                $det->tx_custom2 = $tx_custom2;
+                                $shouldISave = true;
+                            }
+                            if($shouldISave) $det->save($PDOdb);
+                        }
+
+                        $n->save($PDOdb);
+                        $n->setPrice($PDOdb, $line->qty, null, $object->element, $object->id);
+
+                        _updateObjectLine($n, $object->element, $line->id, $object->id, true);
+                    }
                 }
 
                 if($object->element == 'propal') $titleLine = new PropaleLigne($db);
