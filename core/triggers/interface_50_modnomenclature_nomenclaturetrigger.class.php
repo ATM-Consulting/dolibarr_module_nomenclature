@@ -154,7 +154,20 @@ class Interfacenomenclaturetrigger
 			}
 
 			if ($origin !== 'propal' || empty($origin_id)) {
-				null;
+                $n = new TNomenclature;
+                $n->loadByObjectId($PDOdb, $object->id, 'commande', true, $object->fk_product, $object->qty, $object->fk_commande); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+                if ($n->getId() == 0)
+                {
+                    $n->non_secable = $n->nomenclature_original->non_secable;
+
+                    $n->fk_object = $object->id;
+                    $n->object_type = 'commande';
+                    $n->setPrice($PDOdb, $object->qty, $object->id, 'commande', $object->fk_commande);
+                    $n->save($PDOdb);
+                }
+
+                $this->_setPrice($PDOdb, $object, $object->fk_propal, 'propal');
+
 			} else {
 
 				$propal = new Propal($db);
@@ -267,7 +280,14 @@ class Interfacenomenclaturetrigger
 			$n = new TNomenclature();
 			$n->loadByObjectId($PDOdb, $object->id, 'propal');
 			$n->delete($PDOdb);
-		} elseif ($action == 'LINE_DUPLICATE') {
+		}
+		elseif ($action == 'LINEORDER_DELETE' && $object->element == 'commandedet')
+        {
+            $n = new TNomenclature();
+            $n->loadByObjectId($PDOdb, $object->id, 'commande');
+            $n->delete($PDOdb);
+        }
+		elseif ($action == 'LINE_DUPLICATE') {
 
 			if ($object->line_from->product_type != 9)
 			{
