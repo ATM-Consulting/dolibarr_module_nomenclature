@@ -449,6 +449,8 @@ setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
 setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
 setup_print_on_off('NOMENCLATURE_CLONE_ON_PRODUCT_CLONE');
 
+setup_print_on_off('NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE');
+
 print '</table>';
 
 ?>

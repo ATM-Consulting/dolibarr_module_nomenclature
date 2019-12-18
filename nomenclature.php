@@ -398,7 +398,7 @@ function get_format_libelle_produit($fk_product = null) {
 
 /**
  * @param $PDOdb
- * @param $n
+ * @param TNomenclature $n
  * @param $product
  * @param $object
  * @param int $fk_object

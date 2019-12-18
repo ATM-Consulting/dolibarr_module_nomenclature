@@ -237,7 +237,18 @@ class TNomenclature extends TObjetStd
 
 			$perso_price = $det->price;
 
-			if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED) && !empty($perso_price)) {
+            $n = new TNomenclature;
+            if (
+                !empty($conf->global->NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE)
+                && $n->loadByObjectId($PDOdb, $det->fk_product, 'product', false)
+                && $n->getId() > 0
+                && $n->non_secable
+            )
+            {
+                $n->setPrice($PDOdb, $qty_ref, $n->fk_object, $n->object_type);
+                $det->calculate_price = $n->getBuyPrice($n->qty_reference);
+            }
+			elseif(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED) && !empty($perso_price)) {
 				if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_APPLY_QTY)) {
 					$det->calculate_price = $perso_price * $det->qty * $coef_qty_price;
 				}
