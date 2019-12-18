@@ -122,7 +122,33 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
 		$PDOdb = new TPDOdb();
 
-		if ($action == 'LINEPROPAL_INSERT') {
+		// MAJ de la quantité de fabrication si issue d'une nomenclature non sécable
+        if ($action === 'ASSET_LINE_OF_SAVE' && $object->type === 'TO_MAKE')
+        {
+            if (!empty($object->fk_commandedet)) $object_type = 'commande';
+            else $object_type = 'product';
+
+            $n = new TNomenclature;
+            if (
+                $n->loadByObjectId($PDOdb, $object->fk_product, $object_type, false)
+                && $n->getId() > 0
+                && $n->non_secable
+            )
+            {
+                $qyt_reference = $n->qty_reference;
+                while ($qyt_reference < $object->qty_needed)
+                {
+                    $qyt_reference+= $n->qty_reference;
+                }
+
+                $object->qty_needed = $qyt_reference;
+                $object->qty = $qyt_reference;
+            }
+
+            /** @var TAssetOFLine $object */
+            $object->saveQty($PDOdb);
+        }
+		elseif ($action == 'LINEPROPAL_INSERT') {
 
             $n = new TNomenclature;
             $n->loadByObjectId($PDOdb, $object->id, 'propal', true, $object->fk_product, $object->qty, $object->fk_propal); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
