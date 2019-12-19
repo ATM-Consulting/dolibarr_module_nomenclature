@@ -626,7 +626,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                         echo '<input type="text" value="'.$det->title.'" name="TNomenclature['.$k.'][title]" />';
                                     }
 
-                                    _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
+                                    $sub_n = _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 
@@ -752,7 +752,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                     print '<td class="col_amountCostUnit"  >';
                                     if(!empty($det->qty)){
-                                        echo   price(round($price / $det->qty, 2));
+                                        if (
+                                            !empty($conf->global->NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE)
+                                            && is_object($sub_n)
+                                            && $sub_n->non_secable
+                                        )
+                                        {
+                                            echo price(round($price / $sub_n->qty_reference, 2));
+                                        }
+                                        else echo price(round($price / $det->qty, 2));
                                     }
                                     print '</td>';
 
@@ -1418,5 +1426,5 @@ function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
 		}
     }
 
-	return true;
+	return $n;
 }
