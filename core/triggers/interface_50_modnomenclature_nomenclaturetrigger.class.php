@@ -264,7 +264,36 @@ class Interfacenomenclaturetrigger
 				// S'il y a bien un load depuis ma ligne de propal d'origine
 				if ($n->iExist)
 				{
-					$n->cloneObject($PDOdb, $object->line->id);
+					$TAttributesToCopy = array('title', 'fk_nomenclature_parent', 'is_default', 'qty_reference', 'note_private', 'non_secable');
+
+					$n_new = new TNomenclature();
+					$n_new->loadByObjectId($PDOdb, $object->line->id, $object->element, true, $object->line_from->fk_product, $object->line_from->qty);
+
+					foreach ($TAttributesToCopy as $attribute)
+					{
+						$n_new->{ $attribute } = $n->{ $attribute };
+					}
+
+					if (! empty($n->TNomenclatureDet)) {
+						foreach ( $n->TNomenclatureDet as $TDetValues ) {
+							$k = $n_new->addChild($PDOdb, 'TNomenclatureDet');
+							$n_new->TNomenclatureDet[$k]->set_values($TDetValues);
+							$n_new->TNomenclatureDet[$k]->fk_origin = $TDetValues->rowid;
+						}
+					}
+					if (! empty($n->TNomenclatureWorkstation)) {
+						foreach ( $n->TNomenclatureWorkstation as $TDetValues ) {
+
+							$k = $n_new->addChild($PDOdb, 'TNomenclatureWorkstation');
+							$n_new->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+						}
+					}
+
+					$n_new->setPrice($PDOdb, $object->line->qty, $object->id, $object->element);
+
+					$n_new->save($PDOdb);
+
+					$this->_setPrice($PDOdb, $object->line, $object->id, $object->element);
 				}
 			}
 			
