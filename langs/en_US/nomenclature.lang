@@ -1,15 +1,15 @@
-Module104580Name = Nomenclature
+Module104580Name = Bill of materials
 Module104580Desc = Define your manufacturing composition, record your production cost
 
 #TODO: harmoniser: • chantier (construction project? works? works campaign?) • stock virtuel/physique (virtual / actual ou virtual / physical?) • ouvrage => structure • déboursé => cost/spent amount • coût margé =>
 
 ATMAbout = This module has been developed by <a href="http://www.atm-consulting.fr" target="_blank">ATM Consulting</a><br>You can find the documentation on our <a href="http://wiki.atm-consulting.fr/index.php/Accueil" target="_blank">wiki</a><br><br>For any question or feedback, contact us on <a href="mailto:support@atm-consulting.fr">support@atm-consulting.fr</a><br><br>For any commercial question, contact us on <a href="mailto:contact@atm-consulting.fr">contact@atm-consulting.fr</a> or at +33 9 77 19 50 70<br><br>Find our other modules on <a href="http://www.dolistore.com/search.php?orderby=position&orderway=desc&search_query=atm&submit_search=Rechercher" target="_blank">Dolistore</a>
 
-nomenclatureSetup = nomenclature module setup
-nomenclatureAbout = About nomenclature
+nomenclatureSetup = Bill of materials module setup
+nomenclatureAbout = About Bill of materials
 #Setup
 RecalculateNomenclature=Recalculate
-RecalculateNomenclatureDesc=Recalculate all nomenclatures
+RecalculateNomenclatureDesc=Recalculate all bom
 RecalculateNomenclatureDone=Recalculate done
 
 NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Use flat cost as purchase price
@@ -17,14 +17,14 @@ NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE=Use flat cost as purchase price
 
 GlobalParameters=Global parameters
 
-nomenclatureAllowFreeLine=Allow adding a nomenclature to a service or free-form line
+nomenclatureAllowFreeLine=Allow adding a bom to a service or free-form line
 BTPParameters=Construction parameters
 CoeffParameters=Coefficients
 
-NomenclatureImportTitle=Import nomenclatures
+NomenclatureImportTitle=Import bom
 helpNomenclatureImportFile=Nomenclature number, Product ref, Component ref, Qty, Reference qty, Code of type (MO for Workstation)
 
-AddNomenclature=Add a nomenclature
+AddNomenclature=Add a bom
 AddProductNomenclature=Add product/service
 SaveNomenclature=Save
 nomenclatureIsDefault=Set as default
@@ -64,20 +64,20 @@ TotalForX=Total for %s item(s)
 TotalUnit=Total for 1 item
 
 NomenclatureSaved=Nomenclature saved
-NomenclatureNBSaved=%d nomenclatures saved
-WorkstationAlreadyAssociated=This Workstation is already linked to this nomenclature
+NomenclatureNBSaved=%d BOMs saved
+WorkstationAlreadyAssociated=This Workstation is already linked to this BOM
 
-NomenclatureLineSaved=Specific nomenclature saved
-DeleteThisNomenclature=Delete this nomenclature
+NomenclatureLineSaved=Specific BOM saved
+DeleteThisNomenclature=Delete this BOM
 NomenclatureDeleted=Nomenclature deleted
 AddWorkstation=Add a workstation
 
 ApplyNomenclaturePrice=Apply selling price
 ApplyNewCoefToObjectLine=Recompute selling price of lines
-CloneNomenclatureFromProduct=Import nomenclature
-NomenclatureCloned=Imported nomenclature(s)
+CloneNomenclatureFromProduct=Import BOM
+NomenclatureCloned=Imported BOM(s)
 
-ListUseNomenclaure=Liste of nomenclatures that use this product
+ListUseNomenclaure=Liste of BOMs that use this product
 
 AddCoef=Add a coefficient
 # TODO: vérifier si 'Modifier' correspond à une ouverture en mode édition ou à une sauvegarde
@@ -106,8 +106,8 @@ nomenclatureCoefUpdated=Coefficients updated
 nomenclatureApplyAllCoefOnPriceError=Unable to update prices: the document doesn’t have draft status
 
 SaveAll=Save changes
-PseudoNomenclature=Pseudo-nomenclature of the product
-PseudoNomenclatureInfo=This is the product’s nomenclature, not the line’s. The first level will be linked to the line upon saving; sublevels will be common product nomenclatures.
+PseudoNomenclature=Pseudo-BOM of the product
+PseudoNomenclatureInfo=This is the product’s BOM, not the line’s. The first level will be linked to the line upon saving; sublevels will be common product nomenclatures.
 
 EditLine=Edit line
 ThisProductCreateAnInfinitLoop=Unable to add this product: this would cause an infinite loop
@@ -129,25 +129,25 @@ TotalPricePMP=Theoretical materials total
 TotalPriceOF=Actual materials total
 priceMO_OF=Actual, analysis of MO over the specified period
 TotalMO_OF=Actual MO total
-massUpdate=Mass-update nomenclatures
+massUpdate=Mass-update BOMs
 massUpdateMenu=Nomenclature mass-updated
-nomenclatureSpeedSelectClick=Quick nomenclature, select by clicking
+nomenclatureSpeedSelectClick=Quick BOM, select by clicking
 PercentUP=Increase in percent
 ShowImpact=Show impact
 QtyAfter=Qty after
 MakeIt=Update
 
 NOMENCLATURE_COST_TYPE=Default suggestion for purchase / cost price
-NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST=Use the child nomenclature price before the purchase price for calculation
+NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST=Use the child BOM price before the purchase price for calculation
 NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED=This cost uses this line’s quantity
-NOMENCLATURE_PERSO_PRICE_APPLY_QTY=Hide the recommended price line in the nomenclature
-NOMENCLATURE_HIDE_ADVISED_PRICE=Do not show the recommended price line in the nomenclature
-NOMENCLATURE_USE_ON_INVOICE=Use nomenclature cost price with invoices
+NOMENCLATURE_PERSO_PRICE_APPLY_QTY=Hide the recommended price line in the BOM
+NOMENCLATURE_HIDE_ADVISED_PRICE=Do not show the recommended price line in the BOM
+NOMENCLATURE_USE_ON_INVOICE=Use BOM cost price with invoices
 NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC=Force the use of the selling price rather than the cost plus margin (when adding a proposal / order / invoice line)
 NOMENCLATURE_USE_QTYREF_TO_ONE=Always use 1 as a reference quantity in the cost price calculation
-NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Use the “time before start” field in the nomenclature on workstations
-NOMENCLATURE_USE_TIME_PREPARE=Use the “Preparation time” field in the nomenclature on workstations
-NOMENCLATURE_USE_TIME_DOING=Use the “Manufacturing time” field in the nomenclature on workstations
+NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Use the “time before start” field in the BOM on workstations
+NOMENCLATURE_USE_TIME_PREPARE=Use the “Preparation time” field in the BOM on workstations
+NOMENCLATURE_USE_TIME_DOING=Use the “Manufacturing time” field in the BOM on workstations
 NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION=Enable linking a product line to the workstation
 NOMENCLATURE_ALLOW_USE_MANUAL_COEF=Enable manually editing coefficients
 NOMENCLATURE_USE_COEF_ON_COUT_REVIENT=Enable editing a margin coefficient line-wise
@@ -155,7 +155,7 @@ NOMENCLATURE_USE_CUSTOM_BUYPRICE=Enable to select a purchase / cost price on eve
 NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT=Enable to edit the product unit on every line
 NOMENCLATURE_USE_LOSS_PERCENT=Enable automatic calculation of quantity based on the loss percentage
 NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE=In the coefficient tab of proposals, prevent recomputing lines whose selling price has been manually forced.
-NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Do not use the nomenclature selling price when a proposal / order / invoice line is added.
+NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE=Do not use the BOM selling price when a proposal / order / invoice line is added.
 NOMENCLATURE_FEEDBACK=Add a Product return tab on projects / construction projects
 NOMENCLATURE_FEEDBACK_USE_STOCK=Add stock movements upon construction project returns (the stock module must be enabled)
 NOMENCLATURE_FEEDBACK_INIT_STOCK=Manage assigning stock to construction projects
@@ -163,12 +163,12 @@ NOMENCLATURE_FEEDBACK_OBJECT=Type of objects used for construction project retur
 NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE=Lock warehouse modification
 NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE=Close the window after the user has clicked on “Apply selling price”
 NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help=You must empty your browser cache after setting this option.
-NOMENCLATURE_HIDE_STOCK_COLUMNS=Hide the “physical stock” and “virtual stock” on nomenclatures
-NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE=Include products that do not belong to a nomenclature on the nomenclature details of a proposal
-NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL=Separate product ref and label on nomenclature details of a proposal
-NOMENCLATURE_HIDE_SUBTOTALS=Hide subtotals on nomenclature details of proposals
-NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES=Hide titles and subtotals on nomenclature details of proposals
-NOMENCLATURE_SHOW_TITLE_IN_COLUMN=Show titles in a column on nomenclature details of proposals
+NOMENCLATURE_HIDE_STOCK_COLUMNS=Hide the “physical stock” and “virtual stock” on BOMs
+NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE=Include products that do not belong to a BOM on the BOM details of a proposal
+NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL=Separate product ref and label on BOM details of a proposal
+NOMENCLATURE_HIDE_SUBTOTALS=Hide subtotals on BOM details of proposals
+NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES=Hide titles and subtotals on BOM details of proposals
+NOMENCLATURE_SHOW_TITLE_IN_COLUMN=Show titles in a column on BOM details of proposals
 
 ParamSaved=Successfully saved
 CostType1=Best available supplier price in database
@@ -180,9 +180,9 @@ SetPriceInfiniteLoop=Infinite loop detected in the price fetching method
 
 DeleteSpecificCoef=Delete specific coefficients
 
-nomenclatureRead=View nomenclatures
-nomenclatureWrite=Create/edit nomenclatures
-nomenclatureShowPrice=View the price of nomenclature details
+nomenclatureRead=View BOMs
+nomenclatureWrite=Create/edit BOMs
+nomenclatureShowPrice=View the price of BOM details
 
 
 workstationListCustomTHM=Liste of average hourly rates
@@ -206,17 +206,17 @@ NomenclatureSelectWarehouseNeeded=Target warehouse for components:
 NomenclatureErrorEmptyQtyToStock=Error: quantity not set
 NomenclatureErrorNoWarehouseSelectedToMake=Error: no warehouse selected for finished product storage
 NomenclatureErrorNoWarehouseSelectedNeeded=Error: no warehouse selected as a component supply source
-NomenclatureErrorInvalidNomenclatureType=Error: only nomenclatures of type “product” can generate stock movements
+NomenclatureErrorInvalidNomenclatureType=Error: only BOMs of type “product” can generate stock movements
 
 // TODO: vérifier ça
-NomenclatureStockProductFrom=Inward stock movement through nomenclature [%s]
-NomenclatureDestockProductFrom=Outward stock movement through nomenclature [%s]
+NomenclatureStockProductFrom=Inward stock movement through BOM [%s]
+NomenclatureDestockProductFrom=Outward stock movement through BOM [%s]
 
 NomenclatureMvtOk=Stock movements OK
 
-NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Enable the stock movement feature from the “nomenclature” tab of products (the “stock” module must be enabled)
+NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Enable the stock movement feature from the “BOM” tab of products (the “stock” module must be enabled)
 
-NomenclatureStockTheorique=Virtual stock + nomenclature
+NomenclatureStockTheorique=Virtual stock + BOM
 NomenclatureStockTheoriqueHelp=Dolibarr standard virtual stock + possible manufacturing quantity via components
 
 QtyAllowed=Quantity assigned to the construction project
@@ -237,15 +237,15 @@ StockNotInit=Stock movements to construction sites not initialized. They will be
 NoFeedbackObjectLinked=This project isn’t currently linked to any %s.
 ApplyPlanned=Ensure compliance with planned quantity
 DoStockFeedBack=Put back into stock
-NoNomenclature=No nomenclature or structure
+NoNomenclature=No BOM or structure
 
 # LIST
 is_default=Used by default
 NomenclatureName=Name
 CreateOn=Created on
 Updated=Updated on
-NomenclatureList=List of nomenclatures / structures
-ListMessageNothingToShow=No result. Please check filters or add a nomenclature
+NomenclatureList=List of BOMs / structures
+ListMessageNothingToShow=No result. Please check filters or add a BOM
 
 RealStock=Actual stock
 TheoreticalStock=Theoretical stock
@@ -255,4 +255,4 @@ SearchByCategory=Search by category
 NothingHere=No subcategory or product
 DoASearch=Please submit a search query / No result matching your search query
 NOMENCLATURE_DETAILS_TAB_REWRITE=Separate products from services in the detail tab on structures
-UpdateTitleCoeff=Update nomenclature coefficients
+UpdateTitleCoeff=Update BOM coefficients
