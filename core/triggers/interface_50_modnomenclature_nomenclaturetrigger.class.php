@@ -181,6 +181,7 @@ class Interfacenomenclaturetrigger
 
 			if ($origin !== 'propal' || empty($origin_id)) {
                 $n = new TNomenclature;
+
                 $n->loadByObjectId($PDOdb, $object->id, 'commande', true, $object->fk_product, $object->qty, $object->fk_commande); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
                 if ($n->getId() == 0)
                 {
@@ -192,7 +193,7 @@ class Interfacenomenclaturetrigger
                     $n->save($PDOdb);
                 }
 
-                $this->_setPrice($PDOdb, $object, $object->fk_propal, 'propal');
+                $this->_setPrice($PDOdb, $object, $object->fk_commande, 'commande');
 
 			} else {
 
