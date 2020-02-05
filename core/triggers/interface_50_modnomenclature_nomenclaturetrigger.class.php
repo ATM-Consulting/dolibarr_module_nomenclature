@@ -253,6 +253,16 @@ class Interfacenomenclaturetrigger
 			$o->fetch(GETPOST('id'));
 			$object->fetch($object->id); // Pour recharger les bonnes lignes qui sinon sont celles de l'objet de départ
 
+			if ($origin == 'propal') {
+				$TCoeffPropal = TNomenclatureCoefObject::loadCoefObject($PDOdb, $o, 'propal');
+
+				foreach ($TCoeffPropal as &$coeffObject) {
+					$coeffObject->rowid = 0;
+					$coeffObject->fk_object = $object->id;
+					$coeffObject->save($PDOdb);
+				}
+			}
+
 			if (! empty($o->lines)) {
 				foreach ( $o->lines as $i => $line ) {
 					$n = new TNomenclature();
@@ -294,9 +304,10 @@ class Interfacenomenclaturetrigger
 
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'propal');
 
-			$TNomenclatureWorkstationThmObject = new TNomenclatureWorkstationThmObject;
 			TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
 
+			TNomenclatureCoefObject::deleteCoefsObject($PDOdb, $object->id, $object->element);
+			
 		} elseif ($action == 'ORDER_DELETE') {
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
 		} elseif ($action == 'PRODUCT_DELETE') {
