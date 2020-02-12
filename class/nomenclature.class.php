@@ -36,6 +36,9 @@ class TNomenclature extends TObjetStd
 	/** @var null|TPDOdb */
 	public $PDOdb = null;
 
+	/** @var string $element */
+	public $element = 'nomenclature';
+
     function __construct()
     {
         global $conf;
@@ -1104,6 +1107,10 @@ class TNomenclatureDet extends TObjetStd
 	/**
 	 * product_type == fk_coef (rowid de la table nomenclature_coef)
 	 */
+
+	/** @var string $element */
+	public $element = 'nomenclaturedet';
+
     function __construct()
     {
     	global $conf;
