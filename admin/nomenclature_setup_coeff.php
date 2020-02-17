@@ -109,6 +109,7 @@ if ($action == 'add' || $action == 'edit')
 
 $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 $TCoefWS = TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
+$TCoefPS = TNomenclatureCoef::loadCoef($PDOdb, 'pricesuggested');
 
 /*
  * Actions
@@ -186,7 +187,7 @@ print '<td><strong>'.$langs->trans("CreateCoef").'</strong></br>';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="add">';
 print '<label>'.$langs->trans('NomenclatureLineType').'</label>&nbsp;';
-print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'))).'&nbsp;&nbsp;';
+print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'), 'pricesuggested'=>$langs->trans('PriceSuggested'))).'&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
 print '<input type="text" name="label" placeholder="'.$langs->trans('NomenclatureCoeffLabel').'" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" /><br />';
 print '</td>';
@@ -274,6 +275,39 @@ if(!empty($conf->workstation->enabled)) {
 	print '</table>';
 
 }
+
+// Coef prix de vente conseillé
+
+$var=false;
+print '<table class="noborder" width="100%">';
+print '<tr class="liste_titre">';
+print '<td>'.$langs->trans("ModifyCoefPS").'</td>'."\n";
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
+
+foreach ($TCoefPS as &$coef)
+{
+
+    $var=!$var;
+    print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+    print '<tr '.$bc[$var].'>';
+    print '<td><input type="text" placeholder="'.$langs->trans('NomenclatureCoeffLabel').'"  name="label" value="'.$coef->label.'"  size="25" />&nbsp;<input type="text"  placeholder="'.$langs->trans('NomenclatureCoeffDesc').'"  name="desc" value="'.$coef->description.'" size="60" /></td>';
+    print '<td align="center" width="20">&nbsp;</td>';
+    print '<td align="right" width="650">';
+    print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="action" value="edit">';
+    print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
+    print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
+    print '<input readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
+    print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
+    print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
+    print '<input type="submit" class="butAction" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
+    print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
+    print '</td></tr>';
+    print '</form>';
+}
+
+print '</table>';
 
 
 
