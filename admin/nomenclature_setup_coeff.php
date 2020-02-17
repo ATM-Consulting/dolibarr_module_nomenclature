@@ -109,7 +109,9 @@ if ($action == 'add' || $action == 'edit')
 
 $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 $TCoefWS = TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
-$TCoefPS = TNomenclatureCoef::loadCoef($PDOdb, 'pricesuggested');
+$TCoefFinal = TNomenclatureCoef::loadCoef($PDOdb, 'pricefinal');
+
+if(empty($TCoefFinal)) 	$msg = get_htmloutput_mesg(img_warning('default') . ' ' . 'Ajouter un coefficient du prix de vente conseillé : code "coef_final"', '', 'error', 1);
 
 /*
  * Actions
@@ -170,9 +172,6 @@ dol_fiche_head(
 // Setup page goes here
 $form=new Form($db);
 
-
-
-
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 $var=false;
 print '<table class="noborder" width="100%">';
@@ -187,7 +186,7 @@ print '<td><strong>'.$langs->trans("CreateCoef").'</strong></br>';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="add">';
 print '<label>'.$langs->trans('NomenclatureLineType').'</label>&nbsp;';
-print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'), 'pricesuggested'=>$langs->trans('PriceSuggested'))).'&nbsp;&nbsp;';
+print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'), 'pricefinal'=>$langs->trans('PriceFinal'))).'&nbsp;&nbsp;';
 print '<label>'.$langs->trans('NomenclatureCreateLabel').'</label>&nbsp;';
 print '<input type="text" name="label" placeholder="'.$langs->trans('NomenclatureCoeffLabel').'" value="'.($action == 'add' && !empty($label) ? $label : '').'"  size="25" /><br />';
 print '</td>';
@@ -214,9 +213,6 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 foreach ($TCoef as $coef)
 {
 
-	$allow_to_delete = ($coef->code_type!='coef_marge');
-
-
 	$var=!$var;
 	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 	print '<tr '.$bc[$var].'>';
@@ -231,7 +227,7 @@ foreach ($TCoef as $coef)
 	print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
 	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
 	print '<input type="submit" class="butAction" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
-	if($allow_to_delete) print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
+    print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
 	print '</td></tr>';
 	print '</form>';
 }
@@ -250,7 +246,7 @@ if(!empty($conf->workstation->enabled)) {
 	print '<td align="center" width="20">&nbsp;</td>';
 	print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
-	foreach ($TCoefWS as &$coef)
+    foreach ($TCoefWS as &$coef)
 	{
 
 		$var=!$var;
@@ -281,11 +277,11 @@ if(!empty($conf->workstation->enabled)) {
 $var=false;
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print '<td>'.$langs->trans("ModifyCoefPS").'</td>'."\n";
+print '<td>'.$langs->trans("ModifyCoefFinal").'</td>'."\n";
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 
-foreach ($TCoefPS as &$coef)
+foreach ($TCoefFinal as &$coef)
 {
 
     $var=!$var;
@@ -309,7 +305,7 @@ foreach ($TCoefPS as &$coef)
 
 print '</table>';
 
-
+if(!empty($msg)) print $msg;
 
 llxFooter();
 

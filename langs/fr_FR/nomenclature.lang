@@ -79,10 +79,10 @@ ListUseNomenclaure=Liste des nomenclatures utilisant ce produit
 ListRequired=Liste produits et MO nécessaires
 
 AddCoef=Ajouter un coefficient
-PriceSuggested=Prix conseillé
+PriceFinal=Prix conseillé
 ModifyCoef=Modifier un coefficient
 ModifyCoefWS=Modifier un coefficient de main d'oeuvre
-ModifyCoefPS=Modifier un coefficient du prix de vente conseillé
+ModifyCoefFinal=Modifier un coefficient du prix de vente conseillé
 CreateCoef=Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel=Libellé : 
 NomenclatureCreateTx=Coef :
