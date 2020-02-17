@@ -74,7 +74,7 @@ if (isset($conf->global->NOMENCLATURE_COEF_MARGE))
 	$o=new TNomenclatureCoef;
 	$o->label = 'Marge';
 	$o->description = "Coef. de marge";
-	$o->code_type = "coef_marge";
+	$o->code_type = "coef_final";
 	$o->tx = $conf->global->NOMENCLATURE_COEF_MARGE;
 	$o->save($PDOdb);
 

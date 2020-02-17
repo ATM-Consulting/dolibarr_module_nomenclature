@@ -54,7 +54,8 @@ TotalAmountCostWithChargeOF=Coût de revient réel
 TotalAmountCostWithChargeOFForX=Coût de revient réel pour %s exemplaire(s)
 TotalAmountCostWithChargeOFQty=Coût de revient réel pour qté de référence
 AmountCostWithChargeCustom=Coût perso
-PriceConseil=Prix de vente conseillé (Marge %s %%)
+//PriceConseil=Prix de vente conseillé (Marge %s %%)
+PriceConseil=Prix de vente conseillé
 PriceConseilForX=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
 
