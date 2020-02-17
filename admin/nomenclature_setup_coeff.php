@@ -284,6 +284,8 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 foreach ($TCoefFinal as &$coef)
 {
 
+    $allow_to_delete = ($coef->code_type!='coef_final');
+
     $var=!$var;
     print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
     print '<tr '.$bc[$var].'>';
@@ -298,7 +300,7 @@ foreach ($TCoefFinal as &$coef)
     print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
     print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
     print '<input type="submit" class="butAction" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
-    print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
+    if($allow_to_delete) print '<input type="submit" class="butActionDelete" name="delete" value="'.$langs->trans("Delete").'">';
     print '</td></tr>';
     print '</form>';
 }
