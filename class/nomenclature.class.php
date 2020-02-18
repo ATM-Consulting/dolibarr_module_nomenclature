@@ -367,7 +367,7 @@ class TNomenclature extends TObjetStd
 		$this->totalMO_OF = $total_mo_of;
 
 		$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $this, $object_type);
-		$this->marge_object = $marge;
+//		$this->marge_object = $marge;
 		$this->marge = $marge->tx_object;
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;

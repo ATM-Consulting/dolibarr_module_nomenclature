@@ -526,9 +526,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                     , nomenclature_id: '<?php echo $n->rowid; ?>'
                 }
                 , dataType: "json"
-                , success: function (data) {
-                    location.reload();
-                }
             });
         });
 		
@@ -1276,7 +1273,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                             foreach($TCoefFinal as $coef){
                                 $TCoeffinaltoselect[$coef->code_type] = $coef->label;
                             }
-                            echo $form->selectarray('select_coef_final', $TCoeffinaltoselect, 'select_coef_final', '', '', '', '', '','','','');
+                            echo $form->selectarray('select_coef_final', $TCoeffinaltoselect, $n->marge_object, '', '', '', '', '','','','');
                             ?>
                         </td>
                         <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
