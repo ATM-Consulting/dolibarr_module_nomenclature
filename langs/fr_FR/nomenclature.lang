@@ -263,3 +263,5 @@ nomenclatureNonSecableHelp=Cette notion permet d'utiliser la quantité de réfé
 nomenclatureNonSecableForQty=Seuil non sécable pour une quantité de référence de %s
 
 NomenclatureWarningSeuilNonSecableHelp=Attention : la nomenclature de cette ligne est de type non sécable, seul un multiple de la quantité de référence (%s) est autorisé
+
+NomenclatureHelpMargePriceFinal=Peut être modifié dans la configuration du module Nomenclature

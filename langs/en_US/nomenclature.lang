@@ -256,3 +256,5 @@ NothingHere=No subcategory or product
 DoASearch=Please submit a search query / No result matching your search query
 NOMENCLATURE_DETAILS_TAB_REWRITE=Separate products from services in the detail tab on structures
 UpdateTitleCoeff=Update BOM coefficients
+
+NomenclatureHelpMargePriceFinal=Can be modified in the configuration of the Parts list module

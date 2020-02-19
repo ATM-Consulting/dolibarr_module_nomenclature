@@ -1274,6 +1274,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                 $TCoeffinaltoselect[$coef->code_type] = $coef->label;
                             }
                             echo $form->selectarray('select_coef_final', $TCoeffinaltoselect, $n->marge_object, '', '', '', '', '','','','');
+                            echo img_help('', $langs->trans('NomenclatureHelpMargePriceFinal'));
                             ?>
                         </td>
                         <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
