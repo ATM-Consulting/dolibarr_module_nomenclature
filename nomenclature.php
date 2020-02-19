@@ -170,7 +170,7 @@ if (empty($reshook))
 		    	} else
                 {
                     $last_det = end($n->TNomenclatureDet);
-                    $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'#line_'.$last_det->rowid;
+                    $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 
                     header("location: ".$url, true);
                     exit;
@@ -329,7 +329,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	    
 	    if(!empty($fk_nomenclature) && $fk_nomenclature == $n->id){ $accordeonActiveIndex = $idion; }
 	    $idion++;
-	    
+
 		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
 	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
 	}
