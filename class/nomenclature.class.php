@@ -460,13 +460,14 @@ class TNomenclature extends TObjetStd
 		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 
-	function addProduct($PDOdb, $fk_new_product) {
+	function addProduct($PDOdb, $fk_new_product, $fk_new_product_qty = 1) {
         global $conf;
 
 		$k = $this->addChild($PDOdb, 'TNomenclatureDet');
         $det = &$this->TNomenclatureDet[$k];
         $det->rang = $k;
         $det->fk_product = $fk_new_product;
+        $det->qty = $fk_new_product_qty;
 
         if($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST){
             $nome = new TNomenclature();

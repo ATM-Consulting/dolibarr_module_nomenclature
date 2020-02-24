@@ -163,8 +163,9 @@ if (empty($reshook))
 		    }
 	
 		    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
+		    $fk_new_product_qty = (int)GETPOST('fk_new_product_qty_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-		    	if(!$n->addProduct($PDOdb, $fk_new_product)) {
+		        if(!$n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
 	
@@ -965,12 +966,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                     <div class="tabsAction">
                         <div>
                             <?php
+                            print '<label>' .$langs->trans('Qty'). '<input type="text" value="1" name="fk_new_product_qty_'.$n->getId().'" size="4" maxlength="50"/></label>';
+                            print '<label>'.$langs->trans('Product').'';
                             if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
                                 print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
                             }
                             else{
                                 print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
                             }
+                            print '</label>';
                             ?>
                             <span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
                             <div class="inline-block divButAction">
