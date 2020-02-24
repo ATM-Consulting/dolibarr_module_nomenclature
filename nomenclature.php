@@ -163,14 +163,19 @@ if (empty($reshook))
 	
 		    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-		    	if(!$n->addProduct($PDOdb, $fk_new_product)) {
+                if(!$n->addProduct($PDOdb, $fk_new_product)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
-	
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
-		    	}
-	
-		    }
+		    	} else
+                {
+                    $last_det = end($n->TNomenclatureDet);
+                    $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
+
+                    header("location: ".$url, true);
+                    exit;
+                }
+            }
 	
 		    $fk_new_workstation = GETPOST('fk_new_workstation');
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
@@ -324,7 +329,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	    
 	    if(!empty($fk_nomenclature) && $fk_nomenclature == $n->id){ $accordeonActiveIndex = $idion; }
 	    $idion++;
-	    
+
 		// On passe par là depuis l'onglet "Ouvrage" d'un produit, du coup il faut passer la qty_reference de la nomenclature
 	    _fiche_nomenclature($PDOdb, $n, $product, $object, $product->id, 'product', $n->qty_reference);
 	}
@@ -605,9 +610,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        foreach($TNomenclatureDet as $k=>&$det) {
 
                            $class = ($class == 'impair') ? 'pair' : 'impair';
-                           
+
                            ?>
-                           <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>">
+                           <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>" id="line_<?php echo $det->getId(); ?>">
                                <td><?php
                                     $p_nomdet = new Product($db);
                                     if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0)
