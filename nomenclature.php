@@ -77,7 +77,7 @@ if (empty($reshook))
 		cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_product_clone', 'int'), $fk_object, $object_type);
 	}
 	else if($action==='add_nomenclature') {
-
+	
 	    $n=new TNomenclature;
 	    $n->set_values($_REQUEST);
 	    $n->save($PDOdb);
@@ -137,8 +137,7 @@ if (empty($reshook))
 			$n->set_values($_POST);
 	
 		    $n->is_default = (int)GETPOST('is_default');
-		    if (!GETPOSTISSET('non_secable')) $n->non_secable = 0;
-
+	
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
 	
 		    if(!empty($_POST['TNomenclature'])) {
@@ -170,9 +169,15 @@ if (empty($reshook))
 					$p_err->fetch($fk_new_product);
 	
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
-		    	}
-	
-		    }
+		    	} else
+                {
+                    $last_det = end($n->TNomenclatureDet);
+                    $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
+
+                    header("location: ".$url, true);
+                    exit;
+                }
+            }
 	
 		    $fk_new_workstation = GETPOST('fk_new_workstation');
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
@@ -399,7 +404,7 @@ function get_format_libelle_produit($fk_product = null) {
 
 /**
  * @param $PDOdb
- * @param TNomenclature $n
+ * @param $n
  * @param $product
  * @param $object
  * @param int $fk_object
@@ -413,8 +418,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
 	
+	
 	print '<h3 class="accordion-title">';
-	print $langs->trans('Nomenclature').' '.$langs->trans('numberShort').$n->getId();
+	print $langs->trans('Nomenclature').' n°'.$n->getId();
 	print ' '.$n->title;
 	
 	print ' - '.$langs->trans('nomenclatureQtyReference').' '. $n->qty_reference;
@@ -425,7 +431,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	$price_to_sell =  $n->getSellPrice($qty_ref); // prix de vente conseillé total
 	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell*$qty_ref);
     if (GETPOST('json') == 1 && $n->non_secable) print ' ('.$langs->trans('nomenclatureNonSecableForQty', $n->qty_reference).')';
-
+	
 	print '</h3>';
 	
 	print '<div id="nomenclature'.$n->id.'" class="tabBar accordion-body">';
@@ -437,7 +443,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		echo '<div class="error">'.$langs->trans('NonLocalNomenclature').'</div>';
 	}
 
-    $formCore=new TFormCore('auto', 'form_nom_'.$n->getId(), 'post', false);
+	$pAction = $_SERVER['PHP_SELF'].'?fk_product='.$n->fk_object;
+    $formCore=new TFormCore($pAction, 'form_nom_'.$n->getId(), 'post', false);
     if ($readonly) {
         $formCore->Set_typeaff('view'); // $formCore methods will return read-only elements instead of form inputs
     } else {
@@ -452,11 +459,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         echo $formCore->hidden('qty_price', $qty_price);
         if ($json) echo $formCore->hidden('non_secable', $n->non_secable);
     }
-
+    
     $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
     $TCoefFinal = TNomenclatureCoef::loadCoef($PDOdb, 'pricefinal');
-
-    ?>
+    
+	?>
 	<script type="text/javascript">
 	$(document).ready(function() {
 		$(".det-table>tbody").sortable({
@@ -513,7 +520,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				$(this).parent('td').find('input[type="text"]').val(TCoef[$(this).val()]);
 			});
 		<?php }?>
-
+		
         // Récupération du coeffinal
         $('.select_coef_final').change(function() {
 
@@ -628,7 +635,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            $class = ($class == 'impair') ? 'pair' : 'impair';
                            
                            ?>
-                           <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>">
+                           <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>" id="line_<?php echo $det->getId(); ?>">
                                <td><?php
                                     $p_nomdet = new Product($db);
                                     if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0)
@@ -798,6 +805,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                ?>
 								   
 								   <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
+                               
 	                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
 	                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom]', empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom, 3,100);
 	                               } ?>
@@ -1187,15 +1195,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                     </td>
                 </tr>
                 <?php
-            }
+        	}
         }
 
 		if($user->rights->nomenclature->showPrice)
 		{
 				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload 
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
-                $marge = $n->marge_object;
-
+				$marge = $n->marge_object;
+				
 				$PR = price2num($n->totalPR,'MT');
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
@@ -1282,7 +1290,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                             ?>
                         </td>
                         <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
-                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell); ?> </td>
+                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell); ?></td>
                         <?php } ?>
 
                         <td style="font-weight: bolder; text-align: right;">
@@ -1300,7 +1308,26 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 		if (GETPOST('optioncss') !== 'print')
         {
-        ?>
+		?><tr>
+            <td align="right" colspan="5">
+                <div class="tabsAction">
+                    <?php
+
+                    if($conf->workstation->enabled && !$readonly) {
+
+                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
+                        ?>
+                        <div class="inline-block divButAction">
+                        <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
+                        </div>
+                        <?php
+                    }
+
+                    ?>
+                </div>
+            </td>
+        </tr>
+
         <tr>
 			<td colspan="5">
 				<div class="tabsAction">
