@@ -61,6 +61,13 @@ function _put(&$PDOdb, $case) {
 			_setRang($PDOdb, GETPOST('TRank'),GETPOST('type'));
 			
 			break;
+
+        case 'set-marge-final':
+
+            _setMargeFinal($PDOdb, GETPOST('code_type'), GETPOST('nomenclature_id'));
+            print 1;
+            break;
+
     }
     
 }
@@ -80,6 +87,15 @@ function _setRang(&$PDOdb, $TRank,$type) {
 		
 	}
 	
+}
+
+function _setMargeFinal(&$PDOdb, $code_type, $nomenclature_id) {
+
+	    $n=new TNomenclature;
+	    $n->load($PDOdb, $nomenclature_id);
+
+	    $n->marge_object = $code_type;
+	    $res = $n->save($PDOdb);
 }
 
 function _products($fk_parent=0) {

@@ -54,7 +54,8 @@ TotalAmountCostWithChargeOF=Coût de revient réel
 TotalAmountCostWithChargeOFForX=Coût de revient réel pour %s exemplaire(s)
 TotalAmountCostWithChargeOFQty=Coût de revient réel pour qté de référence
 AmountCostWithChargeCustom=Coût perso
-PriceConseil=Prix de vente conseillé (Marge %s %%)
+//PriceConseil=Prix de vente conseillé (Marge %s %%)
+PriceConseil=Prix de vente conseillé
 PriceConseilForX=Prix de vente conseillé (Marge %s %%) pour %s exemplaire(s)
 PriceConseilUnit=Prix de vente conseillé (Marge %s %%) pour 1 exemplaire
 
@@ -79,8 +80,10 @@ ListUseNomenclaure=Liste des nomenclatures utilisant ce produit
 ListRequired=Liste produits et MO nécessaires
 
 AddCoef=Ajouter un coefficient
+PriceFinal=Prix conseillé
 ModifyCoef=Modifier un coefficient
 ModifyCoefWS=Modifier un coefficient de main d'oeuvre
+ModifyCoefFinal=Modifier un coefficient du prix de vente conseillé
 CreateCoef=Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel=Libellé : 
 NomenclatureCreateTx=Coef :
@@ -260,3 +263,5 @@ nomenclatureNonSecableHelp=Cette notion permet d'utiliser la quantité de réfé
 nomenclatureNonSecableForQty=Seuil non sécable pour une quantité de référence de %s
 
 NomenclatureWarningSeuilNonSecableHelp=Attention : la nomenclature de cette ligne est de type non sécable, seul un multiple de la quantité de référence (%s) est autorisé
+
+NomenclatureHelpMargePriceFinal=Peut être modifié dans la configuration du module Nomenclature

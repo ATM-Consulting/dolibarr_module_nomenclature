@@ -74,7 +74,7 @@ if (isset($conf->global->NOMENCLATURE_COEF_MARGE))
 	$o=new TNomenclatureCoef;
 	$o->label = 'Marge';
 	$o->description = "Coef. de marge";
-	$o->code_type = "coef_marge";
+	$o->code_type = "coef_final";
 	$o->tx = $conf->global->NOMENCLATURE_COEF_MARGE;
 	$o->save($PDOdb);
 
@@ -83,20 +83,39 @@ if (isset($conf->global->NOMENCLATURE_COEF_MARGE))
 else
 {
 	$o=new TNomenclatureCoef($db);
-	$o->loadBy($PDOdb, 'coef_marge', 'code_type');
+	$o->loadBy($PDOdb, 'coef_final', 'code_type');
 
 	if ($o->getId() > 0) null; //OK le coef exist donc on ne fait rien
 	else
 	{
-		//Il faut créer le coef_marge car il s'agit d'un coef obligatoire pour des calculs donc le mettre au moins à 0
-		$o=new TNomenclatureCoef;
-		$o->label = 'Marge';
-		$o->description = "Coef. de marge";
-		$o->code_type = "coef_marge";
-		$o->type = "nomenclature";
-		$o->tx = 1.1;
-		$o->entity = $conf->entity;
-		$o->save($PDOdb);
+        //Il faut créer le coef_final car il s'agit d'un coef obligatoire pour des calculs
+
+        $o->loadBy($PDOdb, 'coef_marge', 'code_type'); //coef_marge existe mais pas le coef_final --> on prend la valeur du coef_marge
+
+        if($o->getId() > 0){
+
+            $tx_coeffinal = $o->tx;
+
+            $o=new TNomenclatureCoef;
+            $o->label = 'Marge Finale';
+            $o->description = "Coef. du prix de vente conseillé";
+            $o->code_type = "coef_final";
+            $o->type = "pricefinal";
+            $o->tx = $tx_coeffinal;
+            $o->entity = $conf->entity;
+            $o->save($PDOdb);
+
+        } else
+        {
+            $o = new TNomenclatureCoef;
+            $o->label = 'Marge Finale';
+            $o->description = "Coef. du prix de vente conseillé";
+            $o->code_type = "coef_final";
+            $o->type = "pricefinal";
+            $o->tx = 1.1;
+            $o->entity = $conf->entity;
+            $o->save($PDOdb);
+        }
 	}
 }
 

@@ -39,6 +39,8 @@ class TNomenclature extends TObjetStd
 	/** @var string $element */
 	public $element = 'nomenclature';
 
+	public $marge_object;
+
     function __construct()
     {
         global $conf;
@@ -54,6 +56,8 @@ class TNomenclature extends TObjetStd
         $this->add_champs('object_type',array('type'=>'string', 'index'=>true));
         $this->add_champs('note_private',array('type'=>'text'));
         $this->add_champs('non_secable',array('type'=>'integer'));
+
+        $this->add_champs('marge_object',array('type'=>'string'));
 
         $this->_init_vars();
 
@@ -362,8 +366,8 @@ class TNomenclature extends TObjetStd
 		$this->totalMO = $total_mo;
 		$this->totalMO_OF = $total_mo_of;
 
-		$marge = TNomenclatureCoefObject::getMarge($PDOdb, $object, $object_type);
-		$this->marge_object = $marge;
+		$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $this, $object_type);
+//		$this->marge_object = $marge;
 		$this->marge = $marge->tx_object;
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
@@ -1613,7 +1617,7 @@ class TNomenclatureCoef extends TObjetStd
 
 	function delete(&$PDOdb)
 	{
-		if ($this->code_type == 'coef_marge') return false;
+		if ($this->code_type == 'coef_final') return false;
 
 		//Vérification que le coef ne soit pas utilisé - si utilisé alors on interdit la suppression
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE code_type = '.$this->code_type.'
@@ -1664,15 +1668,32 @@ class TNomenclatureCoefObject extends TObjetStd
 		return false;
 	}
 
-	static function getMarge(&$PDOdb, $object, $type_object)
-	{
-		$TCoef = self::loadCoefObject($PDOdb, $object, $type_object);
-		$marge = $TCoef['coef_marge'];
+//	static function getMarge(&$PDOdb, $object, $type_object)
+//	{
+//		$TCoef = self::loadCoefObject($PDOdb, $object, $type_object);
+//
+//		$marge = $TCoef['coef_marge'];
+//
+//		if($marge > 5) $marge = 1+($marge/100);
+//
+//		return $marge;
+//	}
 
-		if($marge > 5) $marge = 1+($marge/100);
+    function getMargeFinal(&$PDOdb, $object, $type_object)
+    {
+        $TCoef = self::loadCoefObject($PDOdb, $object, $type_object);
 
-		return $marge;
-	}
+        if(!empty($object->marge_object)){
+            $marge = $TCoef[$object->marge_object];
+        } else
+        {
+            $marge = $TCoef['coef_final'];
+        }
+
+        if($marge > 5) $marge = 1+($marge/100);
+
+        return $marge;
+    }
 
 	static function deleteCoefsObject(&$PDOdb, $fk_object, $type_object) {
 
@@ -1709,6 +1730,7 @@ class TNomenclatureCoefObject extends TObjetStd
 			default:
 				$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 				$TCoef += TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
+                $TCoef += TNomenclatureCoef::loadCoef($PDOdb, 'pricefinal');
 //				uasort($TCoef, function($a, $b) {
 //					if ($a->type == 'nomenclature' && $b->type == 'workstation') return -1;
 //					else if ($a->type == 'workstation' && $b->type == 'nomenclature') return 1;

@@ -77,7 +77,7 @@ if (empty($reshook))
 		cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_product_clone', 'int'), $fk_object, $object_type);
 	}
 	else if($action==='add_nomenclature') {
-	
+
 	    $n=new TNomenclature;
 	    $n->set_values($_REQUEST);
 	    $n->save($PDOdb);
@@ -413,7 +413,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
 
 	
-	
 	print '<h3 class="accordion-title">';
 	print $langs->trans('Nomenclature').' '.$langs->trans('numberShort').$n->getId();
 	print ' '.$n->title;
@@ -425,8 +424,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	$price_to_sell =  $n->getSellPrice($qty_ref); // prix de vente conseillé total
 	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell*$qty_ref);
-
-	if (GETPOST('json') == 1 && $n->non_secable) print ' ('.$langs->trans('nomenclatureNonSecableForQty', $n->qty_reference).')';
+    if (GETPOST('json') == 1 && $n->non_secable) print ' ('.$langs->trans('nomenclatureNonSecableForQty', $n->qty_reference).')';
 
 	print '</h3>';
 	
@@ -454,10 +452,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         echo $formCore->hidden('qty_price', $qty_price);
         if ($json) echo $formCore->hidden('non_secable', $n->non_secable);
     }
-    
+
     $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
-    
-	?>
+    $TCoefFinal = TNomenclatureCoef::loadCoef($PDOdb, 'pricefinal');
+
+    ?>
 	<script type="text/javascript">
 	$(document).ready(function() {
 		$(".det-table>tbody").sortable({
@@ -513,9 +512,25 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 			$('.select_coef').change(function() {
 				$(this).parent('td').find('input[type="text"]').val(TCoef[$(this).val()]);
 			});
-		<?php }
+		<?php }?>
+
+        // Récupération du coeffinal
+        $('.select_coef_final').change(function() {
+
+            var code_type = $(this).val();
+
+            $.ajax({
+                url: "<?php echo dol_buildpath('/nomenclature/script/interface.php', 1) ?>"
+                , data: {
+                    put: 'set-marge-final'
+                    , code_type: code_type
+                    , nomenclature_id: '<?php echo $n->rowid; ?>'
+                }
+                , dataType: "json"
+            });
+        });
 		
-		if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?>
+		<?php if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) { ?>
 	
 			$("input[name*=qty_base], input[name*=loss_percent]").change(function() {
 
@@ -783,7 +798,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                ?>
 								   
 								   <td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type]', TNomenclatureDet::getTType($PDOdb), $det->code_type, 1, '', '', 'select_coef'); ?>
-                               
 	                               <?php if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) {
 	                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom]', empty($det->tx_custom) ? $TCoef[$det->code_type]->tx : $det->tx_custom, 3,100);
 	                               } ?>
@@ -1180,8 +1194,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		{
 				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload 
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
-				$marge = $n->marge_object;
-				
+                $marge = $n->marge_object;
+
 				$PR = price2num($n->totalPR,'MT');
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
 				$price_buy = $n->getBuyPrice(); // prix d'achat total
@@ -1257,9 +1271,18 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                     <tr class="liste_total"  data-row="PriceConseil" >
-                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100); ?></td>
+                        <td style="font-weight: bolder;"><?php echo $langs->trans('PriceConseil', ($marge->tx_object -1)* 100); ?>
+                            <?php
+                            $TCoeffinaltoselect = array();
+                            foreach($TCoefFinal as $coef){
+                                $TCoeffinaltoselect[$coef->code_type] = $coef->label;
+                            }
+                            echo $form->selectarray('select_coef_final', $TCoeffinaltoselect, $n->marge_object, '', '', '', '', '','','','');
+                            echo img_help('', $langs->trans('NomenclatureHelpMargePriceFinal'));
+                            ?>
+                        </td>
                         <?php if($qty_ref!=1 && !empty($qty_ref)) { ?>
-                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell); ?></td>
+                            <td style="font-weight: bolder; text-align: right;"><?php echo price($price_to_sell); ?> </td>
                         <?php } ?>
 
                         <td style="font-weight: bolder; text-align: right;">

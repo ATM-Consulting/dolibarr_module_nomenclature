@@ -56,7 +56,8 @@ TotalAmountCostWithChargeOF=Actual cost price
 TotalAmountCostWithChargeOFForX=Actual cost price for %s item(s)
 TotalAmountCostWithChargeOFQty=Actual cost price for the reference qty
 AmountCostWithChargeCustom=Custom cost with fee
-PriceConseil=Recommended selling price (margin: %s%%)
+//PriceConseil=Recommended selling price (margin: %s%%)
+PriceConseil=Recommended selling price
 PriceConseilForX=Recommended selling price (margin: %s%%) for %s item(s)
 PriceConseilUnit=Recommended selling price (margin: %s%%) for 1 item
 
@@ -84,6 +85,7 @@ AddCoef=Add a coefficient
 ModifyCoef=Edit a coefficient
 # TODO: vérifier workforce ici ('main d’œuvre' dans le FR)
 ModifyCoefWS=Edit a workforce coefficient
+ModifyCoefFinal=Modify a coefficient of the recommended selling price
 CreateCoef=Please fill in the coefficient's label, database code (no spaces, no diacritics) and rate
 NomenclatureCreateLabel=Label:
 NomenclatureCreateTx=Coefficient:
@@ -256,3 +258,5 @@ NothingHere=No subcategory or product
 DoASearch=Please submit a search query / No result matching your search query
 NOMENCLATURE_DETAILS_TAB_REWRITE=Separate products from services in the detail tab on structures
 UpdateTitleCoeff=Update BOM coefficients
+
+NomenclatureHelpMargePriceFinal=Can be modified in the configuration of the Parts list module
