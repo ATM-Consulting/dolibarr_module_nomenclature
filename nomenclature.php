@@ -650,7 +650,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                     $sub_n = _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 
+									if ($readonly) echo '<div class="note_private">';
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
+									if ($readonly) echo '</div>';
 
 									if(!empty($conf->global->NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION)) {
 									
