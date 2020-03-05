@@ -292,7 +292,7 @@ class TNomenclature extends TObjetStd
 			$totalPR+= $det->calculate_price ;
 
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
-			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
+			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && $this->TCoefObject[$det->code_type]->tx_object != $det->tx_custom) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
@@ -1712,6 +1712,14 @@ class TNomenclatureCoefObject extends TObjetStd
 
 	}
 
+    /**
+     * Charge les coefs de l'objet et s'il n'y en a pas, alors charge les coefs globaux
+     * @param     $PDOdb
+     * @param     $object
+     * @param     $type_object
+     * @param int $fk_origin
+     * @return TNomenclatureCoef[] | TNomenclatureCoefObject[]
+     */
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
