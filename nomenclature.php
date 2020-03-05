@@ -169,8 +169,7 @@ if (empty($reshook))
 					$p_err->fetch($fk_new_product);
 	
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
-		    	} else
-                {
+				} elseif ($n->object_type === 'product') {
                     $last_det = end($n->TNomenclatureDet);
                     $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 
