@@ -459,8 +459,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         echo $formCore->hidden('qty_price', $qty_price);
         if ($json) echo $formCore->hidden('non_secable', $n->non_secable);
     }
-    
-    $TCoef = TNomenclatureCoef::loadCoef($PDOdb);
+
+    $TCoef = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object->element);
     $TCoefFinal = TNomenclatureCoef::loadCoef($PDOdb, 'pricefinal');
     
 	?>

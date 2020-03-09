@@ -205,8 +205,16 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 		if ($fiche == 'propal') echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="update_line_price" value="'.$langs->trans('ApplyNewCoefToObjectLine').'" /></div>';
 		else echo '<div class="inline-block divButAction"><input class="butAction" type="submit" name="save" value="'.$langs->trans('Save').'" /></div>';
 
-		$firstCoef = current($TCoefObject);
-		if(get_class($firstCoef) == 'TNomenclatureCoefObject') {
+        $foundCoefObject = false;
+        foreach ($TCoefObject as $obj)
+        {
+            if (get_class($obj) == 'TNomenclatureCoefObject')
+            {
+                $foundCoefObject = true;
+                break;
+            }
+        }
+        if($foundCoefObject) {
 			echo '<div class="inline-block divButAction"><input class="butActionDelete" type="submit" name="deleteSpecific" value="'.$langs->trans('DeleteSpecificCoef').'" /></div>';
 		}
 	}
@@ -311,12 +319,25 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 			break;
 	}
 
+	// Chargement des coefs fraichement enregistrés
+    $TCoef = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object->element);
 	foreach ($object->lines as $line)
 	{
 		if ($line->product_type == 9 || (!empty($conf->global->NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE) && !empty($line->array_options['options_pv_force']))) continue;
 
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
+
+        foreach ($nomenclature->TNomenclatureDet as &$det)
+        {
+            if (isset($TCoef[$det->code_type]))
+            {
+                $det->tx_custom = $TCoef[$det->code_type]->tx; // [FIXME] - uniquement tx_custom ? C'est pour mettre à jour les taux qui sont visibles sur les lignes (le total prend en compte les coef custom lors du recalcul, mais visuellement on perd toute logique)
+                $det->save($PDOdb);
+            }
+        }
+
+
 		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
 
 

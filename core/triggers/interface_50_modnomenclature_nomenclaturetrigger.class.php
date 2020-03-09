@@ -148,7 +148,7 @@ class Interfacenomenclaturetrigger
             /** @var TAssetOFLine $object */
             $object->saveQty($PDOdb);
         }
-		elseif ($action == 'LINEPROPAL_INSERT') {
+		elseif ($action == 'LINEPROPAL_INSERT' && !isset($object->context['createfromclone'])) {
 
             $n = new TNomenclature;
             $n->loadByObjectId($PDOdb, $object->id, 'propal', true, $object->fk_product, $object->qty, $object->fk_propal); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
@@ -242,9 +242,15 @@ class Interfacenomenclaturetrigger
              */
             $TOrigin = explode('_', $action);
 			if ($TOrigin[0] == 'PROPAL')
+            {
 				$origin = 'propal';
+                $fk_origin = $object->fk_propal;
+            }
 			else
+            {
 				$origin = 'commande';
+                $fk_origin = $object->fk_commande;
+            }
 
 			$classname = ucfirst($origin);
 
@@ -289,6 +295,7 @@ class Interfacenomenclaturetrigger
 							}
 						}
 
+                        $n_new->setPrice($PDOdb, $object->qty, $object->id, $origin, $fk_origin);
 						$n_new->save($PDOdb);
 					}
 				}
