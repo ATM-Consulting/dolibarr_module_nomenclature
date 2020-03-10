@@ -226,6 +226,7 @@ class TNomenclature extends TObjetStd
         }
 
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
+		$this->TCoefStandard += TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
 		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		// vérifier l'éxistance de coef produit : non prioritaire au coef de l'objet
