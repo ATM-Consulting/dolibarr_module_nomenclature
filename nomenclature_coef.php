@@ -316,9 +316,10 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 		if ($line->product_type == 9 || (!empty($conf->global->NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE) && !empty($line->array_options['options_pv_force']))) continue;
 
 		$nomenclature = new TNomenclature;
-		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
-		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
+		$loaded = $nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);
 
+		if (!$loaded) continue;
+		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
 
 		_updateObjectLine($nomenclature, $object_type, $line->id, $object->id, true);
 
