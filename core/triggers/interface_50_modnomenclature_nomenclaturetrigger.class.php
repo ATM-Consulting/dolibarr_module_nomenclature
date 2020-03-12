@@ -299,8 +299,6 @@ class Interfacenomenclaturetrigger
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
 			$db->query($sql);
 		} elseif ($action == 'PROPAL_DELETE') {
-			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "propal"';
-			$db->query($sql);
 
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'propal');
 
@@ -494,9 +492,9 @@ class Interfacenomenclaturetrigger
 			{
 				$obj = $PDOdb->Get_line();
 
-				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
-				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
-				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
 			}
 		}
 
