@@ -161,8 +161,8 @@ if (empty($reshook))
 		        }
 		    }
 	
-		    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
-		    $fk_new_product_qty = (int)GETPOST('fk_new_product_qty_'.$n->getId());
+		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId());
+		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
 		        if(!$n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty)) {
 					$p_err= new Product($db);
