@@ -1027,7 +1027,8 @@ class TNomenclature extends TObjetStd
 			$coef = $qty_abs / $this->qty_reference; // Coef pour les composants (l'attribut qty des lignes équivaut à la fabrication de qty_reference de la nomenclature)
 
 			$mouvS = new MouvementStock($db);
-			$mouvS->origin = new stdClass();
+			$mouvS->origin = new Product($db);
+//			$mouvS->origin = new stdClass();
 			$mouvS->origin->element = 'product';
 			$mouvS->origin->id = $this->fk_object;
 
