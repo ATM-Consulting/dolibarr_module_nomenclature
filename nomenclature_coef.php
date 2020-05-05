@@ -340,7 +340,6 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
 
 		$nomenclature->setPrice($PDOdb,$line->qty,$line->id,'propal',$object->id);
 
-
 		_updateObjectLine($nomenclature, $object_type, $line->id, $object->id, true);
 
 	}

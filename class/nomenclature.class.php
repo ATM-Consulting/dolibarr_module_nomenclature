@@ -191,33 +191,34 @@ class TNomenclature extends TObjetStd
 
 	    switch ($object_type)
         {
-           case 'propal':
-               	require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
-               	require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+			case 'propal':
+				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
+				require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 
 				$object = new Propal($db);
-			   if (!empty($fk_origin)) {
-				   $object->fetch($fk_origin);
-				   $object->fetch_thirdparty();
-			   }
+	  		 	$object->fetch($fk_origin);
+				$object->fetch_thirdparty();
 
 				break;
 		   case 'commande':
 			   require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 			   require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
-			   if (!empty($fk_origin)) {
-					$commande = new Commande($db);
-					if ($commande->fetch($fk_origin) > 0) {
-						$commande->fetchObjectLinked();
-						if (!empty($commande->linkedObjects['propal'])) {
-							// Récupération de la propal d'origine pour récupérer ses coef
-							$object = current($commande->linkedObjects['propal']);
-							$object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
-						}
-					} else {
-						dol_print_error($db);
-					}
-				}
+
+			   $commande = new Commande($db);
+			   if ($commande->fetch($fk_origin) > 0)
+			   {
+				   $commande->fetchObjectLinked();
+				   if (!empty($commande->linkedObjects['propal']))
+				   {
+					   // Récupération de la propal d'origine pour récupérer ses coef
+					   $object = current($commande->linkedObjects['propal']);
+					   $object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
+				   }
+			   }
+			   else
+			   {
+				   dol_print_error($db);
+			   }
 
 			   break;
 
@@ -292,7 +293,7 @@ class TNomenclature extends TObjetStd
 			$totalPR+= $det->calculate_price ;
 
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
-			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && $this->TCoefObject[$det->code_type]->tx_object != $det->tx_custom) $coef = $det->tx_custom;
+			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
@@ -734,7 +735,16 @@ class TNomenclature extends TObjetStd
         return 1;
     }
 
-
+	/**
+	 * @param TPDOdb $PDOdb
+	 * @param int $fk_object
+	 * @param string $object_type
+	 * @param bool $loadProductWSifEmpty
+	 * @param int $fk_product
+	 * @param int $qty
+	 * @param int $fk_origin
+	 * @return bool True if found, False if not
+	 */
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1, $fk_origin=0) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()."
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
@@ -1027,7 +1037,8 @@ class TNomenclature extends TObjetStd
 			$coef = $qty_abs / $this->qty_reference; // Coef pour les composants (l'attribut qty des lignes équivaut à la fabrication de qty_reference de la nomenclature)
 
 			$mouvS = new MouvementStock($db);
-			$mouvS->origin = new stdClass();
+			$mouvS->origin = new Product($db);
+//			$mouvS->origin = new stdClass();
 			$mouvS->origin->element = 'product';
 			$mouvS->origin->id = $this->fk_object;
 

@@ -99,7 +99,7 @@ class modnomenclature extends DolibarrModules
             )
             ,'triggers'=>1
             ,'models' => 1
-            ,'css'=>array('/nomenclature/css/nomenclature.css')  
+            ,'css'=>array('/nomenclature/css/nomenclature.css')
 		);
 
 		// Data directories to create when module is enabled.
@@ -127,7 +127,7 @@ class modnomenclature extends DolibarrModules
 		$this->const[] = array('NOMENCLATURE_USE_TIME_PREPARE','chaine','1','',0,'current');
 		$this->const[] = array('NOMENCLATURE_USE_TIME_DOING','chaine','1','',0,'current');
 		$this->const[] = array('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE','chaine','1','',0,'current');
-		
+
 			//array('NOMENCLATURE_COEF_FOURNITURE','chaine','1.1','Coef. de frais généraux (stockage, appro, ...) sur Fourniture',1),
 			//array('NOMENCLATURE_COEF_CONSOMMABLE','chaine','1.05','Coef. de frais généraux (stockage, appro, ...) sur consmmable',1),
 			//array('NOMENCLATURE_COEF_MARGE','chaine','20','Coef. de marge sur prix de vente (en %)',1),
@@ -166,7 +166,7 @@ class modnomenclature extends DolibarrModules
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
             ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
 		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
-            
+
         );
 
         // Dictionaries
@@ -222,16 +222,16 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
         $this->rights[$r][4] = 'showPrice';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $r++;
-		
-		
+
+
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'Personnaliser les coefficients d\'un tiers';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
         $this->rights[$r][4] = 'tiers';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $this->rights[$r][5] = 'updatecoef';
         $r++;
-		
-		
+
+
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'Personnaliser les coefficients d\'une propal';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
@@ -282,7 +282,7 @@ class modnomenclature extends DolibarrModules
 									'target'=>'',
 									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
-		 
+
 		 $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=product',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 		     'type'=>'left',			                // This is a Left menu entry
 		     'titre'=>'Nomenclatures',
@@ -326,7 +326,7 @@ class modnomenclature extends DolibarrModules
 	function init($options='')
 	{
 		$sql = array();
-		
+
 		define('INC_FROM_DOLIBARR',true);
 
 		dol_include_once('/nomenclature/config.php');

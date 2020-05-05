@@ -161,16 +161,15 @@ if (empty($reshook))
 		        }
 		    }
 	
-		    $fk_new_product = (int)GETPOST('fk_new_product_'.$n->getId());
-		    $fk_new_product_qty = (int)GETPOST('fk_new_product_qty_'.$n->getId());
+		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId());
+		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
 		        if(!$n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
 	
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
-		    	} else
-                {
+				} elseif ($n->object_type === 'product') {
                     $last_det = end($n->TNomenclatureDet);
                     $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 
@@ -651,7 +650,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                     $sub_n = _draw_child_arbo($PDOdb, $p_nomdet->id, $det->qty);
 
+									if ($readonly) echo '<div class="note_private">';
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
+									if ($readonly) echo '</div>';
 
 									if(!empty($conf->global->NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION)) {
 									
@@ -1308,25 +1309,25 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 		if (GETPOST('optioncss') !== 'print')
         {
-		?><tr>
-            <td align="right" colspan="5">
-                <div class="tabsAction">
-                    <?php
-
-                    if($conf->workstation->enabled && !$readonly) {
-
-                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
-                        ?>
-                        <div class="inline-block divButAction">
-                        <input type="submit" name="add_workstation" class="butAction" value="<?php echo $langs->trans('AddWorkstation'); ?>" />
-                        </div>
-                        <?php
-                    }
-
-                    ?>
-                </div>
-            </td>
-        </tr>
+//		?><!--<tr>-->
+<!--            <td align="right" colspan="5">-->
+<!--                <div class="tabsAction">-->
+<!--                    --><?php
+//
+//                    if($conf->workstation->enabled && !$readonly) {
+//
+//                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
+//                        ?>
+<!--                        <div class="inline-block divButAction">-->
+<!--                        <input type="submit" name="add_workstation" class="butAction" value="--><?php //echo $langs->trans('AddWorkstation'); ?><!--" />-->
+<!--                        </div>-->
+<!--                        --><?php
+//                    }
+//
+//                    ?>
+<!--                </div>-->
+<!--            </td>-->
+<!--        </tr>-->
 
         <tr>
 			<td colspan="5">
