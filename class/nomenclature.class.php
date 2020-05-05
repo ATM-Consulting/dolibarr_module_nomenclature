@@ -196,29 +196,28 @@ class TNomenclature extends TObjetStd
                	require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 
 				$object = new Propal($db);
-	  		 	$object->fetch($fk_origin);
-				$object->fetch_thirdparty();
+			   if (!empty($fk_origin)) {
+				   $object->fetch($fk_origin);
+				   $object->fetch_thirdparty();
+			   }
 
 				break;
 		   case 'commande':
 			   require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 			   require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
-
-			   $commande = new Commande($db);
-			   if ($commande->fetch($fk_origin) > 0)
-			   {
-				   $commande->fetchObjectLinked();
-				   if (!empty($commande->linkedObjects['propal']))
-				   {
-					   // Récupération de la propal d'origine pour récupérer ses coef
-					   $object = current($commande->linkedObjects['propal']);
-					   $object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
-				   }
-			   }
-			   else
-			   {
-				   dol_print_error($db);
-			   }
+			   if (!empty($fk_origin)) {
+					$commande = new Commande($db);
+					if ($commande->fetch($fk_origin) > 0) {
+						$commande->fetchObjectLinked();
+						if (!empty($commande->linkedObjects['propal'])) {
+							// Récupération de la propal d'origine pour récupérer ses coef
+							$object = current($commande->linkedObjects['propal']);
+							$object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
+						}
+					} else {
+						dol_print_error($db);
+					}
+				}
 
 			   break;
 
