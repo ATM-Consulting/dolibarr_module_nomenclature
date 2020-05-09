@@ -237,37 +237,6 @@ class Interfacenomenclaturetrigger
 				}
 			}
 
-			if (! empty($o->lines)) {
-				foreach ( $o->lines as $i => $line ) {
-					$n = new TNomenclature();
-					$n->loadByObjectId($PDOdb, $line->rowid, $origin);
-
-					if ($n->rowid > 0) {
-						$n_new = new TNomenclature();
-						$n_new->fk_nomenclature_parent = $n->fk_nomenclature_parent;
-						$n_new->object_type = $origin;
-						$n_new->fk_object = $object->lines[$i]->rowid;
-
-						if (! empty($n->TNomenclatureDet)) {
-							foreach ( $n->TNomenclatureDet as $TDetValues ) {
-								$k = $n_new->addChild($PDOdb, 'TNomenclatureDet');
-								$n_new->TNomenclatureDet[$k]->set_values($TDetValues);
-								$n_new->TNomenclatureDet[$k]->fk_origin = $TDetValues->rowid;
-							}
-						}
-						if (! empty($n->TNomenclatureWorkstation)) {
-							foreach ( $n->TNomenclatureWorkstation as $TDetValues ) {
-
-								$k = $n_new->addChild($PDOdb, 'TNomenclatureWorkstation');
-								$n_new->TNomenclatureWorkstation[$k]->set_values($TDetValues);
-							}
-						}
-
-						$n_new->save($PDOdb);
-					}
-				}
-			}
-
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 		} elseif ($action == 'COMPANY_DELETE') {
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
