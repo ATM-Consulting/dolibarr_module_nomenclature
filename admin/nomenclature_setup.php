@@ -132,21 +132,32 @@ if(!function_exists('setup_print_title')){
 
 print '<table class="noborder" width="100%">';
 
-// Configuration en lien avec les Devis / Commandes
+// ************************************************
+// CONFIGURATION EN LIEN AVEC LES DEVIS / COMMANDES
+// ************************************************
 setup_print_title('ParamLinkedToOrdersAndPropal');
 
-setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', $langs->trans('nomenclatureAllowFreeLineHelp'));
-setup_print_on_off('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS', '', '', $langs->trans('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP'));
+setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', 'nomenclatureAllowFreeLineHelp');
+setup_print_on_off('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS', '', '', 'NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP');
+setup_print_on_off('NOMENCLATURE_DETAILS_TAB_REWRITE');
+setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
+setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
 
-// Configuration en lien avec la gestion du stock
+// **********************************************
+// CONFIGURATION EN LIEN AVEC LA GESTION DU STOCK
+// **********************************************
 setup_print_title('ParamLinkedToStock');
 
-setup_print_on_off('NOMENCLATURE_ALLOW_JUST_MP', $langs->trans('nomenclatureJustMP'), '', $langs->trans('nomenclatureJustMPHelp'));
+setup_print_on_off('NOMENCLATURE_ALLOW_JUST_MP', $langs->trans('nomenclatureJustMP'), '', 'nomenclatureJustMPHelp');
+setup_print_on_off('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN');
+setup_print_on_off('NOMENCLATURE_HIDE_STOCK_COLUMNS');
 
-// Configuration en lien avec l'aide à la définition du prix de vente
+// ******************************************************************
+// CONFIGURATION EN LIEN AVEC L'AIDE À LA DÉFINITION DU PRIX DE VENTE
+// ******************************************************************
 setup_print_title('ParamLinkedToSellPrice');
-setup_print_on_off('NOMENCLATURE_ACTIVATE_DETAILS_COSTS', '', '', $langs->trans('NOMENCLATURE_ACTIVATE_DETAILS_COSTS_HELP'));
-setup_print_on_off('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST', '', '', $langs->trans('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST_HELP'));
+setup_print_on_off('NOMENCLATURE_ACTIVATE_DETAILS_COSTS', '', '', 'NOMENCLATURE_ACTIVATE_DETAILS_COSTS_HELP');
+setup_print_on_off('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST', '', '', 'NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST_HELP');
 
 // Note : hidden by JS
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
@@ -161,157 +172,31 @@ print '</td></tr>';
 print '</form>';
 
 
-setup_print_on_off('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED', '', '', $langs->trans('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED_HELP'));
+setup_print_on_off('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED', '', '', 'NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED_HELP');
 if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED)) {
-	setup_print_on_off('NOMENCLATURE_PERSO_PRICE_APPLY_QTY', '', '', $langs->trans('NOMENCLATURE_PERSO_PRICE_APPLY_QTY_HELP'));
+	setup_print_on_off('NOMENCLATURE_PERSO_PRICE_APPLY_QTY', '', '', 'NOMENCLATURE_PERSO_PRICE_APPLY_QTY_HELP');
 }
 
-setup_print_on_off('NOMENCLATURE_HIDE_ADVISED_PRICE','','', $langs->trans('NOMENCLATURE_HIDE_ADVISED_PRICE_HELP'));
-setup_print_on_off('NOMENCLATURE_USE_ON_INVOICE','','', $langs->trans('NOMENCLATURE_USE_ON_INVOICE_HELP'));
+setup_print_on_off('NOMENCLATURE_HIDE_ADVISED_PRICE','','', 'NOMENCLATURE_HIDE_ADVISED_PRICE_HELP');
+setup_print_on_off('NOMENCLATURE_USE_ON_INVOICE','','', 'NOMENCLATURE_USE_ON_INVOICE_HELP');
 setup_print_on_off('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC');
-setup_print_on_off('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE','','', $langs->trans('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE_HELP'));
+setup_print_on_off('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE','','', 'NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE_HELP');
+setup_print_on_off('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE');
+setup_print_on_off('NOMENCLATURE_ALLOW_USE_MANUAL_COEF');
+setup_print_on_off('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT');
+setup_print_on_off('NOMENCLATURE_USE_CUSTOM_BUYPRICE');
+setup_print_on_off('NOMENCLATURE_USE_LOSS_PERCENT');
+setup_print_on_off('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE');
 
-
-// Configuration en lien avec la gestion de production
-setup_print_title('ParamLinkedToGPAO');
-
-setup_print_on_off('NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION');
-
-setup_print_title('Parameters');
-
-
-
-
-setup_print_on_off('NOMENCLATURE_USE_QTYREF_TO_ONE'); // , '', '', $langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE_HELP'));
-
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_BEFORE_LAUNCH").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_BEFORE_LAUNCH">';
-print ajax_constantonoff('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_PREPARE").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_PREPARE">';
-print ajax_constantonoff('NOMENCLATURE_USE_TIME_PREPARE');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_DOING").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_DOING">';
-print ajax_constantonoff('NOMENCLATURE_USE_TIME_DOING');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE">';
-print ajax_constantonoff('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_USE_MANUAL_COEF").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_ALLOW_USE_MANUAL_COEF">';
-print ajax_constantonoff('NOMENCLATURE_ALLOW_USE_MANUAL_COEF');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_COEF_ON_COUT_REVIENT").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_USE_COEF_ON_COUT_REVIENT">';
-print ajax_constantonoff('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_CUSTOM_BUYPRICE").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_USE_CUSTOM_BUYPRICE">';
-print ajax_constantonoff('NOMENCLATURE_USE_CUSTOM_BUYPRICE');
-print '</form>';
-print '</td></tr>';
-
-if(!empty($conf->global->PRODUCT_USE_UNITS)) {
-	$var=!$var;
-	print '<tr '.$bc[$var].'>';
-	print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT").'</td>';
-	print '<td align="center" width="300">';
-	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-	print '<input type="hidden" name="action" value="NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT">';
-	print ajax_constantonoff('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
-	print '</form>';
-	print '</td></tr>';
-}
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_USE_LOSS_PERCENT").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_USE_LOSS_PERCENT">';
-print ajax_constantonoff('NOMENCLATURE_USE_LOSS_PERCENT');
-print '</form>';
-print '</td></tr>';
-
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE">';
-print ajax_constantonoff('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE');
-print '</form>';
-print '</td></tr>';
-
+// Prix d'achat/revient suggéré par défaut
 $var=!$var;
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE\">";
 print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_COST_TYPE").'</td>';
+print '<td>';
+print $form->textwithtooltip( $langs->trans("NOMENCLATURE_COST_TYPE") , $langs->trans("NOMENCLATURE_COST_TYPE_HELP"),2,1,img_help(1,''));
+print '</td>';
 print '<td width="600">';
 
 print '<input id="input_nomenclature_cost_type_1" type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
@@ -339,33 +224,41 @@ print '<td align="center" width="300"><input type="submit" class="butAction" val
 print '</td></tr>';
 print '</form>';
 
+setup_print_on_off('NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE');
 
 
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN">';
-print ajax_constantonoff('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN');
-print '</form>';
-print '</td></tr>';
+
+// ***************************************************
+// CONFIGURATION EN LIEN AVEC LA GESTION DE PRODUCTION
+// ***************************************************
+setup_print_title('ParamLinkedToGPAO');
+
+setup_print_on_off('NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION');
+setup_print_on_off('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH');
+setup_print_on_off('NOMENCLATURE_USE_TIME_PREPARE');
+setup_print_on_off('NOMENCLATURE_USE_TIME_DOING');
+
+// *************************
+// CONFIGURATION D'ERGONOMIE
+// *************************
+setup_print_title('ParamLinkedToUX');
+setup_print_on_off('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE');
+setup_print_on_off('NOMENCLATURE_CLONE_ON_PRODUCT_CLONE');
 
 
-setup_print_on_off('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE', false, 'NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_help');
+// *************************
+// CONFIGURATION DIVERS
+// *************************
+setup_print_title('Parameters');
 
-setup_print_on_off('NOMENCLATURE_HIDE_STOCK_COLUMNS');
+
+setup_print_on_off('NOMENCLATURE_USE_QTYREF_TO_ONE'); // , '', '', $langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE_HELP'));
+
+if(!empty($conf->global->PRODUCT_USE_UNITS)) {
+	setup_print_on_off('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
+}
 
 
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_DETAILS_TAB_REWRITE").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print ajax_constantonoff('NOMENCLATURE_DETAILS_TAB_REWRITE');
-print '</td></tr>';
 
 if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
 {
@@ -374,11 +267,6 @@ if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
 	setup_print_on_off('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES');
 }
 
-setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
-setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
-setup_print_on_off('NOMENCLATURE_CLONE_ON_PRODUCT_CLONE');
-
-setup_print_on_off('NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE');
 
 
 setup_print_title('DeprecatedParameters');
