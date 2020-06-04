@@ -160,7 +160,7 @@ class Interfacenomenclaturetrigger
 
 			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
 
-				// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
+			// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
 			$origin = GETPOST('origin');
 			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
 
@@ -477,6 +477,7 @@ class Interfacenomenclaturetrigger
 
     private function _insertNomenclatureAndSetPrice(&$PDOdb, $object) {
         $n = new TNomenclature;
+
         if(in_array($object->element, array('propal', 'propaldet'))) {
             $element = 'propal';
             $fk_element = 'fk_propal';
@@ -484,14 +485,28 @@ class Interfacenomenclaturetrigger
             $element = 'commande';
             $fk_element = 'fk_commande';
         }
-        if(!empty($element)) {
-            if(! empty($object->context['subtotalDuplicateLines'])) {
 
+        if(!empty($element)) {
+            if(! empty($object->context['subtotalDuplicateLines']))
+            {
                 $n->loadByObjectId($PDOdb, $object->origin_id, $element, true, 0, $object->qty, $object->{$fk_element});
                 // S'il y a bien un load depuis ma ligne de propal d'origine
                 if($n->iExist) $n = $this->_duplicateNomenclature($PDOdb, $object, $n);
             }
-            else $n->loadByObjectId($PDOdb, $object->id, $element, true, $object->fk_product, $object->qty, $object->{$fk_element}); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+			elseif(floatval(DOL_VERSION) >= 8.0 && ! empty($object->context)
+				&& in_array('createfromclone', $object->context)
+				&& !empty($object->origin) && !empty($object->origin_id)
+			){
+				$n->loadByObjectId($PDOdb, $object->origin_id, $element, true, 0, $object->qty, $object->{$fk_element});
+				// S'il y a bien un load depuis ma ligne de propal d'origine
+				if($n->iExist) $n = $this->_duplicateNomenclature($PDOdb, $object, $n);
+			}
+            else
+			{
+				// si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+				$n->loadByObjectId($PDOdb, $object->id, $element, true, $object->fk_product, $object->qty, $object->{$fk_element});
+			}
+
             if($n->getId() == 0) {
                 $n->non_secable = $n->nomenclature_original->non_secable;
 
