@@ -476,6 +476,7 @@ class Interfacenomenclaturetrigger
     }
 
     private function _insertNomenclatureAndSetPrice(&$PDOdb, $object) {
+		global $conf;
         $n = new TNomenclature;
 
         if(in_array($object->element, array('propal', 'propaldet'))) {
@@ -496,6 +497,10 @@ class Interfacenomenclaturetrigger
 			elseif(floatval(DOL_VERSION) >= 8.0 && ! empty($object->context)
 				&& in_array('createfromclone', $object->context)
 				&& !empty($object->origin) && !empty($object->origin_id)
+				&& (
+					$conf->global->NOMENCLATURE_CLONE_AS_IS_FOR_LINES  // Currently an hidden conf
+					|| ( empty($object->fk_product) && empty($object->fk_product_type) && !empty($object->NOMENCLATURE_ALLOW_FREELINE) ) // for free lines
+				)
 			){
 				$n->loadByObjectId($PDOdb, $object->origin_id, $element, true, 0, $object->qty, $object->{$fk_element});
 				// S'il y a bien un load depuis ma ligne de propal d'origine
