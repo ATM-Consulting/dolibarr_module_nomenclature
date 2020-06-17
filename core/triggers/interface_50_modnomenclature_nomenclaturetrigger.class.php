@@ -499,7 +499,7 @@ class Interfacenomenclaturetrigger
 				&& !empty($object->origin) && !empty($object->origin_id)
 				&& (
 					$conf->global->NOMENCLATURE_CLONE_AS_IS_FOR_LINES  // Currently an hidden conf
-					|| ( empty($object->fk_product) && empty($object->fk_product_type) && !empty($object->NOMENCLATURE_ALLOW_FREELINE) ) // for free lines
+					|| ( empty($object->fk_product) && in_array($object->fk_product_type, array(0,1)) && !empty($object->NOMENCLATURE_ALLOW_FREELINE) ) // for free lines
 				)
 			){
 				$n->loadByObjectId($PDOdb, $object->origin_id, $element, true, 0, $object->qty, $object->{$fk_element});
