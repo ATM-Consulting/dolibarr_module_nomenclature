@@ -332,9 +332,13 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
         {
             if (isset($TCoef[$det->code_type]))
             {
-                $det->tx_custom = $TCoef[$det->code_type]->tx; // [FIXME] - uniquement tx_custom ? C'est pour mettre à jour les taux qui sont visibles sur les lignes (le total prend en compte les coef custom lors du recalcul, mais visuellement on perd toute logique)
-                $det->save($PDOdb);
+                $det->tx_custom = $TCoef[$det->code_type]->tx;
             }
+			if (isset($TCoef[$det->code_type2]))
+			{
+				$det->tx_custom2 = $TCoef[$det->code_type2]->tx;
+			}
+			$det->save($PDOdb);
         }
 
 
