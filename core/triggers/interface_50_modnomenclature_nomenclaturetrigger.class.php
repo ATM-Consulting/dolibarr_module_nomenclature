@@ -122,6 +122,10 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
 		$PDOdb = new TPDOdb();
 
+		if($conf->subtotal->enabled) {
+			dol_include_once('/subtotal/class/subtotal.class.php');
+			if (strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
+		}
 		// MAJ de la quantité de fabrication si issue d'une nomenclature non sécable
         if ($action === 'ASSET_LINE_OF_SAVE' && $object->type === 'TO_MAKE')
         {
@@ -149,27 +153,14 @@ class Interfacenomenclaturetrigger
             $object->saveQty($PDOdb);
         }
 		elseif ($action == 'LINEPROPAL_INSERT') {
-
-            $n = new TNomenclature;
-            $n->loadByObjectId($PDOdb, $object->id, 'propal', true, $object->fk_product, $object->qty, $object->fk_propal); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
-            if ($n->getId() == 0)
-            {
-                $n->non_secable = $n->nomenclature_original->non_secable;
-
-                $n->fk_object = $object->id;
-                $n->object_type = 'propal';
-                $n->setPrice($PDOdb, $object->qty, $object->id, 'propal', $object->fk_propal);
-                $n->save($PDOdb);
-            }
-
-			$this->_setPrice($PDOdb, $object, $object->fk_propal, 'propal');
+            $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 		} elseif ($action == 'LINEBILL_INSERT' && !empty($conf->global->NOMENCLATURE_USE_ON_INVOICE)) {
 			$this->_setPrice($PDOdb, $object, $object->fk_facture, 'facture');
 		} elseif ($action == 'LINEORDER_INSERT') {
 
 			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
 
-				// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
+			// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
 			$origin = GETPOST('origin');
 			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
 
@@ -180,21 +171,7 @@ class Interfacenomenclaturetrigger
 			}
 
 			if ($origin !== 'propal' || empty($origin_id)) {
-                $n = new TNomenclature;
-
-                $n->loadByObjectId($PDOdb, $object->id, 'commande', true, $object->fk_product, $object->qty, $object->fk_commande); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
-                if ($n->getId() == 0)
-                {
-                    $n->non_secable = $n->nomenclature_original->non_secable;
-
-                    $n->fk_object = $object->id;
-                    $n->object_type = 'commande';
-                    $n->setPrice($PDOdb, $object->qty, $object->id, 'commande', $object->fk_commande);
-                    $n->save($PDOdb);
-                }
-
-                $this->_setPrice($PDOdb, $object, $object->fk_commande, 'commande');
-
+                $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 			} else {
 
 				$propal = new Propal($db);
@@ -263,37 +240,6 @@ class Interfacenomenclaturetrigger
 				}
 			}
 
-			if (! empty($o->lines)) {
-				foreach ( $o->lines as $i => $line ) {
-					$n = new TNomenclature();
-					$n->loadByObjectId($PDOdb, $line->rowid, $origin);
-
-					if ($n->rowid > 0) {
-						$n_new = new TNomenclature();
-						$n_new->fk_nomenclature_parent = $n->fk_nomenclature_parent;
-						$n_new->object_type = $origin;
-						$n_new->fk_object = $object->lines[$i]->rowid;
-
-						if (! empty($n->TNomenclatureDet)) {
-							foreach ( $n->TNomenclatureDet as $TDetValues ) {
-								$k = $n_new->addChild($PDOdb, 'TNomenclatureDet');
-								$n_new->TNomenclatureDet[$k]->set_values($TDetValues);
-								$n_new->TNomenclatureDet[$k]->fk_origin = $TDetValues->rowid;
-							}
-						}
-						if (! empty($n->TNomenclatureWorkstation)) {
-							foreach ( $n->TNomenclatureWorkstation as $TDetValues ) {
-
-								$k = $n_new->addChild($PDOdb, 'TNomenclatureWorkstation');
-								$n_new->TNomenclatureWorkstation[$k]->set_values($TDetValues);
-							}
-						}
-
-						$n_new->save($PDOdb);
-					}
-				}
-			}
-
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 		} elseif ($action == 'COMPANY_DELETE') {
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
@@ -305,7 +251,7 @@ class Interfacenomenclaturetrigger
 			TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
 
 			TNomenclatureCoefObject::deleteCoefsObject($PDOdb, $object->id, $object->element);
-			
+
 		} elseif ($action == 'ORDER_DELETE') {
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
 		} elseif ($action == 'PRODUCT_DELETE') {
@@ -499,5 +445,84 @@ class Interfacenomenclaturetrigger
 		}
 
 	}
+
+	private function _duplicateNomenclature(&$PDOdb, $object, $n) {
+        $TAttributesToCopy = array('title', 'fk_nomenclature_parent', 'is_default', 'qty_reference', 'note_private', 'non_secable');
+
+        $n_new = new TNomenclature();
+        $n_new->loadByObjectId($PDOdb, $object->line->id, $object->element, true, $object->line_from->fk_product, $object->line_from->qty);
+
+        foreach ($TAttributesToCopy as $attribute)
+        {
+            $n_new->{ $attribute } = $n->{ $attribute };
+        }
+
+        if (! empty($n->TNomenclatureDet)) {
+            foreach ( $n->TNomenclatureDet as $TDetValues ) {
+                $k = $n_new->addChild($PDOdb, 'TNomenclatureDet');
+                $n_new->TNomenclatureDet[$k]->set_values($TDetValues);
+                $n_new->TNomenclatureDet[$k]->fk_origin = $TDetValues->rowid;
+            }
+        }
+        if (! empty($n->TNomenclatureWorkstation)) {
+            foreach ( $n->TNomenclatureWorkstation as $TDetValues ) {
+
+                $k = $n_new->addChild($PDOdb, 'TNomenclatureWorkstation');
+                $n_new->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+            }
+        }
+
+        return $n_new;
+    }
+
+    private function _insertNomenclatureAndSetPrice(&$PDOdb, $object) {
+		global $conf;
+        $n = new TNomenclature;
+
+        if(in_array($object->element, array('propal', 'propaldet'))) {
+            $element = 'propal';
+            $fk_element = 'fk_propal';
+        } else if(in_array($object->element, array('commande', 'commandedet'))) {
+            $element = 'commande';
+            $fk_element = 'fk_commande';
+        }
+
+        if(!empty($element)) {
+            if(! empty($object->context['subtotalDuplicateLines']))
+            {
+                $n->loadByObjectId($PDOdb, $object->origin_id, $element, true, 0, $object->qty, $object->{$fk_element});
+                // S'il y a bien un load depuis ma ligne de propal d'origine
+                if($n->iExist) $n = $this->_duplicateNomenclature($PDOdb, $object, $n);
+            }
+			elseif(floatval(DOL_VERSION) >= 8.0 && ! empty($object->context)
+				&& in_array('createfromclone', $object->context)
+				&& !empty($object->origin) && !empty($object->origin_id)
+				&& (
+					$conf->global->NOMENCLATURE_CLONE_AS_IS_FOR_LINES  // Currently an hidden conf
+					|| ( empty($object->fk_product) && in_array($object->fk_product_type, array(0,1)) && !empty($object->NOMENCLATURE_ALLOW_FREELINE) ) // for free lines
+				)
+			){
+				$n->loadByObjectId($PDOdb, $object->origin_id, $element, true, 0, $object->qty, $object->{$fk_element});
+				// S'il y a bien un load depuis ma ligne de propal d'origine
+				if($n->iExist) $n = $this->_duplicateNomenclature($PDOdb, $object, $n);
+			}
+            else
+			{
+				// si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
+				$n->loadByObjectId($PDOdb, $object->id, $element, true, $object->fk_product, $object->qty, $object->{$fk_element});
+			}
+
+            if($n->getId() == 0) {
+                $n->non_secable = $n->nomenclature_original->non_secable;
+
+                $n->fk_object = $object->id;
+                $n->object_type = $element;
+                $n->setPrice($PDOdb, $object->qty, $object->id, $element, $object->{$fk_element});
+                $n->save($PDOdb);
+            }
+
+            $this->_setPrice($PDOdb, $object, $object->{$fk_element}, $element);
+        }
+    }
 
 }

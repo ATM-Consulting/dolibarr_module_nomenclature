@@ -191,9 +191,9 @@ class TNomenclature extends TObjetStd
 
 	    switch ($object_type)
         {
-           case 'propal':
-               	require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
-               	require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
+			case 'propal':
+				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
+				require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 
 				$object = new Propal($db);
 	  		 	$object->fetch($fk_origin);
@@ -226,6 +226,7 @@ class TNomenclature extends TObjetStd
         }
 
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
+		$this->TCoefStandard += TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
 		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		// vérifier l'éxistance de coef produit : non prioritaire au coef de l'objet
@@ -734,7 +735,16 @@ class TNomenclature extends TObjetStd
         return 1;
     }
 
-
+	/**
+	 * @param TPDOdb $PDOdb
+	 * @param int $fk_object
+	 * @param string $object_type
+	 * @param bool $loadProductWSifEmpty
+	 * @param int $fk_product
+	 * @param int $qty
+	 * @param int $fk_origin
+	 * @return bool True if found, False if not
+	 */
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1, $fk_origin=0) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()."
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
@@ -1027,7 +1037,8 @@ class TNomenclature extends TObjetStd
 			$coef = $qty_abs / $this->qty_reference; // Coef pour les composants (l'attribut qty des lignes équivaut à la fabrication de qty_reference de la nomenclature)
 
 			$mouvS = new MouvementStock($db);
-			$mouvS->origin = new stdClass();
+			$mouvS->origin = new Product($db);
+//			$mouvS->origin = new stdClass();
 			$mouvS->origin->element = 'product';
 			$mouvS->origin->id = $this->fk_object;
 
@@ -1712,6 +1723,14 @@ class TNomenclatureCoefObject extends TObjetStd
 
 	}
 
+    /**
+     * Charge les coefs de l'objet et s'il n'y en a pas, alors charge les coefs globaux
+     * @param     $PDOdb
+     * @param     $object
+     * @param     $type_object
+     * @param int $fk_origin
+     * @return TNomenclatureCoef[] | TNomenclatureCoefObject[]
+     */
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
