@@ -245,6 +245,11 @@ else{
 
 $db->close();
 
+/**
+ * @param TPDOdb $PDOdb
+ * @param Product $product
+ * @param CommonObject $object
+ */
 function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	global $user, $langs, $db, $conf;
 
@@ -386,6 +391,10 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 }
 
+/**
+ * @param int $fk_product
+ * @return string
+ */
 function get_format_libelle_produit($fk_product = null) {
 	global $db;
 
@@ -402,10 +411,10 @@ function get_format_libelle_produit($fk_product = null) {
 }
 
 /**
- * @param $PDOdb
- * @param $n
- * @param $product
- * @param $object
+ * @param TPDOdb $PDOdb
+ * @param TNomenclature $n
+ * @param Product $product
+ * @param CommonObject $object
  * @param int $fk_object
  * @param string $object_type
  * @param int $qty_ref
@@ -823,10 +832,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 
                                    print '<td class="col_amountCostWithChargeUnit"  >';
-                                   echo $coef_qty_price>0?price(round($price_charge/$coef_qty_price, 2)) : '';
+                                   echo $det->qty>0?price(round($price_charge/$det->qty, 2)) : '';
                                    print '</td>';
 
-									echo '<td align="right" valign="middle">';
+									echo '<td class="col_amountCostWithCharge" align="right" valign="middle">';
 									if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
 										echo price($price_charge);
 										echo '<span class="pricePMP"><br />'.price(price2num($det->charged_price_pmp,'MT')).'</span>';
