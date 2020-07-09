@@ -245,6 +245,11 @@ else{
 
 $db->close();
 
+/**
+ * @param TPDOdb $PDOdb
+ * @param Product $product
+ * @param CommonObject $object
+ */
 function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	global $user, $langs, $db, $conf;
 
@@ -386,6 +391,10 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 }
 
+/**
+ * @param int $fk_product
+ * @return string
+ */
 function get_format_libelle_produit($fk_product = null) {
 	global $db;
 
@@ -402,10 +411,10 @@ function get_format_libelle_produit($fk_product = null) {
 }
 
 /**
- * @param $PDOdb
- * @param $n TNomenclature
- * @param $product
- * @param $object
+ * @param TPDOdb $PDOdb
+ * @param TNomenclature $n
+ * @param Product $product
+ * @param CommonObject $object
  * @param int $fk_object
  * @param string $object_type
  * @param int $qty_ref
