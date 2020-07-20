@@ -200,6 +200,16 @@ class Interfacenomenclaturetrigger
 			$o->fetch(GETPOST('id'));
 			$object->fetch($object->id); // Pour recharger les bonnes lignes qui sinon sont celles de l'objet de départ
 
+			if ($origin == 'propal') {
+				$TCoeffPropal = TNomenclatureCoefObject::loadCoefObject($PDOdb, $o, 'propal');
+
+				foreach ($TCoeffPropal as &$coeffObject) {
+					$coeffObject->rowid = 0;
+					$coeffObject->fk_object = $object->id;
+					$coeffObject->save($PDOdb);
+				}
+			}
+
 			if (! empty($o->lines)) {
 				foreach ( $o->lines as $i => $line ) {
 					$n = new TNomenclature();
@@ -236,13 +246,12 @@ class Interfacenomenclaturetrigger
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
 			$db->query($sql);
 		} elseif ($action == 'PROPAL_DELETE') {
-			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "propal"';
-			$db->query($sql);
 
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'propal');
-			
-			$TNomenclatureWorkstationThmObject = new TNomenclatureWorkstationThmObject;
+
 			TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
+
+			TNomenclatureCoefObject::deleteCoefsObject($PDOdb, $object->id, $object->element);
 			
 		} elseif ($action == 'ORDER_DELETE') {
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
@@ -413,9 +422,9 @@ class Interfacenomenclaturetrigger
 			{
 				$obj = $PDOdb->Get_line();
 
-				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
-				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
-				$db->query('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
 			}
 		}
 

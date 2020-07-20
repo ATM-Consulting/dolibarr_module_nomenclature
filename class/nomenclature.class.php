@@ -199,6 +199,7 @@ class TNomenclature extends TObjetStd
         }
 
 		$this->TCoefStandard = TNomenclatureCoef::loadCoef($PDOdb);
+		$this->TCoefStandard += TNomenclatureCoef::loadCoef($PDOdb, 'workstation');
 		if(!empty($object->id)) $this->TCoefObject = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object_type);
 
 		// vérifier l'éxistance de coef produit : non prioritaire au coef de l'objet
@@ -700,7 +701,16 @@ class TNomenclature extends TObjetStd
         return 1;
     }
 
-
+	/**
+	 * @param TPDOdb $PDOdb
+	 * @param int $fk_object
+	 * @param string $object_type
+	 * @param bool $loadProductWSifEmpty
+	 * @param int $fk_product
+	 * @param int $qty
+	 * @param int $fk_origin
+	 * @return bool True if found, False if not
+	 */
 	function loadByObjectId(&$PDOdb, $fk_object, $object_type, $loadProductWSifEmpty = false, $fk_product = 0, $qty = 1, $fk_origin=0) {
 	    $sql = "SELECT rowid FROM ".$this->get_table()."
             WHERE fk_object=".(int)$fk_object." AND object_type='".$object_type."'";
