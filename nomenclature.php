@@ -80,8 +80,13 @@ if (empty($reshook))
 
 	    $n=new TNomenclature;
 	    $n->set_values($_REQUEST);
-	    $n->save($PDOdb);
-
+	    $res = $n->save($PDOdb);
+	    if($res>0){
+	    	setEventMessage($langs->trans('BomAdded'));
+		}
+	    else{
+			setEventMessage($langs->trans('BomAddError'), 'errors');
+		}
 	}
 	else if($action==='add_fk_nomenclature') {
 		//TODO ajouter les enfants de la nomenclature passé en post à la nomenclature courrante
@@ -125,6 +130,7 @@ if (empty($reshook))
 		}
 		else
 		{
+			$anchorTag = '';
 			$n=new TNomenclature;
 
 		    if($fk_nomenclature>0) $n->load($PDOdb, $fk_nomenclature, false, $product->id , $qty_ref, $object_type, $fk_origin);
@@ -164,7 +170,8 @@ if (empty($reshook))
 		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId());
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-		        if(!$n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty)) {
+		    	$res = $n->addProduct($PDOdb, $fk_new_product);
+		    	if(empty($res)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
 
@@ -182,8 +189,10 @@ if (empty($reshook))
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
 		        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
 		        $det = &$n->TNomenclatureWorkstation[$k];
+				/** @var TNomenclatureWorkstation $det */
 		        $det->fk_workstation = $fk_new_workstation;
 		        $det->rang = $k+1;
+		        $anchorTag = '#nomenclature-ws-item-k-'.$k; // pas le choix de passer par k car n'est pas encore enregistré
 		    }
 
 		    // prevent multiple event from ajax call
@@ -199,6 +208,10 @@ if (empty($reshook))
 
 			// Fait l'update du PA et PU de la ligne si nécessaire
 			_updateObjectLine($n, $object_type, $fk_object, GETPOST('fk_origin'), GETPOST('apply_nomenclature_price'));
+
+
+			header("Location: ".$_SERVER["PHP_SELF"].'?fk_product='.intval($fk_product)."&fk_nomenclature=".$n->id.$anchorTag);
+			exit;
 
 		}
 
@@ -281,6 +294,17 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
             $("input[name=clone_nomenclature]").click(function() {
                 document.location.href="?action=clone_nomenclature&fk_product=<?php echo $product->id; ?>&fk_product_clone="+$("#fk_clone_from_product").val();
             });
+
+            // Pas le choix à cause de l'accordéon le hash par en vrille du coup un petit set timeout et c'est bon
+			setTimeout(function () {
+				if(window.location.hash){
+					var hash = window.location.hash;
+
+					$('html, body').animate({
+						scrollTop: $(hash).offset().top -80
+					}, 300, 'swing');
+				}
+			}, 500);
 
 		});
 
@@ -1066,7 +1090,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        	?></td> -->
                         */
                        ?>
-                       <tr class="<?php echo $class ?>" rowid="<?php echo $ws->getId(); ?>">
+                       <tr class="<?php echo $class ?>"  id="nomenclature-ws-item-k-<?php echo $k; ?>" rowid="<?php echo $ws->getId(); ?>">
                        	   <td colspan="1"><?php
 
                                 echo $ws->workstation->getNomUrl(1);
