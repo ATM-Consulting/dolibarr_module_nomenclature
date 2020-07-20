@@ -175,8 +175,12 @@ if (empty($reshook))
 
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
 		    	}
-				else{
-					$anchorTag = '#nomenclature-item-id-'.intval($res);
+		    	elseif ($n->object_type === 'product') {
+					$last_det = end($n->TNomenclatureDet);
+					$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
+
+					header("location: ".$url, true);
+					exit;
 				}
 		    }
 
@@ -630,7 +634,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            $class = ($class == 'impair') ? 'pair' : 'impair';
 
                            ?>
-                           <tr class="<?php echo $class ?>" id="nomenclature-item-id-<?php echo $det->getId(); ?>" rowid="<?php echo $det->getId(); ?>">
+                           <tr class="<?php echo $class ?>" rowid="<?php echo $det->getId(); ?>" id="line_<?php echo $det->getId(); ?>">
                                <td><?php
                                     $p_nomdet = new Product($db);
                                     if ($det->fk_product>0 && $p_nomdet->fetch($det->fk_product)>0)
