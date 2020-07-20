@@ -297,3 +297,5 @@ nomenclatureNonSecableForQty = Seuil non sécable pour une quantité de référe
 NomenclatureWarningSeuilNonSecableHelp = Attention : la nomenclature de cette ligne est de type non sécable, seul un multiple de la quantité de référence (%s) est autorisé
 
 NomenclatureHelpMargePriceFinal = Peut être modifié dans la configuration du module Nomenclature
+BomAdded = Nomenclature ajoutée
+BomAddError = Une erreur c'est produite
