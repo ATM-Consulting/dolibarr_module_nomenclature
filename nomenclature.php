@@ -184,8 +184,10 @@ if (empty($reshook))
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
 		        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
 		        $det = &$n->TNomenclatureWorkstation[$k];
+				/** @var TNomenclatureWorkstation $det */
 		        $det->fk_workstation = $fk_new_workstation;
 		        $det->rang = $k+1;
+		        $anchorTag = '#nomenclature-ws-item-k-'.$k; // pas le choix de passer par k car n'est pas encore enregistré
 		    }
 
 		    // prevent multiple event from ajax call
@@ -1041,7 +1043,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                        	?></td> -->
                         */
                        ?>
-                       <tr class="<?php echo $class ?>" rowid="<?php echo $ws->getId(); ?>">
+                       <tr class="<?php echo $class ?>"  id="nomenclature-ws-item-k-<?php echo $k; ?>" rowid="<?php echo $ws->getId(); ?>">
                        	   <td colspan="1"><?php
 
                                 echo $ws->workstation->getNomUrl(1);
