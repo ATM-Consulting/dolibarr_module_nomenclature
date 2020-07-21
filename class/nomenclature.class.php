@@ -93,11 +93,15 @@ class TNomenclature extends TObjetStd
         }
     }
 
+	/**
+	 * @param TPDOdb $PDOdb
+	 * @return bool|int
+	 */
     function save(&$PDOdb)
     {
         global $conf, $db;
 
-        parent::save($PDOdb);
+        $res = parent::save($PDOdb);
 
         if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST && $this->object_type == 'product'){
             $prod = new Product($db);
@@ -107,6 +111,8 @@ class TNomenclature extends TObjetStd
             $test->setPrice($PDOdb,$this->qty_reference,$prod->id,'object');
             $test->updateTotalPR($PDOdb,$prod,$this->totalPR);
         }
+
+        return $res;
     }
 
     function getAllIdsNomenclature(){
@@ -465,6 +471,11 @@ class TNomenclature extends TObjetStd
 		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 
+	/**
+	 * @param $PDOdb
+	 * @param $fk_new_product
+	 * @return bool
+	 */
 	function addProduct($PDOdb, $fk_new_product, $fk_new_product_qty = 1) {
         global $conf;
 
@@ -482,20 +493,24 @@ class TNomenclature extends TObjetStd
             }
         }
 
-		$this->save($PDOdb);
-
+		$res = $this->save($PDOdb);
+		if($res>0){
 		if(!$this->infinitLoop($PDOdb)) {
-			return true;
+				return $det->rowid;
 		}
 		else {
 
-			global $langs;
+			    global $langs;
 
-			setEventMessage($langs->trans('CantAddProductBecauseOfAnInfiniteLoop', 'errors'));
+			    setEventMessage($langs->trans('CantAddProductBecauseOfAnInfiniteLoop', 'errors'));
 
-			$det->to_delete = true;
-			$this->save($PDOdb);
+			    $det->to_delete = true;
+			    $this->save($PDOdb);
 
+				return false;
+			}
+		}
+        else{
 			return false;
 		}
 	}
