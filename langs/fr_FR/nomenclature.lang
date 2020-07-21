@@ -298,4 +298,4 @@ NomenclatureWarningSeuilNonSecableHelp = Attention : la nomenclature de cette li
 
 NomenclatureHelpMargePriceFinal = Peut être modifié dans la configuration du module Nomenclature
 BomAdded = Nomenclature ajoutée
-BomAddError = Une erreur c'est produite
+BomAddError = Une erreur s'est produite
