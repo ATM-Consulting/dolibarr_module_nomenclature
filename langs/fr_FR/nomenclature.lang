@@ -252,4 +252,4 @@ NOMENCLATURE_DETAILS_TAB_REWRITE=Séparer les produits des services dans l'ongle
 UpdateTitleCoeff=Mettre à jour les coefficients des nomenclatures
 
 BomAdded = Nomenclature ajoutée
-BomAddError = Une erreur c'est produite
+BomAddError = Une erreur s'est produite

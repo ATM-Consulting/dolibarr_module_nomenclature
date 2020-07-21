@@ -65,7 +65,7 @@ class TNomenclature extends TObjetStd
 
 	/**
 	 * @param TPDOdb $PDOdb
-	 * @return bool|false|int
+	 * @return bool|int
 	 */
     function save(&$PDOdb)
     {
