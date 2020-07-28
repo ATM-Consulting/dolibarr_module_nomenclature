@@ -38,6 +38,8 @@ $fk_nomenclature=(int)GETPOST('fk_nomenclature');
 $object_type = GETPOST('object_type');
 $fk_origin = GETPOST('fk_origin');
 
+$disableAnchorRedirection = GETPOST('disableAnchorRedirection');
+
 if(empty($object_type)) {
     $object_type='product';
     $fk_object = $product->id;
@@ -170,7 +172,7 @@ if (empty($reshook))
 		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId());
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-		    	$res = $n->addProduct($PDOdb, $fk_new_product);
+		    	$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
 		    	if(empty($res)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
@@ -180,8 +182,10 @@ if (empty($reshook))
                     $last_det = end($n->TNomenclatureDet);
                     $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 
-                    header("location: ".$url, true);
-                    exit;
+					if(empty($disableAnchorRedirection)){
+						header("location: ".$url, true);
+						exit;
+					}
                 }
             }
 
@@ -209,10 +213,10 @@ if (empty($reshook))
 			// Fait l'update du PA et PU de la ligne si nécessaire
 			_updateObjectLine($n, $object_type, $fk_object, GETPOST('fk_origin'), GETPOST('apply_nomenclature_price'));
 
-
-			header("Location: ".$_SERVER["PHP_SELF"].'?fk_product='.intval($fk_product)."&fk_nomenclature=".$n->id.$anchorTag);
-			exit;
-
+			if(empty($disableAnchorRedirection)){
+				header("Location: ".$_SERVER["PHP_SELF"].'?fk_product='.intval($fk_product)."&fk_nomenclature=".$n->id.$anchorTag);
+				exit;
+			}
 		}
 
 	}
