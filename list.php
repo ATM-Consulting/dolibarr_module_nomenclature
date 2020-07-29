@@ -92,8 +92,13 @@ $list = new Listview($db,'nomenclature-list');
 
 $TParam= array();
 
+$TParam['limit'] = array(
+    'nbLine'=>$limit
+);
+
 $TParam['list'] = array(
     'title'=>$langs->trans('NomenclatureList'),
+    'param_url'=>'&limit=' . $limit
 );
 
 $TParam['title'] = array(
