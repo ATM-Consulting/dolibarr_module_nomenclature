@@ -73,7 +73,7 @@ if ($action == 'add' || $action == 'edit')
 
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
 			else $nomenclatureCoef->type = GETPOST('line_type');
-			
+
 			$nomenclatureCoef->label = $label;
 			$nomenclatureCoef->description = $desc;
 			$nomenclatureCoef->code_type = $code;
@@ -140,7 +140,7 @@ llxHeader('', $langs->trans($page_name));
 // Subheader
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
     . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans($page_name), $linkback);
+print load_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
 $head = nomenclatureAdminPrepareHead();
@@ -188,6 +188,13 @@ print $form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->
 print '<input type="submit" value="'.$langs->trans("Modify").'" class="butAction">';
 print '</form>';
 print '</td></tr>';
+
+
+
+
+setup_print_title('DeprecatedParameters');
+setup_print_on_off('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY');
+
 
 print '</table>';
 
