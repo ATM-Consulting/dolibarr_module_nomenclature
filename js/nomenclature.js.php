@@ -30,6 +30,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                     $(this).unbind().click(function() {
                        $.ajax({
                            url: url
+						   ,data: { disableAnchorRedirection : true }
                        }).done(function(data) {
                            $a.closest('.ui-dialog').effect( "shake", { direction : 'up', times : 1 } );
                             $div.html(data);
@@ -42,7 +43,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 
                $div.find('form').submit(function() {
                    var data = $(this).serialize();
-                   data+='&'+ButtonWhoSubmit+'=1';
+                   data+='&'+ButtonWhoSubmit+'=1&disableAnchorRedirection=1';
                    /*console.log(data);*/
                    $.post($(this).attr('action'), data, function() {
                         $div.dialog('option','title',"<?php echo $langs->transnoentities('NomenclatureLineSaved'); ?>");
@@ -71,6 +72,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 							{
 								$.ajax({
 									url: url
+									,data: { disableAnchorRedirection : true }
 									,success: function(html) {
 										$('#id-right > .fiche').replaceWith($(html).find('#id-right > .fiche'));
 
@@ -124,6 +126,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                 , object_type: object_type
                 , fk_origin: fk_origin
                 , json : 1
+			   , disableAnchorRedirection : true
            }
            ,dataType:'html'
        }).done(function(data){
