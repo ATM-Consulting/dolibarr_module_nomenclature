@@ -294,7 +294,7 @@ function _getDetails(&$object, $object_type) {
 
                 $TTitle = TSubtotal::getAllTitleFromLine($line);
                 $TTitleKeys = array_keys($TTitle);
-                $firstParentTitleId = $TTitleKeys[0];
+                $firstParentTitleId = intval($TTitleKeys[0]);
 
                 $nomenclature = new TNomenclature;
                 $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
@@ -524,7 +524,6 @@ function print_table($TData, $TWorkstation, $object_type) {
             <?php
 
             foreach($TData as $k => $TBlock) {
-
             	if ($showTitleCol && $k == "") $lastTitle = '';
 
             	foreach($TBlock['products'] as $fk_product => $line) {
@@ -581,7 +580,6 @@ function print_table($TData, $TWorkstation, $object_type) {
 					}
                     print '<td align="right">'.$qty.'</td>';
                     print '<td align="right">'.$unit.'</td>';
-
                     if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
                         if($action == 'edit' && $k == $index_block && $fk_product_toEdit == $line->fk_product) {
                             print '<td nowrap colspan="2">';
