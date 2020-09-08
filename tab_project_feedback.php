@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2014 Alexis Algoud        <support@atm-conuslting.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -81,16 +81,16 @@ if (empty($reshook))
 {
     // TODO: desabling edit mode if $conf->stock->enabled and a corresponding expedition exists
     if($action=='save'){
-        
+
         saveFeedbackForm();
-        
+
     }
 }
 
 
 
 /*
- * View 
+ * View
  */
 
 llxHeader('', $langs->trans('Projectfeedback'));
@@ -158,11 +158,11 @@ if($res && $res->num_rows>0)
         elseif($object_type == 'propal'){
             $targetObject = new Propal($db);
         }
-        
+
         if($targetObject->fetch($obj->rowid) > 0){
-            
+
             $targetObject->fetchObjectLinked();
-            
+
             // Ajout des params liés au projet
             $TParam = array(
                 'hiddenFields' => array(
@@ -171,20 +171,20 @@ if($res && $res->num_rows>0)
                     'origin' => $targetObject->element,
                 ),
             );
-            
+
             if(!empty($fk_origin) && $fk_origin == $targetObject->id){ $accordeonActiveIndex = $idion; }
             $idion++;
-            
+
             print '<h3  class="accordion-title">'. $langs->trans('Order') . ' : ' .$targetObject->ref. '</h3>';
             print '<div class="accordion-body-table" >';
-            
+
             $editMode = true;
             if (!empty($targetObject->linkedObjectsIds['shipping']) > 0)
             {
                 $editMode = false;
                 print '<div class="info clearboth"  >'.$langs->trans('FeedbackDisableShippingExists').'</div>';
             }
-            
+
             feedback_drawlines($targetObject, $object_type,$TParam, $editMode);
             print '</div>';
         }
@@ -192,14 +192,14 @@ if($res && $res->num_rows>0)
     print '</div>';
 }
 else {
-    
+
     if($object_type == 'commande'){
         $langTargetObject = $langs->trans('commande');
     }
     elseif($object_type == 'propal'){
         $langTargetObject = $langs->trans('Proposal');
     }
-    
+
     print '<div class="info" >'.$langs->trans('NoFeedbackObjectLinked',$langTargetObject).'</div>';
 }
 
