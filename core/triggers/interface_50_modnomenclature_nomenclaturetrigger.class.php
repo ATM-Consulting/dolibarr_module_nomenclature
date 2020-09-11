@@ -124,7 +124,7 @@ class Interfacenomenclaturetrigger
 
 		if($conf->subtotal->enabled) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
-			if (strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
+			if (isset($object->element) && strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
 		}
 		// MAJ de la quantité de fabrication si issue d'une nomenclature non sécable
         if ($action === 'ASSET_LINE_OF_SAVE' && $object->type === 'TO_MAKE')
