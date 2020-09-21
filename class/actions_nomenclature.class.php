@@ -138,6 +138,9 @@ class Actionsnomenclature
 		
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
+
+            $ret = $object->fetch($object->id); // Reload to get new records
+
 			if (count($object->lines) > 0)
 			{
 			?>
