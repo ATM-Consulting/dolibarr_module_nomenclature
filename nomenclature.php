@@ -1379,9 +1379,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                         if ($json == 1) { ?>
                             <style type="text/css">
                                 .dialogSouldBeZindexed {
-                                    z-index: 210 !important; /* 101 Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
+                                    z-index: 1500 !important; /* 101 Ce z-index avait été ajouté pour un problème de superposition avec les select produits contenu dans la fenêtre mais apparemment on en a plus besoin */
                                     /* => finalement je le remet car je rencontre de nouveau le problème et je le reproduit à chaque fois que je fait plusieurs recherche via les selects (inputs)
                                     Avec la v8 de dolibarr le menu du haut passe devant le bouton close de la boite de dialogue (plus possibl ede fermer), je passe le z-index de 101 à 210
+                                    Note : le changement pourrait avoir un impacte sur les menu déroulants, j'ai fait un test j'aipas eu de soucis,
+                                    si tel est le cas alors voir si on peut corriger les z-index des autres popup
                                     */
                                     overflow: visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
                                 }
