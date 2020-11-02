@@ -61,6 +61,15 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	{
 		setEventMessage($langs->trans("ParamSaved"));
 
+		if($code == 'NOMENCLATURE_DETAILS_TAB_REWRITE' && empty($conf->global->PRODUCT_USE_UNITS)){
+			// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
+			// activer également la conf cachée "PRODUCT_USE_UNITS" si elle ne l'est pas déjà.
+			if (dolibarr_set_const($db, 'PRODUCT_USE_UNITS', 1, 'chaine', 0, '', $conf->entity) > 0)
+			{
+				setEventMessage($langs->trans("ConfProductUseUnitActivated"));
+			}
+		}
+
 		header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
 	}
@@ -139,7 +148,18 @@ setup_print_title('ParamLinkedToOrdersAndPropal');
 
 setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', 'nomenclatureAllowFreeLineHelp');
 setup_print_on_off('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS', '', '', 'NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP');
+
+if(!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE) && empty($conf->global->PRODUCT_USE_UNITS)){
+	// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
+	// activer également la conf cachée "PRODUCT_USE_UNITS" si elle ne l'est pas déjà.
+	// /!\ Voir aussi la partie action
+	if (dolibarr_set_const($db, 'PRODUCT_USE_UNITS', 1, 'chaine', 0, '', $conf->entity) > 0)
+	{
+		setEventMessage($langs->trans("ConfProductUseUnitActivated"));
+	}
+}
 setup_print_on_off('NOMENCLATURE_DETAILS_TAB_REWRITE');
+
 setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
 setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
 

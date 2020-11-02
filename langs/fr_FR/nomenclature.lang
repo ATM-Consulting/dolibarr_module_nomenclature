@@ -10,6 +10,7 @@ RecalculateNomenclature = Recalculer
 RecalculateNomenclatureDesc = Recalculer toutes les nomenclatures
 RecalculateNomenclatureDone = Calculs terminés
 RecalculateNomenclatureHelp = Permet de recalculer toutes les nomenclatures déjà créées en intégrant cette règle.<br/><br/>Cela s’applique également pour les nomenclatures contenues dans les éléments commerciaux (devis, commandes, etc.). <br/>Néanmoins, le prix de la ligne de nomenclature des éléments commerciaux restera inchangé. <br/><br/>Pour intégrer ce nouveau montant dans les éléments commerciaux, il faut ouvrir la nomenclature depuis la ligne de l’élément (devis, commandes, etc.) et cliquer sur “Appliquer le prix de vente”.
+ConfProductUseUnitActivated = Le support des unités sur les produits vient d'être activé car vous utilisez la configuration : Séparer les produits des services dans l'onglet de détail des ouvrages
 
 ParamLinkedToOrdersAndPropal = Configuration en lien avec les Devis / Commandes
 nomenclatureAllowFreeLine = Autoriser l’ajout de nomenclature à partir de ligne libre (produit ou service) sur devis et commande client
