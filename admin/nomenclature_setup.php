@@ -274,9 +274,6 @@ setup_print_title('Parameters');
 
 setup_print_on_off('NOMENCLATURE_USE_QTYREF_TO_ONE'); // , '', '', $langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE_HELP'));
 
-if(!empty($conf->global->PRODUCT_USE_UNITS)) {
-	setup_print_on_off('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
-}
 
 
 
@@ -292,6 +289,10 @@ if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
 setup_print_title('DeprecatedParameters');
 
 setup_print_on_off('NOMENCLATURE_SPEED_CLICK_SELECT', $langs->trans('nomenclatureSpeedSelectClick'), '', $langs->trans('nomenclatureSpeedSelectClickHelp'));
+
+if(!empty($conf->global->PRODUCT_USE_UNITS)) {
+	setup_print_on_off('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
+}
 
 print '</table>';
 
