@@ -75,9 +75,16 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 									,data: { disableAnchorRedirection : true }
 									,success: function(html) {
 										$('#id-right > .fiche').replaceWith($(html).find('#id-right > .fiche'));
-
+										let hash = "#row-" + fk_line;
+										$('html, body').animate({
+											scrollTop: $(hash).offset().top
+										}, 800, function(){
+											// Add hash (#) to URL when done scrolling (default click behavior)
+											window.location.hash = hash;
+										});
 <?php  	                                if(!empty($conf->global->NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE))
 										{
+
 										    print "\n".'$("#dialog-nomenclature").dialog(\'close\'); '."\n";
 										}
 ?>
