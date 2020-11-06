@@ -10,6 +10,7 @@ RecalculateNomenclature = Recalculer
 RecalculateNomenclatureDesc = Recalculer toutes les nomenclatures
 RecalculateNomenclatureDone = Calculs terminés
 RecalculateNomenclatureHelp = Permet de recalculer toutes les nomenclatures déjà créées en intégrant cette règle.<br/><br/>Cela s’applique également pour les nomenclatures contenues dans les éléments commerciaux (devis, commandes, etc.). <br/>Néanmoins, le prix de la ligne de nomenclature des éléments commerciaux restera inchangé. <br/><br/>Pour intégrer ce nouveau montant dans les éléments commerciaux, il faut ouvrir la nomenclature depuis la ligne de l’élément (devis, commandes, etc.) et cliquer sur “Appliquer le prix de vente”.
+ConfProductUseUnitActivated = Le support des unités sur les produits vient d'être activé car vous utilisez la configuration : Séparer les produits des services dans l'onglet de détail des ouvrages
 
 ParamLinkedToOrdersAndPropal = Configuration en lien avec les Devis / Commandes
 nomenclatureAllowFreeLine = Autoriser l’ajout de nomenclature à partir de ligne libre (produit ou service) sur devis et commande client
@@ -177,6 +178,8 @@ NOMENCLATURE_USE_COEF_ON_COUT_REVIENT_HELP = Par défaut, pour chaque ligne de p
 NOMENCLATURE_USE_CUSTOM_BUYPRICE = Autoriser la sélection d'un prix d'achat/revient sur chaque ligne (prioritaire sur ceux suggérés par défaut)
 NOMENCLATURE_USE_CUSTOM_BUYPRICE_HELP = Par défaut, lors de l’ajout d’un produit dans la nomenclature, le prix d’achat unitaire utilisé est le prix d’achat le plus élevé parmi les prix d’achat renseignés sur la fiche produit. <br/>Si cette option est activée, vous pouvez sélectionner dans une liste déroulante le prix que vous souhaitez utiliser pour les calculs parmi les éléments suivants renseignés sur la fiche produit : les différents prix d’achat, le prix de revient, le PMP, un prix personnalisé.
 NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT = Autoriser l'édition de l'unité produit sur chaque ligne
+NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT_DESC = Attention, l'indication de l'unité et à titre informative actuellement, elle n'est pas convertie pour le destockage.
+WarningUnitOfBomIsNotTheSameAsProduct = Attention, l'unité diffère de l'unité paramétrée sur la fiche produit <strong>(%s)</strong>.<br>L'indication de l'unité est actuellement à titre informative, elle n'est pas convertie pour le destockage.<br/>Pour éviter les erreurs de quantité il est recommandé de changer cette valeur sur la nomenclature et d'adapter les quantités si besoins.
 NOMENCLATURE_USE_LOSS_PERCENT = Activer le calcul automatique de la quantité en fonction du pourcentage de perte
 NOMENCLATURE_USE_LOSS_PERCENT_HELP = Par défaut, vous pouvez renseigner une quantité sur chaque ligne de produit ajoutée à une nomenclature. <br/>Lorsque cette option est activée, deux nouveaux champs apparaissent avant le champ quantité permettant de renseigner une quantité de base ainsi qu’un pourcentage de perte. <br/><br/>Ces champs, une fois renseignés, vont remplir automatiquement la quantité.
 NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE = Sur l'onglet coefficient des propositions, empêcher le recalcul des lignes dont le prix vente a été forcé manuellement

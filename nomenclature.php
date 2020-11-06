@@ -707,8 +707,15 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                 ?></td>
 
 	                                <?php if(!empty($conf->global->PRODUCT_USE_UNITS)) { ?>
-		                               <td class="ligne_col_fk_unit"><?php
-		                               		if(!empty($conf->global->NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT)) echo $form->selectUnits($det->fk_unit, 'TNomenclature['.$k.'][fk_unit]', 1);
+		                               <td class="ligne_col_fk_unit nowrap" ><?php
+
+										   // To display warning message if product haven't the same unit as bom
+										   $det->productCurrentUnit = $object->getValueFrom('c_units', $p_nomdet->fk_unit, 'label');
+										   $det->warningUnitNotTheSameAsProduct = ($det->fk_unit != $p_nomdet->fk_unit);
+
+		                               		if(!empty($conf->global->NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT) || !empty($det->warningUnitNotTheSameAsProduct)){
+		                               			echo $form->selectUnits($det->fk_unit, 'TNomenclature['.$k.'][fk_unit]', 1);
+											}
 		                               		else {
 		                               			// On copie l'unité de la ligne dans l'objet produit pour utiliser la fonction getLabelOfUnit()
 		                               			$original_fk_unit = $p_nomdet->fk_unit;
@@ -717,6 +724,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                               			// On remet l'unité de base du produit au cas où
 		                               			$p_nomdet->fk_unit = $original_fk_unit;
 		                               		}
+
+										   if($det->warningUnitNotTheSameAsProduct){
+											   $unitTitle = $langs->trans('WarningUnitOfBomIsNotTheSameAsProduct', $langs->trans($det->productCurrentUnit));
+											   echo '<span class="badge badge-danger classfortooltip" title="'.$unitTitle.'" ><span class="fa fa-warning"></span></span>';
+										   }
 									    ?></td>
 									<?php }
 
