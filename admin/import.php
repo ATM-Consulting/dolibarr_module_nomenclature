@@ -34,9 +34,9 @@ function _card(&$PDOdb) {
 	    "nomenclature@nomenclature"
 	);
 
-	
+
 	print '<h3>'.$langs->trans('NomenclatureImportTitle').'</h3>';
-	
+
 	$formCore=new TFormCore('auto','formImport','post',true);
 
 	echo $formCore->fichier($langs->trans('importFile').img_help(1, $langs->trans('helpNomenclatureImportFile')) , 'file1', '', 40);
@@ -59,7 +59,7 @@ function _show_tab_session(&$PDOdb) {
 
 	$Tab = &$_SESSION['TDataImport'];
 
-	$save = GETPOST('bt_save') ? true : false;
+	$save = GETPOST('bt_save', 'none') ? true : false;
 	//var_dump($Tab);
 	if (!empty($Tab))
 	{
@@ -182,7 +182,7 @@ function _show_nomenclature(&$n) {
 
 function _import_to_session() {
 
-	if(GETPOST('bt_view') && !empty($_FILES['file1']['name'])) {
+	if(GETPOST('bt_view', 'none') && !empty($_FILES['file1']['name'])) {
 		$Tab = &$_SESSION['TDataImport'];
 		$Tab = array();
 
