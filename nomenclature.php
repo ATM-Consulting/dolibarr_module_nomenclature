@@ -27,14 +27,14 @@ $fk_product = GETPOST('fk_product', 'int');
 $product_ref = GETPOST('ref', 'alpha');
 if ($fk_product || $product_ref) $product->fetch($fk_product, $product_ref);
 
-$qty_ref = GETPOST('qty_ref', 'int'); // il s'agit de la qty de la ligne de document, si vide alors il faudra utiliser qty_reference de la nomenclature
+$qty_ref = (float)GETPOST('qty_ref', 'int'); // il s'agit de la qty de la ligne de document, si vide alors il faudra utiliser qty_reference de la nomenclature
 
 $action= GETPOST('action', 'alpha');
 
 $PDOdb=new TPDOdb;
 
-$fk_object=GETPOST('fk_object', 'int');
-$fk_nomenclature=GETPOST('fk_nomenclature', 'int');
+$fk_object= (int)GETPOST('fk_object', 'int');
+$fk_nomenclature= (int)GETPOST('fk_nomenclature', 'int');
 $object_type = GETPOST('object_type', 'none');
 $fk_origin = GETPOST('fk_origin', 'int');
 
@@ -68,7 +68,7 @@ if (empty($reshook))
 
 	if($action==='delete_nomenclature') {
 	    $n=new TNomenclature;
-	    $n->load($PDOdb, GETPOST('fk_nomenclature', 'int'));
+	    $n->load($PDOdb, (int)GETPOST('fk_nomenclature', 'int'));
 	    $n->delete($PDOdb);
 
 	    setEventMessage('NomenclatureDeleted');
@@ -113,7 +113,7 @@ if (empty($reshook))
 	    $n->load($PDOdb, $fk_nomenclature);
 
 	    if($n->getId()>0) {
-	    	$k = GETPOST('k', 'int');
+	    	$k = (int)GETPOST('k', 'int');
 	//var_dump( $fk_nomenclature,$k,$n->TNomenclatureWorkstation);
 		$n->TNomenclatureWorkstation[$k]->to_delete = true;
 		$n->save($PDOdb);
@@ -127,7 +127,7 @@ if (empty($reshook))
 			$n->load($PDOdb, $fk_nomenclature);
 			$n->delete($PDOdb);
 
-			$res = cloneNomenclatureFromProduct($PDOdb, GETPOST('fk_clone_from_product', 'int'), $fk_object, $object_type);
+			$res = cloneNomenclatureFromProduct($PDOdb, (int)GETPOST('fk_clone_from_product', 'int'), $fk_object, $object_type);
 
 		}
 		else
@@ -144,7 +144,7 @@ if (empty($reshook))
 
 			$n->set_values($_POST);
 
-		    $n->is_default = GETPOST('is_default', 'int');
+		    $n->is_default = (int)GETPOST('is_default', 'int');
 
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
 
@@ -211,7 +211,7 @@ if (empty($reshook))
 		    $n->save($PDOdb);
 
 			// Fait l'update du PA et PU de la ligne si nécessaire
-			_updateObjectLine($n, $object_type, $fk_object, GETPOST('fk_origin', 'int'), GETPOST('apply_nomenclature_price', 'none'));
+			_updateObjectLine($n, $object_type, $fk_object, (int)GETPOST('fk_origin', 'int'), GETPOST('apply_nomenclature_price', 'none'));
 
 			if(empty($disableAnchorRedirection)){
 				header("Location: ".$_SERVER["PHP_SELF"].'?fk_product='.intval($fk_product)."&fk_nomenclature=".$n->id.$anchorTag);
@@ -249,7 +249,7 @@ if (empty($reshook))
 if($object_type != 'product') {
 
     $langs->load('nomenclature@nomenclature');
-    $origin_object_id = GETPOST('fk_origin', 'int');
+    $origin_object_id = (int)GETPOST('fk_origin', 'int');
     $n=new TNomenclature;
     $n->loadByObjectId($PDOdb,$fk_object, $object_type, false, $product->id, $qty_ref, $origin_object_id);
     $readonly = $object->statut > 0;
@@ -354,7 +354,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 
 	    // open if edited
-	    $fk_nomenclature=GETPOST('fk_nomenclature', 'int');
+	    $fk_nomenclature=(int)GETPOST('fk_nomenclature', 'int');
 
 	    // default open
 	    if(!empty($n->is_default) && empty($fk_nomenclature)){
@@ -451,7 +451,7 @@ function get_format_libelle_produit($fk_product = null) {
 function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $object_type='product', $qty_ref=1, $readonly=false) {
 	global $langs, $conf, $db, $user, $hookmanager;
 
-	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin', 'int'));
+	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,(int)GETPOST('fk_origin', 'int'));
 
 
 

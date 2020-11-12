@@ -31,7 +31,7 @@ dol_include_once('/nomenclature/class/nomenclature.class.php');
 $type_object = 'product';
 
 // GET POST
-$id = GETPOST('id', 'int');
+$id = (int)GETPOST('id', 'int');
 $action=GETPOST('action','alpha');
 
 // Load translation files required by the page

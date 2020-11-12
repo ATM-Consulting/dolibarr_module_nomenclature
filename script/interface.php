@@ -23,7 +23,7 @@ function _get(&$PDOdb, $case) {
 
             break;
         case 'categories':
-            $fk_parent = GETPOST('fk_parent', 'int');
+            $fk_parent = (int)GETPOST('fk_parent', 'int');
             $keyword= GETPOST('keyword', 'none');
 
             dol_include_once('/categories/class/categorie.class.php');
@@ -53,7 +53,7 @@ function _put(&$PDOdb, $case) {
             break;
 		case 'nomenclatures':
 
-			_putHierarchie($PDOdb,GETPOST('THierarchie', 'array'),GETPOST('fk_object', 'int'),GETPOST('object_type', 'alpha'));
+			_putHierarchie($PDOdb,GETPOST('THierarchie', 'array'),(int)GETPOST('fk_object', 'int'),GETPOST('object_type', 'alpha'));
 
 			break;
 		case 'rang':
@@ -64,7 +64,7 @@ function _put(&$PDOdb, $case) {
 
         case 'set-marge-final':
 
-            _setMargeFinal($PDOdb, GETPOST('code_type', 'none'), GETPOST('nomenclature_id', 'int'));
+            _setMargeFinal($PDOdb, GETPOST('code_type', 'none'), (int)GETPOST('nomenclature_id', 'int'));
             print 1;
             break;
 

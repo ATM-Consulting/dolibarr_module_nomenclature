@@ -33,7 +33,7 @@ dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 
 // GET POST
-$id = GETPOST('id', 'int');
+$id = (int)GETPOST('id', 'int');
 $action=GETPOST('action','alpha');
 
 $TQty = GETPOST('qty', 'array');

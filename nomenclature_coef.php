@@ -20,11 +20,11 @@ if(GETPOST('deleteSpecific', 'none')) {
 	{
 		require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 		$object = new Propal($db);
-		$object->fetch(GETPOST('id', 'int'));
+		$object->fetch((int)GETPOST('id', 'int'));
 		TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
 	}
 
-	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, GETPOST('id', 'int'), $fiche);
+	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, (int)GETPOST('id', 'int'), $fiche);
 
 	// Si je supprime les coef custom, alors je dois ré-appliquer en automatique les prix de vente (sinon ça veut dire qu'on laisse la possibilité de supprimer les coef et de garder des montants lignes incohérents)
 	if ($fiche == 'propal') _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
@@ -57,7 +57,7 @@ switch ($fiche) {
 			if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
 			{
 				$object = new Propal($db);
-				$object->fetch(GETPOST('id', 'int'));
+				$object->fetch((int)GETPOST('id', 'int'));
 
 				$TNomenclatureWorkstationThmObject = GETPOST('TNomenclatureWorkstationThmObject', 'none');
 				TNomenclatureWorkstationThmObject::updateAllThmObject($PDOdb, $object, $TNomenclatureWorkstationThmObject);

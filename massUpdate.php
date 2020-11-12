@@ -9,8 +9,8 @@
 
 	$action = GETPOST('action', 'alpha');
 	$make_it = GETPOST('make_it', 'none');
-	$fk_product = GETPOST('fk_product', 'int');
-	$coef = GETPOST('coef', 'int');
+	$fk_product = (int)GETPOST('fk_product', 'int');
+	$coef = (double)GETPOST('coef', 'int');
 
 	$PDOdb = new TPDOdb;
 
