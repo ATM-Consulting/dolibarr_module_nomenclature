@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2014 Alexis Algoud        <support@atm-conuslting.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -31,7 +31,7 @@ dol_include_once('/nomenclature/class/nomenclature.class.php');
 $type_object = 'product';
 
 // GET POST
-$id = (int)GETPOST('id');
+$id = (int)GETPOST('id', 'int');
 $action=GETPOST('action','alpha');
 
 // Load translation files required by the page
@@ -77,13 +77,13 @@ if (empty($reshook))
     if ($action == 'add' || $action == 'edit')
     {
         $idCoef = GETPOST('rowid', 'int');
-        
-        if (GETPOST('delete'))
+
+        if (GETPOST('delete', 'alpha'))
         {
             $nomenclatureCoef = new TNomenclatureCoefObject;
             $nomenclatureCoef->load($PDOdb, $idCoef);
             $res = $nomenclatureCoef->delete($PDOdb);
-            
+
             if ($res > 0) setEventMessages($langs->trans('NomenclatureDeleteSuccess'), null);
             else setEventMessages($langs->trans('NomenclatureErrorCantDelete'), null, 'errors');
         }
@@ -93,24 +93,24 @@ if (empty($reshook))
             $desc = GETPOST('desc', 'alpha');
             $code = GETPOST('code_type', 'alpha');
             $tx = GETPOST('tx', 'alpha');
-            
+
             if ($code && $tx)
             {
                 $nomenclatureCoef = new TNomenclatureCoefObject;
-                
+
                 if ($idCoef) $nomenclatureCoef->load($PDOdb, $idCoef);
-                else $nomenclatureCoef->type = GETPOST('line_type');
-                
-                
+                else $nomenclatureCoef->type = GETPOST('line_type', 'none');
+
+
                 $nomenclatureCoef->fk_object = $object->id;
                 $nomenclatureCoef->type_object = $type_object;
                 //$nomenclatureCoef->label = $label;
                 //$nomenclatureCoef->description = $desc;
                 $nomenclatureCoef->code_type = $code;
                 $nomenclatureCoef->tx_object = $tx;
-                
+
                 $rowid = $nomenclatureCoef->save($PDOdb);
-                
+
                 if ($rowid) setEventMessages($langs->trans('NomenclatureSuccessSaveCoef'), null);
                 else setEventMessages($langs->trans('NomenclatureErrorAddCoefDoublon'), null, 'errors');
             }
@@ -119,27 +119,27 @@ if (empty($reshook))
                 setEventMessages($langs->trans('NomenclatureErrorAddCoef'), null, 'errors');
             }
         }
-        
+
     }
-    
+
 }
 
 
 
 /*
- * View 
+ * View
  */
 
 
 $title = $langs->trans('ProductServiceCard');
 $helpurl = '';
 $shortlabel = dol_trunc($object->label,16);
-if (GETPOST("type") == '0' || ($object->type == Product::TYPE_PRODUCT))
+if (GETPOST("type", 'none') == '0' || ($object->type == Product::TYPE_PRODUCT))
 {
     $title = $langs->trans('Product')." ". $shortlabel ." - ".$langs->trans('CoefList');
     $helpurl='EN:Module_Products|FR:Module_Produits|ES:M&oacute;dulo_Productos';
 }
-if (GETPOST("type") == '1' || ($object->type == Product::TYPE_SERVICE))
+if (GETPOST("type", 'none') == '1' || ($object->type == Product::TYPE_SERVICE))
 {
     $title = $langs->trans('Service')." ". $shortlabel ." - ".$langs->trans('CoefList');
     $helpurl='EN:Module_Services_En|FR:Module_Services|ES:M&oacute;dulo_Servicios';
@@ -170,7 +170,7 @@ print '<div class="fichecenter" >';
 
 $TCoef = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $type_object);
 
-$num = !empty($TCoef)?count($TCoef):''; 
+$num = !empty($TCoef)?count($TCoef):'';
 
 $backbutton = '';
 print_barre_liste($langs->trans("DefaultCoeficientList"), 0, $_SERVER["PHP_SELF"], '', '', '', $backbutton, $num, $num);
@@ -215,13 +215,13 @@ print '<td align="center" ></td>'."\n";
 
 foreach ($TCoef as $coef)
 {
-    
+
     $allow_to_delete = false;
     if( $coef->code_type!='coef_marge' || ($coef->code_type!='coef_marge' && $coef->rowid > 1) ){
         $allow_to_delete = true;
     }
-    
-    
+
+
     $var=!$var;
     print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
     print '<tr '.$bc[$var].'>';
@@ -229,22 +229,22 @@ foreach ($TCoef as $coef)
     print '<td align="center" width="20">';
     print '<input readonly="readonly" type="hidden" name="code_type" value="'.$coef->code_type.'"  size="15" />'.$coef->code_type;
     print '</td>';
-    
+
     print '<td align="center" >';
-    
+
     print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
     print '<input type="hidden" name="action" value="edit">';
     print '<input type="hidden" name="id" value="'.$object->id.'">';
     print '<input type="hidden" name="type_object" value="'.$type_object.'">';
     print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
     print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
-    
+
     print '</td>';
     print '<td align="right" >';
-    
+
     print '<input type="submit" class="button" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
     if($allow_to_delete) print '<input type="submit" class="button" name="delete" value="'.$langs->trans("Delete").'">';
-    
+
     print '</td></tr>';
     print '</form>';
 }
