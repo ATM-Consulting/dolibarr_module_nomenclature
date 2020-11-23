@@ -139,7 +139,7 @@ class Actionsnomenclature
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
 
-            $ret = $object->fetch($object->id); // Reload to get new records
+			if($action == 'addline') $object->fetch($object->id); // Reload to get new records
 			// Ensure third party is loaded
 			if ($object->socid && empty($object->thirdparty)) $object->fetch_thirdparty();
 
