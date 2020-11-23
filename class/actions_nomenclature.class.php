@@ -134,18 +134,20 @@ class Actionsnomenclature
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
 	{
 		global $langs,$conf,$form;
-		$TContext = explode(':', $parameters['context']);		
-		
+		$TContext = explode(':', $parameters['context']);
+
 		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
 		{
 
             $ret = $object->fetch($object->id); // Reload to get new records
+			// Ensure third party is loaded
+			if ($object->socid && empty($object->thirdparty)) $object->fetch_thirdparty();
 
 			if (count($object->lines) > 0)
 			{
 			?>
 				<script type="text/javascript" src="<?php echo dol_buildpath('/nomenclature/js/nomenclature.js.php',1); ?>"></script>
-				<script type="text/javascript"> 
+				<script type="text/javascript">
 				$(document).ready(function() {
 
 					var lineColDescriptionPos = <?php echo (! empty($conf->global->MAIN_VIEW_LINE_NUMBER) ? 2 : 1); ?>;
@@ -179,16 +181,16 @@ class Actionsnomenclature
 						z-index: 150;
 					}
 				</style>
-				
-				
-				<script type="text/javascript"> 
+
+
+				<script type="text/javascript">
 					$(document).ready(function() {
 						$("#fournprice_predef").ready(function(){$("#idprod").change(function() {
 							var fk_product = $(this).val();
 							var data = {"action": "idprod_change", "fk_product": fk_product};
 							 ajax_call(data);
-							
-								
+
+
 						})});
 						function ajax_call(datas)
 						{
@@ -197,16 +199,16 @@ class Actionsnomenclature
 								type: "POST",
 								dataType: "json",
 								data: datas,
-								
+
 							}).done(function(data){
 								if(data.result){
 										 $("#fournprice_predef").hide();
 										 $(".liste_titre_add td:contains('Prix de revient')").hide();
-										
+
 									} else {
 										$("#fournprice_predef").show();
 										$(".liste_titre_add td:contains('Prix de revient')").show();
-									}		
+									}
 							}).fail(function(){
 								$.jnotify('AjaxError',"error");
 							});
@@ -214,23 +216,23 @@ class Actionsnomenclature
 					});
 				</script>
 				<?php
-				
+
 			}
-			
+
 		}
 		else if (in_array('stockproductcard', $TContext) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
 		{
 			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', 1);
-			
+
 			dol_include_once('/nomenclature/config.php');
 			dol_include_once('/nomenclature/class/nomenclature.class.php');
-			
+
 			$PDOdb = new TPDOdb;
 			$nomenclature = new TNomenclature;
 			$nomenclature->loadByObjectId($PDOdb, $object->id, 'product');
-			
+
 			$qty_theo_nomenclature = $nomenclature->getQtyManufacturable();
-			
+
 			$this->resprints = '<tr class="nomenclature_stock_theorique">';
 			$this->resprints.= '<td>'.$form->textwithpicto($langs->trans('NomenclatureStockTheorique'), $langs->trans('NomenclatureStockTheoriqueHelp')).'</td>';
 			$this->resprints.= '<td>'.price2num($object->stock_theorique+$qty_theo_nomenclature, 'MS').'</td>';
@@ -296,7 +298,7 @@ class Actionsnomenclature
                                 var nomenEl = document.getElementById("TQuantites['.$object->fk_commandedet.']");
                                 nomenEl.dataset.step = '.$n->qty_reference.';
                                 $(nomenEl).after("'.dol_escape_js(img_picto($langs->transnoentities('NomenclatureWarningSeuilNonSecableHelp', $n->qty_reference), 'help')).'");
-// 
+//
                                 $(nomenEl).keyup(function(ev) {
                                     console.log("Trigger keyup from nomenclature");
                                     let value = parseFloat(this.value.replace(",", "."));
@@ -311,7 +313,7 @@ class Actionsnomenclature
                                         this.dataset.calculNextValue = 1;
                                     }
                                 });
-                                
+
                                 $(nomenEl).blur(function(ev) {
                                     console.log("Trigger blur from nomenclature");
                                     if (this.dataset.calculNextValue == 1) {
@@ -446,12 +448,12 @@ class Actionsnomenclature
                                 var nomenEl = document.getElementById("quantity_to_create");
                                 nomenEl.value = '.$n->qty_reference.';
                                 nomenEl.dataset.step = '.$n->qty_reference.';
-                                
+
                                 $(nomenEl).keyup(function(ev) {
                                     console.log("Trigger keyup from nomenclature");
                                     let value = parseFloat(this.value.replace(",", "."));
                                     let multiple = value / this.dataset.step;
-            
+
                                     if (multiple === parseInt(multiple)) {
                                         $(this).removeClass("outline-error");
                                         this.dataset.calculNextValue = 0;
@@ -461,7 +463,7 @@ class Actionsnomenclature
                                         this.dataset.calculNextValue = 1;
                                     }
                                 });
-                                
+
                                 $(nomenEl).blur(function(ev) {
                                     console.log("Trigger blur from nomenclature");
                                     if (this.dataset.calculNextValue == 1) {
