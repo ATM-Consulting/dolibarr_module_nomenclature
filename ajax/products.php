@@ -1,6 +1,6 @@
 <?php
 /* Copié collé de htdocs/product/ajax/product.php dans le but de customiser la requête sql, et donc de récupérer que les produits ayant au moins 1 nomenclature
- * 
+ *
  * Copyright (C) 2006      Andre Cianfarani     <acianfa@free.fr>
  * Copyright (C) 2005-2013 Regis Houssin        <regis.houssin@capnetworks.com>
  * Copyright (C) 2007-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
@@ -173,17 +173,17 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 	sort($match);
 	$idprod = (! empty($match [0]) ? $match [0] : '');
 
-	if (! GETPOST($htmlname) && ! GETPOST($idprod))
+	if (! GETPOST($htmlname, 'none') && ! GETPOST($idprod, 'none'))
 		return;
 
 		// When used from jQuery, the search term is added as GET param "term".
 	$searchkey='';
-	if(GETPOST($idprod) && GETPOST($idprod) !== 'BadFirstParameterForGETPOST') {
-		$searchkey = GETPOST($idprod);
-	} elseif(GETPOST($htmlname) && GETPOST($htmlname) !== 'BadFirstParameterForGETPOST'){
-		$searchkey = GETPOST($htmlname);
+	if(GETPOST($idprod, 'none') && GETPOST($idprod, 'none') !== 'BadFirstParameterForGETPOST') {
+		$searchkey = GETPOST($idprod, 'none');
+	} elseif(GETPOST($htmlname, 'none') && GETPOST($htmlname, 'none') !== 'BadFirstParameterForGETPOST'){
+		$searchkey = GETPOST($htmlname, 'none');
 	}
-	
+
 	$form = new Form($db);
 	if (empty($mode) || $mode == 1) {
 		$arrayresult = $form->select_produits_list("", $htmlname, $type, "", $price_level, $searchkey, $status, 2, $outjson, $socid);
@@ -194,15 +194,15 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 	/* CUSTOM CODE */
 	$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'product WHERE rowid IN (SELECT DISTINCT fk_object FROM '.MAIN_DB_PREFIX.'nomenclature WHERE object_type = "product")';
 	$resql = $db->query($sql);
-	
+
 	if ($resql && $db->num_rows($resql) > 0 && count($arrayresult) > 0)
 	{
 		$TIdFound = array();
-		while ($row = $db->fetch_object($resql)) 
+		while ($row = $db->fetch_object($resql))
 		{
 			$TIdFound[] = $row->rowid;
 		}
-		
+
 		foreach ($arrayresult as $index => &$TValue)
 		{
 			if (!in_array($TValue['key'], $TIdFound))

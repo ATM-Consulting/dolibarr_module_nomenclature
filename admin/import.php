@@ -131,7 +131,7 @@ function _show_tab_session(&$PDOdb) {
 
 	$Tab = &$_SESSION['TDataImport'];
 
-	$save = GETPOST('bt_save') ? true : false;
+	$save = GETPOST('bt_save', 'none') ? true : false;
 	//var_dump($Tab);
 	if (!empty($Tab))
 	{
@@ -276,7 +276,7 @@ function _show_nomenclature(&$n) {
 
 function _import_to_session() {
 
-	if(GETPOST('bt_view') && !empty($_FILES['file1']['name'])) {
+	if(GETPOST('bt_view', 'none') && !empty($_FILES['file1']['name'])) {
 		$Tab = &$_SESSION['TDataImport'];
 		$Tab = array();
 

@@ -15,14 +15,14 @@ if(! class_exists('TSubtotal')) dol_include_once('/subtotal/class/subtotal.class
 $langs->load('nomenclature@nomenclature');
 $langs->load('workstation@workstation');
 
-$object_type = GETPOST('object');
+$object_type = GETPOST('object', 'alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
+$ref = GETPOST('ref', 'alpha');
 $action = GETPOST('action', 'none', 2); // Check only $_POST
 
 $hookmanager->initHooks(array('nomenclatureproductservicelist'));
 
-if(GETPOST('save') == 'ok') setEventMessage($langs->trans('Saved'));
+if(GETPOST('save', 'none') == 'ok') setEventMessage($langs->trans('Saved'));
 
 $form = new Form($db);
 $PDOdb = new TPDOdb;
