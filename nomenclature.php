@@ -172,12 +172,20 @@ if (empty($reshook))
 		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId());
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId());
 		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-		    	$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
-		    	if(empty($res)) {
+
+				$last_det = end($n->TNomenclatureDet);
+				$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
+				$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
+
+				if(empty($res)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
 
 					setEventMessage($langs->trans('ThisProductCreateAnInfinitLoop').' '.$p_err->getNomUrl(0),'errors');
+
+					header("location: ".$url, true);
+					exit;
+
 				} elseif ($n->object_type === 'product') {
                     $last_det = end($n->TNomenclatureDet);
                     $url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
