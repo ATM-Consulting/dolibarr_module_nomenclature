@@ -171,8 +171,11 @@ if (empty($reshook))
 
 		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId());
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId());
-		    if(GETPOST('add_nomenclature') && $fk_new_product>0) {
-		    	$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
+		    if(GETPOST('add_nomenclature') && $fk_new_product>0 && $fk_new_product != $fk_product) {
+
+				$last_det = end($n->TNomenclatureDet);
+
+				$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
 		    	if(empty($res)) {
 					$p_err= new Product($db);
 					$p_err->fetch($fk_new_product);
@@ -187,7 +190,13 @@ if (empty($reshook))
 						exit;
 					}
                 }
-            }
+            } elseif($fk_new_product == $fk_product) {
+				$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
+
+				setEventMessage($langs->trans('AddDetNomenclatureError'), 'errors');
+				header("location: " . $url);
+				exit;
+			}
 
 		    $fk_new_workstation = GETPOST('fk_new_workstation');
 		    if(GETPOST('add_workstation') && $fk_new_workstation>0 ) {
