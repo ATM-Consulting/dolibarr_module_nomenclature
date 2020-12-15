@@ -208,7 +208,6 @@ $sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
 $sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
 
 $sql.= 'WHERE sm.fk_projet = '.$object->id;
-$sql.= ' AND sm.entity IN ('.getEntity('project').')';
 if ($search_date_start) $sql .= " AND sm.datem >= '".$db->idate($search_date_start)."'";
 if ($search_date_end)   $sql .= " AND sm.datem <= '".$db->idate($search_date_end)."'";
 
@@ -308,7 +307,7 @@ echo $list->render($sql, $TParam);
 $formcore->end_form();
 
 //print $sql;
-//print $list->db->error();
+print $list->db->error();
 
 llxFooter();
 
