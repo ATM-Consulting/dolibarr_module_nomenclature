@@ -27,6 +27,7 @@ require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/task.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/project.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
