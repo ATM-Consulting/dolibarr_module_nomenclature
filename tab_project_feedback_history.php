@@ -197,7 +197,7 @@ $parameters=array(
 	'sql' => $sql,
 	'TOptionalGroupBy' =>& $TOptionalGroupBy // la requette utilise un group by, il est donc plus judicieux d'utiliser $TOptionalGroupBy pour ajouter un simple champs
 );
-$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
 
 
@@ -217,7 +217,7 @@ $parameters=array(
 	'sql' => $sql,
 	'TOptionalGroupBy' =>& $TOptionalGroupBy
 );
-$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
 
 $sql.= ' GROUP BY DATE_FORMAT(sm.datem, \''.$granularityFormat.'\'), sm.fk_product ';

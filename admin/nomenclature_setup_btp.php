@@ -163,6 +163,7 @@ setup_print_title('Projectfeedback');
 setup_print_on_off('NOMENCLATURE_FEEDBACK');
 
 setup_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK');
+setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW');
 
 setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
 
