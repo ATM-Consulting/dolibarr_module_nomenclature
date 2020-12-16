@@ -188,7 +188,7 @@ $sql = 'SELECT DATE_FORMAT(sm.datem, \''.$granularityFormat.'\') AS datemGrouped
 
 // Modification du sign du pmp en fonction du type de mouvement
 // stock movement type  2=output (stock decrease), 3=input (stock increase)
-$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -sm.price ELSE sm.price END) * SUM(sm.value) sumPrice  ';
+$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -sm.price * sm.value ELSE sm.price * sm.value END) sumPrice  ';
 
 
 
