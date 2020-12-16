@@ -188,7 +188,7 @@ $sql = 'SELECT DATE_FORMAT(sm.datem, \''.$granularityFormat.'\') AS datemGrouped
 
 // Modification du sign du pmp en fonction du type de mouvement
 // stock movement type  2=output (stock decrease), 3=input (stock increase)
-$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -sm.price ELSE sm.price END) * SUM(sm.value) sumPrice  ';
+$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -sm.price * sm.value ELSE sm.price * sm.value END) sumPrice  ';
 
 
 
@@ -208,7 +208,6 @@ $sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
 $sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
 
 $sql.= 'WHERE sm.fk_projet = '.$object->id;
-$sql.= ' AND sm.entity IN ('.getEntity('project').')';
 if ($search_date_start) $sql .= " AND sm.datem >= '".$db->idate($search_date_start)."'";
 if ($search_date_end)   $sql .= " AND sm.datem <= '".$db->idate($search_date_end)."'";
 
@@ -308,7 +307,7 @@ echo $list->render($sql, $TParam);
 $formcore->end_form();
 
 //print $sql;
-//print $list->db->error();
+print $list->db->error();
 
 llxFooter();
 
