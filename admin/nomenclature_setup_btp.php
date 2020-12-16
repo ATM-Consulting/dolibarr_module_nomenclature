@@ -162,12 +162,46 @@ setup_print_title('Projectfeedback');
 
 setup_print_on_off('NOMENCLATURE_FEEDBACK');
 
-setup_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK');
-setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW');
 
-setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE');
+$ajaxConstantOnOffInput = array(
+	'alert' => array(
+		'del' => array(
+			'content'=>$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeState')
+				."<ul>"
+				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCK')."</li>":'')
+				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')."</li>":'')
+				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')."</li>":'')
+				."</ul>",
+			'title'=>$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeStateTitle')
+		)
+	),
+	'del' => array(
+		'NOMENCLATURE_FEEDBACK_INIT_STOCK',
+		'NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE',
+		'NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW'
+	)
+);
 
-setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK');
+setup_print_on_off('NOMENCLATURE_FEEDBACK_USE_STOCK', '', '', '', 300, false, $ajaxConstantOnOffInput);
+
+$ajaxConstantOnOffInput = array(
+	'alert' => array(
+		'set' => array(
+			'content' => $langs->transnoentities('NOMENCLATURE_FEEDBACK_USE_STOCK_DependencyChangeState')
+				. "<ul><li>" . $langs->transnoentities('NOMENCLATURE_FEEDBACK_USE_STOCK') . "</li></ul>",
+			'title' => $langs->transnoentities('NOMENCLATURE_FEEDBACK_USE_STOCK_DependencyChangeStateTitle')
+		)
+	),
+	'set' => array('NOMENCLATURE_FEEDBACK_USE_STOCK' => 1)
+);
+setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK', '', '', '', 300, false, $ajaxConstantOnOffInput);
+setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE', '', '', '', 300, false, $ajaxConstantOnOffInput);
+
+if(intval(DOL_VERSION) > 13 ){
+	// TODO : corriger la version nécessaire Dolibarr en fonction de l'acceptation de la PR cœur
+	setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW', '', '', '', 300, false, $ajaxConstantOnOffInput);
+}
+
 
 
 if(empty($conf->global->NOMENCLATURE_FEEDBACK_OBJECT)){

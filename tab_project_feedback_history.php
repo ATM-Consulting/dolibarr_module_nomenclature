@@ -205,9 +205,12 @@ $sql.=$hookmanager->resPrint;
 $sql.= !empty($TOptionalGroupBy)?', '.implode(', ',$TOptionalGroupBy):'';
 
 $sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
+$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
 $sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
 
 $sql.= 'WHERE sm.fk_projet = '.$object->id;
+$sql.= ' AND sm.type_mouvement IN (2,3) ';
+$sql.= ' AND e.entity IN ('.getEntity('stock').') ';
 if ($search_date_start) $sql .= " AND sm.datem >= '".$db->idate($search_date_start)."'";
 if ($search_date_end)   $sql .= " AND sm.datem <= '".$db->idate($search_date_end)."'";
 

@@ -529,21 +529,213 @@ class Actionsnomenclature
 			$langs->load('nomenclature@nomenclature');
 
 			$listofreferent = array(
-				'stock_mouvement'=>array(
-					'name'=>"MouvementStockAssociated",
-					'title'=>"ListMouvementStockProject",
-					'class'=>'MouvementStockFeedBack',
+				'stock_feedback'=>array(
+					'name'=>"ProjectfeedbackResume",
+					'title'=>"ProjectfeedbackResumeHistory",
+					'class'=>'MouvementStock',
 					'margin'=>'minus',
 					'table'=>'stock_mouvement',
 					'datefieldname'=>'datem',
-					'disableamount'=>0,
-					'test'=>($conf->stock->enabled && $user->rights->stock->mouvement->lire)
+					'disableamount'=>1,
+					'test'=>($conf->stock->enabled && $user->rights->stock->mouvement->lire && $conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)
 				)
 			);
 
-			$this->resArray = $listofreferent;
+			$this->results = $listofreferent;
             return 1;
         }
     }
+
+
+	/**
+	 * Overloading the printOverviewProfit function : replacing the parent's function with the one below
+	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 14 de Dolibarr
+	 * TODO : corriger dans ce commentaire la version Dolibarr pour l'apparition du hook en fonction de l'acceptation de la PR cœur
+	 *
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          $action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	function printOverviewProfit(&$parameters, &$object, &$action, $hookmanager) {
+		global $conf, $langs, $db;
+
+		$TContext = explode(':', $parameters['context']);
+
+		if(in_array('projectOverview', $TContext) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)) {
+
+
+			$name = $langs->trans($parameters['value']['name']);
+
+			$datefieldname = $parameters['value']['datefieldname'];
+			$type = $parameters['key'];
+			$dates = $parameters['dates'];
+			$datee = $parameters['datee'];
+
+			$parameters['total_revenue_ht'];
+			$parameters['balance_ht'];
+			$parameters['balance_ttc'];
+
+			if ($type == 'stock_feedback' && !empty($parameters['value']['test']))
+			{
+
+				$sql = 'SELECT COUNT(DISTINCT sm.fk_product) nbMovement, SUM(sm.value) as qty';
+
+				// Modification du sign du pmp en fonction du type de mouvement
+				// stock movement type  2=output (stock decrease), 3=input (stock increase)
+				$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -sm.price * sm.value ELSE sm.price * sm.value END) as sumPrice  ';
+
+				$sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
+				$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
+
+				$sql.= 'WHERE ';
+				$sql.= ' e.entity IN ('.getEntity('stock').') ';
+				$sql.= ' AND sm.type_mouvement IN (2,3) ';
+				$sql.= ' AND sm.fk_projet = '.intval($object->id).' ';
+
+				if (empty($datefieldname) && !empty($this->table_element_date)) $datefieldname = $this->table_element_date;
+
+				if ($dates > 0 ){
+					$sql .= " AND (sm.datem >= '".$db->idate($dates)."' OR sm.datem IS NULL)";
+				}
+
+				if ($datee > 0){
+					$sql .= " AND (sm.datem <= '".$db->idate($datee)."' OR sm.datem IS NULL)";
+				}
+
+
+				$obj = $db->getRow($sql);
+				if($obj){
+
+					// Mise à jour de la balance du projet
+					$parameters['balance_ht']  -= $obj->sumPrice;
+					$parameters['balance_ttc'] -= $obj->sumPrice;
+
+					// Display line
+					$this->resprints = '<tr class="oddeven">';
+
+					$tabHistoryUrl = dol_buildpath('/nomenclature/tab_project_feedback_history.php', 1).'?id='.$object->id;
+
+					// Module
+					$this->resprints.= '<td class="left">'.$name.' <small><a href="'.$tabHistoryUrl.'" >('.$langs->trans('ShowFeedBackHistoryDetails').')</a></small></td>';
+
+					// Nb
+					$this->resprints.= '<td class="right"><span class="classfortooltip" title="'.$langs->trans('ProjectfeedbackResumeNbMovementHelp').'" >'.$obj->nbMovement.'</span></td>';
+
+
+					// Amount HT
+					$this->resprints.= '<td class="right">';
+					$this->resprints.= '<span class="classfortooltip" title="'.$langs->trans('ProjectfeedbackResumeStockCostHTHelp').'" >'.price($obj->sumPrice).'</span>';
+					$this->resprints.= '</td>';
+
+					// Amount TTC
+					$this->resprints.= '<td class="right">';
+					$this->resprints.= '<span class="classfortooltip" title="'.$langs->trans('ProjectfeedbackResumeStockCostHTHelp').'" >'.price($obj->sumPrice).'</span>';
+					$this->resprints.= '</td>';
+
+					$this->resprints.= '</tr>';
+				}
+				else{
+					$this->resprints = '<tr class="oddeven">';
+
+					$this->resprints.= '<td class="left" colspan="6">'.$langs->trans('DataBaseQueryError').'</td>'; // $db->error().'<br>'.$sql.
+
+					$this->resprints.= '</tr>';
+				}
+
+				return 1;
+			}
+		}
+	}
+
+
+	/**
+	 * Overloading the printOverviewProfit function : replacing the parent's function with the one below
+	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 14 de Dolibarr
+	 * TODO : corriger dans ce commentaire la version Dolibarr pour l'apparition du hook en fonction de l'acceptation de la PR cœur
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          $action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	function getElementList(&$parameters, &$object, &$action, $hookmanager) {
+		global $conf, $langs, $db;
+
+		$TContext = explode(':', $parameters['context']);
+
+		if(in_array('projectdao', $TContext)) {
+
+
+			$name = $langs->trans($parameters['value']['name']);
+
+			$datefieldname = $parameters['datefieldname'];
+			$type = $parameters['type'];
+			$dates = $parameters['dates'];
+			$datee = $parameters['datee'];
+			$fk_projet = $parameters['fk_projet'];
+
+			if ($type == 'stock_feedback')
+			{
+				/*
+				 * Cette partie est nomalement useless car usurpé avec les hook printOverviewProfit et printOverviewDetail
+				 * Je la carde au cas ou getElementList serai utilisé en dehors de project overview pour éviter une erreur SQL
+				 */
+
+				$sql = 'SELECT sm.rowid';
+				$sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
+				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
+				$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
+
+				$sql.= 'WHERE ';
+				$sql.= ' e.entity IN ('.getEntity('stock').') ';
+				$sql.= ' AND sm.type_mouvement IN (2,3) ';
+				$sql.= ' AND sm.fk_projet IN ('.$fk_projet.') ';
+
+				if (empty($datefieldname) && !empty($this->table_element_date)) $datefieldname = $this->table_element_date;
+
+				if ($dates > 0 ){
+					$sql .= " AND (sm.datem >= '".$db->idate($dates)."' OR sm.datem IS NULL)";
+				}
+
+				if ($datee > 0){
+					$sql .= " AND (sm.datem <= '".$db->idate($datee)."' OR sm.datem IS NULL)";
+				}
+
+				$this->resprints = $sql;
+				return 1;
+			}
+		}
+	}
+
+	/**
+	 * Overloading the printOverviewDetail function : replacing the parent's function with the one below
+	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 14 de Dolibarr
+	 * TODO : corriger dans ce commentaire la version Dolibarr pour l'apparition du hook en fonction de l'acceptation de la PR cœur
+	 *
+	 * @param   array()         $parameters     Hook metadatas (context, etc...)
+	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+	 * @param   string          $action        Current action (if set). Generally create or edit or null
+	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+	 */
+	function printOverviewDetail(&$parameters, &$object, &$action, $hookmanager) {
+		global $conf, $langs,$user;
+
+		$TContext = explode(':', $parameters['context']);
+
+		if(in_array('projectOverview', $TContext)) {
+			if ($parameters['key'] == 'stock_feedback' && !empty($parameters['value']['test']))
+			{
+				// skip details because there is already a tab for that
+				return 1;
+			}
+		}
+	}
+
+
+
 
 }
