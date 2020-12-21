@@ -197,8 +197,7 @@ $ajaxConstantOnOffInput = array(
 setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK', '', '', '', 300, false, $ajaxConstantOnOffInput);
 setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE', '', '', '', 300, false, $ajaxConstantOnOffInput);
 
-if(intval(DOL_VERSION) > 13 ){
-	// TODO : corriger la version nécessaire Dolibarr en fonction de l'acceptation de la PR cœur
+if(intval(DOL_VERSION) > 13){
 	setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW', '', '', '', 300, false, $ajaxConstantOnOffInput);
 }
 

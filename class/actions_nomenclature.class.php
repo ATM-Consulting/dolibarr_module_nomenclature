@@ -549,8 +549,7 @@ class Actionsnomenclature
 
 	/**
 	 * Overloading the printOverviewProfit function : replacing the parent's function with the one below
-	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 14 de Dolibarr
-	 * TODO : corriger dans ce commentaire la version Dolibarr pour l'apparition du hook en fonction de l'acceptation de la PR cœur
+	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 13 de Dolibarr
 	 *
 	 * @param   array()         $parameters     Hook metadatas (context, etc...)
 	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
@@ -653,8 +652,7 @@ class Actionsnomenclature
 
 	/**
 	 * Overloading the printOverviewProfit function : replacing the parent's function with the one below
-	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 14 de Dolibarr
-	 * TODO : corriger dans ce commentaire la version Dolibarr pour l'apparition du hook en fonction de l'acceptation de la PR cœur
+	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 13 de Dolibarr
 	 * @param   array()         $parameters     Hook metadatas (context, etc...)
 	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
 	 * @param   string          $action        Current action (if set). Generally create or edit or null
@@ -712,8 +710,7 @@ class Actionsnomenclature
 
 	/**
 	 * Overloading the printOverviewDetail function : replacing the parent's function with the one below
-	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 14 de Dolibarr
-	 * TODO : corriger dans ce commentaire la version Dolibarr pour l'apparition du hook en fonction de l'acceptation de la PR cœur
+	 * HOOK ajouté après le 14/12/2020 ce hook est présent à partir de la version 13 de Dolibarr
 	 *
 	 * @param   array()         $parameters     Hook metadatas (context, etc...)
 	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
