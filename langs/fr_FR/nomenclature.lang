@@ -28,6 +28,15 @@ DateMovementGranularity = Granularité
 CalculatedCostHT = Coût stock recalculé
 CalculatedCostHTHelp = Coût stock HT calculé sur le prix moyen pondéré (PMP) actuel du produit ou si ce dernier est vide sur le prix de revient du produit
 ProjectfeedbackResumeStockCostHTHelp = Coût stock HT calculé sur les prix moyen pondéré (PMP) du produit lors du transfert de stock. A noter que si le PMP était à 0 lors du mouvement de stock alors le mouvement à une valorisation null. Cette information n'est fiable que si votre valorisation de stock est rigoureuse (il faut considérer ces chiffres comme optimistes)
+ProjectfeedbackResumeStockCostHTHelp_cost_price = Coût total des produits affecté au chantier basé sur le prix de revient courant de chaque produit.
+ProjectfeedbackResumeStockCostHTHelp_pmp = Coût total des produits affecté au chantier basé sur le pmp courant de chaque produit.
+BackportVxDetectedSoFeatureReady = Backport de fonctionnalités Dolibarr %s détectées : cette fonctionnalité est donc accessible
+NOMENCLATURE_FEEDBACK_COST_BASED = Calculer le côut des affectations chantier sur la "vue d'ensemble" basé sur le :
+NOMENCLATURE_FEEDBACK_COST_BASED_HELP = Certaines valeurs de cette liste dépendent de l'activation d'options du module. Il peut être utile de recharger cette page pour les faire apparaître.
+BasedOnCostPrice = Prix de revient
+BasedOnStockMovementPrice = Coût du mouvement de stock
+BasedOnPMP = PMP
+
 
 NomenclatureImportTitle = Importer des nomenclatures
 importFile = Fichier import
@@ -200,7 +209,7 @@ NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeStateTitle = Confirmation d'activat
 NOMENCLATURE_FEEDBACK_USE_STOCK_DependencyChangeState = Avant d'activer cette configuration vérifiez que le module stock est activé.<br/><br/>Les configurations suivantes vont êtres activées :
 NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeState = Les configurations suivantes vont êtres désactivées :
 NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW = Ajoute les affectations chantier sur la "Vue d'ensemble" d'un chantier
-NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW_HELP = Nécessite l'option ''Effectuer les mouvements de stock lors des affectations chantier'', l'information est basé sur les mouvements de stocks et le PMP.
+NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW_HELP = Si  l'option ''Effectuer les mouvements de stock lors des affectations chantier'' est activé, les calcules seront basés sur les mouvements de stocks, dans le cas contraire, les calculs seront basés sur l'affectation de stock globale du chantier sans prise en compte des filtres de dates de plus de plus l'option "Coût du mouvement" ne sera pas disponible pour le paramèttre "Calculer le côut des affectations chantier sur la vue d'ensemble basé sur"
 NOMENCLATURE_FEEDBACK_INIT_STOCK = Permettre d'initialiser l'affectation de stock à un chantier si celà n'a pas était fait
 NOMENCLATURE_FEEDBACK_INIT_STOCK_HELP = Dans le cas où des affectations ont été effectuées avant d'activer l'option "Effectuer les mouvements de stock lors des affectations chantier" alors cette option permet d'initialiser les mouvements de stock manquants sur la page d'affectation de chantier.
 NOMENCLATURE_FEEDBACK_OBJECT = Type d'object utilisé pour l'affectation chantier

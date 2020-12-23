@@ -153,17 +153,6 @@ dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
  * MOUVEMENTS DE STOCKS LIE AU PROJECT
  */
 
-$TAcceptedType = array('commande', 'propal');
-$object_type=in_array($conf->global->NOMENCLATURE_FEEDBACK_OBJECT,$TAcceptedType)?$conf->global->NOMENCLATURE_FEEDBACK_OBJECT:'commande';
-
-// Get list of order linked to this project
-if($object_type == 'commande'){
-	$res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'commande c WHERE c.fk_projet = '.$object->id);
-}
-elseif($object_type == 'propal'){
-	$res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'propal p WHERE p.fk_projet = '.$object->id);
-}
-
 // TODO / ASTUCE :
 // utiliser $TOptionalGroupBy pour ajouter des champs à la clause group by issue des champs additionnels (menu burger de la liste)
 // ça permettra d'obtenir un "rapport" qui s'adapte aux données

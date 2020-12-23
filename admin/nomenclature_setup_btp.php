@@ -177,8 +177,7 @@ $ajaxConstantOnOffInput = array(
 	),
 	'del' => array(
 		'NOMENCLATURE_FEEDBACK_INIT_STOCK',
-		'NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE',
-		'NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW'
+		'NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE'
 	)
 );
 
@@ -197,8 +196,41 @@ $ajaxConstantOnOffInput = array(
 setup_print_on_off('NOMENCLATURE_FEEDBACK_INIT_STOCK', '', '', '', 300, false, $ajaxConstantOnOffInput);
 setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE', '', '', '', 300, false, $ajaxConstantOnOffInput);
 
-if(intval(DOL_VERSION) > 13){
-	setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW', '', '', '', 300, false, $ajaxConstantOnOffInput);
+/*
+ * Recherche le backport des hook dolibarr dans le fichier projet
+ * Dans le cas de l'utilisation sur une version 12 de Dolibarr avec le backport des hooks
+ */
+$projectOverviewHookExist = false;
+$backPortDesc = '';
+if(intval(DOL_VERSION) < 13 && file_exists(DOL_DOCUMENT_ROOT.'/projet/element.php')){
+ 	$stringToFind = 'printOverviewProfit';
+	// get the file contents, assuming the file to be readable (and exist)
+	$contents = file_get_contents(DOL_DOCUMENT_ROOT.'/projet/element.php');
+	if(strpos($contents, $stringToFind) !== false)
+	{
+		$projectOverviewHookExist = true;
+		$backPortDesc = $langs->trans('BackportVxDetectedSoFeatureReady', 'V13');
+	}
+}
+
+if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
+	setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW', '', $backPortDesc);
+
+	$available = array (
+		'cost_price' => $langs->trans('BasedOnCostPrice'),
+		'pmp' => $langs->trans('BasedOnPMP')
+	);
+
+	if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
+		$available['stock_price'] = $langs->trans('BasedOnStockMovementPrice');
+	}
+
+	$selected = $conf->global->NOMENCLATURE_FEEDBACK_COST_BASED;
+	if(empty($selected)){ $selected = 'pmp'; }
+
+	$input = $form->selectArray('NOMENCLATURE_FEEDBACK_COST_BASED', $available, $selected);
+	setup_print_input_form_part('NOMENCLATURE_FEEDBACK_COST_BASED', '', $backPortDesc, array(), $input, 'NOMENCLATURE_FEEDBACK_COST_BASED_HELP', 400);
+
 }
 
 
@@ -206,23 +238,13 @@ if(intval(DOL_VERSION) > 13){
 if(empty($conf->global->NOMENCLATURE_FEEDBACK_OBJECT)){
     dolibarr_set_const($db, 'NOMENCLATURE_FEEDBACK_OBJECT', 'propal', 'chaine', 0, '', $conf->entity);
 }
-$var=!$var;
-print '<tr '.$bc[$var].'>';
-print '<td>'.$langs->trans("NOMENCLATURE_FEEDBACK_OBJECT").'</td>';
-print '<td align="center" width="20">&nbsp;</td>';
-print '<td align="center" width="300">';
-print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
-print '<input type="hidden" name="action" value="set_NOMENCLATURE_FEEDBACK_OBJECT">';
+
 $array = array(
     'propal' => $langs->trans('Proposal'),
     'commande' => $langs->trans('Commande'),
 );
-print $form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
-print '<input type="submit" value="'.$langs->trans("Modify").'" class="butAction">';
-print '</form>';
-print '</td></tr>';
-
+$input =$form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
+setup_print_input_form_part('NOMENCLATURE_FEEDBACK_OBJECT', '', '', array(), $input);
 
 
 
