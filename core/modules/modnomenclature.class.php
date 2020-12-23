@@ -167,7 +167,7 @@ class modnomenclature extends DolibarrModules
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
             ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
 		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
-		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
+		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
         );
 
         // Dictionaries
