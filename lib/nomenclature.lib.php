@@ -612,11 +612,6 @@ function saveFeedbackForm(){
                         $mouvementStock->origin = $origin;
                     }
 
-                    $label = $langs->trans('nomenclatureStockFeedback');
-                    if($firstStockMovement ){
-                        $label = $langs->trans('nomenclatureStockChantier');
-                    }
-
 
                     if(!empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK) && isset($TStockAllowed[$fk_nomenclature][$fk_product])){
                         // Affectation du stock au chantier
@@ -631,22 +626,34 @@ function saveFeedbackForm(){
                     }
 
                     if(!empty($qtyDelta)){
+                    	//  Add PMP to stock movement or at least cost_price as pmp
+                    	$pmp = 0;
+						$product = nomenclature_getObjectFromCache('Product', $fk_product);
+						if(!empty($product)){
+							/** @var Product $product */
+							if(!empty($product->pmp)) {
+								$pmp = $product->pmp;
+							}
+							else{
+								$pmp = $product->cost_price;
+							}
+						}
 
                         if(0 > $qtyDelta){
-                            $mouvementStock->reception($user, $fk_product, $feedback->fk_warehouse, abs($qtyDelta), 0, $label);
+							$label = $langs->trans('nomenclatureStockBack');
+							if($firstStockMovement ){ $label = $langs->trans('nomenclatureStockChantier'); }
+                            $res = $mouvementStock->reception($user, $fk_product, $feedback->fk_warehouse, abs($qtyDelta), $pmp, $label);
+							if($res<0){ $countError++; }
                         }
                         else{
-                            $mouvementStock->livraison($user, $fk_product, $feedback->fk_warehouse, abs($qtyDelta), 0, $label);
+							$label = $langs->trans('nomenclatureStockSend');
+							if($firstStockMovement ){ $label = $langs->trans('nomenclatureStockChantier'); }
+							$res = $mouvementStock->livraison($user, $fk_product, $feedback->fk_warehouse, abs($qtyDelta), $pmp, $label);
+							if($res<0){ $countError++; }
                         }
                     }
 
                 }
-
-
-
-
-
-
 
                 if($feedback->save($PDOdb))
                 {
@@ -708,3 +715,34 @@ function getEntrepotNomenclatureCache($id){
 }
 
 
+
+/**
+ * Auto fetch and cache object
+ * see module WebPassword listviewhelper
+ * @param $objetClassName
+ * @param $fk_object
+ * @return false|object
+ */
+function nomenclature_getObjectFromCache($objetClassName, $fk_object){
+	global $db, $TListViewObjectCache;
+
+	if(!class_exists($objetClassName)){
+		// TODO : Add error log here
+		return false;
+	}
+
+	if(empty($TListViewObjectCache[$objetClassName][$fk_object])){
+		$object = new $objetClassName($db);
+		if($object->fetch($fk_object, false) <= 0)
+		{
+			return false;
+		}
+
+		$TListViewObjectCache[$objetClassName][$fk_object] = $object;
+	}
+	else{
+		$object = $TListViewObjectCache[$objetClassName][$fk_object];
+	}
+
+	return $object;
+}

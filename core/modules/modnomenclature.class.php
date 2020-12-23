@@ -59,7 +59,7 @@ class modnomenclature extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.1.3';
+		$this->version = '3.2.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -166,7 +166,7 @@ class modnomenclature extends DolibarrModules
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
             ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
 		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
-
+		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
         );
 
         // Dictionaries
