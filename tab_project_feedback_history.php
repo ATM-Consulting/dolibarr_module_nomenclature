@@ -389,8 +389,8 @@ function _calculatedCost($fk_product = '', $qty = 0)
 
 	$pmp = $product->pmp;
 	if(empty($product->pmp)){
-		$pmp = cost_price;
+		$pmp = $product->cost_price;
 	}
 
-	return price (doubleval($pmp) * doubleval($qty));
+	return price (doubleval($pmp) * doubleval($qty*-1));
 }
