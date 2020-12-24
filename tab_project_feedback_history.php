@@ -153,10 +153,6 @@ dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
  * MOUVEMENTS DE STOCKS LIE AU PROJECT
  */
 
-$TAcceptedType = array('commande', 'propal');
-$object_type=in_array($conf->global->NOMENCLATURE_FEEDBACK_OBJECT,$TAcceptedType)?$conf->global->NOMENCLATURE_FEEDBACK_OBJECT:'commande';
-
-
 // TODO / ASTUCE :
 // utiliser $TOptionalGroupBy pour ajouter des champs à la clause group by issue des champs additionnels (menu burger de la liste)
 // ça permettra d'obtenir un "rapport" qui s'adapte aux données
@@ -190,7 +186,7 @@ $parameters=array(
 	'sql' => $sql,
 	'TOptionalGroupBy' =>& $TOptionalGroupBy // la requette utilise un group by, il est donc plus judicieux d'utiliser $TOptionalGroupBy pour ajouter un simple champs
 );
-$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$reshook=$hookmanager->executeHooks('printFieldListSelect', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
 
 
@@ -198,9 +194,12 @@ $sql.=$hookmanager->resPrint;
 $sql.= !empty($TOptionalGroupBy)?', '.implode(', ',$TOptionalGroupBy):'';
 
 $sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
+$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
 $sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
 
 $sql.= 'WHERE sm.fk_projet = '.$object->id;
+$sql.= ' AND sm.type_mouvement IN (2,3) ';
+$sql.= ' AND e.entity IN ('.getEntity('stock').') ';
 if ($search_date_start) $sql .= " AND sm.datem >= '".$db->idate($search_date_start)."'";
 if ($search_date_end)   $sql .= " AND sm.datem <= '".$db->idate($search_date_end)."'";
 
@@ -209,7 +208,7 @@ $parameters=array(
 	'sql' => $sql,
 	'TOptionalGroupBy' =>& $TOptionalGroupBy
 );
-$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object);    // Note that $action and $object may have been modified by hook
+$reshook=$hookmanager->executeHooks('printFieldListWhere', $parameters, $object, $action);    // Note that $action and $object may have been modified by hook
 $sql.=$hookmanager->resPrint;
 
 $sql.= ' GROUP BY DATE_FORMAT(sm.datem, \''.$granularityFormat.'\'), sm.fk_product ';
@@ -390,8 +389,8 @@ function _calculatedCost($fk_product = '', $qty = 0)
 
 	$pmp = $product->pmp;
 	if(empty($product->pmp)){
-		$pmp = cost_price;
+		$pmp = $product->cost_price;
 	}
 
-	return price (doubleval($pmp) * doubleval($qty));
+	return price (doubleval($pmp) * doubleval($qty*-1));
 }
