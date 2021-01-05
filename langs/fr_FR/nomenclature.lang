@@ -104,7 +104,7 @@ ListRequired = Liste produits et MO nécessaires
 AddCoef = Ajouter un coefficient
 PriceFinal = Prix conseillé
 ModifyCoef = Modifier un coefficient
-ModifyCoefWS = Modifier un coefficient de main d'oeuvre
+ModifyCoefWS = Modifier un coefficient de main d'œuvre
 ModifyCoefFinal = Modifier un coefficient du prix de vente conseillé
 CreateCoef = Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel = Libellé : 
@@ -123,7 +123,7 @@ DefaultCoeficientList = Liste des cofficients par défaut pour ce produit
 NomenclatureSuccessSaveCoef = Sauvegarde effectuée
 
 CoefList = Liste des coefficients
-CoefListWorkstation = Liste des coefficients de main d'oeuvre
+CoefListWorkstation = Liste des coefficients de main d'œuvre
 nomenclatureCoefUpdated = Coefficients mis à jour
 nomenclatureApplyAllCoefOnPriceError = Impossible de mettre les prix à jour, le statut du document n'est pas en brouillon
 
@@ -335,3 +335,27 @@ NomenclatureWarningSeuilNonSecableHelp = Attention : la nomenclature de cette li
 NomenclatureHelpMargePriceFinal = Peut être modifié dans la configuration du module Nomenclature
 BomAdded = Nomenclature ajoutée
 BomAddError = Une erreur s'est produite
+
+HowToImportBom = Comment importer des ouvrages
+HowToImportBomHelp = Vous pouvez importer des nomenclatures via cette interface à l’aide de fichier CSV (Excel).<br/><a href="%s" target="_blank" >Le fichier d’import (disponible en téléchargement ici)</a> doit comporter les colonnes suivantes :
+colNumberOfBom = Numéro de la nomenclature
+colNumberOfBomHelp = Il s’agit du numéro attribué à votre nomenclature sur sa fiche Produit >> onglet “Nomenclature”.
+colProductRef = Référence du produit
+colProductRefHelp = Il s’agit de la référence du produit qui contiendra votre nomenclature. Cette fiche produit doit avoir été préalablement créée dans Dolibarr.
+colAssetType = Type composant
+colAssetTypeHelp = 1 (produit ou service) / 2 (poste de travail).
+colAssetRef = Référence du composant
+colAssetRefHelp = Il s’agit de la référence (produit) ou de l’id (poste de travail) du composant à ajouter dans votre nomenclature. Cet élément doit avoir été préalablement créé dans Dolibarr.
+colAssetQuality = Quantité du composant
+colAssetQualityHelp = Il s’agit de la quantité du composant à ajouter à votre nomenclature (temps de fabrication pour les postes de travail).
+colQuantityRef = Quantité de référence
+colQuantityRefHelp = Il s’agit de la quantité de référence pour laquelle vous construisez votre nomenclature.
+colMargeToApply = Code de marge à appliquer
+colMargeToApplyHelp = Il s’agit du code renseigné sur l’onglet coefficient de la configuration du module nomenclature (coefficient produit ou main d\'œuvre). Cet élément doit avoir été préalablement créé dans Dolibarr.
+colFinalMargeToApply = Code de marge finale à appliquer
+colFinalMargeToApplyHelp = Il s’agit du code renseigné sur l’onglet coefficient de la configuration du module nomenclature (coefficient du prix de vente conseillé). Cet élément doit avoir été préalablement créé dans Dolibarr.
+IdOfBommCreated = Id nomenclature créée
+Component = Composant
+ImportBomNoteHelp = A noter : si vous souhaitez importer une nomenclature possédant plusieurs composants, il faudra bien créer une ligne par composant. Chaque ligne possédera bien le même numéro de nomenclature, la même référence produit et la même quantité de référence.
+BomsCreated = Nomenclatures créées
+ErrorFetching = %s non trouvé
