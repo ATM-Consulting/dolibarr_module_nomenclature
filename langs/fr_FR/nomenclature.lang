@@ -87,7 +87,7 @@ ListRequired = Liste produits et MO nécessaires
 AddCoef = Ajouter un coefficient
 PriceFinal = Prix conseillé
 ModifyCoef = Modifier un coefficient
-ModifyCoefWS = Modifier un coefficient de main d'oeuvre
+ModifyCoefWS = Modifier un coefficient de main d'œuvre
 ModifyCoefFinal = Modifier un coefficient du prix de vente conseillé
 CreateCoef = Renseigner son libellé et son code de base de données (pas d'espace ni de caractère accentué) ainsi que son taux
 NomenclatureCreateLabel = Libellé : 
@@ -106,7 +106,7 @@ DefaultCoeficientList = Liste des cofficients par défaut pour ce produit
 NomenclatureSuccessSaveCoef = Sauvegarde effectuée
 
 CoefList = Liste des coefficients
-CoefListWorkstation = Liste des coefficients de main d'oeuvre
+CoefListWorkstation = Liste des coefficients de main d'œuvre
 nomenclatureCoefUpdated = Coefficients mis à jour
 nomenclatureApplyAllCoefOnPriceError = Impossible de mettre les prix à jour, le statut du document n'est pas en brouillon
 
@@ -320,7 +320,7 @@ colAssetQualityHelp = Il s’agit de la quantité du composant à ajouter à vot
 colQuantityRef = Quantité de référence
 colQuantityRefHelp = Il s’agit de la quantité de référence pour laquelle vous construisez votre nomenclature.
 colMargeToApply = Code de marge à appliquer
-colMargeToApplyHelp = Il s’agit du code renseigné sur l’onglet coefficient de la configuration du module nomenclature (coefficient produit ou main d\'oeuvre). Cet élément doit avoir été préalablement créé dans Dolibarr.
+colMargeToApplyHelp = Il s’agit du code renseigné sur l’onglet coefficient de la configuration du module nomenclature (coefficient produit ou main d\'œuvre). Cet élément doit avoir été préalablement créé dans Dolibarr.
 colFinalMargeToApply = Code de marge finale à appliquer
 colFinalMargeToApplyHelp = Il s’agit du code renseigné sur l’onglet coefficient de la configuration du module nomenclature (coefficient du prix de vente conseillé). Cet élément doit avoir été préalablement créé dans Dolibarr.
 IdOfBommCreated = Id nomenclature créée
