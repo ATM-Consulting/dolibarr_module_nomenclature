@@ -1,5 +1,8 @@
 <?php
 define('INC_FROM_CRON_SCRIPT',true);
+if (!defined('NOTOKENRENEWAL')) {
+	define('NOTOKENRENEWAL', 1);
+}
 require('../config.php');
 
 $langs->load('nomenclature@nomenclature');

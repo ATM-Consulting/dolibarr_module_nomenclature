@@ -1,7 +1,12 @@
 <?php
 
+	if (!defined('NOTOKENRENEWAL')) {
+		define('NOTOKENRENEWAL', 1);
+	}
     require('../config.php');
     dol_include_once('/nomenclature/class/nomenclature.class.php');
+	require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+
     if($conf->workstation->enabled) {
         dol_include_once('/workstation/class/workstation.class.php');
     }
