@@ -477,7 +477,9 @@ class TNomenclature extends TObjetStd
 	 * @return bool
 	 */
 	function addProduct($PDOdb, $fk_new_product, $fk_new_product_qty = 1) {
-        global $conf;
+        global $conf, $langs;
+
+        if($fk_new_product == $this->fk_object && $this->object_type = 'product' ) return false;
 
 		$k = $this->addChild($PDOdb, 'TNomenclatureDet');
         $det = &$this->TNomenclatureDet[$k];
@@ -499,9 +501,6 @@ class TNomenclature extends TObjetStd
 				return $det->rowid;
 		}
 		else {
-
-			    global $langs;
-
 			    setEventMessage($langs->trans('CantAddProductBecauseOfAnInfiniteLoop', 'errors'));
 
 			    $det->to_delete = true;
@@ -1472,6 +1471,7 @@ class TNomenclatureDet extends TObjetStd
     	      			console.log("init fournprice_predef");
     	        		var pricevalue = select_fournprice.find('option:selected').attr("price");
     	      			select_fournprice.closest('tr').find('input[name*="buying_price"]').attr('placeholder',pricevalue);
+                        select_fournprice.closest('tr').find('input[name*="buying_price"]').val(pricevalue);
     	      		}
 
     			    select_fournprice.change(function() {
