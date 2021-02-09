@@ -1471,6 +1471,7 @@ class TNomenclatureDet extends TObjetStd
     	      			console.log("init fournprice_predef");
     	        		var pricevalue = select_fournprice.find('option:selected').attr("price");
     	      			select_fournprice.closest('tr').find('input[name*="buying_price"]').attr('placeholder',pricevalue);
+                        select_fournprice.closest('tr').find('input[name*="buying_price"]').val(pricevalue);
     	      		}
 
     			    select_fournprice.change(function() {
