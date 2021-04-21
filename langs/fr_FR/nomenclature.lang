@@ -1,5 +1,6 @@
 Module104580Name = Nomenclature
 Module104580Desc = Définissez votre composition de fabrication, relevé votre prix de revient
+#TODO trad en_US: harmoniser le vocabulaire: • chantier (construction project? works? works campaign?) • stock virtuel/physique (virtual / actual ou virtual / physical?) • ouvrage = > structure • déboursé => cost/spent amount • coût margé =>
 
 ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.fr" target="_blank">ATM Consulting</a><br>Vous pouvez retrouver la documentation sur notre <a href="http://wiki.atm-consulting.fr/index.php/Accueil" target="_blank">wiki</a><br><br>Pour toute question technique ou retour, contactez-nous sur <a href="mailto:support@atm-consulting.fr">support@atm-consulting.fr</a><br><br>Pour toute question commerciale, contactez-nous sur <a href="mailto:contact@atm-consulting.fr">contact@atm-consulting.fr</a> ou au +33 9 77 19 50 70<br><br>Retrouvez nos autres modules sur <a href="http://www.dolistore.com/search.php?orderby=position&orderway=desc&search_query=atm&submit_search=Rechercher" target="_blank">Dolistore</a>
 
@@ -169,7 +170,7 @@ NOMENCLATURE_COST_TYPE_HELP = Vous pouvez définir ici le prix unitaire qui sera
 NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST = Utiliser le prix de la nomenclature enfant avant le prix d'achat pour le calcul
 NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST_HELP = Par défaut, lors de l’ajout d’un produit nomenclaturé (enfant) dans un autre produit nomenclaturé (parent), le prix d’achat unitaire du produit enfant récupéré est le dernier prix d’achat renseigné sur la fiche produit (si existant). Une fois cette option activée, le prix d’achat unitaire du produit enfant récupéré sera le prix calculé par la nomenclature enfant.
 NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED = Le prix personnalisé d'un composant est un déboursé
-NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED_HELP = Par défaut, lorsque vous renseignez un prix personnalisé sur une ligne de produit dans une nomenclature, celui-ci va remplacer le coût de revient total de cette ligne (quelle que soit la quantité), donc après application de la marge. <br/><br/>Lorsque cette option est activée le prix personnalisé remplacera le prix d’achat total (quelque soit la quantité) donc avant application de la marge.
+NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED_HELP = Par défaut, lorsque vous renseignez un prix personnalisé sur une ligne de produit dans une nomenclature, celui-ci va remplacer le coût de revient total de cette ligne (quelle que soit la quantité), donc après application de la marge. <br/><br/>Lorsque cette option est activée le prix personnalisé remplacera le prix d’achat total (quelle que soit la quantité) donc avant application de la marge.
 NOMENCLATURE_PERSO_PRICE_APPLY_QTY = Ce déboursé prend en compte la quantité de la ligne
 NOMENCLATURE_PERSO_PRICE_APPLY_QTY_HELP = Permet que le prix personnalisé remplace le prix d’achat unitaire et non plus le prix d’achat total (quelque soit la quantité).
 NOMENCLATURE_HIDE_ADVISED_PRICE = Masquer la ligne de prix conseillé dans la nomenclature
@@ -209,7 +210,7 @@ NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeStateTitle = Confirmation d'activat
 NOMENCLATURE_FEEDBACK_USE_STOCK_DependencyChangeState = Avant d'activer cette configuration vérifiez que le module stock est activé.<br/><br/>Les configurations suivantes vont êtres activées :
 NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeState = Les configurations suivantes vont êtres désactivées :
 NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW = Ajoute les affectations chantier sur la "Vue d'ensemble" d'un chantier
-NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW_HELP = Si  l'option ''Effectuer les mouvements de stock lors des affectations chantier'' est activé, les calculs seront basés sur les mouvements de stocks, dans le cas contraire, les calculs seront basés sur l'affectation de stock globale du chantier sans prise en compte des filtres de dates de plus de plus l'option "Coût du mouvement" ne sera pas disponible pour le paramèttre "Calculer le côut des affectations chantier sur la vue d'ensemble basé sur"
+NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW_HELP = Si  l'option ''Effectuer les mouvements de stock lors des affectations chantier'' est activé, les calculs seront basés sur les mouvements de stocks, dans le cas contraire, les calculs seront basés sur l'affectation de stock globale du chantier sans prise en compte des filtres de dates. De plus, l'option "Coût du mouvement" ne sera pas disponible pour le paramèttre "Calculer le côut des affectations chantier sur la vue d'ensemble basé sur"
 NOMENCLATURE_FEEDBACK_INIT_STOCK = Permettre d'initialiser l'affectation de stock à un chantier si celà n'a pas était fait
 NOMENCLATURE_FEEDBACK_INIT_STOCK_HELP = Dans le cas où des affectations ont été effectuées avant d'activer l'option "Effectuer les mouvements de stock lors des affectations chantier" alors cette option permet d'initialiser les mouvements de stock manquants sur la page d'affectation de chantier.
 NOMENCLATURE_FEEDBACK_OBJECT = Type d'object utilisé pour l'affectation chantier
@@ -327,7 +328,7 @@ NOMENCLATURE_DETAILS_TAB_REWRITE_HELP = Par défaut, dans l’onglet “Nomencla
 UpdateTitleCoeff = Mettre à jour les coefficients des nomenclatures
 
 nomenclatureNonSecable = Seuil non sécable
-nomenclatureNonSecableHelp = Cette notion permet d'utiliser la quantité de référence comme non sécable dans vos propositions comerciales/ commandes clients. Exemple pour une quantité de référence de 1 : si la ligne de votre devis a pour quantité 3.5, alors la nomenclature associée à cette ligne, calculera un prix pour une quantité de 4
+nomenclatureNonSecableHelp = Cette notion permet d'utiliser la quantité de référence comme non sécable dans vos propositions commerciales/ commandes clients. Exemple pour une quantité de référence de 1 : si la ligne de votre devis a pour quantité 3.5, alors la nomenclature associée à cette ligne, calculera un prix pour une quantité de 4
 nomenclatureNonSecableForQty = Seuil non sécable pour une quantité de référence de %s
 
 NomenclatureWarningSeuilNonSecableHelp = Attention : la nomenclature de cette ligne est de type non sécable, seul un multiple de la quantité de référence (%s) est autorisé
@@ -359,3 +360,4 @@ Component = Composant
 ImportBomNoteHelp = A noter : si vous souhaitez importer une nomenclature possédant plusieurs composants, il faudra bien créer une ligne par composant. Chaque ligne possédera bien le même numéro de nomenclature, la même référence produit et la même quantité de référence.
 BomsCreated = Nomenclatures créées
 ErrorFetching = %s non trouvé
+Worstations = Workstations
