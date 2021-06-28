@@ -44,7 +44,7 @@ $fk_origin = GETPOST('fk_origin', 'int');
 $ref = GETPOST('ref', 'aZ09');
 // Load translation files required by the page
 $langs->loadLangs(array('projects', 'companies', 'nomenclature@nomenclature'));
-$langs->load('workstation@workstation');
+$langs->load('workstationatm@workstationatm');
 
 // Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array('projectfeedbackcard','globalcard'));
