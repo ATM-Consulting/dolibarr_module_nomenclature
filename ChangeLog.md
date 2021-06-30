@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - NEW : Compatibility with Workstation ATM for Dolibarr v14 *28/06/2021* - 4.0.0  
-  **require WorkstationAtm 2.0**
+  **requires WorkstationAtm 2.0**
 
 - FIX : missing en_US translations. *2021-04-21* - 3.2.3
 
