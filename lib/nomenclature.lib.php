@@ -213,7 +213,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
     list($TProduct,$TWorkstation) = feedback_getDetails($object, $object_type);
 
-    $langs->load('workstation@workstation');
+    $langs->load('workstationatm@workstationatm');
     $PDOdb = new TPDOdb;
 
 

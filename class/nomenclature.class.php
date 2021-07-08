@@ -6,7 +6,7 @@ if (!class_exists('TObjetStd'))
 	$res = require_once dirname(__FILE__).'/../config.php';
 }
 
-dol_include_once('/workstation/class/workstation.class.php');
+dol_include_once('/workstationatm/class/workstation.class.php');
 
 class TNomenclature extends TObjetStd
 {
@@ -67,7 +67,7 @@ class TNomenclature extends TObjetStd
         $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
 
 
-        if($conf->workstation->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
+        if($conf->workstationatm->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
         $this->object_type = 'product';
@@ -453,7 +453,7 @@ class TNomenclature extends TObjetStd
 			$this->iExist = true;
 		}
 
-		if($loadProductWSifEmpty && $conf->workstation->enabled && empty($this->TNomenclatureWorkstation)) {
+		if($loadProductWSifEmpty && $conf->workstationatm->enabled && empty($this->TNomenclatureWorkstation)) {
 			$this->load_product_ws($PDOdb);
 		}
 
@@ -1868,7 +1868,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		$TThmObject = array();
 
 		// 1 : on récupère tous les Poste de travail existants
-		dol_include_once('/workstation/class/workstation.class.php');
+		dol_include_once('/workstationatm/class/workstation.class.php');
 		$TWorkstation = TWorkstation::getAllWorkstationObject($PDOdb);
 
 		// 2 : on va chercher les coef custom

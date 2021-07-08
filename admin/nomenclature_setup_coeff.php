@@ -237,7 +237,7 @@ print '</table>';
 
 
 // Coef lignes msin d'oeuvre (module workstation)
-if(!empty($conf->workstation->enabled)) {
+if(!empty($conf->workstationatm->enabled)) {
 
 	$var=false;
 	print '<table class="noborder" width="100%">';

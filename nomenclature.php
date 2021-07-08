@@ -12,8 +12,8 @@ dol_include_once('/product/class/html.formproduct.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 
-if($conf->workstation->enabled) {
-    dol_include_once('/workstation/class/workstation.class.php');
+if($conf->workstationatm->enabled) {
+    dol_include_once('/workstationatm/class/workstation.class.php');
 }
 
 $hookmanager->initHooks(array('nomenclaturecard'));
@@ -1074,7 +1074,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         <?php } ?>
 
         <?php
-       if(!empty($conf->workstation->enabled)) {
+       if(!empty($conf->workstationatm->enabled)) {
 
        ?>
         <tr>
@@ -1241,7 +1241,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                         <div class="tabsAction">
                             <div>
                                 <?php
-                                if ( $conf->workstation->enabled && ! $readonly ) {
+                                if ( $conf->workstationatm->enabled && ! $readonly ) {
                                     echo $formCore->combo( '', 'fk_new_workstation', TWorkstation::getWorstations( $PDOdb, false, ! empty( $conf->global->NOMENCLATURE_PRESELECT_FIRST_WS ) ? false : true ), - 1 );
                                     ?>
                                     <div class="inline-block divButAction">
@@ -1376,7 +1376,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 <!--                <div class="tabsAction">-->
 <!--                    --><?php
 //
-//                    if($conf->workstation->enabled && !$readonly) {
+//                    if($conf->workstationatm->enabled && !$readonly) {
 //
 //                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
 //                        ?>
