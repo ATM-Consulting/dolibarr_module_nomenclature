@@ -1,5 +1,6 @@
 <?php
 define('INC_FROM_CRON_SCRIPT',true);
+if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK");
 if (!defined('NOTOKENRENEWAL')) {
 	define('NOTOKENRENEWAL', 1);
 }
