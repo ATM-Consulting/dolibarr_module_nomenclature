@@ -101,7 +101,6 @@ $( function() {
         var consume         = parseFloat( $('#qty-consume' + datakey).val());
         var qtyused         = parseFloat(line.data('qtyused'));
         var finalused       = getNumber(   qtyused + consume  );
-        console.log({qtyused : qtyused , consume: consume});
         var impactdispo     = getNumberSigned(  (newstockallowed - stockallowed ) - (finalused - qtyused) ) + ' (' + (newstockallowed - finalused) + ')';
         
         if((newstockallowed - stockallowed ) - (finalused - qtyused)  == 0){ impactdispo = ''; }
