@@ -184,15 +184,32 @@ function feedback_getDetails(&$object, $object_type) {
         $nomenclature->fetchCombinedDetails($PDOdb);
         $coef_qty_price = $nomenclature->setPrice($PDOdb, $nomenclature->qty_reference, '', $object_type, $object->id,$line->fk_product);
 
-        foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
-            $det->qty = floatval($det->qty) * floatval($line->qty);
-            if(!isset($TProduct[$fk_product])) {
-                $TProduct[$fk_product] = $det;
-            }
-            else{
-                $TProduct[$fk_product]->qty += $det->qty;
-            }
-        }
+        if(!empty($nomenclature->TNomenclatureDetCombined)) {
+			foreach ($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
+				$det->qty = floatval($det->qty) * floatval($line->qty);
+				if (!isset($TProduct[$fk_product])) {
+					$item = new stdClass();
+					$item->qty = $det->qty;
+					$item->fk_product = $det->fk_product;
+					$item->fk_nomenclature = $det->fk_nomenclature;
+					$TProduct[$fk_product] = $item;
+				} else {
+					$TProduct[$fk_product]->qty += $det->qty;
+				}
+			}
+		} elseif($line->fk_product > 0) {
+			if (!isset($TProduct[$line->fk_product])) {
+				$item = new stdClass();
+				$item->qty = $line->qty;
+				$item->fk_product = $line->fk_product;
+				$item->type = $line->product_type;
+				$item->fk_nomenclature = 0;
+
+				$TProduct[$line->fk_product] = $item;
+			} else {
+				$TProduct[$line->fk_product]->qty += $line->qty;
+			}
+		}
 
     }
 
@@ -253,7 +270,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
     // une astuce pour etre sur d'avoir les produits en premier suivis des services
     $TProductsClassed = array();
-    foreach($TProduct as $fk_product=> $det) {
+    foreach($TProduct as $fk_product => $det) {
         $product = getProductNomenclatureCache($fk_product); // mise en cache des produits car utilisé plus tard
         $fk_product_type = 4;
         if($product){$fk_product_type = $product->type; } // récupération du type, par defaut 0 -> produit
@@ -289,7 +306,9 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
             $product = getProductNomenclatureCache($fk_product);
             //if(empty($product)){continue;}
-
+if(empty($product)){
+	var_dump($fk_product);
+}
 
             $feedback = new TNomenclatureFeedback();
             $resfecth = $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
