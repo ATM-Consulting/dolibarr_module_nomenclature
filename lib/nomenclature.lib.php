@@ -306,9 +306,6 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
             $product = getProductNomenclatureCache($fk_product);
             //if(empty($product)){continue;}
-if(empty($product)){
-	var_dump($fk_product);
-}
 
             $feedback = new TNomenclatureFeedback();
             $resfecth = $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
