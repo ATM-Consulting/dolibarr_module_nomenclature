@@ -281,9 +281,10 @@ NomenclatureStockTheorique = Stock virtuel + nomemclature
 NomenclatureStockTheoriqueHelp = Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants
 
 QtyAllowed = Quantité affectée au  chantier
+QtyToBeAllocated = Quantité à affecter
 QtyPlanned = Quantité prévue
 QtyNotUsed = Quantité disponible sur chantier
-QtyNewConsume = Quantité supplémentaire consommé
+QtyNewConsume = Quantité consommée
 QtyReturn = Quantité retournée
 Projectfeedback = Affectation chantier
 ProjectfeedbackResumeHistory = Historique affectation chantier

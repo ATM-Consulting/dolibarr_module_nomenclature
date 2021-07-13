@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- NEW/FIX : Refonte de l'interface des retours chantiers *13/07/2021* - 4.1.0
+
 ## 4.0
 
 - NEW : Compatibility with Workstation ATM for Dolibarr v14 *28/06/2021* - 4.0.0  
