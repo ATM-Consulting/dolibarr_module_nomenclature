@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- NEW : Separator parameter nomenclature import *25/08/2021* - 4.1.1
 - NEW/FIX : Refonte de l'interface des retours chantiers *13/07/2021* - 4.1.0
 
 ## 4.0
