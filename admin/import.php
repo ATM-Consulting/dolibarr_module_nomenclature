@@ -297,9 +297,9 @@ function _import_to_session() {
 			$fk_product_composant = $row[2]; // produit ou code WS
 			if(empty($fk_product_composant)) continue;
 
-			$qty = (double) price2num($row[3]);
-			$qty_ref = (double) price2num($row[4]);
-			$type = $row[5];
+			$type = $row[3];
+			$qty = (double) price2num($row[4]);
+			$qty_ref = (double) price2num($row[5]);
 
 			if(empty($Tab[$fk_product]))$Tab[$fk_product]=array();
 			if(empty($Tab[$fk_product][$num_nomenclature]))$Tab[$fk_product][$num_nomenclature]=array();

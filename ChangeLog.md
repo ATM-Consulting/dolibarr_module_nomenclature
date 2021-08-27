@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- FIX : import setup - columns order *2021-08-25* - 3.2.4
 - FIX : missing en_US translations. *2021-04-21* - 3.2.3
 
 ### 3.2
