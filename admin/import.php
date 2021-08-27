@@ -90,6 +90,7 @@ function _card(&$PDOdb) {
 	print '<legend><strong>'.$langs->trans('NomenclatureImportTitle').'</strong></legend>';
 
 	//déterminer le séparateur du fichier d'import
+	if(empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR)) $conf->global->NOMENCLATURE_IMPORT_SEPARATOR = ',';
 	setup_print_input_form_part('NOMENCLATURE_IMPORT_SEPARATOR');
 
 	$formCore=new TFormCore('auto','formImport','post',true);
