@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- FIX : Import nomenclature afficher message d'erreur + ne pas créer de nomenclature quand il y a une erreur de composant *2021-08-27* - 3.2.5
 - FIX : import setup - columns order *2021-08-25* - 3.2.4
 - FIX : missing en_US translations. *2021-04-21* - 3.2.3
 

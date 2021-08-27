@@ -136,7 +136,9 @@ function _show_tab_session(&$PDOdb) {
 	if (!empty($Tab))
 	{
 		$TRefNotFound=array();
+		$TRefComposantNotFound=array();
 	    $nb_not_here = 0;
+		$nb_not_here_composant = 0;
 		foreach($Tab as $product_ref=> $TNomenclature) {
 
 			$p=new Product($db);
@@ -146,15 +148,13 @@ function _show_tab_session(&$PDOdb) {
 			    continue;
 			}
 
-			print '<fieldset>';
-			print '<legend><strong>'.$p->getNomUrl(1).' - '.$p->label.'</strong></legend>';
-
 
 			foreach($TNomenclature as $TData) {
 
 				$n=new TNomenclature;
 				$n->fk_object = $p->id;
 				$n->object_type = 'product';
+				$nocreate = 0;
 
 				foreach($TData as $data) {
 					if(!empty($data['qty_ref']))$n->qty_reference = (double)$data['qty_ref'];
@@ -174,6 +174,9 @@ function _show_tab_session(&$PDOdb) {
 						$p_compo=new Product($db);
 						if($p_compo->fetch(0,$data['fk_product_composant'])<=0){
 							setEventMessage($langs->trans('ErrorFetching',$data['fk_product_composant']));
+							$nb_not_here_composant++;
+							$TRefComposantNotFound[$product_ref] = $data['fk_product_composant'];
+							$nocreate = 1;
 							continue;
 						}
 						$k = $n->addChild($PDOdb, 'TNomenclatureDet');
@@ -185,14 +188,14 @@ function _show_tab_session(&$PDOdb) {
 
 				}
 
-				if($save) {
+				if($save && empty($nocreate)) {
 					$res = $n->save($PDOdb);
 					if($res<1){
 						unset($_SESSION['TDataImport']);
 					}
 				}
 
-				_show_nomenclature($n);
+				if(empty($nocreate)) _show_nomenclature($n, $p);
 
 			}
 
@@ -207,6 +210,15 @@ function _show_tab_session(&$PDOdb) {
 			foreach ($TRefNotFound as $k => $ref)
 			{
 				echo '<li>'.$ref.'</li>';
+			}
+			echo '</ul>';
+
+
+			echo '<p>'.$nb_not_here_composant.' nomenclature(s) au(x) composant(s) non présent(s)</p>';
+			echo '<ul>';
+			foreach ($TRefComposantNotFound as $refproduct => $refcomposant)
+			{
+				echo '<li> Produit '.$refproduct.' : composant '.$refcomposant.'</li>';
 			}
 			echo '</ul>';
 			echo '</div>';
@@ -233,9 +245,12 @@ function _show_tab_session(&$PDOdb) {
 /**
  * @param TNomenclature $n
  */
-function _show_nomenclature(&$n) {
+function _show_nomenclature(&$n, &$p) {
 
 	global $langs,$db, $user;
+
+	print '<fieldset>';
+	print '<legend><strong>'.$p->getNomUrl(1).' - '.$p->label.'</strong></legend>';
 
 	echo '<br />Pour : '.$n->qty_reference;
 
