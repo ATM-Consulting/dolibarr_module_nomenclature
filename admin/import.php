@@ -301,7 +301,7 @@ function _import_to_session() {
 
 		while(!feof($f1)) {
 
-			$row = fgetcsv($f1, 4096, ';', '"');
+			$row = fgetcsv($f1, 4096, ',', '"');
 
 			$num_nomenclature = (int)$row[0];
 			if(empty($num_nomenclature)) $num_nomenclature = 1;
