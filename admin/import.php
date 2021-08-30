@@ -339,11 +339,8 @@ function _import_to_session() {
 
 		while(!feof($f1)) {
 
-<<<<<<< HEAD
+
 			$row = fgetcsv($f1, 4096, !empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR) ? $conf->global->NOMENCLATURE_IMPORT_SEPARATOR : ',', '"');
-=======
-			$row = fgetcsv($f1, 4096, ',', '"');
->>>>>>> 8d310d7f172310a757bc29d7489ed18545f83c50
 
 			$num_nomenclature = (int)$row[0];
 			if(empty($num_nomenclature)) $num_nomenclature = 1;
