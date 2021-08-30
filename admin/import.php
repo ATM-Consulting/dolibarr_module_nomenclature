@@ -7,7 +7,7 @@
 	dol_include_once('/core/lib/admin.lib.php');
 	dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 	dol_include_once('/nomenclature/class/nomenclature.class.php');
-
+	dol_include_once('abricot/includes/lib/admin.lib.php');
 	dol_include_once('/product/class/product.class.php');
 
 	$langs->load("nomenclature@nomenclature");
@@ -28,13 +28,43 @@
 		unset($_SESSION['TDataImport']);
 	}
 
+	if (preg_match('/set_(.*)/',$action,$reg))
+	{
+		$code=$reg[1];
+		if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
+		{
+			setEventMessage($langs->trans("ParamSaved"));
+			header("Location: ".$_SERVER["PHP_SELF"]);
+			exit;
+		}
+		else
+		{
+			dol_print_error($db);
+		}
+
+	}
+
+	if (preg_match('/del_(.*)/',$action,$reg))
+	{
+		$code=$reg[1];
+		if (dolibarr_del_const($db, $code, 0) > 0)
+		{
+			Header("Location: ".$_SERVER["PHP_SELF"]);
+			exit;
+		}
+		else
+		{
+			dol_print_error($db);
+		}
+	}
+
 /**
  * VIEW
  */
 	_card($PDOdb);
 
 function _card(&$PDOdb) {
-	global $langs, $user;
+	global $langs, $user, $conf;
 
 	$page_name = "nomenclatureSetup";
 	llxHeader('', $langs->trans($page_name));
@@ -56,6 +86,10 @@ function _card(&$PDOdb) {
 
 	print '<fieldset>';
 	print '<legend><strong>'.$langs->trans('NomenclatureImportTitle').'</strong></legend>';
+
+	//déterminer le séparateur du fichier d'import
+	if(empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR)) $conf->global->NOMENCLATURE_IMPORT_SEPARATOR = ',';
+	setup_print_input_form_part('NOMENCLATURE_IMPORT_SEPARATOR');
 
 	$formCore=new TFormCore('auto','formImport','post',true);
 
@@ -291,6 +325,8 @@ function _show_nomenclature(&$n, &$p) {
 
 function _import_to_session() {
 
+	global $conf;
+
 	if(GETPOST('bt_view', 'none') && !empty($_FILES['file1']['name'])) {
 		$Tab = &$_SESSION['TDataImport'];
 		$Tab = array();
@@ -301,7 +337,7 @@ function _import_to_session() {
 
 		while(!feof($f1)) {
 
-			$row = fgetcsv($f1, 4096, ',', '"');
+			$row = fgetcsv($f1, 4096, !empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR) ? $conf->global->NOMENCLATURE_IMPORT_SEPARATOR : ',', '"');
 
 			$num_nomenclature = (int)$row[0];
 			if(empty($num_nomenclature)) $num_nomenclature = 1;
