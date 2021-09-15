@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.0
 
+- FIX : NOSCRFCHECK compatibilty v14 *2021-09-15* - 4.0.1
 - NEW : Compatibility with Workstation ATM for Dolibarr v14 *28/06/2021* - 4.0.0  
   **requires WorkstationAtm 2.0**
 - FIX : missing en_US translations. *2021-04-21* - 3.2.3
