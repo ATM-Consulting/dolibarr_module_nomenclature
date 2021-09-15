@@ -2,7 +2,7 @@
 if (!defined('NOTOKENRENEWAL')) {
 	define('NOTOKENRENEWAL', 1);
 }
-if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK");
+if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK", 1);
 require '../config.php';
 
 $langs->load('nomenclature@nomenclature');
