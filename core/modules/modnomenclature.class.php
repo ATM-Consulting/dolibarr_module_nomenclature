@@ -93,6 +93,7 @@ class modnomenclature extends DolibarrModules
 			    'propalcard'
                 , 'ordercard'
                 , 'stockproductcard'
+                , 'productcard'
                 , 'projectOverview'
                 , 'listof'
                 , 'ofcard'
