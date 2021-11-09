@@ -96,7 +96,7 @@ $TParam['list'] = array(
     'title'=>$langs->trans('NomenclatureList'),
 );
 $TParam['limit'] = array(
-            'page'=>(isset($_REQUEST['page']) ? $_REQUEST['page'] : 1),
+            'page'=>(isset($_REQUEST['page']) ? $_REQUEST['page'] : 0),
             'nbLine'=>$limit
         );
 $TParam['list']['param_url'] = 'limit='.$limit;
