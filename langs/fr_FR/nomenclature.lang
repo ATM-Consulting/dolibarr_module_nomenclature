@@ -179,6 +179,7 @@ NOMENCLATURE_USE_ON_INVOICE = Utiliser les coûts de revient de nomenclature ave
 NOMENCLATURE_USE_ON_INVOICE_HELP = Par défaut, si vous ajoutez un produit à une facture, le prix unitaire HT appliqué sur votre ligne de facture est le prix de vente renseigné sur la fiche produit (0€ si aucun prix renseigné). <br/><br/>Lorsque vous activez cette option, que votre produit contient une nomenclature et qu’aucun prix de vente n’est saisi sur votre fiche produit (ou 0€), le prix unitaire HT appliqué sur votre ligne de facture sera le prix de vente conseillé calculé par la nomenclature de votre produit.
 NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC = Forcer l'utilsation du prix de vente plutôt que le coût margé (lors de l'ajout d'une ligne propal/commande/facture)
 NOMENCLATURE_USE_QTYREF_TO_ONE = Toujours utiliser la quantité de référence à 1 pour le calcul du coût de revient
+NOMENCLATURE_UNIQUE_TITLE = Titre unique pour les nomenclatures
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH = Utiliser le champs "Délai avant démarrage" dans la nomenclature sur les postes de travail
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH_HELP = Permet de définir un délai avant démarrage sur les postes de travail. Ce délai s’exprime en jours et est utilisé pour décaler la tâche liée au poste de travail suivant.
 NOMENCLATURE_USE_TIME_PREPARE = Utiliser le champs "Temps de préparation" dans la nomenclature sur les postes de travail
@@ -280,6 +281,8 @@ NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN_HELP = Lorsque cette option est activée
 
 NomenclatureStockTheorique = Stock virtuel + nomemclature
 NomenclatureStockTheoriqueHelp = Stock virtuel standard Dolibarr + la quantité de fabrication possible via les composants
+
+NomenclatureTitleWarning=Une nomenclature portant ce nom existe déjà
 
 QtyAllowed = Quantité affectée au  chantier
 QtyToBeAllocated = Quantité à affecter
