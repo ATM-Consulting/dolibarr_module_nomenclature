@@ -180,6 +180,7 @@ NOMENCLATURE_USE_ON_INVOICE_HELP = Par défaut, si vous ajoutez un produit à un
 NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC = Forcer l'utilsation du prix de vente plutôt que le coût margé (lors de l'ajout d'une ligne propal/commande/facture)
 NOMENCLATURE_USE_QTYREF_TO_ONE = Toujours utiliser la quantité de référence à 1 pour le calcul du coût de revient
 NOMENCLATURE_UNIQUE_TITLE = Titre unique pour les nomenclatures
+NOMENCLATURE_UNIQUE_TITLE_HELP = Par défaut, les nomenclatures peuvent porter le même titre. Si vous activez cette configuration, il ne sera plus possible d'utiliser le même titre pour deux nomenclatures différentes. Cela n'est pas rétroactif et les éventuelles nomenclatures existantes ne seront pas modifiées.
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH = Utiliser le champs "Délai avant démarrage" dans la nomenclature sur les postes de travail
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH_HELP = Permet de définir un délai avant démarrage sur les postes de travail. Ce délai s’exprime en jours et est utilisé pour décaler la tâche liée au poste de travail suivant.
 NOMENCLATURE_USE_TIME_PREPARE = Utiliser le champs "Temps de préparation" dans la nomenclature sur les postes de travail
