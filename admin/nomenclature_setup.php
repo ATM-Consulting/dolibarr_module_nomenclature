@@ -273,6 +273,7 @@ setup_print_title('Parameters');
 
 setup_print_on_off('NOMENCLATURE_USE_QTYREF_TO_ONE'); // , '', '', $langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE_HELP'));
 
+setup_print_on_off('NOMENCLATURE_UNIQUE_TITLE', '', '', $langs->trans('NOMENCLATURE_UNIQUE_TITLE_HELP'));
 
 
 

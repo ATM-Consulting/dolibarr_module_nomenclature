@@ -1129,6 +1129,31 @@ class TNomenclature extends TObjetStd
 
 		return $qty_theo;
 	}
+
+
+	/**
+	 * Renvoie si, oui ou non, le titre de la nomenclature peut être enregistré (non si déjà existant; toute nomenclature confondue)
+	 *
+	 * @param string $title
+	 *
+	 * @return int 1 if right, 0 if not right, -1 if KO
+	 */
+	static function getRightToSaveTitle($title){
+
+		global $db;
+
+		$sql = "SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature ";
+		$sql .= " WHERE title = '".$title."'";
+
+		$resql = $db->query($sql);
+
+		if($resql){
+			if($db->num_rows($resql) > 0) return 0;
+			else return 1;
+		} else {
+			return -1;
+		}
+	}
 }
 
 
@@ -1994,5 +2019,6 @@ class TNomenclatureFeedback extends TObjetStd
             return false;
         }
     }
+
 
 }

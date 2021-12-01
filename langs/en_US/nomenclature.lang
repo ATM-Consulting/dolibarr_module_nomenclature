@@ -272,6 +272,8 @@ NOMENCLATURE_HIDE_ADVISED_PRICE=Do not show the recommended price line in the BO
 NOMENCLATURE_USE_ON_INVOICE=Use BOM cost price with invoices
 NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC=Force the use of the selling price rather than the cost plus margin (when adding a proposal / order / invoice line)
 NOMENCLATURE_USE_QTYREF_TO_ONE=Always use 1 as a reference quantity in the cost price calculation
+NOMENCLATURE_UNIQUE_TITLE=Single title for nomenclatures
+NOMENCLATURE_UNIQUE_TITLE_HELP=By default, nomenclatures can have the same title. If you activate this configuration, it will no longer be possible to use the same title for two different nomenclatures. This is not retroactive and any existing nomenclatures will not be modified.
 NOMENCLATURE_USE_TIME_BEFORE_LAUNCH=Use the “time before start” field in the BOM on workstations
 NOMENCLATURE_USE_TIME_PREPARE=Use the “Preparation time” field in the BOM on workstations
 NOMENCLATURE_USE_TIME_DOING=Use the “Manufacturing time” field in the BOM on workstations
@@ -345,6 +347,8 @@ NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN=Enable the stock movement feature from t
 
 NomenclatureStockTheorique=Virtual stock + BOM
 NomenclatureStockTheoriqueHelp=Dolibarr standard virtual stock + possible manufacturing quantity via components
+
+NomenclatureTitleWarning=A nomenclature with this name already exists
 
 QtyAllowed=Quantity assigned to the construction project
 QtyPlanned=Planned quantity
