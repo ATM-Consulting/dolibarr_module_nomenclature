@@ -143,7 +143,7 @@ if (empty($reshook))
 			}
 
 			//vérification titre déjà existant
-			if(!empty($conf->global->NOMENCLATURE_UNIQUE_TITLE) && TNomenclature::getRightToSaveTitle(GETPOST('title', 'alphanohtml')) == 0 && !empty(GETPOST('title', 'alphanohtml'))) {
+			if(!empty($conf->global->NOMENCLATURE_UNIQUE_TITLE) && TNomenclature::getRightToSaveTitle(GETPOST('title', 'alphanohtml')) <= 0 && !empty(GETPOST('title', 'alphanohtml'))) {
 				//si déjà existant on donne au $_POST le titre précédent pour ne pas que le nouveau soit enregistré
 				$_POST['title'] = $n->title ;
 				setEventMessage('NomenclatureTitleWarning', 'warnings');
