@@ -3,8 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- NEW : ajout de la conf "Titre unique pour les nomenclatures" - *29/11/2021* - 4.2.0
-- NEW : Separator parameter nomenclature import *25/08/2021* - 4.1.1
+- NEW : ajout de la conf "Titre unique pour les nomenclatures". Si activée, Dolibarr interdira
+  la création de deux nomenclatures ayant le même nom - *29/11/2021* - 4.2.0
+- NEW : choix du séparateur de champs CSV pour l'import de nomenclatures (par
+  défaut : `,`) *25/08/2021* - 4.1.1
 - NEW/FIX : Refonte de l'interface des retours chantiers *13/07/2021* - 4.1.0
 
 ## 4.0
