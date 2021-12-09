@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 4.2
+
 - NEW : ajout de la conf "Titre unique pour les nomenclatures". Si activée, Dolibarr interdira
   la création de deux nomenclatures ayant le même nom - *29/11/2021* - 4.2.0
 - NEW : choix du séparateur de champs CSV pour l'import de nomenclatures (par
