@@ -643,7 +643,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                            <?php if($user->rights->nomenclature->showPrice) { ?>
                                <th class="liste_titre col_amountCostUnit" align="right" width="5%"><?php echo $langs->trans('AmountCostUnit'); ?></th>
                                <th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th>
-                               <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('Type'); ?></th>
+                               <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('CoefCharge'); ?></th>
 
                                <th class="liste_titre col_amountCostWithChargeUnit" align="right" width="5%"><?php echo $langs->trans('AmountCostWithChargeUnit'); ?></th>
                                <th class="liste_titre col_amountCostWithCharge" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th>
