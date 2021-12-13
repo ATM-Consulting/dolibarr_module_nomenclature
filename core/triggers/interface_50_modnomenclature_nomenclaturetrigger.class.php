@@ -476,7 +476,7 @@ class Interfacenomenclaturetrigger
     }
 
     private function _insertNomenclatureAndSetPrice(&$PDOdb, $object) {
-		global $conf;
+		global $conf, $id_origin_line;
         $n = new TNomenclature;
 
         if(in_array($object->element, array('propal', 'propaldet'))) {
@@ -509,7 +509,8 @@ class Interfacenomenclaturetrigger
             else
 			{
 				// si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
-				$n->loadByObjectId($PDOdb, $object->id, $element, true, $object->fk_product, $object->qty, $object->{$fk_element});
+				$n->loadByObjectId($PDOdb, (!empty($id_origin_line) ? $id_origin_line : $object->id), $element, true, $object->fk_product, $object->qty, $object->{$fk_element});
+				$n->reinit();
 			}
 
             if($n->getId() == 0) {
