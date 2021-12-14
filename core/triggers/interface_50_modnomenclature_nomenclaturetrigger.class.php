@@ -124,7 +124,7 @@ class Interfacenomenclaturetrigger
 
 		if($conf->subtotal->enabled) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
-			if (strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
+			if (isset($object->element) && strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
 		}
 		// MAJ de la quantité de fabrication si issue d'une nomenclature non sécable
         if ($action === 'ASSET_LINE_OF_SAVE' && $object->type === 'TO_MAKE')
@@ -161,8 +161,8 @@ class Interfacenomenclaturetrigger
 			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
 
 			// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
-			$origin = GETPOST('origin');
-			$origin_id = GETPOST('originid'); // id de la ligne propal <= FAUX, id de la propal d'origin
+			$origin = GETPOST('origin', 'none');
+			$origin_id = GETPOST('originid', 'int'); // id de la ligne propal <= FAUX, id de la propal d'origin
 
 			// Module Workflow
 			if(empty($origin) && empty($origin_id) && ! empty($object->context['origin']) && ! empty($object->context['origin_id'])) {
@@ -227,7 +227,7 @@ class Interfacenomenclaturetrigger
 
 			// On load l'objet initial :
 			$o = new $classname($db);
-			$o->fetch(GETPOST('id'));
+			$o->fetch(GETPOST('id', 'int'));
 			$object->fetch($object->id); // Pour recharger les bonnes lignes qui sinon sont celles de l'objet de départ
 
 			if ($origin == 'propal') {
@@ -359,7 +359,7 @@ class Interfacenomenclaturetrigger
         }
 
 		if($action == 'PRODUCT_CREATE' && in_array('createfromclone', $object->context) && !empty($conf->global->NOMENCLATURE_CLONE_ON_PRODUCT_CLONE)) {
-			$origin_id = (!empty($object->origin_id) && $object->origin == 'product')?$object->origin_id:GETPOST('id');
+			$origin_id = (!empty($object->origin_id) && $object->origin == 'product')?$object->origin_id:GETPOST('id', 'int');
 			$TNomenclature = TNomenclature::get($PDOdb, $origin_id);
 			if(!empty($TNomenclature)) {
 				foreach($TNomenclature as $nomenclature) {

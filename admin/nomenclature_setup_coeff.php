@@ -52,7 +52,7 @@ if ($action == 'add' || $action == 'edit')
 {
 	$id = GETPOST('rowid', 'int');
 
-	if (GETPOST('delete'))
+	if (GETPOST('delete', 'alpha'))
 	{
 		$nomenclatureCoef = new TNomenclatureCoef;
 		$nomenclatureCoef->load($PDOdb, $id);
@@ -86,7 +86,7 @@ if ($action == 'add' || $action == 'edit')
 			$nomenclatureCoef = new TNomenclatureCoef;
 
 			if ($id) $nomenclatureCoef->load($PDOdb, $id);
-			else $nomenclatureCoef->type = GETPOST('line_type');
+			else $nomenclatureCoef->type = GETPOST('line_type', 'none');
 
 			$nomenclatureCoef->label = $label;
 			$nomenclatureCoef->description = $desc;
@@ -120,7 +120,7 @@ if(empty($TCoefFinal)) 	$msg = get_htmloutput_mesg(img_warning('default') . ' ' 
 if (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
-	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
+	if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
 	{
 		setEventMessage($langs->trans("ParamSaved"));
 
