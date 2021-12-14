@@ -257,6 +257,7 @@ StatusOfObjectAvoidEdit = Le status de l'objet ne permet pas son édition
 LossPercent = Pourcentage de perte
 BuyingPriceCustom = Prix d'achat personnalisé<br />(prioritaire sur la conf)
 CoefMarge = Coef. de marge
+CoefCharge = Coef. de charge
 qty_base = Qté base
 NomenclatureLineType = Type coef
 
