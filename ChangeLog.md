@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- NEW : Improve save performance save only necessary lines *15/12/2021* - 3.3.0
 
 ### 3.2
 - FIX : Separator parameter nomenclature import => IMPORT NEW DE MAIN SUITE A ERREUR *30/08/2021* - 3.2.6
