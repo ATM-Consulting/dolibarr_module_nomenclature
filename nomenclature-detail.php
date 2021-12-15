@@ -1,5 +1,5 @@
 <?php
-
+ini_set('max_execution_time', 120);
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/propal.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/order.lib.php';
@@ -61,21 +61,26 @@ if($action == 'save') {
 
             $n->fetchCombinedDetails($PDOdb);
 
+		$nts = false;
+
             foreach($n->TNomenclatureDetCombined as $fk_product => $det) {
                 if($fk_productToEdit != $fk_product) continue;
 
-                if($det->buying_price != intval($TValue['buying_price'])) {
-                    $det->buying_price = intval($TValue['buying_price']);
+                //if($det->buying_price != intval($TValue['buying_price'])) {
+                    $det->buying_price = price2num($TValue['buying_price']);
                     $det->save($PDOdb);
 
                     $nbUpdate++;
-                }
+			$nts = true;
+                //}
             }
 
-            $n->save($PDOdb);
-            $n->setPrice($PDOdb, $line->qty, null, $object_type, $object->id);
+		if($nts) {
+        	    $n->save($PDOdb);
+	            $n->setPrice($PDOdb, $line->qty, null, $object_type, $object->id);
 
-            _updateObjectLine($n, $object_type, $line->id, $object->id, true);
+ 	           _updateObjectLine($n, $object_type, $line->id, $object->id, true);
+}
         }
 
         if(! empty($nbUpdate)) {
