@@ -1,5 +1,4 @@
 <?php
-ini_set('max_execution_time', 120);
 require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/propal.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/order.lib.php';
