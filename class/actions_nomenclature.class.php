@@ -804,9 +804,7 @@ class Actionsnomenclature
 		require_once __DIR__ . '/nomenclature.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions.lib.php';
 
-		if(empty($object->lines)) return -1; // No action
-
-		if(empty($conf->global->BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS) || empty($conf->btp->enabled)) return 0;
+		if(empty($object->lines) || empty($conf->global->BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS) || empty($conf->btp->enabled)) return 0;
 
 		$langs->load('btp@btp');
 
