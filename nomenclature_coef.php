@@ -15,16 +15,16 @@ $parameters = array('fiche' => $fiche);
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
-if(GETPOST('deleteSpecific')) {
+if(GETPOST('deleteSpecific', 'none')) {
 	if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fiche == 'propal')
 	{
 		require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 		$object = new Propal($db);
-		$object->fetch(GETPOST('id'));
+		$object->fetch((int)GETPOST('id', 'int'));
 		TNomenclatureWorkstationThmObject::deleteAllThmObject($PDOdb, $object->id, $object->element);
 	}
 
-	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, GETPOST('id'), $fiche);
+	TNomenclatureCoefObject::deleteCoefsObject($PDOdb, (int)GETPOST('id', 'int'), $fiche);
 
 	// Si je supprime les coef custom, alors je dois ré-appliquer en automatique les prix de vente (sinon ça veut dire qu'on laisse la possibilité de supprimer les coef et de garder des montants lignes incohérents)
 	if ($fiche == 'propal') _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
@@ -57,15 +57,15 @@ switch ($fiche) {
 			if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
 			{
 				$object = new Propal($db);
-				$object->fetch(GETPOST('id'));
+				$object->fetch((int)GETPOST('id', 'int'));
 
-				$TNomenclatureWorkstationThmObject = GETPOST('TNomenclatureWorkstationThmObject');
+				$TNomenclatureWorkstationThmObject = GETPOST('TNomenclatureWorkstationThmObject', 'none');
 				TNomenclatureWorkstationThmObject::updateAllThmObject($PDOdb, $object, $TNomenclatureWorkstationThmObject);
 			}
 
 			_updateCoef($PDOdb, $db, $conf, $langs, $user);
 
-			if (GETPOST('update_line_price')) _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
+			if (GETPOST('update_line_price', 'none')) _updateLinePriceObject($PDOdb, $db, $conf, $langs, $user, 'propal');
 
 			header('Location: '.dol_buildpath('/nomenclature/nomenclature_coef.php?id='.GETPOST('id', 'int').'&fiche=propal', 1));
 			exit;
@@ -152,7 +152,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
 	_printCoef($object, $TCoefObject, 'nomenclature', $background_line);
 
-	if(!empty($conf->workstation->enabled))
+	if(!empty($conf->workstationatm->enabled))
 	{
 		echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefListWorkstation") . '</b></td></tr>';
 		_printCoef($object, $TCoefObject, 'workstation', $background_line);
@@ -270,7 +270,7 @@ function _updateCoef(&$PDOdb, &$db, &$conf, &$langs, &$user)
 	$fk_object = GETPOST('id', 'int');
 	$type_object = GETPOST('fiche', 'alpha');
 
-	$TNomenclatureCoefObject = GETPOST('TNomenclatureCoefObject');
+	$TNomenclatureCoefObject = GETPOST('TNomenclatureCoefObject', 'none');
 //	var_dump($TNomenclatureCoefObject);exit;
 	if (!empty($TNomenclatureCoefObject))
 	{

@@ -6,7 +6,7 @@ if (!class_exists('TObjetStd'))
 	$res = require_once dirname(__FILE__).'/../config.php';
 }
 
-dol_include_once('/workstation/class/workstation.class.php');
+dol_include_once('/workstationatm/class/workstation.class.php');
 
 class TNomenclature extends TObjetStd
 {
@@ -67,7 +67,7 @@ class TNomenclature extends TObjetStd
         $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
 
 
-        if($conf->workstation->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
+        if($conf->workstationatm->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
         $this->object_type = 'product';
@@ -453,7 +453,7 @@ class TNomenclature extends TObjetStd
 			$this->iExist = true;
 		}
 
-		if($loadProductWSifEmpty && $conf->workstation->enabled && empty($this->TNomenclatureWorkstation)) {
+		if($loadProductWSifEmpty && $conf->workstationatm->enabled && empty($this->TNomenclatureWorkstation)) {
 			$this->load_product_ws($PDOdb);
 		}
 
@@ -1129,6 +1129,178 @@ class TNomenclature extends TObjetStd
 
 		return $qty_theo;
 	}
+
+
+	/**
+	 * Renvoie si, oui ou non, le titre de la nomenclature peut être enregistré (non si déjà existant; toute nomenclature confondue)
+	 *
+	 * @param string $title
+	 *
+	 * @return int 1 if right, 0 if not right, -1 if KO
+	 */
+	static function getRightToSaveTitle($title){
+
+		global $db;
+
+		$sql = "SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature ";
+		$sql .= " WHERE title = '".$title."'";
+
+		$resql = $db->query($sql);
+
+		if($resql){
+			if($db->num_rows($resql) > 0) return 0;
+			else return 1;
+		} else {
+			return -1;
+		}
+	}
+
+	/**
+	 * Boucle sur les lignes de cmd ou propal pour ensuite appeler la fonction getMarginDetailByProductAndService()
+	 *
+	 * @param $object cmd ou propal
+	 * @param $marginInfo tableau standard permettant d'afficher les marges, adapté dans la fonction getMarginDetailByProductAndService() au détail des nomenclatures
+	 * @return void
+	 */
+	static function getMarginInfosWithNomenclature(&$object, &$marginInfo) {
+
+		global $conf;
+
+		$PDOdb = new TPDOdb;
+
+		require_once DOL_DOCUMENT_ROOT . '/core/class/html.formmargin.class.php';
+
+		foreach ($marginInfo as &$val) $val = 0; // Clean array
+
+		if(empty($object->lines)) $object->fetch_lines();
+
+		if(!empty($object->lines)) {
+
+			foreach ($object->lines as $k=>&$line) {
+
+				$n = new self();
+				$res=$n->loadByObjectId($PDOdb, $line->id, $object->element);
+				if(!empty($n) && !empty($n->TNomenclatureDet)) {
+					self::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $n, $line->qty, false);
+					unset($object->lines[$k]); // Just after loop i call getMarginInfosArray with only lines which have no nomenclature
+				}
+
+			}
+
+			// Calcul marge finale (si conf marge par ligne non activée
+			if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+				$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $object, $object->element);
+				$marginInfo['pv_products'] *= $marge->tx_object;
+				$marginInfo['pv_services'] *= $marge->tx_object;
+			}
+
+			// Get margins infos for lines which have no nomenclature
+			$formmargin = new FormMargin($object->db);
+			$marginInfoForLinesWithoutNomenclature = $formmargin->getMarginInfosArray($object);
+			foreach ($marginInfo as $k=>$v) $marginInfo[$k] += $marginInfoForLinesWithoutNomenclature[$k];
+
+			$marginInfo['pv_total'] = $marginInfo['pv_products'] + $marginInfo['pv_services'];
+			$marginInfo['pa_total'] = $marginInfo['pa_products'] + $marginInfo['pa_services'];
+			$marginInfo['margin_on_products'] = $marginInfo['pv_products'] - $marginInfo['pa_products'];
+			$marginInfo['margin_on_services'] = $marginInfo['pv_services'] - $marginInfo['pa_services'];
+			$marginInfo['total_margin'] = $marginInfo['margin_on_products'] + $marginInfo['margin_on_services'];
+			$marginInfo['margin_rate_products'] = 100 * $marginInfo['margin_on_products'] / $marginInfo['pa_products'];
+			$marginInfo['margin_rate_services'] = 100 * $marginInfo['margin_on_services'] / $marginInfo['pa_services'];
+			$marginInfo['total_margin_rate'] = ($marginInfo['pv_total'] - $marginInfo['pa_total']) / $marginInfo['pa_total'] * 100;
+
+			if ($marginInfo['pa_products'] > 0) {
+				$marginInfo['mark_rate_products'] = 100 * $marginInfo['margin_on_products'] / $marginInfo['pv_products'];
+			}
+			if ($marginInfo['pv_services'] > 0) {
+				$marginInfo['mark_rate_services'] = 100 * $marginInfo['margin_on_services'] / $marginInfo['pv_services'];
+			}
+			if ($marginInfo['pv_total'] > 0) {
+				$marginInfo['total_mark_rate'] = 100 * $marginInfo['total_margin'] / $marginInfo['pv_total'];
+			}
+
+			// Format display
+			foreach ($marginInfo as $k=>$v) $marginInfo[$k] = price2num($v, 'MT');
+
+		}
+	}
+
+	/**
+	 * Fonction recursive qui récupère le montant total des coûts de revient et des prix de vente en tenant compte de la part de produits et services présente dans les nomenclatures lignes et sous nomenclatures jusqu'au niveau le plus bas
+	 *
+	 * @param $PDOdb db abricot
+	 * @param $object propal ou cmd
+	 * @param $marginInfo tableau standard permettant d'afficher les marges, adapté dans cette fonction au détail des nomenclatures
+	 * @param $n nomenclature de la ligne de mcd ou propal
+	 * @param $qty qté ligne
+	 * @param bool $has_parent_nomenclature
+	 * @param int $coef_code_type coefficient de marche sur coût de revient
+	 * @param int $coef_code_type2 coefficient de marge par ligne (si activé)
+	 * @return void
+	 */
+	static function getMarginDetailByProductAndService(&$PDOdb, $object, &$marginInfo, $n, $qty, $has_parent_nomenclature=false, $coef_code_type=1, $coef_code_type2=1) {
+
+		global $db, $conf;
+
+		$n->setPrice($PDOdb, $qty, 0, $object->element, $object->id); // Chargement des coûts
+
+		// Boucle sur les lignes d'une nomenclature
+		foreach ($n->TNomenclatureDet as &$det) {
+
+			$child_nomenclature = new self();
+			$res=$child_nomenclature->loadByObjectId($PDOdb, $det->fk_product, 'product');
+
+			// Cas 1 - Il existe une nomenclature pour cette composante, donc on rappelle la fonction pour récupérer les infos de ses propres composantes
+			if($res > 0) {
+
+				// On charge le coefficient code_type de chaque ligne de niveau de nomenclature où on se trouve, pour pouvoir appliquer tous ces coef aux produits / services du niveau le plus bas
+				$coef = 1;
+				if(!empty($det->code_type)) {
+					$obj_coef = new TNomenclatureCoef;
+					$obj_coef->loadBy($PDOdb, $det->code_type, 'code_type');
+					$coef = $obj_coef->tx;
+				}
+
+				// Pour la marge par ligne (si activée), on applique une seule fois le coefficient de la ligne de la nomenclature la plus haute (celle de la ligne du document)
+				if(empty($has_parent_nomenclature) && !empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+					$obj_coef2 = new TNomenclatureCoef;
+					$obj_coef2->loadBy($PDOdb, $det->code_type2, 'code_type');
+					$coef_code_type2 = $obj_coef2->tx;
+				}
+				// Appel récursif
+
+				TNomenclature::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $child_nomenclature, $qty*$det->qty, true, $coef_code_type*$coef, $coef_code_type2);
+			}
+
+			// Cas 2 - Pas de nomenclature pour cette composante, on récupère les données pour alimenter le tableau $marginInfos
+			else {
+				$p = new Product($db);
+				$p->fetch($det->fk_product);
+
+				// Product
+				if(empty($p->type)) {
+					$pv = $det->pv;
+					if($has_parent_nomenclature) {
+						$pv = $det->charged_price * $coef_code_type;
+						$pv *= $coef_code_type2;
+					}
+					$marginInfo['pa_products'] += $det->charged_price * $coef_code_type;
+					$marginInfo['pv_products'] += $pv;
+				}
+				// Service
+				else {
+					$pv = $det->pv;
+					if($has_parent_nomenclature) {
+						$pv = $det->charged_price * $coef_code_type;
+						$pv *= $coef_code_type2;
+					}
+					$marginInfo['pa_services'] += $det->charged_price * $coef_code_type;
+					$marginInfo['pv_services'] += $pv;
+				}
+
+			}
+		}
+	}
+
 }
 
 
@@ -1868,7 +2040,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		$TThmObject = array();
 
 		// 1 : on récupère tous les Poste de travail existants
-		dol_include_once('/workstation/class/workstation.class.php');
+		dol_include_once('/workstationatm/class/workstation.class.php');
 		$TWorkstation = TWorkstation::getAllWorkstationObject($PDOdb);
 
 		// 2 : on va chercher les coef custom
@@ -1994,5 +2166,6 @@ class TNomenclatureFeedback extends TObjetStd
             return false;
         }
     }
+
 
 }

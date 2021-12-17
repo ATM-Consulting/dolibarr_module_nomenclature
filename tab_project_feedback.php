@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2014 Alexis Algoud        <support@atm-conuslting.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -27,13 +27,14 @@ require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/project.class.php';
 require_once DOL_DOCUMENT_ROOT.'/projet/class/task.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/project.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 dol_include_once('/commande/class/commande.class.php');
 dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 
 // GET POST
-$id = (int)GETPOST('id');
+$id = (int)GETPOST('id', 'int');
 $action=GETPOST('action','alpha');
 
 $TQty = GETPOST('qty', 'array');
@@ -43,7 +44,7 @@ $fk_origin = GETPOST('fk_origin', 'int');
 $ref = GETPOST('ref', 'aZ09');
 // Load translation files required by the page
 $langs->loadLangs(array('projects', 'companies', 'nomenclature@nomenclature'));
-$langs->load('workstation@workstation');
+$langs->load('workstationatm@workstationatm');
 
 // Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array('projectfeedbackcard','globalcard'));
@@ -81,16 +82,16 @@ if (empty($reshook))
 {
     // TODO: desabling edit mode if $conf->stock->enabled and a corresponding expedition exists
     if($action=='save'){
-        
+
         saveFeedbackForm();
-        
+
     }
 }
 
 
 
 /*
- * View 
+ * View
  */
 
 llxHeader('', $langs->trans('Projectfeedback'));
@@ -158,11 +159,11 @@ if($res && $res->num_rows>0)
         elseif($object_type == 'propal'){
             $targetObject = new Propal($db);
         }
-        
+
         if($targetObject->fetch($obj->rowid) > 0){
-            
+
             $targetObject->fetchObjectLinked();
-            
+
             // Ajout des params liés au projet
             $TParam = array(
                 'hiddenFields' => array(
@@ -171,20 +172,20 @@ if($res && $res->num_rows>0)
                     'origin' => $targetObject->element,
                 ),
             );
-            
+
             if(!empty($fk_origin) && $fk_origin == $targetObject->id){ $accordeonActiveIndex = $idion; }
             $idion++;
-            
+
             print '<h3  class="accordion-title">'. $langs->trans('Order') . ' : ' .$targetObject->ref. '</h3>';
             print '<div class="accordion-body-table" >';
-            
+
             $editMode = true;
             if (!empty($targetObject->linkedObjectsIds['shipping']) > 0)
             {
                 $editMode = false;
                 print '<div class="info clearboth"  >'.$langs->trans('FeedbackDisableShippingExists').'</div>';
             }
-            
+
             feedback_drawlines($targetObject, $object_type,$TParam, $editMode);
             print '</div>';
         }
@@ -192,14 +193,14 @@ if($res && $res->num_rows>0)
     print '</div>';
 }
 else {
-    
+
     if($object_type == 'commande'){
         $langTargetObject = $langs->trans('commande');
     }
     elseif($object_type == 'propal'){
         $langTargetObject = $langs->trans('Proposal');
     }
-    
+
     print '<div class="info" >'.$langs->trans('NoFeedbackObjectLinked',$langTargetObject).'</div>';
 }
 

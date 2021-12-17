@@ -95,7 +95,11 @@ $TParam= array();
 $TParam['list'] = array(
     'title'=>$langs->trans('NomenclatureList'),
 );
-
+$TParam['limit'] = array(
+            'page'=>(isset($_REQUEST['page']) ? $_REQUEST['page'] : 0),
+            'nbLine'=>$limit
+        );
+$TParam['list']['param_url'] = 'limit='.$limit;
 $TParam['title'] = array(
     //'object_type' => $langs->trans('ObjectType'),
     'ref' => $langs->trans('ProductRef'),

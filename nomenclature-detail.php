@@ -13,16 +13,16 @@ dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 if(! class_exists('TSubtotal')) dol_include_once('/subtotal/class/subtotal.class.php');
 
 $langs->load('nomenclature@nomenclature');
-$langs->load('workstation@workstation');
+$langs->load('workstationatm@workstationatm');
 
-$object_type = GETPOST('object');
+$object_type = GETPOST('object', 'alpha');
 $id = GETPOST('id', 'int');
-$ref = GETPOST('ref');
+$ref = GETPOST('ref', 'alpha');
 $action = GETPOST('action', 'none', 2); // Check only $_POST
 
 $hookmanager->initHooks(array('nomenclatureproductservicelist'));
 
-if(GETPOST('save') == 'ok') setEventMessage($langs->trans('Saved'));
+if(GETPOST('save', 'none') == 'ok') setEventMessage($langs->trans('Saved'));
 
 $form = new Form($db);
 $PDOdb = new TPDOdb;
@@ -313,6 +313,13 @@ function _getDetails(&$object, $object_type) {
                         $det->type = $p->type;
                         if (empty($det->fk_unit)) $det->fk_unit = 1;
                         $det->unit = $object->getValueFrom('c_units', $det->fk_unit, 'label');
+
+                        // To display warning message if product haven't the same unit as bom
+						$det->productCurrentFkUnit = $p->fk_unit;
+						$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
+						$det->warningUnitNotTheSameAsProduct = ($det->fk_unit != $p->fk_unit);
+
+
                         $det->qty = $det->qty * $line->qty;
                         if (!isset($TProduct[$firstParentTitleId]['products'][$det->fk_product]))
                             $TProduct[$firstParentTitleId]['products'][$det->fk_product] = $det;
@@ -350,6 +357,13 @@ function _getDetails(&$object, $object_type) {
                         $tmpline->charged_price = $line->total_ht;
                         $tmpline->pv = $line->total_ht;
                         $tmpline->unit = $TUnits[$line->fk_unit];
+
+						$p = new Product($db);
+						$p->fetch($line->fk_product);
+						// To display warning message if product haven't the same unit as bom
+						$det->productCurrentFkUnit = $p->fk_unit;
+						$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
+						$tmpline->warningUnitNotTheSameAsProduct = ($tmpline->fk_unit != $p->fk_unit);
 
                         if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
                         else {
@@ -553,6 +567,13 @@ function print_table($TData, $TWorkstation, $object_type) {
                         $label .= $product->getNomUrl(1).' - ';
                         $qty = price($line->qty);
                         $unit = $langs->trans($line->unit);
+
+
+                        if($line->warningUnitNotTheSameAsProduct){
+                        	$unitTitle = $langs->trans('WarningUnitOfBomIsNotTheSameAsProduct', $langs->trans($line->productCurrentUnit));
+                        	$unit = '<span class="badge badge-danger classfortooltip" title="'.$unitTitle.'" >'.$langs->trans($line->unit).'</span>';
+						}
+
                         $calculate_price = price(price2num($line->calculate_price, 'MT'));
                         $charged_price = price(price2num($line->charged_price, 'MT'));
                         $buying_price = price(price2num($line->buying_price, 'MT')); // TODO En mode edit de ligne, le transformer en input type text comme sur les nomenclatures

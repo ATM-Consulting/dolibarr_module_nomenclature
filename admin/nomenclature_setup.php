@@ -57,9 +57,18 @@ $action = GETPOST('action', 'alpha');
 if (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
-	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
+	if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
 	{
 		setEventMessage($langs->trans("ParamSaved"));
+
+		if($code == 'NOMENCLATURE_DETAILS_TAB_REWRITE' && empty($conf->global->PRODUCT_USE_UNITS)){
+			// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
+			// activer également la conf cachée "PRODUCT_USE_UNITS" si elle ne l'est pas déjà.
+			if (dolibarr_set_const($db, 'PRODUCT_USE_UNITS', 1, 'chaine', 0, '', $conf->entity) > 0)
+			{
+				setEventMessage($langs->trans("ConfProductUseUnitActivated"));
+			}
+		}
 
 		header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
@@ -110,8 +119,7 @@ llxHeader('', $langs->trans($page_name));
 // Subheader
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">'
     . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans($page_name), $linkback);
-
+print load_fiche_titre($langs->trans($page_name), $linkback);
 // Configuration header
 $head = nomenclatureAdminPrepareHead();
 dol_fiche_head(
@@ -139,7 +147,18 @@ setup_print_title('ParamLinkedToOrdersAndPropal');
 
 setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', 'nomenclatureAllowFreeLineHelp');
 setup_print_on_off('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS', '', '', 'NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP');
+
+if(!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE) && empty($conf->global->PRODUCT_USE_UNITS)){
+	// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
+	// activer également la conf cachée "PRODUCT_USE_UNITS" si elle ne l'est pas déjà.
+	// /!\ Voir aussi la partie action
+	if (dolibarr_set_const($db, 'PRODUCT_USE_UNITS', 1, 'chaine', 0, '', $conf->entity) > 0)
+	{
+		setEventMessage($langs->trans("ConfProductUseUnitActivated"));
+	}
+}
 setup_print_on_off('NOMENCLATURE_DETAILS_TAB_REWRITE');
+
 setup_print_on_off('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE');
 setup_print_on_off('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL');
 
@@ -254,9 +273,7 @@ setup_print_title('Parameters');
 
 setup_print_on_off('NOMENCLATURE_USE_QTYREF_TO_ONE'); // , '', '', $langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE_HELP'));
 
-if(!empty($conf->global->PRODUCT_USE_UNITS)) {
-	setup_print_on_off('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
-}
+setup_print_on_off('NOMENCLATURE_UNIQUE_TITLE', '', '', $langs->trans('NOMENCLATURE_UNIQUE_TITLE_HELP'));
 
 
 
@@ -272,6 +289,10 @@ if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
 setup_print_title('DeprecatedParameters');
 
 setup_print_on_off('NOMENCLATURE_SPEED_CLICK_SELECT', $langs->trans('nomenclatureSpeedSelectClick'), '', $langs->trans('nomenclatureSpeedSelectClickHelp'));
+
+if(!empty($conf->global->PRODUCT_USE_UNITS)) {
+	setup_print_on_off('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
+}
 
 print '</table>';
 

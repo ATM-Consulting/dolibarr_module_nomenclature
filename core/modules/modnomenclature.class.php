@@ -44,7 +44,8 @@ class modnomenclature extends DolibarrModules
 
         $this->db = $db;
 
-		$this->editor_name = 'ATM-Consulting';
+		$this->editor_name = 'ATM Consulting';
+		$this->editor_url = 'https://www.atm-consulting.fr';
 		// Id for module (must be unique).
 		// Use here a free id (See in Home -> System information -> Dolibarr for list of used modules id).
 		$this->numero = 104580; // 104000 to 104999 for ATM CONSULTING
@@ -53,13 +54,15 @@ class modnomenclature extends DolibarrModules
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
 		// It is used to group modules in module setup page
-		$this->family = "GPAO";
+		$this->family = "ATM Consulting - GPAO";
 		// Module label (no space allowed), used if translation string 'ModuleXXXName' not found (where XXX is value of numeric property 'numero' of module)
 		$this->name = preg_replace('/^mod/i','',get_class($this));
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '3.1.5';
+
+		$this->version = '4.3.0';
+
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -95,6 +98,7 @@ class modnomenclature extends DolibarrModules
                 , 'stockproductcard'
                 , 'productcard'
                 , 'projectOverview'
+				, 'projectdao'
                 , 'listof'
                 , 'ofcard'
             )
@@ -167,7 +171,7 @@ class modnomenclature extends DolibarrModules
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
             ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
 		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
-
+		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
         );
 
         // Dictionaries
@@ -207,7 +211,7 @@ class modnomenclature extends DolibarrModules
 		// Example:
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'nomenclatureRead';  // Permission label
-        $this->rights[$r][3] = 1;                   // Permission by default for new user (0/1)
+        $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
         $this->rights[$r][4] = 'read';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
         $r++;
 
