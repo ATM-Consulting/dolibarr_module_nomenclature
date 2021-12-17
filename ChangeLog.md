@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 4.3
+
+NEW : Fonction récursive (visible dans le module BTP) pour que les marges présentes dans le tableau des cmd, propal, factures
+	tiennent compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes
+
 ## 4.2
 
 - NEW : ajout de la conf "Titre unique pour les nomenclatures". Si activée, Dolibarr interdira

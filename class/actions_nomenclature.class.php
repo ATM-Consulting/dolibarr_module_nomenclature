@@ -797,7 +797,43 @@ class Actionsnomenclature
 		}
 	}
 
+	/**
+	 * Overloading the displayMarginInfos function : replacing the parent's function with the one below
+	 *
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param $hookmanager
+	 * @return int
+	 */
+	function displayMarginInfos(&$parameters, &$object, &$action, $hookmanager) {
 
+		global $conf, $langs;
+
+		require_once __DIR__ . '/nomenclature.class.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions.lib.php';
+
+		if(empty($object->lines) || empty($conf->global->BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS) || empty($conf->btp->enabled)) return 0;
+
+		$langs->load('btp@btp');
+
+		$marginInfo = &$parameters['marginInfo'];
+
+		// Calcul des marges en tenant compte des composantes des nomenclatures et sous nomenclatures
+		TNomenclature::getMarginInfosWithNomenclature($object, $marginInfo);
+
+		// Affichage du tooltip help
+		?>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$("table.margintable").find('tr:first-child').find('td:first-child').append('<?php print img_help(1, $langs->trans('BtpMarginsDetailsWithNomenclaturesHelp')); ?>');
+				});
+			</script>
+		<?php
+
+		return 0;
+
+	}
 
 
 }
