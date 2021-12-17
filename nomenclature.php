@@ -838,9 +838,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 							   }
 	                            if($user->rights->nomenclature->showPrice) {
-
-	                            	$price = price2num($det->calculate_price,'MT');
-									$price_charge = price2num($det->charged_price,'MT');
+	                            	$price = $det->calculate_price; //Si on arrondit cette valeur l'affichage de la colonne prix d'achat unitaire est fausse
+									$price_charge = $det->charged_price;
 
 
                                     print '<td class="col_amountCostUnit"  >';
