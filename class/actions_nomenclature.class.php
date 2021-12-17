@@ -128,7 +128,14 @@ class Actionsnomenclature
                 }
                 $titleLine->insertExtraFields();
             }
-        }
+        } elseif(in_array('productcard', $TContext)) {
+
+			if ($action == "confirm_clone" && GETPOST('confirm', 'alpha') == 'yes' && version_compare(DOL_VERSION, "10.0.0") < 0)
+			{
+				$object->context['createfromclone'] = 'createfromclone';
+			}
+		}
+
     }
 
 	function formObjectOptions($parameters, &$object, &$action, $hookmanager)
