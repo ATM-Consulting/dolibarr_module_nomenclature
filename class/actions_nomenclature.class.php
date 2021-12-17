@@ -797,6 +797,15 @@ class Actionsnomenclature
 		}
 	}
 
+	/**
+	 * Overloading the displayMarginInfos function : replacing the parent's function with the one below
+	 *
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param $hookmanager
+	 * @return int
+	 */
 	function displayMarginInfos(&$parameters, &$object, &$action, $hookmanager) {
 
 		global $conf, $langs;
