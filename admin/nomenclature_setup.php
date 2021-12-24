@@ -197,7 +197,7 @@ if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED)) {
 }
 
 setup_print_on_off('NOMENCLATURE_HIDE_ADVISED_PRICE','','', 'NOMENCLATURE_HIDE_ADVISED_PRICE_HELP');
-setup_print_on_off('NOMENCLATURE_USE_ON_INVOICE','','', 'NOMENCLATURE_USE_ON_INVOICE_HELP');
+//setup_print_on_off('NOMENCLATURE_USE_ON_INVOICE','','', 'NOMENCLATURE_USE_ON_INVOICE_HELP'); // Retirée car maintenant les nomenclatures sur les lignes de factures existent
 setup_print_on_off('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC');
 setup_print_on_off('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE','','', 'NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE_HELP');
 setup_print_on_off('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE');

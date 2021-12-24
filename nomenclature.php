@@ -11,6 +11,7 @@ dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 
 if($conf->workstationatm->enabled) {
     dol_include_once('/workstationatm/class/workstation.class.php');

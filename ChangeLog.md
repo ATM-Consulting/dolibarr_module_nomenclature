@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 4.4
+
+NEW : Ajout nomenclatures sur les lignes de factures - *24/12/2021* - 4.4.0
 
 ## 4.3
 
