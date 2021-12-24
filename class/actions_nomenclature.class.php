@@ -64,7 +64,7 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
             if($action == 'nomenclatureUpdateCoeff' && $object->statut == 0) {
                 if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
 
@@ -143,7 +143,7 @@ class Actionsnomenclature
 		global $langs,$conf,$form;
 		$TContext = explode(':', $parameters['context']);
 
-		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext))
+		if (in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext))
 		{
 
 			if($action == 'addline') $object->fetch($object->id); // Reload to get new records
@@ -255,7 +255,7 @@ class Actionsnomenclature
         $TContext = explode(':', $parameters['context']);
         $line = &$parameters['line'];
 
-        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
             ?>
@@ -347,7 +347,7 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext)) {
+        if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
             if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
 

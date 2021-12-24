@@ -96,7 +96,7 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 	{
 		switch ($object_type) {
 			case 'propal':
-				dol_include_once('/comm/propal/class/propal.class.php');
+				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 
 				$propal = new Propal($db);
 				$propal->fetch($fk_origin);
@@ -112,8 +112,9 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 				}
 
 				break;
+
 			case 'commande':
-				dol_include_once('/commande/class/commande.class.php');
+				require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 
 				$commande = new Commande($db);
 				$commande->fetch(GETPOST('fk_origin', 'int'));
@@ -123,6 +124,21 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 					if ($line->id == $fk_object)
 					{
 						$commande->updateline($fk_object, $line->desc, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
+					}
+				}
+				break;
+
+			case 'facture':
+				require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
+
+				$fac = new Facture($db);
+				$fac->fetch(GETPOST('fk_origin', 'int'));
+
+				foreach ($fac->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$fac->updateline($fk_object, $line->desc, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->special_code, $line->array_options, $line->situation_percent, $line->fk_unit);
 					}
 				}
 				break;

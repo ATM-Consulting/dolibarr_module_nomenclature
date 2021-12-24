@@ -206,27 +206,62 @@ class TNomenclature extends TObjetStd
 				$object->fetch_thirdparty();
 
 				break;
-		   case 'commande':
-			   require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
-			   require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+			case 'commande':
+				require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+				require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
 
-			   $commande = new Commande($db);
-			   if ($commande->fetch($fk_origin) > 0)
-			   {
-				   $commande->fetchObjectLinked();
-				   if (!empty($commande->linkedObjects['propal']))
-				   {
-					   // Récupération de la propal d'origine pour récupérer ses coef
-					   $object = current($commande->linkedObjects['propal']);
-					   $object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
-				   }
-			   }
-			   else
-			   {
-				   dol_print_error($db);
-			   }
+				$commande = new Commande($db);
+				if ($commande->fetch($fk_origin) > 0)
+				{
+					$commande->fetchObjectLinked();
+					if (!empty($commande->linkedObjects['propal']))
+					{
+						// Récupération de la propal d'origine pour récupérer ses coef
+						$object = current($commande->linkedObjects['propal']);
+						$object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
+					}
+				}
+				else
+				{
+					dol_print_error($db);
+				}
 
-			   break;
+				break;
+			case 'facture':
+				require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+				require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+				require_once DOL_DOCUMENT_ROOT.'/commande/class/commande.class.php';
+
+				$fac = new Facture($db);
+				if ($fac->fetch($fk_origin) > 0) {
+
+					$fac->fetchObjectLinked();
+					if (!empty($fac->linkedObjects['commande'])) {
+
+						// Récupération de la commande d'origine si existante pour récupérer la propal d'origine de la commande et récupérer ses coef
+						$cmd = current($fac->linkedObjects['commande']);
+						$cmd->fetchObjectLinked();
+
+						if (!empty($cmd->linkedObjects['propal'])) {
+							// Ou récupération de la commande d'origine pour récupérer ses coef
+							$object = current($fac->linkedObjects['propal']);
+							$object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
+						}
+
+					} elseif(!empty($fac->linkedObjects['propal'])) {
+
+						// Récupération de la propal d'origine pour récupérer ses coef
+						$object = current($fac->linkedObjects['propal']);
+						$object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
+
+					}
+				}
+				else
+				{
+					dol_print_error($db);
+				}
+
+				break;
 
 			  // TODO le cas "facture" semble exister sur un déclanchement de trigger LINEBILL_INSERT, il faudrait potentiellement remonter à la commande d'origin puis à la propal d'origin pour récup les coef custom
         }

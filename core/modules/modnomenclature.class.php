@@ -61,7 +61,7 @@ class modnomenclature extends DolibarrModules
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '4.3.0';
+		$this->version = '4.4.0';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -95,6 +95,7 @@ class modnomenclature extends DolibarrModules
 			'hooks'=>array(
 			    'propalcard'
                 , 'ordercard'
+				, 'invoicecard'
                 , 'stockproductcard'
                 , 'productcard'
                 , 'projectOverview'
