@@ -186,11 +186,12 @@ function _show_tab_session(&$PDOdb) {
 
 
 
-			foreach($TNomenclature as $TData) {
+            foreach($TNomenclature as $i => $TData) {
 
 				$n=new TNomenclature;
 				$n->fk_object = $p->id;
 				$n->object_type = 'product';
+                $n->title = $p->ref.'-'.$i;
 				$nocreate = 0;
 
 				foreach($TData as $data) {
@@ -221,6 +222,7 @@ function _show_tab_session(&$PDOdb) {
 						$n->TNomenclatureDet[$k]->qty = $data['qty'];
 						$n->TNomenclatureDet[$k]->code_type = $data['type'];
 						$n->TNomenclatureDet[$k]->product = $p_compo;
+                        $n->TNomenclatureDet[$k]->rang = $k;
 					}
 
 				}
@@ -340,7 +342,7 @@ function _import_to_session() {
 		while(!feof($f1)) {
 
 
-			$row = fgetcsv($f1, 4096, !empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR) ? $conf->global->NOMENCLATURE_IMPORT_SEPARATOR : ',', '"');
+            $row = fgetcsv($f1, 4096, !empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR) ? $conf->global->NOMENCLATURE_IMPORT_SEPARATOR : ',', '"');
 
 			$num_nomenclature = (int)$row[0];
 			if(empty($num_nomenclature)) $num_nomenclature = 1;
