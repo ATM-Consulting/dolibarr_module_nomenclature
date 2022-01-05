@@ -58,6 +58,8 @@
 		}
 	}
 
+
+
 /**
  * VIEW
  */
@@ -181,7 +183,6 @@ function _show_tab_session(&$PDOdb) {
 				$TRefNotFound[] = $product_ref;
 			    continue;
 			}
-
 
 			foreach($TNomenclature as $i => $TData) {
 
@@ -326,7 +327,6 @@ function _show_nomenclature(&$n, &$p) {
 }
 
 function _import_to_session() {
-
 	global $conf;
 
 	if(GETPOST('bt_view', 'none') && !empty($_FILES['file1']['name'])) {
@@ -338,7 +338,6 @@ function _import_to_session() {
 		if($f1 === false) exit('Houston ? ');
 
 		while(!feof($f1)) {
-
 			$row = fgetcsv($f1, 4096, !empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR) ? $conf->global->NOMENCLATURE_IMPORT_SEPARATOR : ',', '"');
 
 			$num_nomenclature = (int)$row[0];
