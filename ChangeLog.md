@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.4
 
+FIX : Gestion des remises lignes pour la fonction recursive qui tient compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes
 FIX : Gestion des avoirs (avec soustraction des marges en cas de ligne négative) - *04/01/2022* - 4.4.1
 NEW : Ajout nomenclatures sur les lignes de factures - *24/12/2021* - 4.4.0
 
