@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.3
 
+- FIX : Gestion des remises lignes pour la fonction recursive qui tient compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes - *06/01/2022* - 4.3.3
 - FIX : Gestion des avoirs pour la fonction récursive (avec soustraction des marges en cas de ligne négative) - *04/01/2022* - 4.3.2
 - FIX : Le rang n'était pas appliqué au moment de l'import des nomenclatures + ajout du titre de la nomenclature à l'import - *05/01/2022* - 4.3.1
 - NEW : Fonction récursive (visible dans le module BTP) pour que les marges présentes dans le tableau des cmd, propal, factures
