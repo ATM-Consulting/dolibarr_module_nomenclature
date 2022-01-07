@@ -1270,14 +1270,13 @@ class TNomenclature extends TObjetStd
 	 * Fonction recursive qui récupère le montant total des coûts de revient et des prix de vente en tenant compte de la part de produits et services présente dans les nomenclatures lignes et sous nomenclatures jusqu'au niveau le plus bas
 	 *
 	 * @param $PDOdb db abricot
-	 * @param $object propal ou cmd
+	 * @param $object propal ou cmd ou facture
 	 * @param $marginInfo tableau standard permettant d'afficher les marges, adapté dans cette fonction au détail des nomenclatures
-	 * @param $n nomenclature de la ligne de mcd ou propal
+	 * @param $n nomenclature de la ligne de cmd ou propal
 	 * @param $qty qté ligne
-	 * @param string $sign + si montant ligne positif, - sinon
-	 * @param int $line_remise_percent remise ligne
-	 * @param bool $get_detail_by_fk_product
-	 * @param bool $has_parent_nomenclature
+	 * @param int $line document line
+	 * @param bool $get_detail_by_fk_product pour trier les montants par produit
+	 * @param bool $has_parent_nomenclature indique s'il existe une nomenclature parente à ce niveau
 	 * @param int $coef_code_type coefficient de marche sur coût de revient
 	 * @param int $coef_code_type2 coefficient de marge par ligne (si activé)
 	 * @return void
