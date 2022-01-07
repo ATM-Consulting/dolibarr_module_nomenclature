@@ -1271,7 +1271,7 @@ class TNomenclature extends TObjetStd
 	 *
 	 * @param $PDOdb db abricot
 	 * @param $object propal ou cmd ou facture
-	 * @param $marginInfo tableau standard permettant d'afficher les marges, adapté dans cette fonction au détail des nomenclatures
+	 * @param $array_result tableau permettant de stocker les données des marges ou les montants par produit et service ou par type (produit / service) adapté dans cette fonction au détail des nomenclatures
 	 * @param $n nomenclature de la ligne de cmd ou propal
 	 * @param $qty qté ligne
 	 * @param int $line document line
@@ -1281,7 +1281,7 @@ class TNomenclature extends TObjetStd
 	 * @param int $coef_code_type2 coefficient de marge par ligne (si activé)
 	 * @return void
 	 */
-	static function getMarginDetailByProductAndService(&$PDOdb, $object, &$marginInfo, $n, $qty, &$line, $get_detail_by_fk_product=false, $has_parent_nomenclature=false, $coef_code_type=1, $coef_code_type2=1) {
+	static function getMarginDetailByProductAndService(&$PDOdb, $object, &$array_result, $n, $qty, &$line, $get_detail_by_fk_product=false, $has_parent_nomenclature=false, $coef_code_type=1, $coef_code_type2=1) {
 
 		global $db, $conf;
 
@@ -1316,10 +1316,10 @@ class TNomenclature extends TObjetStd
 				}
 				// Appel récursif
 
-				TNomenclature::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $child_nomenclature, $qty*$det->qty, $line, $get_detail_by_fk_product, true, $coef_code_type*$coef, $coef_code_type2);
+				TNomenclature::getMarginDetailByProductAndService($PDOdb, $object, $array_result, $child_nomenclature, $qty*$det->qty, $line, $get_detail_by_fk_product, true, $coef_code_type*$coef, $coef_code_type2);
 			}
 
-			// Cas 2 - Pas de nomenclature pour cette composante, on récupère les données pour alimenter le tableau $marginInfos
+			// Cas 2 - Pas de nomenclature pour cette composante, on récupère les données pour alimenter le tableau $array_result
 			else {
 				$p = new Product($db);
 				$p->fetch($det->fk_product);
@@ -1333,18 +1333,18 @@ class TNomenclature extends TObjetStd
 							$pv = $det->charged_price * $coef_code_type;
 							$pv *= $coef_code_type2;
 						}
-						$marginInfo['pa_products'] += $sign . $det->charged_price * $coef_code_type;
+						$array_result['pa_products'] += $sign . $det->charged_price * $coef_code_type;
 						if($line_remise_percent > 0) $pv *= 1 - $line_remise_percent / 100;
-						$marginInfo['pv_products'] += $sign . $pv;
+						$array_result['pv_products'] += $sign . $pv;
 					} // Service
 					else {
 						if ($has_parent_nomenclature) {
 							$pv = $det->charged_price * $coef_code_type;
 							$pv *= $coef_code_type2;
 						}
-						$marginInfo['pa_services'] += $sign . $det->charged_price * $coef_code_type;
+						$array_result['pa_services'] += $sign . $det->charged_price * $coef_code_type;
 						if($line_remise_percent > 0) $pv *= 1 - $line_remise_percent / 100;
-						$marginInfo['pv_services'] += $sign . $pv;
+						$array_result['pv_services'] += $sign . $pv;
 					}
 				} else { // Regroupement par produit / service
 					if ($has_parent_nomenclature) {
@@ -1369,12 +1369,12 @@ class TNomenclature extends TObjetStd
 
 					if($line_tva_tx > 0) $pv_ttc *= 1 + $line_tva_tx / 100;
 
-					$marginInfo[$det->fk_product]['pv'] += price2num($sign . $pv, 'MT');
-					$marginInfo[$det->fk_product]['pv_ttc'] += price2num($sign . $pv_ttc, 'MT');
-					$marginInfo[$det->fk_product]['qty'] += $qty*$det->qty;
-					$marginInfo[$det->fk_product]['label'] = $p->ref.'&nbsp;-&nbsp;'.$p->label;
-					$marginInfo[$det->fk_product]['type'] = $p->type;
-					$marginInfo[$det->fk_product]['tooltip'][$line->ref] += $line->qty;
+					$array_result[$det->fk_product]['pv'] += price2num($sign . $pv, 'MT');
+					$array_result[$det->fk_product]['pv_ttc'] += price2num($sign . $pv_ttc, 'MT');
+					$array_result[$det->fk_product]['qty'] += $qty*$det->qty;
+					$array_result[$det->fk_product]['label'] = $p->ref.'&nbsp;-&nbsp;'.$p->label;
+					$array_result[$det->fk_product]['type'] = $p->type;
+					$array_result[$det->fk_product]['tooltip'][$line->ref] += $line->qty;
 
 				}
 
