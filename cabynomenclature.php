@@ -572,6 +572,9 @@ $db->close();
  * Fonction permettant de modifier les valeurs de tous les tableaux nécessaires à l'affichage des données en fonction du détail des nomenclatures / ouvrages
  *
  * @param $sortfield string sortfield
+ * @param $selected_type int filter 0 for product 1 service
+ * @param $selected_cat int filter by categ
+ * @param $subcat int checkbox to search in subcategories of $selected_cat
  * @return void
  */
 function setAmountsByNomenclature($sortfield, $selected_type, $selected_cat, $subcat) {
@@ -735,6 +738,8 @@ function _cmp($a, $b) {
 }
 
 /**
+ * Fonction permettant de réordonner le tableau $name en fonction du tri effectué sur une autre colonne pour que l'affichage soit juste
+ *
  * @param $name array array of products names
  * @param $other_array array another array (qty, amount_ht or amount)
  * @return void
