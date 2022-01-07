@@ -390,3 +390,5 @@ NOMENCLATURE_DETAILS_TAB_REWRITE=Separate products from services in the detail t
 UpdateTitleCoeff=Update BOM coefficients
 
 NomenclatureHelpMargePriceFinal=Can be modified in the configuration of the Parts list module
+
+NomenclatureMenuCaByDetailNomenclature=Turnover invoiced by construction work details

@@ -368,3 +368,5 @@ ImportBomNoteHelp = A noter : si vous souhaitez importer une nomenclature possé
 BomsCreated = Nomenclatures créées
 ErrorFetching = %s non trouvé
 Worstations = Workstations
+
+NomenclatureMenuCaByDetailNomenclature=CA facturé par contenu ouvrages

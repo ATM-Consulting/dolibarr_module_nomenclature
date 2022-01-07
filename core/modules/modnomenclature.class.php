@@ -61,7 +61,7 @@ class modnomenclature extends DolibarrModules
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '4.4.1';
+		$this->version = '4.5.0';
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
@@ -289,19 +289,33 @@ class modnomenclature extends DolibarrModules
 									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
 
-		 $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=product',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-		     'type'=>'left',			                // This is a Left menu entry
-		     'titre'=>'Nomenclatures',
-		     'mainmenu'=>'products',
-		     'leftmenu'=>'nomenclature',
-		     'url'=>'/nomenclature/list.php',
-		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-		     'position'=>100,
-		     'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-		     'perms'=>'$user->rights->nomenclature->read',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
-		     'target'=>'',
-		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
-		 $r++;
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=products,fk_leftmenu=product',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'=>'left',			                // This is a Left menu entry
+			'titre'=>'Nomenclatures',
+			'mainmenu'=>'products',
+			'leftmenu'=>'nomenclature',
+			'url'=>'/nomenclature/list.php',
+			'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position'=>100,
+			'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'=>'$user->rights->nomenclature->read',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+			'target'=>'',
+			'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
+		$r++;
+
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=ca',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'type'=>'left',			                // This is a Left menu entry
+			'titre'=>'NomenclatureMenuCaByDetailNomenclature',
+			'mainmenu'=>'accountancy',
+			'leftmenu'=>'ca',
+			'url'=>'/nomenclature/cabynomenclature.php?modecompta=BOOKKEEPING&leftmenu=accountancy_report',
+			'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'position'=>300,
+			'enabled'=>'$conf->nomenclature->enabled && $conf->btp->enabled && !empty($conf->global->BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS) && preg_match("/accountancy_report/", $leftmenu)',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'perms'=>'$user->rights->nomenclature->read',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+			'target'=>'',
+			'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
+		$r++;
 
 		// Exports
 		$r=1;
