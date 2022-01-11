@@ -3,9 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## 4.5
+
+- NEW : Rapport chiffre d'affaires par détail nomenclature / ouvrage - *07/01/2022* - 4.5.0
+
 ## 4.4
 
-NEW : Ajout nomenclatures sur les lignes de factures - *24/12/2021* - 4.4.0
+- NEW : Ajout nomenclatures sur les lignes de factures - *24/12/2021* - 4.4.0
 
 ## 4.3
 
