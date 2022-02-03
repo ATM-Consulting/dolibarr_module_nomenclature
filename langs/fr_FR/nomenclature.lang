@@ -370,3 +370,8 @@ ErrorFetching = %s non trouvé
 Worstations = Workstations
 
 NomenclatureMenuCaByDetailNomenclature=CA facturé par contenu ouvrages
+
+# MassAction
+MajPmpWithBomPriceLabel=Remplacer le PMP par le prix de vente conseillé
+ConfirmMajPmp=Confirmation de mise à jour des PMP
+ConfirmMajPmpQuestion=Êtes-vous sur de vouloir mettre à jour les PMP des produits concernés par les enregistrement(s) sélectionné(s) ?

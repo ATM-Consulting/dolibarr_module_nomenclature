@@ -48,13 +48,19 @@ $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
 $page = (GETPOST("page",'int')?GETPOST("page", 'int'):0);
 $type = (GETPOST("type",'alpha')?GETPOST("type", 'alpha'):0);
+
+//Massaction
+$massaction = GETPOST('massaction', 'alpha');
+$confirmmassaction = GETPOST('confirm', 'alpha');
+$toselect   = GETPOST('toselect', 'array'); // Array of ids of elements selected into a list
+$arrayofselected = is_array($toselect) ? $toselect : array();
+
 if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 if (! $sortfield) $sortfield="n.title";
 if (! $sortorder) $sortorder="ASC";
-
 
 
 /*
@@ -99,7 +105,11 @@ $TParam['limit'] = array(
             'page'=>(isset($_REQUEST['page']) ? $_REQUEST['page'] : 0),
             'nbLine'=>$limit
         );
-$TParam['list']['param_url'] = 'limit='.$limit;
+$TParam['list'] = array(
+	'param_url' => 'limit=' . $limit,
+	'massactions' => array('maj_pmp_massaction'  => $langs->trans('MajPmpWithBomPriceLabel')),
+	'selected' => $arrayofselected
+);
 $TParam['title'] = array(
     //'object_type' => $langs->trans('ObjectType'),
     'ref' => $langs->trans('ProductRef'),
@@ -119,7 +129,7 @@ $TParam['title'] = array(
 $TParam['hide'] = array('is_default');
 
 
-// defined list align for field
+// defined list align for field/extrafields_list_array_fields.tpl.php
 $TParam['position'] = array(
         'text-align'=> array(
             'ref' => 'left',
@@ -212,7 +222,23 @@ print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 print '<input type="hidden" name="page" value="'.$page.'">';
 print '<input type="hidden" name="type" value="'.$type.'">';
 
+if ($massaction == 'maj_pmp_massaction') {
+	$form = new Form($db);
+	print $form->formconfirm($_SERVER["PHP_SELF"], $langs->trans("ConfirmMajPmp"), $langs->trans("ConfirmMajPmpQuestion"), "confirm_maj_pmp_massaction", null, 'yes', 0, 200, 500, 1);
+}
 
+if($action == 'confirm_maj_pmp_massaction' && $confirmmassaction == "yes"){
+	//On parcourt la liste des nomenclatures selectionnées
+	foreach ($arrayofselected as $nom_id){
+		$nom = new TNomenclature();
+		$res = $nom->load($PDOdb, $nom_id);
+		if($res){
+			$nom->UpdateProductPMPByNomPrice();
+		}
+	}
+}elseif ($confirmmassaction != 'yes' && $massaction != 'presend' && $massaction != 'confirm_presend') {
+	$massaction = '';
+}
 print $list->render($sql, $TParam);
 
 print '</form>';

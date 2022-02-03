@@ -139,7 +139,8 @@ if (empty($reshook))
 		    if($fk_nomenclature>0) $n->load($PDOdb, $fk_nomenclature, false, $product->id , $qty_ref, $object_type, $fk_origin);
 		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
 
-			if(!$n->iExist && GETPOST('type_object', 'none')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
+			//Cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
+			if(!$n->iExist && GETPOST('type_object', 'none')!='product') {
 				$n->reinit();
 			}
 
@@ -156,6 +157,7 @@ if (empty($reshook))
 
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
 
+            //Cas ou l'on déplace une ligne
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
@@ -177,6 +179,7 @@ if (empty($reshook))
 		        }
 		    }
 
+            //Cas ou l'on ajoute un produit dans la nomenclature
 		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId(), 'none');
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId(), 'none');
 		    if(GETPOST('add_nomenclature', 'none') && $fk_new_product>0) {
@@ -205,6 +208,7 @@ if (empty($reshook))
                 }
             }
 
+            //Cas où l'on ajoute un nouveau poste à charge
 		    $fk_new_workstation = GETPOST('fk_new_workstation', 'none');
 		    if(GETPOST('add_workstation', 'none') && $fk_new_workstation>0 ) {
 		        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
@@ -222,6 +226,7 @@ if (empty($reshook))
 		    }
 
 
+            //Mise à jour des prix de la nomenclature
 			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
 
 		    $n->save($PDOdb);
