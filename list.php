@@ -130,7 +130,7 @@ $TParam['title'] = array(
 $TParam['hide'] = array('is_default');
 
 
-// defined list align for field/extrafields_list_array_fields.tpl.php
+// defined list align for field
 $TParam['position'] = array(
         'text-align'=> array(
             'ref' => 'left',
@@ -239,7 +239,7 @@ if($action == 'confirm_maj_pmp_massaction' && $confirmmassaction == "yes"){
 		$nom = new TNomenclature();
 		$res = $nom->load($PDOdb, $nom_id);
 		if($res){
-			$nom->UpdateProductPMPByNomPrice();
+			$nom->updateProductPMPByNomPrice();
 		}
 	}
 }elseif ($confirmmassaction != 'yes' && $massaction != 'presend' && $massaction != 'confirm_presend') {
@@ -353,7 +353,11 @@ function nomenclature_getSellPrice($id=0){
     return '--';
 }
 
-// prix de vente conseillé total
+/**
+ * To get the PMP of a product by giving its nomenclature
+ * @param int $id
+ * @return string
+ */
 function nomenclature_getPMP($id=0){
 
 	global $db;
@@ -362,10 +366,8 @@ function nomenclature_getPMP($id=0){
 	$sql.= ' JOIN '.MAIN_DB_PREFIX.'nomenclature n ON p.rowid = n.fk_object';
 	$sql.= ' WHERE n.rowid='.$id;
 	$resql = $db->query($sql);
-	var_dump($resql);
 	if($resql){
 		$obj = $db->fetch_object($resql);
-		var_dump($obj);exit();
 		return $obj->pmp;
 	}
 

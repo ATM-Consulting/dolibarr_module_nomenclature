@@ -1385,7 +1385,12 @@ class TNomenclature extends TObjetStd
 	}
 
 
-	function UpdateProductPMPByNomPrice(){
+	/**
+	 * To update nomenclature product pmp by nomenclature price
+	 *
+	 * @return  void
+	 */
+	public function updateProductPMPByNomPrice(){
 		global $db, $user, $langs;
 
         $error = 0;
@@ -1413,7 +1418,7 @@ class TNomenclature extends TObjetStd
 					$res = $sub_nom->load($this->PDOdb, $obj->rowid);
 					if($res) {
 						//On reéxécute la fonction de mise à jour des PMP sur la sous-nomenclature (récursivité)
-						$sub_nom->UpdateProductPMPByNomPrice();
+						$sub_nom->updateProductPMPByNomPrice();
 					}
 				}
 			}
