@@ -1181,7 +1181,7 @@ class TNomenclature extends TObjetStd
 				$n = new self();
 				$res=$n->loadByObjectId($PDOdb, $line->id, $object->element);
 				if(!empty($n) && !empty($n->TNomenclatureDet)) {
-					self::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $n, $line->qty, false);
+					self::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $n, $line->qty, ($line->subprice > 0 ? '+' : '-'), $line->remise_percent, false);
 					unset($object->lines[$k]); // Just after loop i call getMarginInfosArray with only lines which have no nomenclature
 				}
 
@@ -1204,22 +1204,29 @@ class TNomenclature extends TObjetStd
 			$marginInfo['margin_on_products'] = $marginInfo['pv_products'] - $marginInfo['pa_products'];
 			$marginInfo['margin_on_services'] = $marginInfo['pv_services'] - $marginInfo['pa_services'];
 			$marginInfo['total_margin'] = $marginInfo['margin_on_products'] + $marginInfo['margin_on_services'];
-			$marginInfo['margin_rate_products'] = 100 * $marginInfo['margin_on_products'] / $marginInfo['pa_products'];
-			$marginInfo['margin_rate_services'] = 100 * $marginInfo['margin_on_services'] / $marginInfo['pa_services'];
-			$marginInfo['total_margin_rate'] = ($marginInfo['pv_total'] - $marginInfo['pa_total']) / $marginInfo['pa_total'] * 100;
-
-			if ($marginInfo['pa_products'] > 0) {
+			if (price2num($marginInfo['pa_products']) > 0) {
+				$marginInfo['margin_rate_products'] = 100 * $marginInfo['margin_on_products'] / $marginInfo['pa_products'];
+			}
+			if (price2num($marginInfo['pa_services']) > 0) {
+				$marginInfo['margin_rate_services'] = 100 * $marginInfo['margin_on_services'] / $marginInfo['pa_services'];
+			}
+			if (price2num($marginInfo['pa_total']) > 0) {
+				$marginInfo['total_margin_rate'] = ($marginInfo['pv_total'] - $marginInfo['pa_total']) / $marginInfo['pa_total'] * 100;
+			}
+			if (price2num($marginInfo['pv_products']) > 0) {
 				$marginInfo['mark_rate_products'] = 100 * $marginInfo['margin_on_products'] / $marginInfo['pv_products'];
 			}
-			if ($marginInfo['pv_services'] > 0) {
+			if (price2num($marginInfo['pv_services']) > 0) {
 				$marginInfo['mark_rate_services'] = 100 * $marginInfo['margin_on_services'] / $marginInfo['pv_services'];
 			}
-			if ($marginInfo['pv_total'] > 0) {
+			if (price2num($marginInfo['pv_total']) > 0) {
 				$marginInfo['total_mark_rate'] = 100 * $marginInfo['total_margin'] / $marginInfo['pv_total'];
 			}
 
 			// Format display
-			foreach ($marginInfo as $k=>$v) $marginInfo[$k] = price2num($v, 'MT');
+			foreach ($marginInfo as $k=>$v) {
+				if((strpos($k, 'rate') === false) || !empty($v)) $marginInfo[$k] = price2num($v, 'MT'); // "if" used to avoid rates like 0,00%
+			}
 
 		}
 	}
@@ -1232,12 +1239,14 @@ class TNomenclature extends TObjetStd
 	 * @param $marginInfo tableau standard permettant d'afficher les marges, adapté dans cette fonction au détail des nomenclatures
 	 * @param $n nomenclature de la ligne de mcd ou propal
 	 * @param $qty qté ligne
+	 * @param string $sign + si montant ligne positif, - sinon
+	 * @param int $remise_percent remise ligne
 	 * @param bool $has_parent_nomenclature
 	 * @param int $coef_code_type coefficient de marche sur coût de revient
 	 * @param int $coef_code_type2 coefficient de marge par ligne (si activé)
 	 * @return void
 	 */
-	static function getMarginDetailByProductAndService(&$PDOdb, $object, &$marginInfo, $n, $qty, $has_parent_nomenclature=false, $coef_code_type=1, $coef_code_type2=1) {
+	static function getMarginDetailByProductAndService(&$PDOdb, $object, &$marginInfo, $n, $qty, $sign='+', $remise_percent=0, $has_parent_nomenclature=false, $coef_code_type=1, $coef_code_type2=1) {
 
 		global $db, $conf;
 
@@ -1268,7 +1277,7 @@ class TNomenclature extends TObjetStd
 				}
 				// Appel récursif
 
-				TNomenclature::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $child_nomenclature, $qty*$det->qty, true, $coef_code_type*$coef, $coef_code_type2);
+				TNomenclature::getMarginDetailByProductAndService($PDOdb, $object, $marginInfo, $child_nomenclature, $qty*$det->qty, $sign, $remise_percent, true, $coef_code_type*$coef, $coef_code_type2);
 			}
 
 			// Cas 2 - Pas de nomenclature pour cette composante, on récupère les données pour alimenter le tableau $marginInfos
@@ -1276,25 +1285,27 @@ class TNomenclature extends TObjetStd
 				$p = new Product($db);
 				$p->fetch($det->fk_product);
 
+				$pv = $det->pv;
+
 				// Product
 				if(empty($p->type)) {
-					$pv = $det->pv;
 					if($has_parent_nomenclature) {
 						$pv = $det->charged_price * $coef_code_type;
 						$pv *= $coef_code_type2;
 					}
-					$marginInfo['pa_products'] += $det->charged_price * $coef_code_type;
-					$marginInfo['pv_products'] += $pv;
+					$marginInfo['pa_products'] += $sign.$det->charged_price * $coef_code_type;
+					if($remise_percent > 0) $pv *= 1 - $remise_percent / 100;
+					$marginInfo['pv_products'] += $sign.$pv;
 				}
 				// Service
 				else {
-					$pv = $det->pv;
 					if($has_parent_nomenclature) {
 						$pv = $det->charged_price * $coef_code_type;
 						$pv *= $coef_code_type2;
 					}
-					$marginInfo['pa_services'] += $det->charged_price * $coef_code_type;
-					$marginInfo['pv_services'] += $pv;
+					$marginInfo['pa_services'] += $sign.$det->charged_price * $coef_code_type;
+					if($remise_percent > 0) $pv *= 1 - $remise_percent / 100;
+					$marginInfo['pv_services'] += $sign.$pv;
 				}
 
 			}
