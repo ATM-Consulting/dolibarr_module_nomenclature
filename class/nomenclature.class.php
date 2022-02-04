@@ -1386,7 +1386,7 @@ class TNomenclature extends TObjetStd
 
 
 	function UpdateProductPMPByNomPrice(){
-		global $db, $user;
+		global $db, $user, $langs;
 
         $error = 0;
 
@@ -1437,6 +1437,12 @@ class TNomenclature extends TObjetStd
             $resql_update_pmp = $db->query($sql_update_pmp);
             if($resql_update_pmp<0){
                 $error++;
+            }
+
+            if($error==0){
+				setEventMessages($langs->trans('PmpCorrectlyUpdated'), null, 'mesgs');
+            } else {
+				setEventMessages($langs->trans('PmpNotCorrectlyUpdated'), null, 'errors');
             }
         }
     }

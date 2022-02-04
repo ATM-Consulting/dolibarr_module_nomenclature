@@ -117,6 +117,7 @@ $TParam['title'] = array(
     
     'is_default'  => $langs->trans('is_default'),
     'qty_reference' => $langs->trans('nomenclatureQtyReference'),
+    'pmp' => $langs->trans('PMP'),
     'SellPrice'     => $langs->trans('PriceConseil'),
     //'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
     'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOFQty'),
@@ -138,6 +139,7 @@ $TParam['position'] = array(
             'is_default'  => 'center',
             
             'qty_reference' => 'right',
+            'pmp' => 'right',
             'SellPrice'     => 'right',
             'totalPRCMO_PMP'  => 'right',
             'totalPRCMO_OF'  => 'right',
@@ -158,6 +160,7 @@ $TParam['type'] = array (
     'date_cre' => 'date', // [datetime], [hour], [money], [number], [integer]
     'date_maj' => 'datetime',
     'qty_reference' => 'number',
+    'pmp' => 'money',
     'totalPRCMO_PMP' => 'money',
     'totalPRCMO_OF'  => 'money',
     'totalPRCMO'     => 'money',
@@ -170,6 +173,7 @@ $TParam['search'] = array (
     'is_default'     => array('search_type'=>array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') )),
     
     'qty_reference'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'qty_reference'),
+    'pmp'  			 => array('search_type'=>true, 'table'=>'p', 'fieldname'=>'pmp'),
     'totalPRCMO_PMP' => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_PMP'),
     'totalPRCMO_OF'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_OF'),
     //'totalPRCMO'     => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO'),
@@ -186,10 +190,12 @@ $TParam['eval'] = array(
     
     // prix d'achat total
     //'BuyPrice' => 'nomenclature_getBuyPrice(@rowid@)',
-    
-    // prix de vente conseillé total
+
+	'PMP' => 'nomenclature_getPMP(@rowid@)',
+
+	// prix de vente conseillé total
     'SellPrice' => 'nomenclature_getSellPrice(@rowid@)',
-    
+
     // Prix de revient chargé (on affiche tjr le chargé)
     'totalPRCMO' => 'nomenclature_totalPRCMO(@rowid@)',
     
@@ -204,7 +210,7 @@ $TParam['eval'] = array(
 );
 
 // Query MYSQL
-$sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO, n.qty_reference ";
+$sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO, n.qty_reference, p.pmp";
 $sql.= " FROM `" . MAIN_DB_PREFIX . "nomenclature` n   ";
 $sql.= " JOIN `" . MAIN_DB_PREFIX . "product` p ON (p.rowid = n.fk_object)   ";
 $sql.= " WHERE  n.object_type = 'product' AND n.fk_nomenclature_parent = 0 ";
@@ -347,6 +353,24 @@ function nomenclature_getSellPrice($id=0){
     return '--';
 }
 
+// prix de vente conseillé total
+function nomenclature_getPMP($id=0){
+
+	global $db;
+
+	$sql = 'SELECT pmp FROM '.MAIN_DB_PREFIX.'product p';
+	$sql.= ' JOIN '.MAIN_DB_PREFIX.'nomenclature n ON p.rowid = n.fk_object';
+	$sql.= ' WHERE n.rowid='.$id;
+	$resql = $db->query($sql);
+	var_dump($resql);
+	if($resql){
+		$obj = $db->fetch_object($resql);
+		var_dump($obj);exit();
+		return $obj->pmp;
+	}
+
+	return '--';
+}
 
 // Prix de revient chargé (on affiche tjr le chargé)
 function nomenclature_totalPRCMO($id=0){
