@@ -48,13 +48,19 @@ $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
 $page = (GETPOST("page",'int')?GETPOST("page", 'int'):0);
 $type = (GETPOST("type",'alpha')?GETPOST("type", 'alpha'):0);
+
+//Massaction
+$massaction = GETPOST('massaction', 'alpha');
+$confirmmassaction = GETPOST('confirm', 'alpha');
+$toselect   = GETPOST('toselect', 'array'); // Array of ids of elements selected into a list
+$arrayofselected = is_array($toselect) ? $toselect : array();
+
 if (empty($page) || $page == -1) { $page = 0; }     // If $page is not defined, or '' or -1
 $offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 if (! $sortfield) $sortfield="n.title";
 if (! $sortorder) $sortorder="ASC";
-
 
 
 /*
@@ -99,7 +105,11 @@ $TParam['limit'] = array(
             'page'=>(isset($_REQUEST['page']) ? $_REQUEST['page'] : 0),
             'nbLine'=>$limit
         );
-$TParam['list']['param_url'] = 'limit='.$limit;
+$TParam['list'] = array(
+	'param_url' => 'limit=' . $limit,
+	'massactions' => array('maj_pmp_massaction'  => $langs->trans('MajPmpWithBomPriceLabel')),
+	'selected' => $arrayofselected
+);
 $TParam['title'] = array(
     //'object_type' => $langs->trans('ObjectType'),
     'ref' => $langs->trans('ProductRef'),
@@ -107,6 +117,7 @@ $TParam['title'] = array(
     
     'is_default'  => $langs->trans('is_default'),
     'qty_reference' => $langs->trans('nomenclatureQtyReference'),
+    'pmp' => $langs->trans('PMP'),
     'SellPrice'     => $langs->trans('PriceConseil'),
     //'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
     'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOFQty'),
@@ -128,6 +139,7 @@ $TParam['position'] = array(
             'is_default'  => 'center',
             
             'qty_reference' => 'right',
+            'pmp' => 'right',
             'SellPrice'     => 'right',
             'totalPRCMO_PMP'  => 'right',
             'totalPRCMO_OF'  => 'right',
@@ -148,6 +160,7 @@ $TParam['type'] = array (
     'date_cre' => 'date', // [datetime], [hour], [money], [number], [integer]
     'date_maj' => 'datetime',
     'qty_reference' => 'number',
+    'pmp' => 'money',
     'totalPRCMO_PMP' => 'money',
     'totalPRCMO_OF'  => 'money',
     'totalPRCMO'     => 'money',
@@ -160,6 +173,7 @@ $TParam['search'] = array (
     'is_default'     => array('search_type'=>array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') )),
     
     'qty_reference'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'qty_reference'),
+    'pmp'  			 => array('search_type'=>true, 'table'=>'p', 'fieldname'=>'pmp'),
     'totalPRCMO_PMP' => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_PMP'),
     'totalPRCMO_OF'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_OF'),
     //'totalPRCMO'     => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO'),
@@ -176,10 +190,12 @@ $TParam['eval'] = array(
     
     // prix d'achat total
     //'BuyPrice' => 'nomenclature_getBuyPrice(@rowid@)',
-    
-    // prix de vente conseillé total
+
+	'PMP' => 'nomenclature_getPMP(@rowid@)',
+
+	// prix de vente conseillé total
     'SellPrice' => 'nomenclature_getSellPrice(@rowid@)',
-    
+
     // Prix de revient chargé (on affiche tjr le chargé)
     'totalPRCMO' => 'nomenclature_totalPRCMO(@rowid@)',
     
@@ -194,7 +210,7 @@ $TParam['eval'] = array(
 );
 
 // Query MYSQL
-$sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO, n.qty_reference ";
+$sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO, n.qty_reference, p.pmp";
 $sql.= " FROM `" . MAIN_DB_PREFIX . "nomenclature` n   ";
 $sql.= " JOIN `" . MAIN_DB_PREFIX . "product` p ON (p.rowid = n.fk_object)   ";
 $sql.= " WHERE  n.object_type = 'product' AND n.fk_nomenclature_parent = 0 ";
@@ -212,7 +228,23 @@ print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 print '<input type="hidden" name="page" value="'.$page.'">';
 print '<input type="hidden" name="type" value="'.$type.'">';
 
+if ($massaction == 'maj_pmp_massaction') {
+	$form = new Form($db);
+	print $form->formconfirm($_SERVER["PHP_SELF"], $langs->trans("ConfirmMajPmp"), $langs->trans("ConfirmMajPmpQuestion"), "confirm_maj_pmp_massaction", null, 'yes', 0, 200, 500, 1);
+}
 
+if($action == 'confirm_maj_pmp_massaction' && $confirmmassaction == "yes"){
+	//On parcourt la liste des nomenclatures selectionnées
+	foreach ($arrayofselected as $nom_id){
+		$nom = new TNomenclature();
+		$res = $nom->load($PDOdb, $nom_id);
+		if($res){
+			$nom->updateProductPMPByNomPrice();
+		}
+	}
+}elseif ($confirmmassaction != 'yes' && $massaction != 'presend' && $massaction != 'confirm_presend') {
+	$massaction = '';
+}
 print $list->render($sql, $TParam);
 
 print '</form>';
@@ -321,6 +353,26 @@ function nomenclature_getSellPrice($id=0){
     return '--';
 }
 
+/**
+ * To get the PMP of a product by giving its nomenclature
+ * @param int $id
+ * @return string
+ */
+function nomenclature_getPMP($id=0){
+
+	global $db;
+
+	$sql = 'SELECT pmp FROM '.MAIN_DB_PREFIX.'product p';
+	$sql.= ' JOIN '.MAIN_DB_PREFIX.'nomenclature n ON p.rowid = n.fk_object';
+	$sql.= ' WHERE n.rowid='.$id;
+	$resql = $db->query($sql);
+	if($resql){
+		$obj = $db->fetch_object($resql);
+		return $obj->pmp;
+	}
+
+	return '--';
+}
 
 // Prix de revient chargé (on affiche tjr le chargé)
 function nomenclature_totalPRCMO($id=0){

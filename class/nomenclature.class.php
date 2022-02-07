@@ -7,6 +7,8 @@ if (!class_exists('TObjetStd'))
 }
 
 dol_include_once('/workstationatm/class/workstation.class.php');
+dol_include_once('/product/class/product.class.php');
+
 
 class TNomenclature extends TObjetStd
 {
@@ -1381,6 +1383,74 @@ class TNomenclature extends TObjetStd
 			}
 		}
 	}
+
+
+	/**
+	 * To update nomenclature product pmp by nomenclature price
+	 *
+	 * @return  void
+	 */
+	public function updateProductPMPByNomPrice(){
+		global $db, $user, $langs;
+
+        $error = 0;
+
+        $nom_product = new Product($db);
+        $res = $nom_product->fetch($this->fk_object);
+        if($res<0){
+            $error++;
+        }
+
+		if(!empty($this->TNomenclatureDet)){
+            //On parcourt les lignes de nomenclature
+			foreach ($this->TNomenclatureDet as $nom_det) {
+				//Pour chaque ligne, on vérifie si le produit (de la ligne) dispose d'une nomenclature
+				$sql = 'SELECT rowid, fk_object FROM ' . MAIN_DB_PREFIX . 'nomenclature';
+				$sql .= ' WHERE fk_object=' . $nom_det->fk_product;
+				$sql .= ' AND object_type="product"';
+				$resql = $db->query($sql);
+
+				//Cas où le produit (de la ligne courante) est issu d'une nomenclature
+				if($resql && $db->num_rows($resql) > 0) {
+					//On fetch la sous-nomenclature
+					$obj = $db->fetch_object($resql);
+					$sub_nom = new TNomenclature();
+					$res = $sub_nom->load($this->PDOdb, $obj->rowid);
+					if($res) {
+						//On reéxécute la fonction de mise à jour des PMP sur la sous-nomenclature (récursivité)
+						$sub_nom->updateProductPMPByNomPrice();
+					}
+				}
+			}
+            //On met à jour les prix de la nomenclature traitée
+			$this->setPrice($this->PDOdb, $this->qty_reference, $this->fk_object, $this->object_type);
+
+            //On met à jour le PMP du produit (de la nomenclature)
+            $priceToPmp = $this->totalPRCMO;
+            if (!empty($this->marge_object)){
+                //Pour le nouveau PMP, on applique le coeff de nomenclature
+                $sql_select_marge = 'SELECT tx FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE code_type = '. $this->marge_object;
+                $resql_select_marge = $db->query($sql_select_marge);
+                if($resql_select_marge){
+                    $priceToPmp = $priceToPmp * $this->marge_object;
+                }
+            }
+            $nom_product->pmp = $priceToPmp;
+            $sql_update_pmp =  'UPDATE '.MAIN_DB_PREFIX.'product';
+            $sql_update_pmp.=  ' SET pmp = '. (float) $priceToPmp;
+            $sql_update_pmp.=  ' WHERE rowid = '. (int) $nom_product->id;
+            $resql_update_pmp = $db->query($sql_update_pmp);
+            if($resql_update_pmp<0){
+                $error++;
+            }
+
+            if($error==0){
+				setEventMessages($langs->trans('PmpCorrectlyUpdated'), null, 'mesgs');
+            } else {
+				setEventMessages($langs->trans('PmpNotCorrectlyUpdated'), null, 'errors');
+            }
+        }
+    }
 
 }
 
