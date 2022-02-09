@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.6 
 
+- FIX : Le filtre PMP sur la liste des nomenclatures ne fonctionnait pas. Le calcul du prix de vente conseillé n'était pas correct - *09/02/2022* - 4.6.1
 - NEW : Ajout d'une action de masse permettant de remplacer le pmp des produits des nomenclatures sélectionnées par le prix des nomenclatures - *04/02/2022* - 4.6.0
 
 ## 4.5
