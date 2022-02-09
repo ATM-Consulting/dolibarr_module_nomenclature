@@ -181,6 +181,10 @@ $TParam['search'] = array (
     'date_maj'       => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'date_maj'),
 );
 
+$TParam['operator'] = array(
+  'pmp' => '= '.round('nomenclature_getPMP(@rowid@)', 2, PHP_ROUND_HALF_UP)
+);
+
 $TParam['eval'] = array(
     // array of customized field function
     'title'=>'linkToNomenclature(\'@val@\', @rowid@, \'@object_type@\', \'@fk_object@\')',
