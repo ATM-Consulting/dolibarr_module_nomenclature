@@ -12,7 +12,7 @@ dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 if(! class_exists('TSubtotal')) dol_include_once('/subtotal/class/subtotal.class.php');
 
 $langs->load('nomenclature@nomenclature');
-$langs->load('workstation@workstation');
+$langs->load('workstationatm@workstationatm');
 
 $object_type = GETPOST('object', 'alpha');
 $id = GETPOST('id', 'int');

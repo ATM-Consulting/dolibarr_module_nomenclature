@@ -154,8 +154,67 @@ class Interfacenomenclaturetrigger
         }
 		elseif ($action == 'LINEPROPAL_INSERT') {
             $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
-		} elseif ($action == 'LINEBILL_INSERT' && !empty($conf->global->NOMENCLATURE_USE_ON_INVOICE)) {
+		} elseif ($action == 'LINEBILL_INSERT') {
+
+			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
+
+			// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
+			$origin = GETPOST('origin', 'none');
+			$origin_id = GETPOST('originid', 'int'); // id de la ligne propal <= FAUX, id de la propal d'origin
+
+			// Module Workflow
+			if(empty($origin) && empty($origin_id) && ! empty($object->context['origin']) && ! empty($object->context['origin_id'])) {
+				$origin = $object->context['origin'];
+				$origin_id = $object->context['origin_id'];
+			}
+
+			if (($origin !== 'propal' && $origin !== 'commande') || empty($origin_id)) {
+				$this->_insertNomenclatureAndSetPrice($PDOdb, $object);
+			} else {
+
+				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
+				require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
+
+				$classname = ucfirst($origin); // commande ou propal
+
+				$obj = new $classname($db);
+				$obj->fetch($origin_id);
+				$fk_line_origin = 0;
+				foreach ( $obj->lines as $line ) {
+					if ($line->rang == $object->rang) {
+						$fk_line_origin = $line->id;
+						$line_origin = $line;
+						break;
+					}
+				}
+
+				if (!empty($line_origin))
+				{
+					$n = new TNomenclature();
+					$n->loadByObjectId($PDOdb, $line_origin->id, $obj->element,true, $line_origin->fk_product, $line_origin->qty, $obj->id, true);
+
+					if ($n->getId() > 0 || $n->fk_nomenclature_parent > 0)
+					{
+						if ($n->getId() == 0) $need_set_price = true;
+						else $need_set_price = false;
+
+						$n->fk_object = $object->id;
+						$n->object_type = 'facture'; // pas facturedet !
+						$n->cloneObject($PDOdb);
+						if ($need_set_price)
+						{
+							$n->setPrice($PDOdb, $this->qty_reference, $this->fk_object, $this->object_type, $object->fk_commande);
+							$n->save($PDOdb);
+						}
+					}
+				}
+
+			}
+
 			$this->_setPrice($PDOdb, $object, $object->fk_facture, 'facture');
+
+			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
+
 		} elseif ($action == 'LINEORDER_INSERT') {
 
 			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
@@ -173,6 +232,8 @@ class Interfacenomenclaturetrigger
 			if ($origin !== 'propal' || empty($origin_id)) {
                 $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 			} else {
+
+				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 
 				$propal = new Propal($db);
 				$propal->fetch($origin_id);
@@ -264,11 +325,17 @@ class Interfacenomenclaturetrigger
 			$n->delete($PDOdb);
 		}
 		elseif ($action == 'LINEORDER_DELETE' && $object->element == 'commandedet')
-        {
-            $n = new TNomenclature();
-            $n->loadByObjectId($PDOdb, $object->id, 'commande');
-            $n->delete($PDOdb);
-        }
+		{
+			$n = new TNomenclature();
+			$n->loadByObjectId($PDOdb, $object->id, 'commande');
+			$n->delete($PDOdb);
+		}
+		elseif ($action == 'LINEBILL_DELETE' && $object->element == 'facturedet')
+		{
+			$n = new TNomenclature();
+			$n->loadByObjectId($PDOdb, $object->id, 'facture');
+			$n->delete($PDOdb);
+		}
 		elseif ($action == 'LINE_DUPLICATE') {
 
 			if ($object->line_from->product_type != 9)
@@ -419,6 +486,7 @@ class Interfacenomenclaturetrigger
 			$facture = new Facture($db);
 			$facture->fetch($fk_parent);
 			$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', 0, $object->product_type, 0, 0, $object->fk_fournprice, $n->totalPRC / $object->qty,$object->label, $object->special_code, 0, $object->situation_percent, $object->fk_unit);
+
 		}
 
 	}
@@ -483,9 +551,12 @@ class Interfacenomenclaturetrigger
             $element = 'propal';
             $fk_element = 'fk_propal';
         } else if(in_array($object->element, array('commande', 'commandedet'))) {
-            $element = 'commande';
-            $fk_element = 'fk_commande';
-        }
+			$element = 'commande';
+			$fk_element = 'fk_commande';
+		} else if(in_array($object->element, array('facture', 'facturedet'))) {
+			$element = 'facture';
+			$fk_element = 'fk_facture';
+		}
 
         if(!empty($element)) {
             if(! empty($object->context['subtotalDuplicateLines']))

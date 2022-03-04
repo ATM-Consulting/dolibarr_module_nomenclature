@@ -1,4 +1,5 @@
 <?php
+if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK", 1);
 
 	if (!defined('NOTOKENRENEWAL')) {
 		define('NOTOKENRENEWAL', 1);
@@ -7,8 +8,8 @@
     dol_include_once('/nomenclature/class/nomenclature.class.php');
 	require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
-    if($conf->workstation->enabled) {
-        dol_include_once('/workstation/class/workstation.class.php');
+    if($conf->workstationatm->enabled) {
+        dol_include_once('/workstationatm/class/workstation.class.php');
     }
 
     $PDOdb = new TPDOdb;

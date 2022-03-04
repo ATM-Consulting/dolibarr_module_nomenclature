@@ -1,5 +1,6 @@
 <?php
 define('INC_FROM_CRON_SCRIPT',true);
+if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK", 1);
 if (!defined('NOTOKENRENEWAL')) {
 	define('NOTOKENRENEWAL', 1);
 }
@@ -66,9 +67,12 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 									url = "<?php echo dol_buildpath('/comm/propal.php?id=', 1); ?>"+fk_origin;
 							    <?php } ?>
 							        break;
-							    case 'commande':
-							        url = "<?php echo dol_buildpath('/commande/card.php?id=', 1); ?>"+fk_origin;
-							        break;
+								case 'commande':
+									url = "<?php echo dol_buildpath('/commande/card.php?id=', 1); ?>"+fk_origin;
+									break;
+								case 'facture':
+									url = "<?php echo dol_buildpath('/compta/facture/card.php?id=', 1); ?>"+fk_origin;
+									break;
 							}
 
 							if (url)

@@ -11,9 +11,10 @@ dol_include_once('/comm/propal/class/propal.class.php');
 dol_include_once('/product/class/html.formproduct.class.php');
 dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
+require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 
-if($conf->workstation->enabled) {
-    dol_include_once('/workstation/class/workstation.class.php');
+if($conf->workstationatm->enabled) {
+    dol_include_once('/workstationatm/class/workstation.class.php');
 }
 
 $hookmanager->initHooks(array('nomenclaturecard'));
@@ -138,8 +139,16 @@ if (empty($reshook))
 		    if($fk_nomenclature>0) $n->load($PDOdb, $fk_nomenclature, false, $product->id , $qty_ref, $object_type, $fk_origin);
 		    else $n->loadByObjectId($PDOdb, $fk_object, $object_type,true, $product->id, $qty_ref, $fk_origin); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
 
-			if(!$n->iExist && GETPOST('type_object', 'none')!='product') { // cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
+			//Cas où on sauvegarde depuis une ligne et qu'il faut dupliquer la nomenclature
+			if(!$n->iExist && GETPOST('type_object', 'none')!='product') {
 				$n->reinit();
+			}
+
+			//vérification titre déjà existant
+			if(!empty($conf->global->NOMENCLATURE_UNIQUE_TITLE) && TNomenclature::getRightToSaveTitle(GETPOST('title', 'alphanohtml')) <= 0 && !empty(GETPOST('title', 'alphanohtml'))) {
+				//si déjà existant on donne au $_POST le titre précédent pour ne pas que le nouveau soit enregistré
+				$_POST['title'] = $n->title ;
+				setEventMessage('NomenclatureTitleWarning', 'warnings');
 			}
 
 			$n->set_values($_POST);
@@ -148,6 +157,7 @@ if (empty($reshook))
 
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
 
+            //Cas ou l'on déplace une ligne
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
@@ -169,6 +179,7 @@ if (empty($reshook))
 		        }
 		    }
 
+            //Cas ou l'on ajoute un produit dans la nomenclature
 		    $fk_new_product = GETPOST('fk_new_product_'.$n->getId(), 'none');
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId(), 'none');
 		    if(GETPOST('add_nomenclature', 'none') && $fk_new_product>0) {
@@ -197,6 +208,7 @@ if (empty($reshook))
                 }
             }
 
+            //Cas où l'on ajoute un nouveau poste à charge
 		    $fk_new_workstation = GETPOST('fk_new_workstation', 'none');
 		    if(GETPOST('add_workstation', 'none') && $fk_new_workstation>0 ) {
 		        $k = $n->addChild($PDOdb, 'TNomenclatureWorkstation');
@@ -214,6 +226,7 @@ if (empty($reshook))
 		    }
 
 
+            //Mise à jour des prix de la nomenclature
 			$n->setPrice($PDOdb,$qty_ref,$n->fk_object,$n->object_type, $fk_origin);
 
 		    $n->save($PDOdb);
@@ -831,9 +844,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 							   }
 	                            if($user->rights->nomenclature->showPrice) {
-
-	                            	$price = price2num($det->calculate_price,'MT');
-									$price_charge = price2num($det->charged_price,'MT');
+	                            	$price = $det->calculate_price; //Si on arrondit cette valeur l'affichage de la colonne prix d'achat unitaire est fausse
+									$price_charge = $det->charged_price;
 
 
                                     print '<td class="col_amountCostUnit"  >';
@@ -1074,7 +1086,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         <?php } ?>
 
         <?php
-       if(!empty($conf->workstation->enabled)) {
+       if(!empty($conf->workstationatm->enabled)) {
 
        ?>
         <tr>
@@ -1241,7 +1253,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                         <div class="tabsAction">
                             <div>
                                 <?php
-                                if ( $conf->workstation->enabled && ! $readonly ) {
+                                if ( $conf->workstationatm->enabled && ! $readonly ) {
                                     echo $formCore->combo( '', 'fk_new_workstation', TWorkstation::getWorstations( $PDOdb, false, ! empty( $conf->global->NOMENCLATURE_PRESELECT_FIRST_WS ) ? false : true ), - 1 );
                                     ?>
                                     <div class="inline-block divButAction">
@@ -1376,7 +1388,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 <!--                <div class="tabsAction">-->
 <!--                    --><?php
 //
-//                    if($conf->workstation->enabled && !$readonly) {
+//                    if($conf->workstationatm->enabled && !$readonly) {
 //
 //                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
 //                        ?>

@@ -96,7 +96,7 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 	{
 		switch ($object_type) {
 			case 'propal':
-				dol_include_once('/comm/propal/class/propal.class.php');
+				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 
 				$propal = new Propal($db);
 				$propal->fetch($fk_origin);
@@ -112,8 +112,9 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 				}
 
 				break;
+
 			case 'commande':
-				dol_include_once('/commande/class/commande.class.php');
+				require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
 
 				$commande = new Commande($db);
 				$commande->fetch(GETPOST('fk_origin', 'int'));
@@ -123,6 +124,21 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 					if ($line->id == $fk_object)
 					{
 						$commande->updateline($fk_object, $line->desc, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
+					}
+				}
+				break;
+
+			case 'facture':
+				require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
+
+				$fac = new Facture($db);
+				$fac->fetch(GETPOST('fk_origin', 'int'));
+
+				foreach ($fac->lines as $line)
+				{
+					if ($line->id == $fk_object)
+					{
+						$fac->updateline($fk_object, $line->desc, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->special_code, $line->array_options, $line->situation_percent, $line->fk_unit);
 					}
 				}
 				break;
@@ -184,15 +200,32 @@ function feedback_getDetails(&$object, $object_type) {
         $nomenclature->fetchCombinedDetails($PDOdb);
         $coef_qty_price = $nomenclature->setPrice($PDOdb, $nomenclature->qty_reference, '', $object_type, $object->id,$line->fk_product);
 
-        foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
-            $det->qty = floatval($det->qty) * floatval($line->qty);
-            if(!isset($TProduct[$fk_product])) {
-                $TProduct[$fk_product] = $det;
-            }
-            else{
-                $TProduct[$fk_product]->qty += $det->qty;
-            }
-        }
+        if(!empty($nomenclature->TNomenclatureDetCombined)) {
+			foreach ($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
+				$det->qty = floatval($det->qty) * floatval($line->qty);
+				if (!isset($TProduct[$fk_product])) {
+					$item = new stdClass();
+					$item->qty = $det->qty;
+					$item->fk_product = $det->fk_product;
+					$item->fk_nomenclature = $det->fk_nomenclature;
+					$TProduct[$fk_product] = $item;
+				} else {
+					$TProduct[$fk_product]->qty += $det->qty;
+				}
+			}
+		} elseif($line->fk_product > 0) {
+			if (!isset($TProduct[$line->fk_product])) {
+				$item = new stdClass();
+				$item->qty = $line->qty;
+				$item->fk_product = $line->fk_product;
+				$item->type = $line->product_type;
+				$item->fk_nomenclature = 0;
+
+				$TProduct[$line->fk_product] = $item;
+			} else {
+				$TProduct[$line->fk_product]->qty += $line->qty;
+			}
+		}
 
     }
 
@@ -213,7 +246,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
     list($TProduct,$TWorkstation) = feedback_getDetails($object, $object_type);
 
-    $langs->load('workstation@workstation');
+    $langs->load('workstationatm@workstationatm');
     $PDOdb = new TPDOdb;
 
 
@@ -253,7 +286,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
     // une astuce pour etre sur d'avoir les produits en premier suivis des services
     $TProductsClassed = array();
-    foreach($TProduct as $fk_product=> $det) {
+    foreach($TProduct as $fk_product => $det) {
         $product = getProductNomenclatureCache($fk_product); // mise en cache des produits car utilisé plus tard
         $fk_product_type = 4;
         if($product){$fk_product_type = $product->type; } // récupération du type, par defaut 0 -> produit
@@ -290,7 +323,6 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             $product = getProductNomenclatureCache($fk_product);
             //if(empty($product)){continue;}
 
-
             $feedback = new TNomenclatureFeedback();
             $resfecth = $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
 
@@ -314,53 +346,37 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             print '   <td data-col="qty" align="center">'.price($det->qty).'</td>';
             print '   <td data-col="unit" align="left">'.$product->getLabelOfUnit().'</td>';
 
+			if($editMode) {
+				print '   <td data-col="stockAllowed" align="left">';
+				if (!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)) {
 
-            print '   <td data-col="stockAllowed" align="left">';
-            if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
+					if ($editMode) {
+						print img_picto($langs->trans('ApplyPlanned'), 'rightarrow', 'class="loadAllowed" ' . $dataKey . ' ');
+						$qtyConsumeValue = 0;//!empty($qtyConsume[$det->fk_nomenclature][$det->fk_product])?$qtyConsume[$det->fk_nomenclature][$det->fk_product]:0;
 
-                if($editMode){
-                    print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllowed" '.$dataKey.' ');
-                    $qtyConsumeValue = 0;//!empty($qtyConsume[$det->fk_nomenclature][$det->fk_product])?$qtyConsume[$det->fk_nomenclature][$det->fk_product]:0;
+						print '<input class="stockAllowed" id="stockAllowed' . $domKeySuffix . '" ' . $dataKey . '  type="number" min="' . - ($feedback->stockAllowed - $feedback->qtyUsed) . '" name="stockAllowed[' . $det->fk_nomenclature . '][' . $det->fk_product . ']" data-id="' . $feedback->id . '" value="0" />';
 
-                    print '<input class="stockAllowed" id="stockAllowed'.$domKeySuffix.'" '.$dataKey.'  type="number" min="'.$feedback->qtyUsed.'" name="stockAllowed['.$det->fk_nomenclature.']['.$det->fk_product.']" data-id="'.$feedback->id.'" value="'.$feedback->stockAllowed.'" />';
+					}
+					print '<br/>';
+				}
 
-                }
-                else{
-                    print price($feedback->stockAllowed);
-                }
+				if ($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && (empty($feedback->fk_warehouse) || empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE))) {
+					$formproduct = new FormProduct($db);
+					print $formproduct->selectWarehouses($fk_entrepot, 'entrepot-' . $det->fk_nomenclature . '-' . $det->fk_product, 'warehouseopen', 0, 0, $det->fk_product);
+				} elseif (!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && !empty($feedback->fk_warehouse)) {
+					$entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
+					if ($entrepot) {
+						print '<small>' . $entrepot->libelle . '</small>';
+					}
+				}
 
-                print ' <span class="qty-used-impact" id="qty-allowed-impact'.$domKeySuffix.'" ></span>';
-                print '<br/>';
+				print '	</td>';
+			}
 
+			print '   <td data-col="stockAllreadyAffected" align="left">'.price($feedback->stockAllowed);
+			print ' <span class="qty-used-impact" id="qty-allowed-impact'.$domKeySuffix.'" ></span>';
+			print '</td>';
 
-            }
-
-            if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && ( empty($feedback->fk_warehouse) || empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)) )
-            {
-                $formproduct=new FormProduct($db);
-                print $formproduct->selectWarehouses($fk_entrepot,'entrepot-'.$det->fk_nomenclature.'-'.$det->fk_product,'warehouseopen',0,0,$det->fk_product);
-            }
-            elseif(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && $product->type == 0 && !empty($feedback->fk_warehouse))
-            {
-                $entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
-                if($entrepot){
-                    print '<small>'.$entrepot->libelle.'</small>';
-                }
-            }
-
-            print '	</td>';
-
-
-            if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
-
-                $dispo = $feedback->stockAllowed - $feedback->qtyUsed;
-                $class= '';
-                if( $dispo < 0){
-                    $class= 'error';
-                }
-                print '<td  data-col="qtyUsedImpact" align="center" ><span class="'.$class.'"  >'.price($feedback->stockAllowed - $feedback->qtyUsed).'</span>';
-                print ' <span class="qty-used-impact" id="qty-diff-impact'.$domKeySuffix.'" ></span></td>';
-            }
 
             print '   <td data-col="qtyUsed"  align="left">';
 
@@ -385,6 +401,17 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 			// Quantité utilisée
 			print '   <td data-col="qtyUsedImpact" align="center">'.price($feedback->qtyUsed).' <span class="qty-used-impact" id="qty-used-impact'.$domKeySuffix.'" ></span></td>';
 
+			if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
+
+				$dispo = $feedback->stockAllowed - $feedback->qtyUsed;
+				$class= '';
+				if( $dispo < 0){
+					$class= 'error';
+				}
+				print '<td  data-col="qtyUsedImpact" align="center" ><span class="'.$class.'"  >'.price($feedback->stockAllowed - $feedback->qtyUsed).'</span>';
+				print ' <span class="qty-used-impact" id="qty-diff-impact'.$domKeySuffix.'" ></span>';
+				print '</td>';
+			}
 
             if(!empty($conf->global->NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY))
             {
@@ -441,9 +468,8 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         {
             //print '<tfooter>';
             print '<tr>';
-            print '<td class="liste_titre" colspan="5" ></td>';
+            print '<td class="liste_titre" colspan="7" ></td>';
             print '<td class="liste_titre" align="center"><span class="pointer DoStockFeedBack" ><i class="fa fa-recycle"></i> '.$langs->trans('DoStockFeedBack').'</span></td>';
-            print '<td class="liste_titre"  ></td>';
             print '</tr>';
             //print '</tfooter>';
         }
@@ -502,22 +528,22 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     print '<td class="liste_titre">'.$productTypeTitle.'</td>';
     print '<td class="liste_titre" align="center" colspan="2">'.$langs->trans('QtyPlanned').'</td>';
 
-    print '<td class="liste_titre" align="left">';
-    if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)){
-        $nbCols ++;
+	if($editMode) {
+		print '<td class="liste_titre" align="left">';
+		if (!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)) {
+			$nbCols++;
 
-        if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
-            print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllAllowed" ');
-        }
-        print $langs->trans('QtyAllowed');
-    }
-    print '</td>';
+			if ($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)) {
+				print img_picto($langs->trans('ApplyPlanned'), 'rightarrow', 'class="loadAllAllowed" ');
+			}
+			print $langs->trans('QtyToBeAllocated');
+		}
+		print '</td>';
+	}
+
+	print '<td class="liste_titre"  align="left">'.$langs->trans('QtyAllowed').'</td>';
 
 
-    if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
-        print '<td class="liste_titre" align="center">'.$langs->trans('QtyNotUsed').'</td>';
-        $nbCols ++;
-    }
 
     print '<td class="liste_titre" align="left">';
     if($editMode && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK))
@@ -528,6 +554,11 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
     //print '		<td class="liste_titre" align="center">'.$langs->trans('QtyReturn').'</td>';
 
 	print '<td class="liste_titre" align="center">'.$langs->trans('TotalQtyConsume').'</td>';
+
+	if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && !empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK) ){
+		print '<td class="liste_titre" align="center">'.$langs->trans('QtyNotUsed').'</td>';
+		$nbCols ++;
+	}
 
     if(!empty($conf->global->NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY))
     {
@@ -616,8 +647,8 @@ function saveFeedbackForm(){
                     if(!empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK) && isset($TStockAllowed[$fk_nomenclature][$fk_product])){
                         // Affectation du stock au chantier
                         // Modification des mouvements de stock
-                        $qtyDelta = price2num($TStockAllowed[$fk_nomenclature][$fk_product]) - $feedback->stockAllowed;
-                        $feedback->stockAllowed = price2num($TStockAllowed[$fk_nomenclature][$fk_product]) ;
+                        $qtyDelta = doubleval(price2num($TStockAllowed[$fk_nomenclature][$fk_product]));
+                        $feedback->stockAllowed = $feedback->stockAllowed + $qtyDelta ;
                     }
                     else{
                         // Modification des mouvements de stock

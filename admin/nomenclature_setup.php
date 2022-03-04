@@ -197,7 +197,7 @@ if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED)) {
 }
 
 setup_print_on_off('NOMENCLATURE_HIDE_ADVISED_PRICE','','', 'NOMENCLATURE_HIDE_ADVISED_PRICE_HELP');
-setup_print_on_off('NOMENCLATURE_USE_ON_INVOICE','','', 'NOMENCLATURE_USE_ON_INVOICE_HELP');
+//setup_print_on_off('NOMENCLATURE_USE_ON_INVOICE','','', 'NOMENCLATURE_USE_ON_INVOICE_HELP'); // Retirée car maintenant les nomenclatures sur les lignes de factures existent
 setup_print_on_off('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC');
 setup_print_on_off('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE','','', 'NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE_HELP');
 setup_print_on_off('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE');
@@ -232,11 +232,6 @@ print '<br><input id="input_nomenclature_cost_type_costprice" type="radio" name=
 if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'costprice') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_costprice" >'.$langs->trans('CostType3').'</label>';
-
-print '<br><input id="input_nomenclature_cost_type_disable" type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
-if (empty($conf->global->NOMENCLATURE_COST_TYPE) || $conf->global->NOMENCLATURE_COST_TYPE === 'disable') print 'checked ';
-print '/> ';
-print '<label for="input_nomenclature_cost_type_disable" >'.$langs->trans('Disabled').'</label>';
 
 print '</td>';
 print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Modify").'" >';
@@ -273,6 +268,7 @@ setup_print_title('Parameters');
 
 setup_print_on_off('NOMENCLATURE_USE_QTYREF_TO_ONE'); // , '', '', $langs->trans('NOMENCLATURE_USE_QTYREF_TO_ONE_HELP'));
 
+setup_print_on_off('NOMENCLATURE_UNIQUE_TITLE', '', '', $langs->trans('NOMENCLATURE_UNIQUE_TITLE_HELP'));
 
 
 
