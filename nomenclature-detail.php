@@ -60,7 +60,7 @@ if($action == 'save') {
 
             $n->fetchCombinedDetails($PDOdb);
 
-		$nts = false;
+		$nts = false; // nts means: “need to save”
 
             foreach($n->TNomenclatureDetCombined as $fk_product => $det) {
                 if($fk_productToEdit != $fk_product) continue;
