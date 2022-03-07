@@ -192,13 +192,27 @@ function feedback_getDetails(&$object, $object_type) {
 
     foreach($object->lines as $k=>&$line) {
 
-        if($line->product_type == 9) continue;
+        if($line->product_type == 9 || empty($line->fk_product)) continue;
 
         $nomenclature = new TNomenclature;
         $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
 
         $nomenclature->fetchCombinedDetails($PDOdb);
         $coef_qty_price = $nomenclature->setPrice($PDOdb, $nomenclature->qty_reference, '', $object_type, $object->id,$line->fk_product);
+
+
+		if(!empty($conf->global->NOMENCLATURE_FEEDBACK_ADD_ALSO_PARENT_PRODUCT)){
+			// Ajoute le produit final de
+			if (!isset($TProduct[$line->fk_product])) {
+				$item = new stdClass();
+				$item->qty = $line->qty;
+				$item->fk_product = $line->fk_product;
+				$item->fk_nomenclature = 0;
+				$TProduct[$line->fk_product] = $item;
+			} else {
+				$TProduct[$line->fk_product]->qty += $line->qty;
+			}
+		}
 
         if(!empty($nomenclature->TNomenclatureDetCombined)) {
 			foreach ($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {

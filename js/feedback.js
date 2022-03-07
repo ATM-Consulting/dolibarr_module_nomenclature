@@ -1,14 +1,16 @@
 // Pour info la fonction getNumber sert juste à eviter un bug d'affichage pourris genre 5.56 - 0 = 5.5599999999999 
 
-$( function() {
+jQuery( function($) {
     $( '.qtyConsume' ).bind('keyup change', function(e) {
         var datakey = $(this).data('targetkey');
+		if($(this).val() == ''){ $(this).val(0); }
         updateImpact(datakey);
     });
 
 
     $( '.stockAllowed' ).bind('keyup change', function(e) {
         var datakey = $(this).data('targetkey');
+		if($(this).val() == ''){ $(this).val(0); }
         updateImpact(datakey);
     });
 

@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- FIX : Calcul JS *18/02/2022* - 4.6.2
 - NEW : Improve save performance save only necessary lines *15/12/2021* - 3.3.0
 
 
