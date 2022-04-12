@@ -1065,13 +1065,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                             <?php
                             print '<label>' .$langs->trans('Qty'). '<input type="text" value="1" name="fk_new_product_qty_'.$n->getId().'" size="4" maxlength="50"/></label>';
                             print '<label>'.$langs->trans('Product').'';
+							$finished = 2;
                             if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-                                print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
-                            }
-                            else{
-                                print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
-                            }
-                            print '</label>';
+								$finished = 0;
+							}
+							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,$finished);
+							print '</label>';
                             ?>
                             <span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
                             <div class="inline-block divButAction">
