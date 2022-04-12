@@ -1418,6 +1418,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                     */
                                     overflow: visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
                                 }
+
+								/* le select2 d'ajout de produit passe derrière la popin... impossible d'ajouter un produit à une nomenclature de ligne. C'est un peu chiant. */
+								.select2-dropdown{
+									z-index: 2000;
+								}
+
                             </style>
                             <div>
                                 <?php
