@@ -500,7 +500,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		echo '<div class="error">'.$langs->trans('NonLocalNomenclature').'</div>';
 	}
 
-	$pAction = $_SERVER['PHP_SELF'].'?fk_product='.$n->fk_object;
+	$pAction = $n->getId() ? $_SERVER['PHP_SELF'].'?fk_product='.$n->fk_object : 'auto';
     $formCore=new TFormCore($pAction, 'form_nom_'.$n->getId(), 'post', false);
     if ($readonly) {
         $formCore->Set_typeaff('view'); // $formCore methods will return read-only elements instead of form inputs
@@ -1065,13 +1065,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                             <?php
                             print '<label>' .$langs->trans('Qty'). '<input type="text" value="1" name="fk_new_product_qty_'.$n->getId().'" size="4" maxlength="50"/></label>';
                             print '<label>'.$langs->trans('Product').'';
+							$finished = 2;
                             if(!empty($conf->global->NOMENCLATURE_ALLOW_JUST_MP)) {
-                                print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,0);
-                            }
-                            else{
-                                print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,2);
-                            }
-                            print '</label>';
+								$finished = 0;
+							}
+							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,$finished);
+							print '</label>';
                             ?>
                             <span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>
                             <div class="inline-block divButAction">
@@ -1419,6 +1418,12 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                     */
                                     overflow: visible !important; /* Permet de ne pas tronquer le visuel après un ajout */
                                 }
+
+								/* le select2 d'ajout de produit passe derrière la popin... impossible d'ajouter un produit à une nomenclature de ligne. C'est un peu chiant. */
+								.select2-dropdown{
+									z-index: 2000;
+								}
+
                             </style>
                             <div>
                                 <?php
