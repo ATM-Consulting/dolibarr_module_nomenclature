@@ -500,7 +500,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		echo '<div class="error">'.$langs->trans('NonLocalNomenclature').'</div>';
 	}
 
-	$pAction = $_SERVER['PHP_SELF'].'?fk_product='.$n->fk_object;
+	$pAction = $n->getId() ? $_SERVER['PHP_SELF'].'?fk_product='.$n->fk_object : 'auto';
     $formCore=new TFormCore($pAction, 'form_nom_'.$n->getId(), 'post', false);
     if ($readonly) {
         $formCore->Set_typeaff('view'); // $formCore methods will return read-only elements instead of form inputs
