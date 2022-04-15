@@ -390,7 +390,7 @@ class Interfacenomenclaturetrigger
 
 				$n->setPrice($PDOdb, $object->qty, $object->id, 'propal', $object->fk_propal);
 
-				$pv_calcule = round($n->totalPV / $object->qty, 5); // round car selon les cas, les nombres sont identiques mais sont consiférés comme différents (genr après la virgule il y a un 0000000000000000000000000001 qu'on ne voit pas)
+				$pv_calcule = round($n->totalPV / (!empty($object->qty) ? $object->qty: 1), 5); // round car selon les cas, les nombres sont identiques mais sont consiférés comme différents (genr après la virgule il y a un 0000000000000000000000000001 qu'on ne voit pas)
 				$pv_manuel = round($object->subprice, 5);
 				//var_dump(round($pv_calcule,5) != round($pv_manuel,3),round($pv_calcule,5), round($pv_manuel,5));exit;
 				if($pv_calcule != $pv_manuel) $pv_force = true;

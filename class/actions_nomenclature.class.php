@@ -176,11 +176,30 @@ class Actionsnomenclature
 
 							if(td.length === 0) td = $('#row-<?php echo $lineid; ?> td:nth-child('+lineColDescriptionPos+')');
 
-							td.append('<a href="javascript:showLineNomenclature(<?php echo $showLineNomenclatureParams; ?>)"><?php echo $picto; ?></a>');
+							td.append('<a class="openPopin" href="javascript:showLineNomenclature(<?php echo $showLineNomenclatureParams; ?>)" data-lineid="<?php echo $lineid; ?>" data-fk_product="<?php echo $line->fk_product; ?>" data-element="<?php echo $object->element; ?>" data-fk_element="<?php echo $object->id; ?>"><?php echo $picto; ?></a>');
 							<?php
 						}
 					}
+
+					// si l'un de ces modules est activé, on a potentiellement des modifs de qty qui ne sont pas reportées dans l'appel initial, il faut rebuild l'appel de la popin
+					if ($conf->quickcustomerprice->enabled || $conf->quickeditline->enabled)
+					{
 					?>
+						$('.openPopin').on('click', function (e) {
+							e.preventDefault();
+							let parentTr = $(this).closest('tr');
+							let lineId = $(this).data('lineid');
+							let fk_product = $(this).data('fk_product');
+							let element = $(this).data('element');
+							let fk_element = $(this).data('fk_element');
+							let qty = parentTr.find('td.linecolqty').text(); // compat avec quickcustomerprice et quickeditline
+
+							showLineNomenclature(lineId, qty, fk_product, element, fk_element);
+						});
+					<?php
+					}
+					?>
+
 				});
 				</script>
 				<style type="text/css">

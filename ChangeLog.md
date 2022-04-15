@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 
 ## 4.6 
 
+- FIX : retrocompatibilité des nomenclatures non-locales présente (fatal PHP sur enregistrement en nomenclature locale)  - *12/04/2022* - 4.6.7
+- FIX : les lignes en option vidaient leur PU et PA car recalculé sur la base d'une qty à 0  - *12/04/2022* - 4.6.6
+- FIX : compatibilité avec quickcustomerprice  - *12/04/2022* - 4.6.5
+- FIX : warning division par 0 sur les lignes en option  - *12/04/2022* - 4.6.4
+- FIX : problème select2 z-index => le select2 d'ajout de produit affichait sont dropdown derrière la popin... ajout impossible - *12/04/2022* - 4.6.3
 - FIX : Ne pas mettre à jour la ligne de facture à l'ajout pour les avoirs (ça n'a pas de sens) - *11/04/2022* - 4.6.2
 - FIX : Le filtre PMP sur la liste des nomenclatures ne fonctionnait pas. Le calcul du prix de vente conseillé n'était pas correct - *09/02/2022* - 4.6.1
 - NEW : Ajout d'une action de masse permettant de remplacer le pmp des produits des nomenclatures sélectionnées par le prix des nomenclatures - *04/02/2022* - 4.6.0
