@@ -88,6 +88,14 @@ function cloneNomenclatureFromProduct(&$PDOdb, $fk_product, $fk_object, $object_
     return $res;
 }
 
+/**
+ * @param TNomenclature $n
+ * @param $object_type
+ * @param $fk_object
+ * @param $fk_origin
+ * @param $apply_nomenclature_price
+ * @return void
+ */
 function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nomenclature_price=false)
 {
 	global $db;
@@ -105,7 +113,8 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 				{
 					if ($line->id == $fk_object)
 					{
-						$propal->updateline($fk_object, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
+						$qty = $line->qty != 0 ? $line->qty : 1; // fix apply_price pour les lignes en option
+						$propal->updateline($fk_object, $n->getSellPrice($qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, $line->desc, 'HT', $line->info_bits, $line->special_code, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($qty), $line->product_label, $line->product_type, $line->date_start, $line->date_end, $line->array_options, $line->fk_unit);
 						$line->array_options['options_pv_force'] = false;
 						$line->insertExtraFields();
 					}
@@ -123,7 +132,8 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 				{
 					if ($line->id == $fk_object)
 					{
-						$commande->updateline($fk_object, $line->desc, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
+						$qty = $line->qty != 0 ? $line->qty : 1; // fix apply_price pour les lignes en option
+						$commande->updateline($fk_object, $line->desc, $n->getSellPrice($qty), $line->qty, $line->remise_percent, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->date_start, $line->date_end, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($qty), $line->product_label, $line->special_code, $line->array_options, $line->fk_unit);
 					}
 				}
 				break;
@@ -138,7 +148,8 @@ function _updateObjectLine(&$n, $object_type, $fk_object, $fk_origin, $apply_nom
 				{
 					if ($line->id == $fk_object)
 					{
-						$fac->updateline($fk_object, $line->desc, $n->getSellPrice($line->qty), $line->qty, $line->remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($line->qty), $line->product_label, $line->special_code, $line->array_options, $line->situation_percent, $line->fk_unit);
+						$qty = $line->qty != 0 ? $line->qty : 1; // fix apply_price pour les lignes en option
+						$fac->updateline($fk_object, $line->desc, $n->getSellPrice($qty), $line->qty, $line->remise_percent, $line->date_start, $line->date_end, $line->tva_tx, $line->localtax1_tx, $line->localtax2_tx, 'HT', $line->info_bits, $line->product_type, $line->fk_parent_line, $line->skip_update_total, $line->fk_fournprice, $n->getBuyPrice($qty), $line->product_label, $line->special_code, $line->array_options, $line->situation_percent, $line->fk_unit);
 					}
 				}
 				break;
