@@ -247,11 +247,11 @@ if (empty($reshook))
 		$fk_warehouse_to_make = GETPOST('fk_warehouse_to_make', 'int');
 		$fk_warehouse_needed = GETPOST('fk_warehouse_needed', 'int');
 		$qty = GETPOST('nomenclature_qty_to_create', 'int');
+		$use_subbom = GETPOST('use_subbom', 'int');
 
 		$n = new TNomenclature;
 		$n->load($PDOdb, $fk_nomenclature_used);
-
-		$res = $n->addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed);
+        $res = $n->addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed, $use_subbom);
 		if ($res < 0)
 		{
 			setEventMessages('', $n->errors, 'errors');

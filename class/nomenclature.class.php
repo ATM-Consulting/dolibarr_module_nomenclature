@@ -1059,12 +1059,14 @@ class TNomenclature extends TObjetStd
 
 	/**
 	 * Méthode qui ce charge de faire les mouvements de stock du produit final ainsi que des composants
+	 *
 	 * @param type $qty
 	 * @param type $fk_warehouse_to_make
 	 * @param type $fk_warehouse_needed
+	 * @param int  $use_subbom
 	 * @return int
 	 */
-	function addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed)
+	function addMvtStock($qty, $fk_warehouse_to_make, $fk_warehouse_needed, $use_subbom = 0)
 	{
 		global $db,$langs,$user,$conf;
 
@@ -1094,15 +1096,23 @@ class TNomenclature extends TObjetStd
 			$mouvS->origin->id = $this->fk_object;
 
 			$db->begin();
+			if(! empty($use_subbom)) {
+				$this->fetchCombinedDetails($this->PDOdb, true, $qty, 1);
+				$TNomenDetStock = $this->TNomenclatureDetCombined;
+			}
+			else $TNomenDetStock = $this->TNomenclatureDet;
 			if($action === 'destockNeeded')
 			{
 				// DESTOCK components (needed)
-				foreach ($this->TNomenclatureDet as &$det)
-				{
-				    $val = $det->qty*$coef;
-					if(empty($val)) continue;
-					$result=$mouvS->livraison($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
-					if ($result < 0 || ($result == 0 && empty($det->fk_product))) $error++;
+                if(!empty($TNomenDetStock)) {
+					foreach($TNomenDetStock as &$det) {
+						if(! empty($use_subbom)) $val = $det->qty;
+						else $val = $det->qty * $coef;
+
+						if(empty($val)) continue;
+						$result = $mouvS->livraison($user, $det->fk_product, $fk_warehouse_needed, $val, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
+						if($result < 0 || ($result == 0 && empty($det->fk_product))) $error++;
+					}
 				}
 
 				// Then STOCK the parent (to_make)
@@ -1112,11 +1122,17 @@ class TNomenclature extends TObjetStd
 			else
 			{
 				// TODO STOCK components (needed)
-				foreach ($this->TNomenclatureDet as &$det)
-				{
-					$result=$mouvS->reception($user, $det->fk_product, $fk_warehouse_needed, $det->qty*$coef, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
-					if ($result <= 0) $error++;
-				}
+                 if(!empty($TNomenDetStock)) {
+					 foreach($TNomenDetStock as &$det) {
+						 if(! empty($use_subbom)) $val = $det->qty;
+						 else $val = $det->qty * $coef;
+
+						 if(empty($val)) continue;
+
+						 $result = $mouvS->reception($user, $det->fk_product, $fk_warehouse_needed, $val, 0, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
+						 if($result <= 0) $error++;
+					 }
+				 }
 
 				// Then DESTOCK the parent (to_make)
 				$result=$mouvS->livraison($user, $this->fk_object, $fk_warehouse_to_make, $qty_abs, $this->totalPRCMO, $langs->trans('NomenclatureDestockProductFrom', $this->getId()));
