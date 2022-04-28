@@ -172,6 +172,7 @@ function getFormConfirmNomenclature(&$form, &$product, $fk_nomenclature_used, $a
 		if (empty($qty)) $qty = $qty_reference;
 
 		$formproduct = new FormProduct($db);
+		$form = new Form($db);
 		$formproduct->loadWarehouses($product->id, '', '', true);
 
         $text = '';
@@ -181,6 +182,7 @@ function getFormConfirmNomenclature(&$form, &$product, $fk_nomenclature_used, $a
 			,array('type' => 'text'		,'name' => 'nomenclature_qty_to_create'	,'label' => $langs->trans('NomenclatureHowManyQty')				,'value' => $qty, 'moreattr' => 'size="5"')
 			,array('type' => 'other'	,'name' => 'fk_warehouse_to_make'		,'label' => $langs->trans('NomenclatureSelectWarehouseToMake')	,'value' => $formproduct->selectWarehouses(GETPOST('fk_warehouse_to_make', 'none'), 'fk_warehouse_to_make', 'warehouseopen,warehouseinternal', 0, 0, 0, '', 0, 0, null, 'minwidth200'))
 			,array('type' => 'other'	,'name' => 'fk_warehouse_needed'		,'label' => $langs->trans('NomenclatureSelectWarehouseNeeded')	,'value' => $formproduct->selectWarehouses(GETPOST('fk_warehouse_needed', 'none'), 'fk_warehouse_needed', 'warehouseopen,warehouseinternal', 0, 0, 0, '', 0, 0, null, 'minwidth200'))
+			,array('type' => 'other'	,'name' => 'use_subbom'					,'label' => $langs->trans('NomenclatureUseSubBom')				,'value' => $form->selectyesno("use_subbom", GETPOST('use_subbom', 'int'), 1))
 		);
 
         $formconfirm = $form->formconfirm($_SERVER['PHP_SELF'] . '?fk_product=' . $product->id, $langs->trans('NomenclatureCreateStock', $product->ref), $text, 'confirm_create_stock', $formquestion, 0, 1, 'auto');

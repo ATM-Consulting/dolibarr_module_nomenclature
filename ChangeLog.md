@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 - FIX : Calcul JS *18/02/2022* - 4.6.2
 - NEW : Improve save performance save only necessary lines *15/12/2021* - 3.3.0
 
+## 4.7
+- NEW : Ajout de la possibilité de consommer les produits enfants lors de l'appui sur le bouton "Produire X Quantité" - *28/04/2022* - 4.7.0
 
 ## 4.6 
 
