@@ -862,7 +862,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								<td><?php
 								if($n->getId()>0)
 								{
-									$param = '?action=delete_nomenclature_detail&k='.$k.'&fk_nomenclature='.$n->getId().'&fk_product='.$product->id.'&fk_object='.$fk_object;
+									$param = '?action=delete_nomenclature_detail&k='.$k.'&fk_nomenclature='.$n->getId().'&fk_product='.$product->id.'&fk_object='.$fk_object.'&token='.$newToken;
 									$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
 
 									// Si la nomenclature a été enregistré puis que les lignes ont été delete, alors l'icone de suppression ne doit pas s'afficher car ce sont les lignes chargé depuis le load_original()
