@@ -130,10 +130,11 @@ function _fiche_propal(&$PDOdb, &$db, &$conf, &$langs, &$user, $action='')
 function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $label, $paramid, $fieldname, $fiche, $id, $action='')
 {
 	global $hookmanager,$conf;
-
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	$form = new Form($db);
     echo '<form action="'.$_SERVER['PHP_SELF'].'" method="POST">';
 	echo '<input type="hidden" name="id" value="'.$id.'" />';
+	echo '<input type="hidden" name="token" value="'.$newToken.'" />';
 	echo '<input type="hidden" name="fiche" value="'.$fiche.'" />';
 	echo '<input type="hidden" name="action" value="updatecoef" />';
     echo '<table class="border" width="100%">';

@@ -259,7 +259,7 @@ $db->close();
 
 function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	global $user, $langs, $db, $conf;
-
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	llxHeader('',$langs->trans('Nomenclature'));
 
 	$form = new Form($db);
@@ -315,7 +315,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	?>
 	<div class="tabsAction">
 		<div class="inline-block divButAction">
-			<a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>&fk_object=<?php echo $product->id ?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a>
+			<a href="?action=add_nomenclature&fk_product=<?php echo $product->id ?>&fk_object=<?php echo $product->id ?>&token=<?php echo $newToken ;?>" class="butAction"><?php echo $langs->trans('AddNomenclature'); ?></a>
 		</div>
 
 		<?php
@@ -380,7 +380,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 			'qty'=>'number'
 		)
 		,'link'=>array(
-			'Id'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' '.$langs->trans('Nomenclature').'</a>'
+			'Id'=>'<a href="'.dol_buildpath('/nomenclature/nomenclature.php?token='. $newToken .'&fk_product=@val@',1).'">'.img_picto($langs->trans('Nomenclature'),'object_list').' '.$langs->trans('Nomenclature').'</a>'
 		)
 		,'liste'=>array(
 			'titre'=>$langs->trans('ListUseNomenclaure')
@@ -437,7 +437,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	global $langs, $conf, $db, $user, $hookmanager;
 
 	$coef_qty_price = $n->setPrice($PDOdb,$qty_ref,$fk_object,$object_type,GETPOST('fk_origin'));
-
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 
 	print '<h3 class="accordion-title">';
@@ -866,7 +866,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
 
 									// Si la nomenclature a été enregistré puis que les lignes ont été delete, alors l'icone de suppression ne doit pas s'afficher car ce sont les lignes chargé depuis le load_original()
-									if (! empty($n->iExist) && !$readonly) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
+									if (! empty($n->iExist) && !$readonly) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php?token='.$newToken,1).$param.'" class="tojs">'.img_delete().'</a>';
 								}
 								?></td>
 
@@ -876,7 +876,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                    $coldisplay++;
                                    if(!$readonly) { ?>
-                                        <a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>">
+                                        <a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?token='.$newToken.'&fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>">
                                         <?php echo img_picto('Move','grip'); ?>
                                         </a>
                                    <?php } ?>
@@ -1100,13 +1100,13 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								$param.= '&object_type='.$object_type.'&qty_ref='.$qty_ref.'&fk_origin='.GETPOST('fk_origin', 'int').'&json='.$json;
 
 								// Si la nomenclature a été enregistré puis que les lignes ont été delete, alors l'icone de suppression ne doit pas s'afficher car ce sont les lignes chargé depuis le load_original()
-								if (! empty($n->iExist) && !$readonly) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php',1).$param.'" class="tojs">'.img_delete().'</a>';
+								if (! empty($n->iExist) && !$readonly) echo '<a href="'.dol_buildpath('/nomenclature/nomenclature.php?token='.$newToken,1).$param.'" class="tojs">'.img_delete().'</a>';
 							}
 							?>
 						</td>
 
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
-									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$ws->id; ?>">
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?token=' . $newToken . '&fk_product='.$product->id.'&amp;action=up&amp;rowid='.$ws->id; ?>">
 									<?php echo img_picto('Move','grip'); ?>
 									</a>
 								</td>
@@ -1320,7 +1320,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                         if (!$json && !empty($conf->stock->enabled) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN)) {
                             print '<div class="inline-block divButAction">';
-                            print '<a id="nomenclaturecreateqty-' . $n->getId() . '" class="butAction" href="' . dol_buildpath('/nomenclature/nomenclature.php', 1) . '?fk_product=' . $product->id . '&fk_nomenclature_used=' . $n->getId() . '&qty_reference=' . $n->qty_reference . '&action=create_stock">' . $langs->trans('NomenclatureCreateXQty') . '</a>';
+                            print '<a id="nomenclaturecreateqty-' . $n->getId() . '" class="butAction" href="' . dol_buildpath('/nomenclature/nomenclature.php?token='.$newToken, 1) . '?fk_product=' . $product->id . '&fk_nomenclature_used=' . $n->getId() . '&qty_reference=' . $n->qty_reference . '&action=create_stock">' . $langs->trans('NomenclatureCreateXQty') . '</a>';
                             print '</div>';
                         }
                         ?>

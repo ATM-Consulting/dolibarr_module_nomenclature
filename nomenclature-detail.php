@@ -21,7 +21,7 @@ $ref = GETPOST('ref');
 $action = GETPOST('action', 'none', 2); // Check only $_POST
 
 $hookmanager->initHooks(array('nomenclatureproductservicelist'));
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 if(GETPOST('save') == 'ok') setEventMessage($langs->trans('Saved'));
 
 $form = new Form($db);
@@ -106,7 +106,7 @@ if($object_type == 'propal') {
     $title = $langs->trans('Proposal');
     $picto = 'propal';
 
-    $linkback = '<a href="'.DOL_URL_ROOT.'/comm/propal/list.php?restore_lastsearch_values=1'.(! empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+    $linkback = '<a href="'.DOL_URL_ROOT.'/comm/propal/list.php?restore_lastsearch_values=1'.(! empty($socid) ? '&socid='.$socid : '').'&token='.$newToken.'">'.$langs->trans("BackToList").'</a>';
 
     $morehtmlref = '<div class="refidno">';
     // Ref customer
@@ -115,7 +115,7 @@ if($object_type == 'propal') {
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1, 'customer');
 
     if(empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) {
-        $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/comm/propal/list.php?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'">'.$langs->trans("OtherProposals").'</a>)';
+        $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/comm/propal/list.php?socid='.$object->thirdparty->id.'&token='.$newToken.'&search_societe='.urlencode($object->thirdparty->name).'">'.$langs->trans("OtherProposals").'</a>)';
     }
 
     // Project
@@ -127,7 +127,7 @@ if($object_type == 'propal') {
             $proj = new Project($db);
             $proj->fetch($object->fk_project);
 
-            $morehtmlref .= '<a href="'.DOL_URL_ROOT.'/projet/card.php?id='.$object->fk_project.'" title="'.$langs->trans('ShowProject').'">';
+            $morehtmlref .= '<a href="'.DOL_URL_ROOT.'/projet/card.php?token=' . $newToken . '&id='.$object->fk_project.'" title="'.$langs->trans('ShowProject').'">';
             $morehtmlref .= $proj->ref;
             $morehtmlref .= '</a>';
         }
@@ -145,7 +145,7 @@ else if($object_type == 'commande') {
     $title = $langs->trans('CustomerOrder');
     $picto = 'order';
 
-    $linkback = '<a href="'.DOL_URL_ROOT.'/commande/list.php?restore_lastsearch_values=1'.(! empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+    $linkback = '<a href="'.DOL_URL_ROOT.'/commande/list.php?restore_lastsearch_values=1'.(! empty($socid) ? '&token='.$newToken.'&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
 
     $morehtmlref = '<div class="refidno">';
     // Ref customer
@@ -155,7 +155,7 @@ else if($object_type == 'commande') {
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1);
 
     if(empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) {
-        $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/commande/list.php?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'">'.$langs->trans("OtherOrders").'</a>)';
+        $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/commande/list.php?socid='.$object->thirdparty->id.'&token='.$newToken.'&search_societe='.urlencode($object->thirdparty->name).'">'.$langs->trans("OtherOrders").'</a>)';
     }
 
     // Project
@@ -166,7 +166,7 @@ else if($object_type == 'commande') {
         if(! empty($object->fk_project)) {
             $proj = new Project($db);
             $proj->fetch($object->fk_project);
-            $morehtmlref .= '<a href="'.DOL_URL_ROOT.'/projet/card.php?id='.$object->fk_project.'" title="'.$langs->trans('ShowProject').'">';
+            $morehtmlref .= '<a href="'.DOL_URL_ROOT.'/projet/card.php?token='.$newToken.'&id='.$object->fk_project.'" title="'.$langs->trans('ShowProject').'">';
             $morehtmlref .= $proj->ref;
             $morehtmlref .= '</a>';
         }

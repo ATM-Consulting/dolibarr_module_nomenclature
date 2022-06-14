@@ -48,7 +48,7 @@ if (! $user->admin) {
 // Parameters
 $action = GETPOST('action', 'alpha');
 
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 /*
  * Actions
@@ -179,6 +179,7 @@ print '</td></tr>';
 
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="action" value="recalculate_nomenclature">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<tr class="recalculate_nomenclature" '.$bc[$var].'>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="600">'.$langs->trans("RecalculateNomenclatureDesc");
@@ -250,7 +251,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_CUSTOM_THM_FOR_WS").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_CUSTOM_THM_FOR_WS">';
 print ajax_constantonoff('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS');
 print '</form>';
@@ -262,7 +263,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_BEFORE_LAUNCH").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_BEFORE_LAUNCH">';
 print ajax_constantonoff('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH');
 print '</form>';
@@ -274,7 +275,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_PREPARE").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_PREPARE">';
 print ajax_constantonoff('NOMENCLATURE_USE_TIME_PREPARE');
 print '</form>';
@@ -286,7 +287,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_TIME_DOING").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_USE_TIME_DOING">';
 print ajax_constantonoff('NOMENCLATURE_USE_TIME_DOING');
 print '</form>';
@@ -298,7 +299,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE").'</td>'
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE">';
 print ajax_constantonoff('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE');
 print '</form>';
@@ -310,7 +311,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_USE_MANUAL_COEF").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print '<input type="hidden" name="action" value="NOMENCLATURE_ALLOW_USE_MANUAL_COEF">';
 print ajax_constantonoff('NOMENCLATURE_ALLOW_USE_MANUAL_COEF');
 print '</form>';
@@ -322,7 +323,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_COEF_ON_COUT_REVIENT").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print '<input type="hidden" name="action" value="NOMENCLATURE_USE_COEF_ON_COUT_REVIENT">';
 print ajax_constantonoff('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT');
 print '</form>';
@@ -334,7 +335,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_CUSTOM_BUYPRICE").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print '<input type="hidden" name="action" value="NOMENCLATURE_USE_CUSTOM_BUYPRICE">';
 print ajax_constantonoff('NOMENCLATURE_USE_CUSTOM_BUYPRICE');
 print '</form>';
@@ -346,7 +347,7 @@ if(!empty($conf->global->PRODUCT_USE_UNITS)) {
 	print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT").'</td>';
 	print '<td align="center" width="300">';
 	print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="token" value="'. $newToken .'">';
 	print '<input type="hidden" name="action" value="NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT">';
 	print ajax_constantonoff('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
 	print '</form>';
@@ -359,7 +360,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_USE_LOSS_PERCENT").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print '<input type="hidden" name="action" value="NOMENCLATURE_USE_LOSS_PERCENT">';
 print ajax_constantonoff('NOMENCLATURE_USE_LOSS_PERCENT');
 print '</form>';
@@ -371,7 +372,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print '<input type="hidden" name="action" value="NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE">';
 print ajax_constantonoff('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE');
 print '</form>';
@@ -379,7 +380,7 @@ print '</td></tr>';
 
 $var=!$var;
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE\">";
 print '<tr '.$bc[$var].'>';
 print '<td>'.$langs->trans("NOMENCLATURE_COST_TYPE").'</td>';
@@ -418,7 +419,7 @@ print '<td>'.$langs->trans("NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="center" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">'; // Keep form because ajax_constantonoff return single link with <a> if the js is disabled
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'. $newToken .'">';
 print '<input type="hidden" name="action" value="set_NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN">';
 print ajax_constantonoff('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN');
 print '</form>';
