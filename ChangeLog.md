@@ -39,6 +39,8 @@ All notable changes to this project will be documented in this file.
 	tiennent compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes
 
 ## 4.2
+- FIX : Erreurs Ajax : exceptions manquantes à la protection CSRF sur
+        `prod_ajax.php` - *24/06/2022* - 4.2.2
 - FIX : Arrondi faussait le prix d'achat unitaire d'une ligne de nomenclature - *17/12/2021* - 4.2.1
 - NEW : ajout de la conf "Titre unique pour les nomenclatures". Si activée, Dolibarr interdira
   la création de deux nomenclatures ayant le même nom - *29/11/2021* - 4.2.0
