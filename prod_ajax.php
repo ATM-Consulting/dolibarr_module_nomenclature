@@ -1,10 +1,9 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+if (!defined('NOREQUIREMENU'))  define('NOREQUIREMENU', '1');				// If there is no need to load and show top and left menu
+if (!defined('NOREQUIREHTML'))  define('NOREQUIREHTML', '1');				// If we don't need to load the html.form.class.php
+if (!defined('NOCSRFCHECK'))    define('NOCSRFCHECK', '1');
+if (!defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL', '1');
 
 require 'config.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');

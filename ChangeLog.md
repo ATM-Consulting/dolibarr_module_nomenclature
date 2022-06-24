@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.3
 
+- FIX : Suppression de l'option "Désactivé" de la conf "Prix d'achat/revient suggéré par défaut" - *06/01/2022* - 4.3.4
 - FIX : Gestion des remises lignes pour la fonction recursive qui tient compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes - *06/01/2022* - 4.3.3
 - FIX : Gestion des avoirs pour la fonction récursive (avec soustraction des marges en cas de ligne négative) - *04/01/2022* - 4.3.2
 - FIX : Le rang n'était pas appliqué au moment de l'import des nomenclatures + ajout du titre de la nomenclature à l'import - *05/01/2022* - 4.3.1
@@ -20,6 +21,8 @@ All notable changes to this project will be documented in this file.
 	tiennent compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes
 
 ## 4.2
+- FIX : Erreurs Ajax : exceptions manquantes à la protection CSRF sur
+        `prod_ajax.php` - *24/06/2022* - 4.2.2
 - FIX : Arrondi faussait le prix d'achat unitaire d'une ligne de nomenclature - *17/12/2021* - 4.2.1
 - NEW : ajout de la conf "Titre unique pour les nomenclatures". Si activée, Dolibarr interdira
   la création de deux nomenclatures ayant le même nom - *29/11/2021* - 4.2.0

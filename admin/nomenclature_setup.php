@@ -233,11 +233,6 @@ if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE
 print '/> ';
 print '<label for="input_nomenclature_cost_type_costprice" >'.$langs->trans('CostType3').'</label>';
 
-print '<br><input id="input_nomenclature_cost_type_disable" type="radio" name="NOMENCLATURE_COST_TYPE" value="disable" ';
-if (empty($conf->global->NOMENCLATURE_COST_TYPE) || $conf->global->NOMENCLATURE_COST_TYPE === 'disable') print 'checked ';
-print '/> ';
-print '<label for="input_nomenclature_cost_type_disable" >'.$langs->trans('Disabled').'</label>';
-
 print '</td>';
 print '<td align="center" width="300"><input type="submit" class="butAction" value="'.$langs->trans("Modify").'" >';
 print '</td></tr>';
