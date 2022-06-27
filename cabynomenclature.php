@@ -34,7 +34,7 @@ require __DIR__ . '/class/nomenclature.class.php';
 
 // Load translation files required by the page
 $langs->loadLangs(array("products", "categories", "errors", 'accountancy'));
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Security pack (data & check)
 $socid = GETPOST('socid', 'int');
 
@@ -259,8 +259,9 @@ if ($modecompta == "CREANCES-DETTES") {
 $period = $form->selectDate($date_start, 'date_start', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
 $period .= ' - ';
 $period .= $form->selectDate($date_end, 'date_end', 0, 0, 0, '', 1, 0, 0, '', '', '', '', 1, '', '', 'tzserver');
+
 if ($date_end == dol_time_plus_duree($date_start, 1, 'y') - 1) {
-	$periodlink = '<a href="'.$_SERVER["PHP_SELF"].'?year='.($year_start - 1).'&modecompta='.$modecompta.'">'.img_previous().'</a> <a href="'.$_SERVER["PHP_SELF"].'?year='.($year_start + 1).'&modecompta='.$modecompta.'">'.img_next().'</a>';
+	$periodlink = '<a href="'.$_SERVER["PHP_SELF"].'?year='.($year_start - 1).'&modecompta='.$modecompta.'&token='.$newToken.'">'.img_previous().'</a> <a href="'.$_SERVER["PHP_SELF"].'?year='.($year_start + 1).'&modecompta='.$modecompta.'">'.img_next().'</a>';
 } else {
 	$periodlink = '';
 }
@@ -494,7 +495,7 @@ if ($modecompta == 'CREANCES-DETTES') {
 			print "<td>";
 			$fullname = $name[$key];
 			if ($key > 0) {
-				$linkname = '<a href="'.DOL_URL_ROOT.'/product/card.php?id='.$key.'">'.img_object($langs->trans("ShowProduct"), $type[$key] == 0 ? 'product' : 'service').' '.$fullname.'</a>';
+				$linkname = '<a href="'.DOL_URL_ROOT.'/product/card.php?id='.$key.'atoken='.$newToken.'">'.img_object($langs->trans("ShowProduct"), $type[$key] == 0 ? 'product' : 'service').' '.$fullname.'</a>';
 			} else {
 				$linkname = $langs->trans("PaymentsNotLinkedToProduct");
 			}

@@ -48,7 +48,7 @@ $langs->load('workstationatm@workstationatm');
 
 // Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array('projectfeedbackcard','globalcard'));
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 $object = new Project($db);
 
 // Load object
@@ -108,7 +108,7 @@ dol_fiche_head($head, 'projectfeedback', $langs->trans("Project"), -1, ($object-
 
 // Project card
 
-$linkback = '<a href="'.DOL_URL_ROOT.'/projet/list.php?restore_lastsearch_values=1">'.$langs->trans("BackToList").'</a>';
+$linkback = '<a href="'.DOL_URL_ROOT.'/projet/list.php?restore_lastsearch_values=1&token='. $newToken.'">'.$langs->trans("BackToList").'</a>';
 
 $morehtmlref='<div class="refidno">';
 // Title

@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2014 Alexis Algoud        <support@atm-conuslting.fr>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -42,7 +42,7 @@ $hookmanager->initHooks(array('nomenclatureList','globallist'));
 $PDOdb = new TPDOdb;
 
 
-// LIST ELEMENTS 
+// LIST ELEMENTS
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
@@ -73,14 +73,14 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook))
 {
-    
-    
+
+
 }
 
 
 
 /*
- * View 
+ * View
  */
 
 
@@ -114,7 +114,7 @@ $TParam['title'] = array(
     //'object_type' => $langs->trans('ObjectType'),
     'ref' => $langs->trans('ProductRef'),
     'title' => $langs->trans('NomenclatureName'),
-    
+
     'is_default'  => $langs->trans('is_default'),
     'qty_reference' => $langs->trans('nomenclatureQtyReference'),
     'pmp' => $langs->trans('PMP'),
@@ -122,7 +122,7 @@ $TParam['title'] = array(
     //'totalPRCMO_PMP'  => $langs->trans('TotalAmountCostWithChargePMPQty'),
     'totalPRCMO_OF'  => $langs->trans('TotalAmountCostWithChargeOFQty'),
     //'totalPRCMO'  => $langs->trans('Total'),
-    
+
     'date_cre' => $langs->trans('CreateOn'),
     'date_maj' => $langs->trans('Updated'),
 );
@@ -135,16 +135,16 @@ $TParam['position'] = array(
         'text-align'=> array(
             'ref' => 'left',
             'title' => 'left',
-            
+
             'is_default'  => 'center',
-            
+
             'qty_reference' => 'right',
             'pmp' => 'right',
             'SellPrice'     => 'right',
             'totalPRCMO_PMP'  => 'right',
             'totalPRCMO_OF'  => 'right',
             'totalPRCMO'  => 'right',
-            
+
             'date_cre' => 'center',
             'date_maj' => 'center',
         )
@@ -171,7 +171,7 @@ $TParam['search'] = array (
     'title'          => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'title'),
     'ref'            => array('search_type'=>true, 'table'=>'p', 'fieldname'=>'ref'),
     'is_default'     => array('search_type'=>array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') )),
-    
+
     'qty_reference'  => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'qty_reference'),
     'pmp'  			 => array('search_type'=>true, 'table'=>'p', 'fieldname'=>'pmp'),
     'totalPRCMO_PMP' => array('search_type'=>true, 'table'=>'n', 'fieldname'=>'totalPRCMO_PMP'),
@@ -190,8 +190,8 @@ $TParam['eval'] = array(
     'title'=>'linkToNomenclature(\'@val@\', @rowid@, \'@object_type@\', \'@fk_object@\')',
     'ref'=>'linkToNomenclature(\'@val@\', @rowid@, \'@object_type@\', \'@fk_object@\')',
     'is_default' => '_yesNo(\'@is_default@\')',
-    
-    
+
+
     // prix d'achat total
     //'BuyPrice' => 'nomenclature_getBuyPrice(@rowid@)',
 
@@ -202,15 +202,15 @@ $TParam['eval'] = array(
 
     // Prix de revient chargé (on affiche tjr le chargé)
     'totalPRCMO' => 'nomenclature_totalPRCMO(@rowid@)',
-    
+
     // Coût de revient chargé théorique pour %s exemplaire(s)
     'totalPRCMO_PMP' => 'nomenclature_totalPRCMO_PMP(@rowid@)',
-    
+
     // TotalAmountCostWithChargeOF=Coût de revient chargé réel pour %s exemplaire(s)
     'totalPRCMO_OF' => 'nomenclature_totalPRCMO(@rowid@)',//'nomenclature_totalPRCMO_OF(@rowid@)',
-    
-    
-    
+
+
+
 );
 
 // Query MYSQL
@@ -270,7 +270,7 @@ $db->close();
  */
 function _objectTypeList(){
     global $db;
-    
+
     $sql = "SELECT DISTINCT object_type FROM `" . MAIN_DB_PREFIX . "nomenclature`";
     $TResult = array();
     $res = $db->query($sql);
@@ -287,38 +287,38 @@ function _objectTypeList(){
 }
 
 function linkToNomenclature($label = '',$nomenclature_id = '', $object_type = '', $object_id = '' ){
-    
+
     if(empty($object_type)) return $label;
-    
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
     if($object_type == 'product'){
         $url = dol_buildpath('nomenclature/nomenclature.php',1).'?fk_nomenclature='.intval($nomenclature_id ).'&amp;fk_product='.intval($object_id).'#nomenclature'.intval($nomenclature_id );
     }
     else {
-        $url = dol_buildpath('nomenclature/nomenclature-detail.php',1).'?id='.intval($object_id).'&amp;object='.$object_type;
+        $url = dol_buildpath('nomenclature/nomenclature-detail.php',1).'?id='.intval($object_id).'&amp;object='.$object_type.'&token='.$newToken;
     }
-    
+
     return '<a href="'.$url.'" target="_self" >'.(empty($label)?'N/A':$label).'</label>';
 }
 
 function _yesNo($id=0){
     global $langs;
-    
+
     $array = array(0=>$langs->trans('No'), 1=>$langs->trans('Yes') );
     if(!empty($array[$id])) return $array[$id];
     return $array[0];
 }
 
 function nomenclature_cache($id=0, $usecache=1){
-    
+
     global $PDOdb, $n_cache;
-    
+
     if(!empty($id) ){
-        
+
         if($usecache && !empty($n_cache[$id])){
             return $n_cache[$id];
         }
-        
-        
+
+
         $n=new TNomenclature ;
         if($n->load($PDOdb, $id)){
             $n->setPrice($PDOdb,$n->qty_reference, $n->fk_object, $n->object_type);
@@ -332,7 +332,7 @@ function nomenclature_cache($id=0, $usecache=1){
     else{
         return 0;
     }
-    
+
 }
 
 
@@ -342,7 +342,7 @@ function nomenclature_getBuyPrice($id=0){
     if(!empty($n)){
         return price($n->getBuyPrice());
     }
-    
+
     return '--';
 }
 
@@ -353,7 +353,7 @@ function nomenclature_getSellPrice($id=0){
     if(!empty($n)){
         return price($n->getSellPrice());
     }
-    
+
     return '--';
 }
 
@@ -384,17 +384,17 @@ function nomenclature_totalPRCMO($id=0){
     if(!empty($n)){
         return price(price2num($n->totalPRCMO,'MT'));
     }
-    
+
     return '--';
 }
 
-// Prix de revient chargé 
+// Prix de revient chargé
 function nomenclature_totalPR($id=0){
     $n = nomenclature_cache($id);
     if(!empty($n)){
         return price(price2num($n->totalPR,'MT'));
     }
-    
+
     return '--';
 }
 
@@ -405,7 +405,7 @@ function nomenclature_totalPRCMO_PMP($id=0){
     if(!empty($n)){
         return price(price2num($n->totalPRCMO_PMP,'MT'));
     }
-    
+
     return '--';
 }
 
@@ -415,7 +415,7 @@ function nomenclature_totalPRCMO_OF($id=0){
     if(!empty($n)){
         return price(price2num($n->totalPRCMO_OF,'MT'));
     }
-    
+
     return '--';
 }
 
