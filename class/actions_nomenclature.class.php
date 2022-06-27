@@ -587,7 +587,7 @@ class Actionsnomenclature
 	 */
 	function printOverviewProfit(&$parameters, &$object, &$action, $hookmanager) {
 		global $conf, $langs, $db;
-
+		$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 		$TContext = explode(':', $parameters['context']);
 
 		if(in_array('projectOverview', $TContext) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)) {
@@ -707,7 +707,7 @@ class Actionsnomenclature
 					// Element label
 					$this->resprints.= '<td class="left">'.$name;
 					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)) {
-						$this->resprints .= ' <small><a href="' . $tabHistoryUrl . '" >(' . $langs->trans('ShowFeedBackHistoryDetails') . ')</a></small>';
+						$this->resprints .= ' <small><a href="' . $tabHistoryUrl . '&token='. $newToken .'" >(' . $langs->trans('ShowFeedBackHistoryDetails') . ')</a></small>';
 					}
 					$this->resprints.= '</td>';
 

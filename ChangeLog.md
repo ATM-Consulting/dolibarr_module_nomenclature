@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## 4.8
+- FIX : V16 COMPAT - *27/06/2022* - 4.8.1  
 - NEW : Ajout de la possibilité de consommer les produits enfants lors de l'appui sur le bouton "Produire X Quantité" - *28/04/2022* - 4.8.0
 - FIX : Calcul JS *18/02/2022* - 4.7.1
 - NEW : Improve save performance save only necessary lines *15/12/2021* - 4.7.0
