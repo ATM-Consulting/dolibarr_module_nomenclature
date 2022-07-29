@@ -287,14 +287,14 @@ function _show_tab_session(&$PDOdb) {
 function _show_nomenclature(&$n, &$p) {
 
 	global $langs,$db, $user;
-
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	print '<fieldset>';
 	print '<legend><strong>'.$p->getNomUrl(1).' - '.$p->label.'</strong></legend>';
 
 	echo '<br />Pour : '.$n->qty_reference;
 
 	if($n->getId()>0){
-		$url = dol_buildpath('nomenclature/nomenclature.php',1).'?fk_nomenclature='.$n->getId().'&fk_product='.$n->fk_object.'#nomenclature'.$n->getId();
+		$url = dol_buildpath('nomenclature/nomenclature.php',1).'?fk_nomenclature='.$n->getId().'&fk_product='.$n->fk_object.'#nomenclature'.$n->getId().'&token='.$newToken;
 		print '<br />'.$langs->trans('IdOfBommCreated').' : <a href="'.$url.'" >'.$n->getId().'</a>';
 	}
 
