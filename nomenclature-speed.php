@@ -167,7 +167,7 @@ global $db,$langs,$conf,$PDOdb;
 
 function _drawlines(&$object, $object_type) {
 	global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
-
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	llxHeader('', 'Nomenclatures', '', '', 0, 0, array('/nomenclature/js/speed.js','/nomenclature/js/jquery-sortable-lists.min.js'), array('/nomenclature/css/speed.css'));
 
 	_drawHeader($object, $object_type);
@@ -260,7 +260,7 @@ function _drawlines(&$object, $object_type) {
 	<div class="logme"></div>
 
 	<div style="text-align: left;">
-		<div class="inline-block divButAction"><a href="nomenclature-detail.php?id=<?php echo GETPOST('id', 'int') ?>&object=<?php echo GETPOST('object', 'none') ?>" class="butAction">Liste produits et MO nécessaires</a></div>
+		<div class="inline-block divButAction"><a href="nomenclature-detail.php?id=<?php echo GETPOST('id', 'int') ?>&object=<?php echo GETPOST('object', 'none') ?>&token=<?php echo $newToken; ?>" class="butAction">Liste produits et MO nécessaires</a></div>
 
 	</div>
 

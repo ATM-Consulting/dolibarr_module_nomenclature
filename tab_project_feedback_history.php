@@ -67,7 +67,7 @@ if(empty($nbLine)) $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user-
 // Load translation files required by the page
 $langs->loadLangs(array('projects', 'companies', 'nomenclature@nomenclature'));
 
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
 $hookmanager->initHooks(array('projectfeedbackhistory'));
 
@@ -125,7 +125,7 @@ dol_fiche_head($head, 'projectfeedbackhistory', $langs->trans("Project"), -1, ($
 
 // Project card
 
-$linkback = '<a href="'.DOL_URL_ROOT.'/projet/list.php?restore_lastsearch_values=1">'.$langs->trans("BackToList").'</a>';
+$linkback = '<a href="'.DOL_URL_ROOT.'/projet/list.php?restore_lastsearch_values=1&token='.$newToken.'">'.$langs->trans("BackToList").'</a>';
 
 $morehtmlref='<div class="refidno">';
 // Title

@@ -45,7 +45,7 @@ $object = new Product($db);
 
 
 $PDOdb = new TPDOdb;
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Security check
 $fieldvalue = (! empty($id) ? $id : (! empty($ref) ? $ref : ''));
 $fieldtype = (! empty($ref) ? 'ref' : 'rowid');
@@ -153,7 +153,7 @@ $picto = ($object->type == Product::TYPE_SERVICE ? 'service' : 'product');
 
 dol_fiche_head($head, 'nomenclaturecoef', $titre, -1, $picto);
 
-$linkback = '<a href="'.DOL_URL_ROOT.'/product/list.php?restore_lastsearch_values=1">'.$langs->trans("BackToList").'</a>';
+$linkback = '<a href="'.DOL_URL_ROOT.'/product/list.php?restore_lastsearch_values=1&token=' . $newToken .'">'.$langs->trans("BackToList").'</a>';
 $object->next_prev_filter=" fk_product_type = ".$object->type;
 
 $shownav = 1;
