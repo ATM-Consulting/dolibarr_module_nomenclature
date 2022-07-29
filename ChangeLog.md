@@ -6,13 +6,15 @@ All notable changes to this project will be documented in this file.
 
 
 ## 4.8
-- FIX : V16 COMPAT - *27/06/2022* - 4.8.1  
+
+- FIX : V16 COMPAT - *27/06/2022* - 4.8.2
+- FIX : detail calcul error - *21/07/2022* - 4.8.1
 - NEW : Ajout de la possibilité de consommer les produits enfants lors de l'appui sur le bouton "Produire X Quantité" - *28/04/2022* - 4.8.0
 - FIX : Calcul JS *18/02/2022* - 4.7.1
 - NEW : Improve save performance save only necessary lines *15/12/2021* - 4.7.0
 
 ## 4.6 
-
+- FIX : Devided by zero  - *23/06/2022* - 4.6.8  
 - FIX : retrocompatibilité des nomenclatures non-locales présente (fatal PHP sur enregistrement en nomenclature locale)  - *12/04/2022* - 4.6.7
 - FIX : les lignes en option vidaient leur PU et PA car recalculé sur la base d'une qty à 0  - *12/04/2022* - 4.6.6
 - FIX : compatibilité avec quickcustomerprice  - *12/04/2022* - 4.6.5

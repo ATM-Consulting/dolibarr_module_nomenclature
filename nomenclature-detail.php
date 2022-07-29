@@ -237,9 +237,7 @@ function _getDetails(&$object, $object_type) {
 
             $nomenclature = new TNomenclature;
             $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
-
-            $nomenclature->fetchCombinedDetails($PDOdb);
-
+            $nomenclature->fetchCombinedDetails($PDOdb, true, $line->qty);
 
             foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
 
@@ -271,16 +269,18 @@ function _getDetails(&$object, $object_type) {
 
 			}
 
-            foreach($nomenclature->TNomenclatureWorkstationCombined as $fk_ws => $ws) {
-                if(isset($TWorkstation[$fk_ws])) {
-                    $TWorkstation[$fk_ws]->nb_hour += $ws->nb_hour;
-                    $TWorkstation[$fk_ws]->nb_hour_prepare += $ws->nb_hour_prepare;
-                    $TWorkstation[$fk_ws]->nb_hour_manufacture += $ws->nb_hour_manufacture;
-                }
-                else {
-                    $TWorkstation[$fk_ws] = $ws;
-                }
-            }
+            if(!empty($nomenclature->TNomenclatureWorkstationCombined)) {
+				foreach($nomenclature->TNomenclatureWorkstationCombined as $fk_ws => $ws) {
+					if(isset($TWorkstation[$fk_ws])) {
+						$TWorkstation[$fk_ws]->nb_hour += $ws->nb_hour;
+						$TWorkstation[$fk_ws]->nb_hour_prepare += $ws->nb_hour_prepare;
+						$TWorkstation[$fk_ws]->nb_hour_manufacture += $ws->nb_hour_manufacture;
+					}
+					else {
+						$TWorkstation[$fk_ws] = $ws;
+					}
+				}
+			}
         }
         else {
             if(TSubtotal::isTitle($line)) {
