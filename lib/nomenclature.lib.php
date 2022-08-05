@@ -64,7 +64,7 @@ function nomenclatureAdminPrepareHead()
     //$this->tabs = array(
     //	'entity:-tabname:Title:@nomenclature:/nomenclature/mypage.php?id=__ID__'
     //); // to remove a tab
-    complete_head_from_modules($conf, $langs, $object, $head, $h, 'nomenclature');
+    complete_head_from_modules($conf, $langs, new stdClass(), $head, $h, 'nomenclature');
 
     return $head;
 }

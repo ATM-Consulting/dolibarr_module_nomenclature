@@ -69,7 +69,7 @@ class TNomenclature extends TObjetStd
         $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
 
 
-        if($conf->workstationatm->enabled) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
+        if(!empty($conf->workstationatm->enabled)) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
         $this->object_type = 'product';
@@ -105,7 +105,7 @@ class TNomenclature extends TObjetStd
 
         $res = parent::save($PDOdb);
 
-        if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST && $this->object_type == 'product'){
+        if (!empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST) && $this->object_type == 'product'){
             $prod = new Product($db);
             $test = new TNomenclature();
             $prod->fetch($this->fk_object);
@@ -283,7 +283,7 @@ class TNomenclature extends TObjetStd
 		}
 
 
-		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = 0;
+		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = $totalPV = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
 
 			$det->nested_price_level = $this->nested_price_level;
@@ -417,6 +417,7 @@ class TNomenclature extends TObjetStd
 		$this->marge = $marge->tx_object;
 
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
+
 		$this->totalPV = ($this->totalMO + $totalPV);
 		if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->totalPV *= $marge->tx_object;
 
@@ -492,14 +493,14 @@ class TNomenclature extends TObjetStd
 			$this->iExist = true;
 		}
 
-		if($loadProductWSifEmpty && $conf->workstationatm->enabled && empty($this->TNomenclatureWorkstation)) {
+		if($loadProductWSifEmpty && !empty($conf->workstationatm->enabled) && empty($this->TNomenclatureWorkstation)) {
 			$this->load_product_ws($PDOdb);
 		}
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
 
-		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
-		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+//		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+//		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 
 		return $res;
 
@@ -507,7 +508,7 @@ class TNomenclature extends TObjetStd
 
 	private function setAll() {
 		$this->TNomenclatureAll = array_merge($this->TNomenclatureDet,$this->TNomenclatureWorkstation);
-		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
+//		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 
 	/**
@@ -526,7 +527,7 @@ class TNomenclature extends TObjetStd
         $det->fk_product = $fk_new_product;
         $det->qty = $fk_new_product_qty;
 
-        if($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST){
+        if(!empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)){
             $nome = new TNomenclature();
             if ($nome->loadByObjectId($PDOdb, $fk_new_product, 'product')){
                 $nome->setPrice($PDOdb,1,$fk_new_product,'product');
@@ -669,19 +670,19 @@ class TNomenclature extends TObjetStd
 					}
 					else
 					{
-						if($this->TNomenclatureDetCombined[$det->fk_product]) {
+						if(!empty($this->TNomenclatureDetCombined[$det->fk_product])) {
 							$this->TNomenclatureDetCombined[$det->fk_product]->qty+=$coef * $det->qty;
 							$this->TNomenclatureDetCombined[$det->fk_product]->calculate_price+=$coef * $det->calculate_price;
-							$this->TNomenclatureDetCombined[$det->fk_product]->pv+=$coef * $det->pv;
-							$this->TNomenclatureDetCombined[$det->fk_product]->charged_price+=$coef * $det->charged_price;
+							if(!empty($this->TNomenclatureDetCombined[$det->fk_product]->pv)) $this->TNomenclatureDetCombined[$det->fk_product]->pv+=$coef * $det->pv;
+							if(!empty($this->TNomenclatureDetCombined[$det->fk_product]->charged_price))$this->TNomenclatureDetCombined[$det->fk_product]->charged_price+=$coef * $det->charged_price;
 
 						}
 						else {
 							$this->TNomenclatureDetCombined[$det->fk_product] = $det;
 							$this->TNomenclatureDetCombined[$det->fk_product]->qty *= $coef;
 							$this->TNomenclatureDetCombined[$det->fk_product]->calculate_price *= $coef;
-							$this->TNomenclatureDetCombined[$det->fk_product]->pv *= $coef;
-							$this->TNomenclatureDetCombined[$det->fk_product]->charged_price *= $coef;
+							if(!empty($this->TNomenclatureDetCombined[$det->fk_product]->pv)) $this->TNomenclatureDetCombined[$det->fk_product]->pv *= $coef;
+							if(!empty($this->TNomenclatureDetCombined[$det->fk_product]->charged_price)) $this->TNomenclatureDetCombined[$det->fk_product]->charged_price *= $coef;
 						}
 					}
 
@@ -2051,7 +2052,7 @@ class TNomenclatureCoefObject extends TObjetStd
 //		return $marge;
 //	}
 
-    function getMargeFinal(&$PDOdb, $object, $type_object)
+    static function getMargeFinal(&$PDOdb, $object, $type_object)
     {
         $TCoef = self::loadCoefObject($PDOdb, $object, $type_object);
 
@@ -2095,6 +2096,8 @@ class TNomenclatureCoefObject extends TObjetStd
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
 		$Tab = array();
+        if(empty($object)) $object = new stdClass();
+        if(empty($object->id)) $object->id = 0;
 		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object
 				WHERE fk_object = '.(int)$object->id.'
 				AND type_object = "'.$type_object.'"';
