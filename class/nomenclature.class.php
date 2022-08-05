@@ -499,8 +499,8 @@ class TNomenclature extends TObjetStd
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
 
-//		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
-//		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 
 		return $res;
 
@@ -508,7 +508,7 @@ class TNomenclature extends TObjetStd
 
 	private function setAll() {
 		$this->TNomenclatureAll = array_merge($this->TNomenclatureDet,$this->TNomenclatureWorkstation);
-//		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
+		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 
 	/**
