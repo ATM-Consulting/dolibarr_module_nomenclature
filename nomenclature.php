@@ -13,7 +13,7 @@ dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 
-if($conf->workstationatm->enabled) {
+if(!empty($conf->workstationatm->enabled)) {
     dol_include_once('/workstationatm/class/workstation.class.php');
 }
 
@@ -150,7 +150,6 @@ if (empty($reshook))
 				$_POST['title'] = $n->title ;
 				setEventMessage('NomenclatureTitleWarning', 'warnings');
 			}
-
 			$n->set_values($_POST);
 
 		    $n->is_default = (int)GETPOST('is_default', 'int');
@@ -164,6 +163,7 @@ if (empty($reshook))
 				foreach($_POST['TNomenclature'] as $val) $tab[] = $val;
 
 		        foreach($tab as $k=>$TDetValues) {
+                    if(empty($n->TNomenclatureDet[$k])) $n->TNomenclatureDet[$k] = new TNomenclatureDet;
 		            $n->TNomenclatureDet[$k]->set_values($TDetValues);
 
 		            if(isset($_POST['TNomenclature_'.$k.'_workstations'])) {
@@ -185,6 +185,7 @@ if (empty($reshook))
 		    if(GETPOST('add_nomenclature', 'none') && $fk_new_product>0) {
 
 				$last_det = end($n->TNomenclatureDet);
+                if(empty($last_det->rowid))$last_det->rowid = 0;
 				$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 				$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
 
@@ -302,7 +303,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	$picto=($product->type==1?'service':'product');
 	dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
 
-	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', ($user->societe_id?0:1), 'ref');
+	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', (!empty($user->societe_id)?0:1), 'ref');
 	else headerProduct($product);
 
 	?><script type="text/javascript">
@@ -314,7 +315,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 		    if(window.confirm('Vous-êtes sûr ?')) {
 
-		        document.location.href="?action=delete_nomenclature&fk_product=<?php echo $product->id; ?>&fk_nomenclature="+fk_nomenclature;
+		        document.location.href="?action=delete_nomenclature&fk_product=<?php echo $product->id; ?>&fk_nomenclature="+fk_nomenclature+"&token=<?php echo $newToken; ?>"
 
 		    }
 
@@ -355,7 +356,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	       //print $form->select_produits('', 'fk_clone_from_product', '', 0);
 			$htmlname = 'fk_clone_from_product';
 			$urloption='htmlname='.$htmlname.'&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
-			print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
+			print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, (!empty($conf->global->PRODUIT_USE_SEARCH_TO_SELECT)?$conf->global->PRODUIT_USE_SEARCH_TO_SELECT:''), 0, array());
 			print $langs->trans("RefOrLabel").' : ';
 			print '<input type="text" size="20" name="search_'.$htmlname.'" id="search_'.$htmlname.'" value="" '.(empty($conf->global->NOMENCLATURE_DISABLE_AUTOFOCUS) ? 'autofocus' : '').' />';
 	    ?>
@@ -513,7 +514,6 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         echo $formCore->hidden('object_type', $object_type);
         echo $formCore->hidden('fk_origin', GETPOST('fk_origin', 'int'));
         echo $formCore->hidden('qty_ref', $qty_ref);
-        echo $formCore->hidden('qty_price', $qty_price);
         if ($json) echo $formCore->hidden('non_secable', $n->non_secable);
     }
 
@@ -685,7 +685,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 						//Chaque tableau de coef a pour key le rowid du coef
 
-					   $total_charge = 0;
+					   $total_charge =$coldisplay= 0;
                        $class='';$total_produit = $total_mo  = 0;
                        foreach($TNomenclatureDet as $k=>&$det) {
 
@@ -788,7 +788,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                               </td>
 	                               <td class="ligne_col_virtualStock">
 	                               	<?php
-	                               		if($conf->of->enabled && $p_nomdet->id>0){
+	                               		if(!empty($conf->of->enabled) && $p_nomdet->id>0){
 
 	                               			// On récupère les quantités dans les OF
 	                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
@@ -958,6 +958,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                                    <?php
 
                                    $coldisplay++;
+                                   if(empty($det->id)) $det->id = 0;
                                    if(!$readonly) { ?>
                                         <a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&action=up&rowid='.$det->id; ?>&token=<?php echo $newToken; ?>">
                                         <?php echo img_picto('Move','grip'); ?>
@@ -973,7 +974,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 				       if($user->rights->nomenclature->showPrice) {
 				       		$colspan = 3;
-							if($conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
+							if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY) && $conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
 							if(!empty($conf->global->PRODUCT_USE_UNITS)) $colspan ++;
 							if(!empty($conf->global->NOMENCLATURE_USE_LOSS_PERCENT)) $colspan += 2;
@@ -1277,6 +1278,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
 				$marge = $n->marge_object;
+                if(empty($marge)) $marge = new stdClass();
 
 				$PR = price2num($n->totalPR,'MT');
 				$PR_coef = price2num($n->totalPRCMO,'MT'); // Prix de revient chargé (on affiche tjr le chargé)
@@ -1348,6 +1350,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					echo $formCore->hidden('price_to_sell', $price_to_sell);
 				}
 				else {
+				if(empty($marge->tx_object)) $marge->tx_object = 0;
+				if(empty($marge->tx_object)) $marge->tx_object = 0;
 		        ?>
 
 
@@ -1432,7 +1436,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                                 $htmlname = 'fk_clone_from_product';
                                 $urloption = 'htmlname=' . $htmlname . '&outjson=1&price_level=0&type=&mode=1&status=1&finished=2';
-                                print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, $conf->global->PRODUIT_USE_SEARCH_TO_SELECT, 0, array());
+                                print ajax_autocompleter('', $htmlname, dol_buildpath('/nomenclature/ajax/products.php', 1), $urloption, !empty($conf->global->PRODUIT_USE_SEARCH_TO_SELECT) ? $conf->global->PRODUIT_USE_SEARCH_TO_SELECT : '', 0, array());
                                 print $langs->trans("RefOrLabel") . ' : ';
                                 print '<input type="text" size="20" name="search_' . $htmlname . '" id="search_' . $htmlname . '" value="" ' . (empty($conf->global->NOMENCLATURE_DISABLE_AUTOFOCUS) ? 'autofocus' : '') . ' />';
 

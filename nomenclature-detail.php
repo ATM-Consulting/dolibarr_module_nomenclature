@@ -114,7 +114,7 @@ if($object_type == 'propal') {
 
     $morehtmlref = '<div class="refidno">';
     // Ref customer
-    $morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object->ref_client, $object, $usercancreate, 'string', '', 0, 1);
+    $morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object->ref_client, $object, !empty($usercancreate)?$usercancreate:0, 'string', '', 0, 1);
     // Thirdparty
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1, 'customer');
 

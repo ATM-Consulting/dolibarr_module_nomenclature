@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.8
 
+- FIX : PHP8 - *05/08/2022* - 4.8.3
 - FIX : V16 COMPAT - *27/06/2022* - 4.8.2
 - FIX : detail calcul error - *21/07/2022* - 4.8.1
 - NEW : Ajout de la possibilité de consommer les produits enfants lors de l'appui sur le bouton "Produire X Quantité" - *28/04/2022* - 4.8.0

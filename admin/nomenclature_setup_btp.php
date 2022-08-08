@@ -225,8 +225,9 @@ if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
 		$available['stock_price'] = $langs->trans('BasedOnStockMovementPrice');
 	}
 
-	$selected = $conf->global->NOMENCLATURE_FEEDBACK_COST_BASED;
-	if(empty($selected)){ $selected = 'pmp'; }
+
+	if(empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)){ $selected = 'pmp'; }
+	else $selected = $conf->global->NOMENCLATURE_FEEDBACK_COST_BASED;
 
 	$input = $form->selectArray('NOMENCLATURE_FEEDBACK_COST_BASED', $available, $selected);
 	setup_print_input_form_part('NOMENCLATURE_FEEDBACK_COST_BASED', '', $backPortDesc, array(), $input, 'NOMENCLATURE_FEEDBACK_COST_BASED_HELP', 400);
