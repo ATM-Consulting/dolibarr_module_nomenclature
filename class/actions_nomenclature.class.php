@@ -182,7 +182,7 @@ class Actionsnomenclature
 					}
 
 					// si l'un de ces modules est activé, on a potentiellement des modifs de qty qui ne sont pas reportées dans l'appel initial, il faut rebuild l'appel de la popin
-					if ($conf->quickcustomerprice->enabled || $conf->quickeditline->enabled)
+					if (!empty($conf->quickcustomerprice->enabled) || !empty($conf->quickeditline->enabled))
 					{
 					?>
 						$('.openPopin').on('click', function (e) {
@@ -275,7 +275,7 @@ class Actionsnomenclature
         $line = &$parameters['line'];
 
         if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
-            if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+            if(empty($conf->subtotal->enabled)) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
             ?>
             <script type="text/javascript">
@@ -367,7 +367,7 @@ class Actionsnomenclature
         $TContext = explode(':', $parameters['context']);
 
         if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
-            if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+            if(empty($conf->subtotal->enabled)) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
 
             $PDOdb = new TPDOdb;

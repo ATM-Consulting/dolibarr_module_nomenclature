@@ -122,7 +122,7 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
 		$PDOdb = new TPDOdb();
 
-		if($conf->subtotal->enabled) {
+		if(!empty($conf->subtotal->enabled)) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
 			if (isset($object->element) && strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
 		}
