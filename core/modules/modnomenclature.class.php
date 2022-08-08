@@ -61,7 +61,13 @@ class modnomenclature extends DolibarrModules
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '4.8.3';
+
+		$this->version = '4.9.0';
+
+		// Url to the file with your last numberversion of this module
+		require_once __DIR__ . '/../../class/techatm.class.php';
+		$this->url_last_version = \nomenclature\TechATM::getLastModuleVersionUrl($this);
+
 
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
