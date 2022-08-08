@@ -2,8 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 4.9.0
 
+
+
+## 4.9
+
+- NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 4.9.0
 
 ## 4.8
 
