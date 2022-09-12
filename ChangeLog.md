@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 
 
 ## 4.6 
-- FIX : Devided by zero  - *23/06/2022* - 4.6.8  
+- FIX : Compatibility with quickcustomerprice causes bug due to parsing a formatted value for qty - *12/09/2022* - 4.6.9
+- FIX : Devided by zero  - *23/06/2022* - 4.6.8
 - FIX : retrocompatibilité des nomenclatures non-locales présente (fatal PHP sur enregistrement en nomenclature locale)  - *12/04/2022* - 4.6.7
 - FIX : les lignes en option vidaient leur PU et PA car recalculé sur la base d'une qty à 0  - *12/04/2022* - 4.6.6
 - FIX : compatibilité avec quickcustomerprice  - *12/04/2022* - 4.6.5
