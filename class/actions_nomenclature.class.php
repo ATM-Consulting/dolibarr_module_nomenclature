@@ -192,7 +192,7 @@ class Actionsnomenclature
 							let fk_product = $(this).data('fk_product');
 							let element = $(this).data('element');
 							let fk_element = $(this).data('fk_element');
-							let qty = parentTr.find('td.linecolqty').text(); // compat avec quickcustomerprice et quickeditline
+							let qty = price2numjs(parentTr.find('td.linecolqty').text()); // compat avec quickcustomerprice et quickeditline
 
 							showLineNomenclature(lineId, qty, fk_product, element, fk_element);
 						});
