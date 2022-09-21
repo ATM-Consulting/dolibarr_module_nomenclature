@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : Ajout de la class objet_std dans nomenclature.class *21/09/2022* 4.9.2
 - FIX : Module icon - *30/09/2022* - 4.9.1
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 4.9.0
 
