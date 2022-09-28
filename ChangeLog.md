@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : ADD test array - *21/09/2022)* - 4.9.3  
 - FIX : Module icon - *30/09/2022* - 4.9.1
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 4.9.0
 
