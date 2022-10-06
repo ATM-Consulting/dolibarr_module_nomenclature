@@ -8,6 +8,7 @@ if (!class_exists('TObjetStd'))
 
 dol_include_once('/workstationatm/class/workstation.class.php');
 dol_include_once('/product/class/product.class.php');
+dol_include_once('/abricot/includes/class/class.objet_std.php');
 
 
 class TNomenclature extends TObjetStd
