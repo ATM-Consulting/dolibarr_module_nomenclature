@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : Warning:  current() expects parameter 1 to be array, null given *22/09/2022* 4.9.4
 - FIX : ADD test array - *21/09/2022)* - 4.9.3
 - FIX : Ajout de la class objet_std dans nomenclature.class *21/09/2022* 4.9.2
 - FIX : Module icon - *30/09/2022* - 4.9.1

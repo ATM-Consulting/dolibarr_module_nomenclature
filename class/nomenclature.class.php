@@ -247,7 +247,7 @@ class TNomenclature extends TObjetStd
 						$cmd = current($fac->linkedObjects['commande']);
 						$cmd->fetchObjectLinked();
 
-						if (!empty($cmd->linkedObjects['propal'])) {
+						if (!empty($fac->linkedObjects['propal'])) {
 							// Ou récupération de la commande d'origine pour récupérer ses coef
 							$object = current($fac->linkedObjects['propal']);
 							$object_type = 'propal'; // Je bascule sur type "propal" car je veux le loadCoefObject de l'objet d'origine
