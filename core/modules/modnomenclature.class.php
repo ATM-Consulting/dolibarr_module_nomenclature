@@ -61,7 +61,6 @@ class modnomenclature extends DolibarrModules
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-
 		$this->version = '4.9.3';
 
 		// Url to the file with your last numberversion of this module
