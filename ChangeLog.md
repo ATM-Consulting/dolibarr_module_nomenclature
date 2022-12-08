@@ -35,6 +35,7 @@ All notable changes to this project will be documented in this file.
 	tiennent compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes
 
 ## 4.2
+- FIX : Nouvelle quantité en fonction du pourcentage de perte - Adapter l'arrondi en fonction de la conf MAIN_MAX_DECIMALS_UNIT - *8/12/2022* - 4.2.3
 - FIX : Erreurs Ajax : exceptions manquantes à la protection CSRF sur
         `prod_ajax.php` - *24/06/2022* - 4.2.2
 - FIX : Arrondi faussait le prix d'achat unitaire d'une ligne de nomenclature - *17/12/2021* - 4.2.1
