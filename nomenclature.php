@@ -600,6 +600,10 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 					var newQty = val_qty_base * ( 1 +  val_loss_percent / 100 );
 					newQty = Math.round(newQty*100)/100;
+					<?php if(!empty($conf->global->MAIN_MAX_DECIMALS_UNIT)) { ?>
+					var maxdecimal = <?php echo $conf->global->MAIN_MAX_DECIMALS_UNIT ?>; //on arrondit la nouvelle quantité en fonction du nombre de décimal autorisé par la conf
+					newQty = newQty.toFixed(maxdecimal);
+					<?php } ?>
 					$(this).closest('tr').find('td.ligne_col_qty').find("input[name*=qty]").val(newQty);
 				}
 
