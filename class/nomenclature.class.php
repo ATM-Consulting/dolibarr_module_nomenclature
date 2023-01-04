@@ -382,8 +382,8 @@ class TNomenclature extends TObjetStd
 
 		}
 
-		$this->totalPR = $totalPR;
-		$this->totalPRC = $totalPRC;
+		$this->totalPR = floatval($totalPR);
+		$this->totalPRC = floatval($totalPRC);
 
 		$this->totalPR_PMP = $totalPR_PMP;
 		$this->totalPRC_PMP = $totalPRC_PMP;
@@ -410,13 +410,13 @@ class TNomenclature extends TObjetStd
 
 
 		}
-		$this->totalMO = $total_mo;
+		$this->totalMO = floatval($total_mo);
 		$this->totalMO_OF = $total_mo_of;
 
 		$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $this, $object_type);
 //		$this->marge_object = $marge;
 		$this->marge = $marge->tx_object;
-
+        if(is_nan($this->totalPRC)) $this->totalPRC = 0;
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 
 		$this->totalPV = ($this->totalMO + $totalPV);
