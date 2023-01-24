@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : Compatibilité v17 *04/01/2023* 4.9.6
 - FIX : DA022742 PDO Error : try to save NAN instead of a number *04/01/2023* 4.9.5
 - FIX : Warning:  current() expects parameter 1 to be array, null given *22/09/2022* 4.9.4
 - FIX : ADD test array - *21/09/2022)* - 4.9.3
