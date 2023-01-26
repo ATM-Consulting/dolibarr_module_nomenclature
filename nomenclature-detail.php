@@ -314,6 +314,7 @@ function _getDetails(&$object, $object_type) {
                     $nome->fetchCombinedDetails($PDOdb);
                     $nome->setPrice($PDOdb, $line->qty, null, 'propal');
                     foreach ($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
+
                         $p = new Product($db);
                         $p->fetch($det->fk_product);
                         $det->type = $p->type;
@@ -366,12 +367,16 @@ function _getDetails(&$object, $object_type) {
 
 						$p = new Product($db);
 						$p->fetch($line->fk_product);
-						// To display warning message if product haven't the same unit as bom
-						$det->productCurrentFkUnit = $p->fk_unit;
-						$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
+
+						if(!empty($det)) {
+							// To display warning message if product haven't the same unit as bom
+							$det->productCurrentFkUnit = $p->fk_unit;
+							$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
+						}
+
 						$tmpline->warningUnitNotTheSameAsProduct = ($tmpline->fk_unit != $p->fk_unit);
 
-                        if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
+						if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
                         else {
                             $TProduct[$firstParentTitleId]['products'][$line->fk_product]->qty += $tmpline->qty;
                             $TProduct[$firstParentTitleId]['products'][$line->fk_product]->calculate_price += $tmpline->calculate_price;
