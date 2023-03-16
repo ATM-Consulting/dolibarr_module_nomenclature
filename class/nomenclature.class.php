@@ -810,8 +810,16 @@ class TNomenclature extends TObjetStd
         if($obj = $PDOdb->Get_line()) {
             $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty, 0, 1, $object_type, $fk_origin);
         }
-
         $this->load_original($PDOdb, $fk_product, $qty);
+
+
+        // Cas où un produit a été ajouté à une ligne avant la création d'une nomenclature pour ce produit
+        // La modale ne doit pas prendre les infos de la nomenclature ulterieurement créée. Elle a été créée à vide et doit le rester jusqu'à ce qu'une opération soit effectue depuis la modale
+        if(!empty($this->TNomenclatureDet) && $this->TNomenclatureDet[0]->fk_nomenclature != $this->rowid) {
+            $this->TNomenclatureDet = array();
+            return $res;
+        }
+
 		$this->setAll();
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_origin);
