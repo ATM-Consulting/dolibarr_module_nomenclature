@@ -173,9 +173,10 @@ if (empty($reshook))
 		        }
 		    }
 
+
 		    if(!empty($_POST['TNomenclatureWorkstation'])) {
 		        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
-		            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+                    if(!empty($n->TNomenclatureWorkstation[$k])) $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
 		        }
 		    }
 
