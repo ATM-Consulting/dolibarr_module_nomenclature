@@ -456,9 +456,10 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
 
-        if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
+		if((count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
 		{
-      	    $this->qty_reference = $n->qty_reference ;
+
+			$this->qty_reference = $n->qty_reference ;
 
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
                 $this->TNomenclatureDet[$k] = new TNomenclatureDet;
@@ -809,7 +810,7 @@ class TNomenclature extends TObjetStd
         $res = false;
         if($obj = $PDOdb->Get_line()) {
             $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty, 0, 1, $object_type, $fk_origin);
-        }
+		}
         $this->load_original($PDOdb, $fk_product, $qty);
 
 		$this->setAll();
