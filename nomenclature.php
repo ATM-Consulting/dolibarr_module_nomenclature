@@ -1554,7 +1554,6 @@ function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
     $n->loadByObjectId($PDOdb, $id_product, 'product', false);
 
     if ($n->non_secable) print ' <i class="fas fa-unlink" title="'.$langs->trans('nomenclatureNonSecable').'"></i>';
-
     foreach($n->TNomenclatureDet as &$det) {
 
         $p_child = new Product($db);

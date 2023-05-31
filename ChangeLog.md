@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## 4.9
+- FIX : DA023411 - On ne voit plus les enfants sur une fiche nomenclature sur un produit *31/05/2023* 4.9.12
 - FIX : DA023377 - Si on édite une ligne de nomenclature après l'ajout d'une ligne à un document, on perdait les fk_product des lignes *31/05/2023* 4.9.11
 - FIX : DA023328 - Anomalie nomenclature *24/05/2023* 4.9.10
 - FIX : DA023085 - Ajout d'un test *30/03/2023* 4.9.9
