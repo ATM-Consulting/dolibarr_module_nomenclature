@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- FIX: save buttons on nomenclature tab in products not working due to access to wrong nomenclature table fields *23/06/2023*
 
 ## 4.9
 
