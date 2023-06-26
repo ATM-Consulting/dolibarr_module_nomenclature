@@ -184,8 +184,6 @@ if (empty($reshook))
 		    $fk_new_product_qty = GETPOST('fk_new_product_qty_'.$n->getId(), 'none');
 		    if(GETPOST('add_nomenclature', 'none') && $fk_new_product>0) {
 
-				$last_det = end($n->TNomenclatureDet);
-                if(empty($last_det->rowid))$last_det->rowid = 0;
 				$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 				$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
 
