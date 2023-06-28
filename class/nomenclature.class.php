@@ -815,6 +815,7 @@ class TNomenclature extends TObjetStd
 
 		$this->setAll();
 
+        // DA023030
 		// Cas où un produit a été ajouté à une ligne avant la création d'une nomenclature pour ce produit
 		// La modale ne doit pas prendre les infos de la nomenclature ulterieurement créée. Elle a été créée à vide et doit le rester jusqu'à ce qu'une opération soit effectue depuis la modale
 
@@ -822,7 +823,8 @@ class TNomenclature extends TObjetStd
         $PDOdb->Execute($sql2);
         $obj2 = $PDOdb->Get_line();
 
-        if(empty($obj2->fk_nomenclature_parent)) {
+        //DA023411 : J'ai ajouté le test sur l'object type car on allait pas chercher les nomenclatures enfants sur les fiches produits, or l'anomalie de DA023030 n'est présente que lorsqu'on crée une nomenclature depuis un document client
+        if(empty($obj2->fk_nomenclature_parent) && $this->object_type != 'product') {
             $this->TNomenclatureDet = array();
             return $res;
         }
