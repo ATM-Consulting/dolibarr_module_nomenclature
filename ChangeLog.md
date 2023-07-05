@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : Fix php8 fatal *05/07/2023* - 4.9.15
 - FIX : Fix php8 fatal *28/06/2023* - 4.9.14
 - FIX : order of inital table creation not correct. TNomenclatureDet checks for table llx_nomenclature_coef which needs to be created first *19/06/2023*  4.9.13
 - FIX : DA023411 - On ne voit plus les enfants sur une fiche nomenclature sur un produit *31/05/2023* 4.9.12

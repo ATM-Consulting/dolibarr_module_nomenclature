@@ -299,8 +299,11 @@ function _getDetails(&$object, $object_type) {
                 if(TSubtotal::isModSubtotalLine($line)) continue;   // Prevent from subtotal and free text lines
 
                 $TTitle = TSubtotal::getAllTitleFromLine($line);
-                $TTitleKeys = array_keys($TTitle);
-                $firstParentTitleId = intval($TTitleKeys[0]);
+				$firstParentTitleId = 0;
+                if(!empty($TTitle)){
+					$TTitleKeys = array_keys($TTitle);
+					$firstParentTitleId = intval($TTitleKeys[0]);
+                }
 
                 $nomenclature = new TNomenclature;
                 $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
@@ -402,7 +405,9 @@ function _getDetails(&$object, $object_type) {
                     }
 				}
 
-                uasort($TProduct[$firstParentTitleId]['products'], 'sortByProductType');
+                if(!empty($TProduct[$firstParentTitleId]['products']) && is_array($TProduct[$firstParentTitleId]['products'])){
+					uasort($TProduct[$firstParentTitleId]['products'], 'sortByProductType');
+                }
 
                 foreach($nomenclature->TNomenclatureWorkstationCombined as $fk_ws => $ws) {
                     if(isset($TWorkstation[$fk_ws])) {
