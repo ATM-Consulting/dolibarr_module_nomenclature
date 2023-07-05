@@ -299,9 +299,9 @@ function _getDetails(&$object, $object_type) {
                 if(TSubtotal::isModSubtotalLine($line)) continue;   // Prevent from subtotal and free text lines
 
                 $TTitle = TSubtotal::getAllTitleFromLine($line);
-				$TTitleKeys = array_keys($TTitle);
 				$firstParentTitleId = 0;
                 if(!empty($TTitle)){
+					$TTitleKeys = array_keys($TTitle);
 					$firstParentTitleId = intval($TTitleKeys[0]);
                 }
 
