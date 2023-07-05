@@ -402,7 +402,9 @@ function _getDetails(&$object, $object_type) {
                     }
 				}
 
-                uasort($TProduct[$firstParentTitleId]['products'], 'sortByProductType');
+                if(!empty($TProduct[$firstParentTitleId]['products']) && is_array($TProduct[$firstParentTitleId]['products'])){
+					uasort($TProduct[$firstParentTitleId]['products'], 'sortByProductType');
+                }
 
                 foreach($nomenclature->TNomenclatureWorkstationCombined as $fk_ws => $ws) {
                     if(isset($TWorkstation[$fk_ws])) {
