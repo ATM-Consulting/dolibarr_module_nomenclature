@@ -299,8 +299,11 @@ function _getDetails(&$object, $object_type) {
                 if(TSubtotal::isModSubtotalLine($line)) continue;   // Prevent from subtotal and free text lines
 
                 $TTitle = TSubtotal::getAllTitleFromLine($line);
-                $TTitleKeys = array_keys($TTitle);
-                $firstParentTitleId = intval($TTitleKeys[0]);
+				$TTitleKeys = array_keys($TTitle);
+				$firstParentTitleId = 0;
+                if(!empty($TTitle)){
+					$firstParentTitleId = intval($TTitleKeys[0]);
+                }
 
                 $nomenclature = new TNomenclature;
                 $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
