@@ -1273,7 +1273,7 @@ class TNomenclature extends TObjetStd
 			// Get margins infos for lines which have no nomenclature
 			$formmargin = new FormMargin($object->db);
 			$marginInfoForLinesWithoutNomenclature = $formmargin->getMarginInfosArray($object);
-			foreach ($marginInfo as $k=>$v) $marginInfo[$k] += $marginInfoForLinesWithoutNomenclature[$k];
+			foreach ($marginInfo as $k=>$v) $marginInfo[$k] += floatval($marginInfoForLinesWithoutNomenclature[$k]);
 
 			$marginInfo['pv_total'] = $marginInfo['pv_products'] + $marginInfo['pv_services'];
 			$marginInfo['pa_total'] = $marginInfo['pa_products'] + $marginInfo['pa_services'];

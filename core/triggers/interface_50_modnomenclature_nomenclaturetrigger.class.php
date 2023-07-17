@@ -120,7 +120,7 @@ class Interfacenomenclaturetrigger
 		if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
 		dol_include_once('/nomenclature/config.php');
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
-        dol_include_once('/abricot/class/class.pdo.db.php');
+		dol_include_once('/abricot/includes/class/class.pdo.db.php');
 		$PDOdb = new TPDOdb();
 
 		if(!empty($conf->subtotal->enabled)) {
