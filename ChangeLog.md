@@ -4,10 +4,20 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 
-
 ## 4.9
 
-- FIX : DA023653 - Erreur d'arrondi lors de calculs *26/07/2023* 4.9.5
+- FIX : DA023653 - Erreur d'arrondi lors de calculs *26/07/2023* 4.9.16
+- FIX : Fix php8 fatal *05/07/2023* - 4.9.15
+- FIX : Fix php8 fatal *28/06/2023* - 4.9.14
+- FIX : order of inital table creation not correct. TNomenclatureDet checks for table llx_nomenclature_coef which needs to be created first *19/06/2023*  4.9.13
+- FIX : DA023411 - On ne voit plus les enfants sur une fiche nomenclature sur un produit *31/05/2023* 4.9.12
+- FIX : DA023377 - Si on édite une ligne de nomenclature après l'ajout d'une ligne à un document, on perdait les fk_product des lignes *31/05/2023* 4.9.11
+- FIX : DA023328 - Anomalie nomenclature *24/05/2023* 4.9.10
+- FIX : DA023085 - Ajout d'un test *30/03/2023* 4.9.9
+- FIX : DA023030 - Lors de l'ajout d'un produit sans nomenclature, la modale affiche une nomenclature vide, celle-ci doit rester vide jusqu'à ce qu'une actions soit effectué depuis la modale *16/03/2023* 4.9.8
+- FIX : Compatibilité v17 - Warning PHP 8 *26/01/2023* 4.9.7
+- FIX : Compatibilité v17 *04/01/2023* 4.9.6
+- FIX : DA022742 PDO Error : try to save NAN instead of a number *04/01/2023* 4.9.5
 - FIX : Warning:  current() expects parameter 1 to be array, null given *22/09/2022* 4.9.4
 - FIX : ADD test array - *21/09/2022)* - 4.9.3
 - FIX : Ajout de la class objet_std dans nomenclature.class *21/09/2022* 4.9.2

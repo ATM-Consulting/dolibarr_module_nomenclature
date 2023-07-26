@@ -1,0 +1,381 @@
+Module104580Name = Nomenklatur
+Module104580Desc = Definieren Sie Ihre Produktionszusammensetzung und erheben Sie Ihren Selbstkostenpreis
+
+ATMAbout = This module has been developed by <a href="http://www.atm-consulting.fr" target="_blank">ATM Consulting</a><br>You can find the documentation on our <a href="http://wiki.atm-consulting.fr/index.php/Accueil" target="_blank">wiki</a><br><br>For any question or feedback, contact us on <a href="mailto:support@atm-consulting.fr">support@atm-consulting.fr</a><br><br>For any commercial question, contact us on <a href="mailto:contact@atm-consulting.fr">contact@atm-consulting.fr</a> or at +33 9 77 19 50 70<br><br>Find our other modules on <a href="http://www.dolistore.com/search.php?orderby=position&orderway=desc&search_query=atm&submit_search=Rechercher" target="_blank">Dolistore</a>
+
+nomenclatureSetup = Konfiguration Nomenklatur
+nomenclatureAbout = Über das Modul Nomenklatur
+#Setup
+RecalculateNomenclature = Neu berechnen
+RecalculateNomenclatureDesc = Alle Nomenklaturen neu berechnen
+RecalculateNomenclatureDone = Abgeschlossene Berechnungen
+RecalculateNomenclatureHelp = Ermöglicht die Neuberechnung aller bereits erstellten Nomenklaturen unter Einbeziehung dieser Regel.<br/><br/>Dies gilt auch für Nomenklaturen, die in anderen Elementen (Angebote, Aufträge usw.) enthalten sind.<br/>Nichtsdestotrotz bleibt der Preis in der Nomenklaturzeile der Elemente unverändert.<br/><br/>Um den neuen Betrag in die anderen Elemente zu übernehmen, müssen Sie die Nomenklatur aus der Zeile des Elements (Angebot, Auftrag usw.) öffnen und auf "Verkaufspreis anwenden" klicken.
+ConfProductUseUnitActivated = Die Unterstützung von Einheiten auf Produkten wurde gerade aktiviert, da Sie die Einstellung "Produkte von Dienstleistungen in der Registerkarte Baustellendetails trennen" verwenden.
+
+ParamLinkedToOrdersAndPropal = Konfiguration in Verbindung mit Angeboten / Bestellungen
+nomenclatureAllowFreeLine = Hinzufügen von Nomenklaturen aus einer freien Zeile (Produkt oder Dienstleistung) in Angeboten und Kundenaufträgen zulassen
+nomenclatureAllowFreeLineHelp = Wenn Sie Ihrem Angebot / Auftrag eine freie Zeile hinzufügen, ist es standardmäßig nicht möglich, dieser Zeile eine Nomenklatur zuzuordnen. Mit dieser Option können Sie eine Nomenklatur aus einer freien Zeile im Angebot oder Auftrag erstellen.
+
+GlobalParameters = Allgemeine Einstellungen
+BTPParameters = BTP-Einstellungen
+CoeffParameters = Koeffizienten
+NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY = Spalten für die Rentabilität von Baustellen auf Baustellenzuordnungen anzeigen (instabile Funktionalität)
+MovementDate = Bewegungsdatum
+StockMovementHistory = Historie der Baustellenzuweisungen
+StockCostHT = Kosten Bestand
+StockCostHTHelp = Lagerkosten ohne Steuern, berechnet auf der Grundlage des gewichteten Durchschnittspreises (GDP) des Produkts zum Zeitpunkt der Bestandsumlagerung. Beachten Sie: Wenn der GLD bei der Bestandsbewegung 0 war, wird die Bewegung mit Null bewertet. Diese Information ist nur dann zuverlässig, wenn Ihre Bestandsbewertung streng ist.
+DateMovementGranularity = Granularität
+CalculatedCostHT = Neu berechnete Bestandskosten
+CalculatedCostHTHelp = Bestandskosten ohne Mehrwertsteuer, berechnet auf der Grundlage des aktuellen gewichteten Durchschnittspreises (GDP) des Produkts oder, falls dieser leer ist, auf der Grundlage des Selbstkostenpreises des Produkts
+ProjectfeedbackResumeStockCostHTHelp = Bestandskosten ohne Steuern, berechnet auf der Grundlage des gewichteten Durchschnittspreises (GDP) des Produkts zum Zeitpunkt der Bestandsumlagerung. Beachten Sie, dass wenn der GLD bei der Lagerbewegung 0 war, die Bewegung eine Nullbewertung hat. Diese Information ist nur dann zuverlässig, wenn Ihre Bestandsbewertung streng ist (diese Zahlen sollten als optimistisch betrachtet werden).
+ProjectfeedbackResumeStockCostHTHelp_cost_price = Gesamtkosten der Produkte, die der Baustelle zugewiesen wurden, basierend auf den laufenden Kosten jedes Produkts.
+ProjectfeedbackResumeStockCostHTHelp_pmp = Gesamtkosten der Produkte, die der Baustelle zugewiesen wurden, basierend auf dem aktuellen gewichteten Durchschnittspreis (GDP) für jedes Produkt.
+BackportVxDetectedSoFeatureReady = Erkannt: Backport von Dolibarr Feature %s: dieses Feature ist also verfügbar.
+NOMENCLATURE_FEEDBACK_COST_BASED = Berechnen Sie die Kosten für Baustellenzuweisungen auf der Grundlage der Übersicht:
+NOMENCLATURE_FEEDBACK_COST_BASED_HELP = Einige Werte in dieser Liste hängen von der Aktivierung von Optionen des Moduls ab. Es kann hilfreich sein, diese Seite neu zu laden, damit sie angezeigt werden.
+BasedOnCostPrice = Selbstkostenpreis
+BasedOnStockMovementPrice = Kosten der Lagerbewegung
+BasedOnPMP = GDP
+
+
+NomenclatureImportTitle = Nomenklatur importieren
+importFile = Importdatei
+ImportButton = Importieren
+helpNomenclatureImportFile =Nomenklaturnummer, Produktbezeichnung, Komponentenbezeichnung, Menge, Referenzmenge, Typenbezeichnung (Produktionsauftrag für Arbeitsstation)
+
+AddNomenclature = Nomenklatur hinzufügen
+AddProductNomenclature = Produkt/Dienstleistung hinzufügen
+SaveNomenclature = Speichern
+nomenclatureIsDefault = Als Standard festlegen
+numberShort = Nr.
+nomenclatureQtyReference = Referenzmenge
+Proposal = Angebot
+
+WillUseProductWorkstationIfNotSpecified = Es wird die globale Produktdefinition verwendet, sofern nichts anders angegeben ist.
+QtyPrepare = Vorbereitungszeit
+QtyFabrication = Produktionszeit
+nb_days_before_beginning = Zeit vor Start
+nb_days_before_beginningHelp = In ganzen Tagen
+QtyPrepareHelp = In Hundertstelstunden wird diese Zeit bei der Produktion nicht mit der Menge multipliziert.
+QtyFabricationHelp = In Hundertsteln einer Stunde
+Workstations = Arbeitsstationen
+AmountCost = Kaufpreis
+AmountCostWithCharge = Selbstkostenpreis
+AmountCostUnit = Kaufpreis je Einheit
+TotalAmountCost = Gesamtkaufpreis
+TotalAmountCostForX = Gesamtkaufpreis für %s Exemplar(e)
+TotalAmountCostUnit = Gesamt Kaufpreis für 1 Exemplar
+TotalAmountCostWithCharge = Gesamt Selbstkosten
+TotalAmountCostWithChargeForX = Gesamtkosten für %s Exemplar(e)
+AmountCostWithChargeUnit = Selbstkostenpreis pro Exemplar
+TotalAmountCostWithChargeUnit = Selbstkosten für 1 Exemplar
+TotalAmountCostWithChargePMP = Soll Herstellungskosten
+TotalAmountCostWithChargePMPForX = Soll Selbstkosten für %s Exemplar(e)
+TotalAmountCostWithChargePMPQty = Soll Selbstkosten für Referenzmenge
+TotalAmountCostWithChargeOF = Ist Selbstkosten
+TotalAmountCostWithChargeOFForX = Ist Selbstkosten für %s Exemplar(e)
+TotalAmountCostWithChargeOFQty = Ist Selbstkosten für Referenzmenge
+AmountCostWithChargeCustom = Individuelle Kosten mit Gebühr
+//PriceConseil = Empfohlener Verkaufspreis (Marge %s %%)
+PriceConseil = Empfohlener Verkaufspreis
+PriceConseilForX = Empfohlener Verkaufspreis (Marge %s %%) für %s Exemplar(e)
+PriceConseilUnit = Empfohlener Verkaufspreis (Marge %s %%) für 1 Exemplar
+
+TotalForX = Gesamt für %s Exemplar(e)
+TotalUnit = Gesamt für 1 Exemplar
+
+NomenclatureSaved = Nomenklatur gespeichert
+NomenclatureNBSaved = %s Nomenklaturen gespeichert
+WorkstationAlreadyAssociated = Diese Arbeitsstation ist bereits mit dieser Nomenklatur verknüpft
+
+NomenclatureLineSaved = Spezifische Nomenklatur gespeichert
+DeleteThisNomenclature = Nomenklatur löschen
+NomenclatureDeleted = Nomenklatur gelöscht
+AddWorkstation = Arbeitsstation hinzufügen
+
+ApplyNomenclaturePrice = Verkaufspreis anwenden
+ApplyNewCoefToObjectLine = Verkaufspreis der Zeilen neu berechnen
+CloneNomenclatureFromProduct = Nomenklatur importieren
+NomenclatureCloned = Importierte Nomenklatur(en)
+
+ListUseNomenclaure = Liste der Nomenklaturen, die dieses Produkt verwenden
+ListRequired = Liste der benötigten Produkte und Produktionsaufträge
+
+AddCoef = Koeffizient hinzufügen
+PriceFinal = Empfohlener Preis
+ModifyCoef = Koeffizient ändern
+ModifyCoefWS = Arbeitskräftekoeffizienten ändern
+ModifyCoefFinal = Koeffizienten des empfohlenen Verkaufspreises ändern
+CreateCoef = Bitte geben Sie die Bezeichnung des Koeffizienten, den Datenbankcode (keine Leerzeichen, keine diakritischen Zeichen) und den Satz an
+NomenclatureCreateLabel = Bezeichnung:
+NomenclatureCreateTx = Koeffizient:
+NomenclatureCoeffLabel = Bezeichnung
+NomenclatureCoeffDesc = Beschreibung
+NomenclatureCreateCode = Code
+
+NomenclatureSuccessAddCoef = Neuer Koeffizient hinzugefügt
+NomenclatureDeleteSuccess = Erfolgreich gelöscht
+
+NomenclatureErrorAddCoef = Fehler: Koeffizienten kann nciht hinzufügt werden
+NomenclatureErrorAddCoefDoublon = Fehler: Der von Ihnen eingegebene Code ist bereits in der Datenbank vorhanden
+NomenclatureErrorCantDelete = Fehler: Der Datensatz kann nicht gelöscht werden, da eine oder mehrere untergeordnete Verknüpfungen existieren
+DefaultCoeficientList = Liste der Standardkoeffizienten für dieses Produkt
+NomenclatureSuccessSaveCoef = Erfolgreich gespeichert
+
+CoefList = Liste der Koeffizienten
+CoefListWorkstation = Liste der Arbeitskoeffizienten
+nomenclatureCoefUpdated = Koeffizienten aktualisiert
+nomenclatureApplyAllCoefOnPriceError = Preise können nicht aktualisiert werden, das Dokuments ist nicht im Status Entwurf
+
+SaveAll = Änderungen speichern
+PseudoNomenclature = Virtuelle Nomenklatur des Produkts 
+PseudoNomenclatureInfo = Dies ist die Nomenklatur des Produkts, nicht die der Linie. Die erste Ebene wird beim Speichern mit der Linie verknüpft; die Unterebenen sind allgemeine Produktbezeichnungen.
+
+EditLine = Zeile bearbeiten
+ThisProductCreateAnInfinitLoop = Dieses Produkt kann nicht hinzugefügt werden, da es eine Endlosschleife erzeugt
+ThisIsAnInfinitLoop = Es gibt eine Endlosschleife in diesem Produkt, bitte korrigieren Sie den fehlerhaften Aufruf
+ThereIsTooLevelHere = Zu viele Ebenen zum Anzeigen (Endlosschleife?)
+
+ParamLinkedToStock = Konfiguration der Lagerverwaltung
+nomenclatureJustMP = Nur Produkte der Art "Rohstoff" können einer Nomenklatur hinzugefügt werden.
+nomenclatureJustMPHelp = Nur Produkte, deren Art "Rohstoff" ist (kann auf dem Produktblatt geändert werden), können zu einer Nomenklatur hinzugefügt werden.
+DeprecatedParameters = Veraltete Optionen (nicht gewartet)
+
+CoefGenericSaveForSpecific = Generischer Koeffizient. Speichern Sie, wenn Sie ihn objektspezifisch machen wollen.
+
+NonLocalNomenclature = Nomenklatur aus dem Produkt geladen, speichern, um eine lokale Nomenklatur zu erstellen
+
+ParamLinkedToSellPrice = Konfiguration in Verbindung mit der Hilfe bei der Festlegung des Verkaufspreises
+NOMENCLATURE_ACTIVATE_DETAILS_COSTS = Detaillierte Selbstkostenpreise aktivieren
+NOMENCLATURE_ACTIVATE_DETAILS_COSTS_HELP = Mit dieser Option werden in der Nomenklatur Selbstkostenkalkulationen nach verschiedenen Methoden (Einkaufspreis, gewichteter Durchschnittspreis oder Produktionsauftrag) angezeigt, um Ihnen die Entscheidung für einen Verkaufspreis zu erleichtern.
+PricePA = Budget, fester Einkaufspreis, der im Materialstammsatz festgelegt ist
+PricePMP = Soll, gewichteter Durchschnittspreis (GDP) des Produkts
+PriceOF = Ist Analyse des Produktionsauftrages über den angegebenen Zeitraum
+TotalPricePMP = Soll Materialien gesamt
+TotalPriceOF = Ist Materialien gesamt
+priceMO_OF = Ist Analyse des Produktionsauftrages über den angegebenen Zeitraum
+TotalMO_OF = Ist Produktionsauftrag gesamt
+massUpdate = Nomenklaturen massenhaft aktualisieren
+massUpdateMenu = Nomenklaturen massenhaft aktualisiert
+nomenclatureSpeedSelectClick = Schnelle Nomenklatur, Auswahl bei Klick (veraltet)
+nomenclatureSpeedSelectClickHelp = Diese Funktion ist veraltet und wird daher nicht mehr gepflegt.<br/><br/>Eine zusätzliche Schnittstelle auf der Registerkarte "Nomenklatur" in Angeboten und Kundenaufträgen wurde hinzugefügt, um Nomenklaturen on-the-fly zu erstellen.
+PercentUP = Anstieg in %%
+ShowImpact = Auswirkungen zeigen
+QtyAfter = Menge danach
+MakeIt = Aktualisieren
+
+NOMENCLATURE_COST_TYPE = Standardvorschlag für Einkauf / Selbstkostenpreis
+NOMENCLATURE_COST_TYPE_HELP = Hier können Sie den Preis pro Einheit festlegen, der beim Hinzufügen eines Produkts zu einer Nomenklatur verwendet wird. Beachten Sie, dass, wenn die Option "Aus" ist, der abgerufenen Preis der höchste Lieferanteneinkaufspreis ist, der in das Produktdatenblatt eingegeben wurde.
+NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST = Verwenden Sie den Preis der untergeordneten Nomenklatur für die Berechnung des Einkaufspreises
+NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST_HELP =Standardmäßig wird beim Hinzufügen eines (untergeordneten) Nomenklaturprodukts zu einem anderen (übergeordneten) Nomenklaturprodukt als Einkaufspreis pro Einheit des abgerufenen untergeordneten Produkts der letzte Einkaufspreis verwendet, der auf dem Produktblatt angegeben wurde (falls vorhanden). Sobald diese Option aktiviert ist, ist der Einkaufspreis pro Einheit des abgerufenen untergeordneten Produkts der Preis, der von der untergeordneten Nomenklatur berechnet wird.
+NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED = Diese Kosten beziehen sich auf die Menge dieser Zeile
+NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED_HELP = Wenn Sie einen benutzerdefinierten Preis für eine Produktzeile in einer Nomenklatur eingeben, ersetzt dieser standardmäßig den gesamten Einstandspreis dieser Zeile (unabhängig von der Menge), also nach Anwendung der Marge.<br/><br/>Wenn diese Option aktiviert ist, ersetzt der benutzerdefinierte Preis den gesamten Einkaufspreis (unabhängig von der Menge), also vor Anwendung der Marge.
+NOMENCLATURE_PERSO_PRICE_APPLY_QTY = Ausblenden der empfohlenen Preiszeile in der Nomenklatur
+NOMENCLATURE_PERSO_PRICE_APPLY_QTY_HELP = Ermöglicht, dass der benutzerdefinierte Preis den Kaufpreis pro Einheit ersetzt und nicht mehr den gesamten Kaufpreis (unabhängig von der Menge).
+NOMENCLATURE_HIDE_ADVISED_PRICE = Ausblenden der Zeile mit dem empfohlenen Preis in der Nomenklatur
+NOMENCLATURE_HIDE_ADVISED_PRICE_HELP = Ermöglicht es, auf einer Nomenklatur die letzte Zeile des empfohlenen Verkaufspreises auszublenden, die gleich dem Einstandspreis x dem Margenkoeffizienten ist.
+NOMENCLATURE_USE_ON_INVOICE = Nomenklatureinkaufspreis mit Rechnungen verwenden
+NOMENCLATURE_USE_ON_INVOICE_HELP = Wenn Sie ein Produkt zu einer Rechnung hinzufügen, ist der auf Ihre Rechnungszeile angewendete Preis pro Einheit ohne Mehrwertsteuer standardmäßig der auf dem Produktblatt angegebene Verkaufspreis (0€, wenn kein Preis angegeben ist). 
+
+Wenn Sie diese Option aktivieren, Ihr Produkt eine Nomenklatur enthält und auf Ihrem Produktblatt kein Verkaufspreis (oder 0€) eingetragen ist, ist der auf Ihre Rechnungszeile angewendete Stückpreis ohne Mehrwertsteuer der empfohlene Verkaufspreis, der durch die Nomenklatur Ihres Produkts berechnet wird.
+NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC = Erzwingen der Verwendung des Verkaufspreises anstelle der Margenkosten (beim Hinzufügen einer Angebots-/Bestell-/Rechnungszeile)
+NOMENCLATURE_USE_QTYREF_TO_ONE = Immer die Bezugsmenge 1 für die Kalkulation verwenden
+NOMENCLATURE_UNIQUE_TITLE = Einheitlicher Titel für Nomenklaturen
+NOMENCLATURE_UNIQUE_TITLE_HELP = Standardmäßig können Nomenklaturen denselben Titel tragen. Wenn Sie diese Einstellung aktivieren, ist es nicht mehr möglich, denselben Titel für zwei verschiedene Nomenklaturen zu verwenden. Dies gilt nicht rückwirkend und eventuell vorhandene Nomenklaturen werden nicht geändert.
+NOMENCLATURE_USE_TIME_BEFORE_LAUNCH = Verwenden Sie das Feld "Zeit bis Start" in der Nomenklatur an den Arbeitsstationen.
+NOMENCLATURE_USE_TIME_BEFORE_LAUNCH_HELP = Ermöglicht das Einstellen einer Verzögerung vor dem Start auf den Arbeitsstationen. Diese Zeit wird in Tagen angegeben und wird verwendet, um die verlinkte Aufgabe auf die nächste Arbeitsstation zu verschieben.
+NOMENCLATURE_USE_TIME_PREPARE = Das Feld "Vorbereitungszeit" in der Nomenklatur an den Arbeitsstationen verwenden
+NOMENCLATURE_USE_TIME_PREPARE_HELP = Ermöglicht das Festlegen einer Vorbereitungszeit für die Arbeitsstation. Diese Zeit wird in Hundertstelstunden ausgedrückt und wird bei der Kalkulation der Arbeitsstation zur Fertigungszeit addiert. Diese Zeit wird nur einmal addiert, unabhängig von der Menge des Produkts.
+NOMENCLATURE_USE_TIME_DOING = Das Feld "Fertigungszeit" in der Nomenklatur an den Arbeitsstationen verwenden
+NOMENCLATURE_USE_TIME_DOING_HELP = Ermöglicht das Festlegen einer Fertigungszeit für die Arbeitsstation. Diese Zeit wird mit der gewünschten Menge multipliziert.
+ParamLinkedToGPAO = Konfiguration Produktionsmanagement
+NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION = Ermöglichen, eine Produktlinie mit der Arbeitsstation zu verknüpfen
+NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION_HELP = Ermöglicht die Zuordnung einer Arbeitsstation zu einem Produkt in der Nomenklatur
+NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE = Pauschalpreis als Einkaufspreis verwenden
+NOMENCLATURE_ALLOW_USE_MANUAL_COEF = Manuelle Bearbeitung des/der Koeffizienten zulassen
+NOMENCLATURE_ALLOW_USE_MANUAL_COEF_HELP = Standardmäßig können Koeffizienten nur über das Menü "Startseite >> Konfiguration >> Module/Anwendungen >> Nomenklatur >> Registerkarte Koeffizienten" eingestellt werden.<br/>Wenn diese Konfiguration aktiviert ist, ermöglicht sie die manuelle Bearbeitung der Koeffizienten aus der Nomenklatur heraus (entweder aus dem Produktblatt oder aus einem Angebot oder Auftrag).<br/><br/>Dies gilt nur für Produkte allein und nicht für Positionen.
+NOMENCLATURE_USE_COEF_ON_COUT_REVIENT = Ausgabe eines Margenkoeffizienten pro Zeile zulassen
+NOMENCLATURE_USE_COEF_ON_COUT_REVIENT_HELP = Standardmäßig können Sie für jede Produktzeile, die in einer Nomenklatur enthalten ist, einen Koeffizienten festlegen, um den Selbstkostenpreis aus dem Einkaufspreis pro Einheit zu berechnen.<br/>Wenn diese Einstellung aktiviert ist, können Sie für jede Zeile einen zusätzlichen Koeffizienten festlegen, um den Verkaufspreis aus den Selbstkosten zu berechnen.<br/><br/>Dies gilt nur für Produktlinien und nicht für Kostenpositionen.
+NOMENCLATURE_USE_CUSTOM_BUYPRICE = Ermöglicht die Auswahl eines Einkaufs- / Selbstkostenpreises in jeder Zeile (sie haben Vorrang vor den Standardvorschlägen)
+NOMENCLATURE_USE_CUSTOM_BUYPRICE_HELP = Standardmäßig wird beim Hinzufügen eines Produkts in der Nomenklatur der höchste Einkaufspreis unter den Einkaufspreisen verwendet, die auf dem Produktblatt angegeben sind.<br/>Wenn diese Option aktiviert ist, können Sie aus einer Dropdown-Liste den Preis auswählen, den Sie für die Berechnungen verwenden möchten, und zwar aus den folgenden, im Produktstammsatz angegebenen Elementen: die verschiedenen Einkaufspreise, der Selbstkostenpreis, der gewichteten Durchschnittspreis, ein benutzerdefinierter Preis.
+NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT = Ausgabe der Produkteinheit in jeder Zeile zulassen
+NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT_DESC = Achtung, die Angabe der Einheit ist derzeit nur informativ und wird nicht für die Lagerhaltung umgerechnet.
+WarningUnitOfBomIsNotTheSameAsProduct = Achtung, die Einheit weicht von der auf der Produktkarte eingestellten Einheit ab <strong>(%s)</strong>.<br/>Die Angabe der Einheit dient derzeit nur zu Informationszwecken und wird nicht für die Lagerhaltung umgerechnet.<br/>Um Mengenfehler zu vermeiden, empfiehlt es sich, diesen Wert in der Nomenklatur zu ändern und die Mengen gegebenenfalls anzupassen.
+NOMENCLATURE_USE_LOSS_PERCENT = Automatische Berechnung der Menge nach dem Verlustprozentsatz aktivieren
+NOMENCLATURE_USE_LOSS_PERCENT_HELP = Standardmäßig können Sie für jede Produktlinie, die einer Nomenklatur hinzugefügt wird, eine Menge eingeben.<br/>Wenn diese Option aktiviert ist, erscheinen vor dem Feld Menge zwei neue Felder, in die Sie eine Grundmenge und einen Verlustprozentsatz eingeben können.<br/><br/>Wenn diese Felder ausgefüllt sind, wird die Menge automatisch aufgefüllt.
+NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE = Verhindern Sie auf der Registerkarte Koeffizient der Vorschläge die Neuberechnung von Zeilen, deren Verkaufspreis manuell erzwungen wurde.
+NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE = Verwenden Sie beim Hinzufügen einer Angebots-/Bestell-/Rechnungszeile nicht den Nomenklaturverkaufspreis.
+NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE_HELP = Wenn diese Option für ein Produkt mit einer Nomenklatur aktiviert ist, ist der abgerufenen und auf Ihre Dokumentenzeile angewandte Einzelpreis ohne Mehrwertsteuer immer der im Produktblatt ausgefüllte Verkaufspreis.
+NOMENCLATURE_FEEDBACK = Hinzufügen eines Tabs Produktrückgabe bei Projekten / Bauprojekten
+NOMENCLATURE_FEEDBACK_USE_STOCK = Hinzufügen von Bestandsbewegungen bei Rückgabe von Bauprojekten (das Lagermodul muss aktiviert sein)
+NOMENCLATURE_FEEDBACK_USE_STOCK_DependencyChangeStateTitle = Bestätigung der Aktivierung/Deaktivierung von abhängigen Konfigurationen
+NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeStateTitle = Bestätigung der Aktivierung/Deaktivierung von abhängigen Konfigurationen
+NOMENCLATURE_FEEDBACK_USE_STOCK_DependencyChangeState = Bevor Sie diese Konfiguration aktivieren, stellen Sie sicher, dass das Lagermodul aktiviert ist.<br/><br/> Die folgenden Konfigurationen werden aktiviert:
+NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeState = Die folgenden Konfigurationen werden deaktiviert:
+NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW = Fügt Baustellen-Zuweisungen auf der "Übersicht" einer Baustelle hinzu
+NOMENCLATURE_IMPORT_SEPARATOR = Trennzeichen Importdatei
+NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW_HELP = Wenn die Option "Lagerbewegungen bei Baustellenzuweisungen durchführen" aktiviert ist, basieren die Berechnungen auf den Lagerbewegungen, andernfalls basieren die Berechnungen auf der gesamten Lagerzuweisung der Baustelle ohne Berücksichtigung von Datumsfiltern. Außerdem ist die Option "Kosten der Bewegung" nicht verfügbar für die Einstellung "Kosten von Baustellenzuweisungen in der Übersicht berechnen basierend auf".
+NOMENCLATURE_FEEDBACK_INIT_STOCK = Ermöglicht es, die Zuweisung von Lagerbeständen zu einer Baustelle zu initialisieren, wenn dies noch nicht geschehen ist.
+NOMENCLATURE_FEEDBACK_INIT_STOCK_HELP = Wenn die Zuweisungen vor der Aktivierung der Option "Warenbewegungen bei Baustellenzuweisungen durchführen" vorgenommen wurden, werden mit dieser Option die fehlenden Warenbewegungen auf der Baustellenzuweisungsseite initialisiert.
+NOMENCLATURE_FEEDBACK_OBJECT = Objekttyp, der für die Zuordnung Baustelle verwendet wird
+NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE = Keine Änderung des Lagerhauses zulassen
+NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE = Bei einem Klick auf die Schaltfläche "Verkaufspreis anwenden" schließen Sie das Fenster, sobald die Aktion ausgeführt wurde.
+NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE_HELP = Wenn diese Option aktiviert ist, wird beim Öffnen eines Nomenklaturfensters für eine der Zeilen eines Angebots oder eines Auftrags, wenn Sie auf "Verkaufspreis anwenden" klicken, das Nomenklaturfenster automatisch geschlossen, indem Ihr Verkaufspreis auf die Produktzeile angewendet wird.<br/><br/>Diese Option erfordert, dass Sie den Cache Ihres Browsers leeren, damit sie berücksichtigt werden kann.
+NOMENCLATURE_HIDE_STOCK_COLUMNS = Ausblenden des "physischen Bestands" und des "virtuellen Bestands" in Nomenklaturen
+NOMENCLATURE_HIDE_STOCK_COLUMNS_HELP = Standardmäßig werden der physische und der virtuelle Bestand in jeder Zeile von Produkten / Dienstleistungen angezeigt, die einer Nomenklatur hinzugefügt wurden. Mit dieser Option können Sie diese beiden Informationen ausblenden.
+ParamLinkedToUX = Ergonomie-Konfiguration
+NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE = Produkte, die sich nicht in einer Nomenklatur befinden, auf dem Nomenklaturdetail (Angebot / Auftrag) einbeziehen
+NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE_HELP = Standardmäßig werden auf der Registerkarte "Nomenklatur" eines Vorschlags- oder Auftragsblattes nur die Produkte / Dienstleistungen angezeigt, die in den Nomenklaturen Ihrer Angebotszeilen enthalten sind. Wenn diese Option aktiviert ist, werden auf der Registerkarte "Nomenklatur" Ihres Angebots auch die anderen Produkte angezeigt, die sich in Ihren Angebotszeilen befinden (außerhalb der Nomenklatur und der freien Zeile).
+NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL = Trennen Sie die Artikelnummer und die Bezeichnung des Produkts auf dem Nomenklaturdetail (Angebot / Auftrag).
+NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL_HELP = <strong>Achtung</strong>: Diese Option funktioniert nur, wenn die Konfiguration "Produkte und Dienstleistungen auf der Registerkarte "Details" trennen" aktiviert ist.<br/><br/>Standardmäßig werden auf der Registerkarte "Nomenklatur" eines Angebots oder eines Auftrags die Artikelnummern und Beschriftungen der Produkte/Dienstleistungen in derselben Spalte angezeigt. Wenn diese Option aktiviert ist, werden Referenzen und Beschriftungen in getrennten Spalten angezeigt.
+NOMENCLATURE_HIDE_SUBTOTALS = Zwischensummen auf dem Nomenklaturdetail eines Angebots ausblenden
+NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES = Titel und Zwischensummen auf den Nomenklaturdetails eines Angebots ausblenden
+NOMENCLATURE_SHOW_TITLE_IN_COLUMN = Spaltenüberschriften auf den Nomenklaturdetails eines Angebots anzeigen
+NOMENCLATURE_CLONE_ON_PRODUCT_CLONE = Nomenklatur eines Produkts beim Klonen mitkopieren
+NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE = Änderung der Einkaufspreise von Artikeln anhand von Referenzmengen, wenn diese nicht teilbar sind
+
+ParamSaved = Erfolgreich gespeichert
+CostType1 = Bester verfügbarer Lieferantenpreis in der Datenbank
+CostType2 = Gewichtete Durchschnittspreis (GDP); Rückgriff auf den besten Lieferantenpreis, falls nicht gefunden
+CostType3 = Selbstkostenpreis, wenn er auf der Produktkarte gefunden wird; Rückgriff auf Gewichteter Durchschnittspreis (GDP), dann auf den besten Lieferantenpreis, wenn er nicht gefunden wird
+
+CantAddProductBecauseOfAnInfiniteLoop = Dieses Produkt kann nicht hinzugefügt werden, weil dadurch eine Endlosschleife entsteht
+SetPriceInfiniteLoop = Endlosschleife beim Abrufen des Preises erkannt
+
+DeleteSpecificCoef = Spezifische Koeffizienten löschen
+
+nomenclatureRead = Nomenklaturen anzeigen
+nomenclatureWrite = Nomenklaturen erstellen/ändern
+nomenclatureShowPrice = Produktionsauftragsdetails Preise anzeigen
+
+
+workstationListCustomTHM = Liste der durchschnittlichen Stundensätze
+ThmGenericSaveForSpecific = Allgemeiner durchschnittlicher Stundensatz. Speichern Sie ihn, wenn Sie ihn objektspezifisch gestalten möchten.
+workstationThmUpdated = Durchschnittliche Stundensätze aktualisiert
+NOMENCLATURE_USE_CUSTOM_THM_FOR_WS = Ermöglicht die Eingabe von benutzerdefinierten durchschnittlichen Stundensätzen auf Angeboten über die Registerkarte "Koeffizient" der Nomenklatur
+NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP = Ermöglicht die Zuweisung von angebotsspezifischen Stundensätzen zu Arbeitsstationen (sie gelten nur für dieses Angebot).<br/><br/>Sie können darauf über die Registerkarte "Koeffizient" in der Angebotskarte zugreifen.
+StatusOfObjectAvoidEdit = Der Status des Objekts lässt eine Bearbeitung nicht zu
+LossPercent = Prozentualer Verlust
+BuyingPriceCustom = Benutzerdefinierter Kaufpreis<br/>(hat Vorrang vor der Konfiguration)
+CoefMarge = Margenkoeffizient
+CoefCharge = Gebührenkoeffizient
+qty_base = Basismenge
+NomenclatureLineType = Typkoeffizient
+
+NomenclatureCreateXQty = x Artikel herstellen
+
+NomenclatureCreateStock = Einen Lagereintrag erstellen (%s)
+NomenclatureHowManyQty = Zu produzierende Menge:
+NomenclatureSelectWarehouseToMake = Ziellager des Endprodukts:
+NomenclatureSelectWarehouseNeeded = Ziellager der Komponenten:
+
+NomenclatureErrorEmptyQtyToStock = Fehler: Menge nicht angegeben
+NomenclatureErrorNoWarehouseSelectedToMake = Fehler: Kein Lagerhaus für die Lagerung des fertigen Produkts ausgewählt
+NomenclatureErrorNoWarehouseSelectedNeeded = Fehler: Kein Lagerhaus ausgewählt für die Auslagerung von Komponenten
+NomenclatureErrorInvalidNomenclatureType = Fehler: Nur Nomenklaturen vom Typ "Produkt" können eine Warenbewegung erzeugen.
+
+NomenclatureStockProductFrom = Eingabe über Nomenklatur [%s].
+NomenclatureDestockProductFrom = Ausgabe über die Nomenklatur [%s].
+
+NomenclatureMvtOk = Warenbewegungen ok
+
+NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN = Aktivieren der Warenbewegungsfunktionalität vom Tab "Nomenklatur" eines Produkts aus (erfordert, dass das Modul "Lager" aktiviert ist)
+NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN_HELP = Wenn diese Option aktiviert ist, wird in der Nomenklatur des Produktblatts eine Schaltfläche "Produkt x Menge" angezeigt. Mit dieser Schaltfläche können Sie den Bestand des übergeordneten Produkts in Ihrer Nomenklatur erhöhen (dadurch wird auch der Bestand der untergeordneten Produkte in Ihrer Nomenklatur verringert). Die zugehörigen Warenbewegungen werden erstellt.
+
+NomenclatureStockTheorique = Virtueller Bestand + Nomenklatur
+NomenclatureStockTheoriqueHelp = Virtuelles Standardlager Dolibarr + die über Komponenten mögliche Herstellungsmenge
+
+NomenclatureTitleWarning=Eine Nomenklatur mit diesem Namen existiert bereits
+
+QtyAllowed = Der Baustelle zugeordnete Menge
+QtyToBeAllocated = Zuzuordnende Menge
+QtyPlanned = Geplante Menge
+QtyNotUsed = Auf der Baustelle verfügbare Menge
+QtyNewConsume = Verbrauchte Menge
+QtyReturn = Zurückgegebene Menge
+Projectfeedback = Zuordnung Baustelle
+ProjectfeedbackResumeHistory = Historie Zuordnung Baustelle
+ProjectfeedbackResume = Baustellen-Zuweisungen
+ProjectfeedbackResumeNbMovementHelp = le nombre de produit diférents affectés aux chantiers
+ShowFeedBackHistoryDetails = Details ansehen
+DataBaseQueryError = Bei der Datenbankabfrage ist ein Fehler aufgetreten
+Projectfeedbackhistory = Historie Zuordnung Baustelle
+QtyUsed = Verwendete Menge
+TotalQtyConsume = Gesamtmenge verbraucht
+FeedbackSaved = Gespeichert: %s
+FeedBackSaveErrors = Fehler beim Speichern: %s 
+NothingWasDo = Es ist nichts passiert...
+FeedbackDisableShippingExists = Baustellenzuordnungen sind deaktiviert, da für den verknüpften Auftrag eine Sendung existiert
+nomenclatureStockBack = Zurück zur Baustelle
+nomenclatureStockSend = Zuordnung Baustelle
+nomenclatureStockChantier = Versorgung der Baustelle
+nomenclatureStockInitChantier = Lagerbewegung zur Versorgung der Baustelle durchgeführt
+StockNotInit = Nicht initialisierte Warenbewegungen zur Baustelle. Sie werden beim Speichern angelegt
+NoFeedbackObjectLinked = Derzeit ist dieses Projekt mit keiner %s verbunden.
+ApplyPlanned = Sicherstellung der Einhaltung der geplanten Menge
+DoStockFeedBack = Wieder auf Lager legen
+NoNomenclature = Keine Nomenklatur
+
+# LIST 
+is_default = Wird standardmäßig verwendet
+NomenclatureName = Nom
+CreateOn = Erstellungsdatum
+Updated = Letzte Änderung
+NomenclatureList = Liste der Nomenklaturen
+ListMessageNothingToShow = Keine Ergebnisse, überprüfen Sie Ihre Filter oder fügen Sie eine Nomenklatur hinzu.
+
+RealStock = Ist Bestand
+TheoreticalStock = Soll Bestand
+
+#Search by category
+SearchByCategory = Suche nach Kategorie
+NothingHere = Keine Unterkategorie oder Produkt
+DoASearch = Suche durchführen/Keine Ergebnisse für Ihre Suche
+NOMENCLATURE_DETAILS_TAB_REWRITE = Trennen Sie Produkte von Dienstleistungen in der Registerkarte "Nomenklatur" (Angebot / Auftrag).
+NOMENCLATURE_DETAILS_TAB_REWRITE_HELP = Standardmäßig werden auf der Registerkarte "Nomenklatur" eines Angebots oder eines Auftrags die Produkte / Dienstleistungen (außer freie Zeilen) in der folgenden Reihenfolge der Angebotszeilen aufgelistet:<ul><li>Übergeordnetes Produkt und dann Übergeordnete Leistung</li><li>Untergeordnetes Produkt und dann Untergeordnete Leistung</li></ul>Wenn diese Option aktiviert ist, wird die Anzeigereihenfolge wie folgt geändert:<ul><li>Übergeordnetes Produkt und dann untergeordnetes Produkt</li><li>Übergeordnete Leistung und dann untergeordnete Leistung</li></ul>Diese Option ermöglicht auch, dass die Summen (Menge, Einkaufspreis usw.) am Ende der Tabelle angezeigt werden.
+UpdateTitleCoeff = Koeffizienten der Nomenklaturen aktualisieren
+
+nomenclatureNonSecable = Nicht aufteilbare Schwelle
+nomenclatureNonSecableHelp = Dieser Begriff ermöglicht es, die Referenzmenge als nicht teilbar in Ihren Angeboten/Kundenaufträgen zu verwenden. Beispiel für eine Referenzmenge von 1: Wenn die Zeile Ihres Angebots die Menge 3.5 enthält, dann wird die dieser Zeile zugeordnete Nomenklatur einen Preis für eine Menge von 4 berechnen.
+nomenclatureNonSecableForQty = Nicht abtrennbarer Schwellenwert für eine Referenzmenge von %s
+
+NomenclatureWarningSeuilNonSecableHelp = Achtung: Die Nomenklatur dieser Zeile ist vom Typ nicht teilbar, nur ein Vielfaches der Referenzmenge (%s) ist erlaubt.
+
+NomenclatureHelpMargePriceFinal = Kann in der Modulkonfiguration Nomenklatur geändert werden 
+BomAdded = Nomenklatur hinzugefügt
+BomAddError = Ein Fehler ist aufgetreten
+
+HowToImportBom = Wie importiert man Nomenklaturen?
+HowToImportBomHelp = Sie können Nomenklaturen über diese Schnittstelle mithilfe einer CSV-Datei (Excel) importieren.<br/><a href="%s" target="_blank" >Die Importdatei (hier zum Download verfügbar)</a> muss die folgenden Spalten enthalten:
+colNumberOfBom = Nummer der Nomenklatur
+colNumberOfBomHelp = Dies ist die Nummer, die Ihrer Nomenklatur auf ihrem Produktblatt >> Registerkarte "Nomenklatur" zugewiesen wurde.
+colProductRef = Produktreferenz
+colProductRefHelp = Hierbei handelt es sich um die Referenz des Produkts, das Ihre Nomenklatur enthalten wird. Diese Produktkarte muss zuvor in Dolibarr erstellt worden sein.
+colAssetType = Typ Komponente
+colAssetTypeHelp = 1 (Produkt oder Dienstleistung) / 2 (Arbeitsstation).
+colAssetRef = Referenz der Komponente
+colAssetRefHelp = Dies ist die Referenz (Produkt) oder die ID (Arbeitsstation) der Komponente, die Sie in Ihre Nomenklatur einfügen möchten. Dieses Element muss zuvor in Dolibarr erstellt worden sein.
+colAssetQuality = Menge der Komponente
+colAssetQualityHelp = Dies ist die Menge der Komponente, die Ihrer Nomenklatur hinzugefügt werden soll (Fertigungszeit für Arbeitsstationen).
+colQuantityRef = Referenzmenge
+colQuantityRefHelp = Dies ist die Referenzmenge, für die Sie Ihre Nomenklatur aufbauen.
+colMargeToApply = Anzuwendender Margencode
+colMargeToApplyHelp = Dies ist der Code, der auf der Registerkarte Koeffizient in der Konfiguration des Moduls Nomenklatur angegeben ist (Produkt- oder Arbeitskoeffizient). Dieses Element muss zuvor in Dolibarr angelegt worden sein.
+colFinalMargeToApply = Code für die anzuwendende Endmarge
+colFinalMargeToApplyHelp = Dies ist der Code, der auf der Registerkarte Koeffizient in der Konfiguration des Moduls Nomenklatur ausgefüllt wird (Koeffizient des empfohlenen Verkaufspreises). Dieses Element muss zuvor in Dolibarr angelegt worden sein.
+IdOfBommCreated = Nomenklatur-Id angelegt
+Component = Komponente
+ImportBomNoteHelp = Hinweis: Wenn Sie eine Nomenklatur mit mehreren Komponenten importieren möchten, müssen Sie für jede Komponente eine eigene Zeile erstellen. Jede Zeile hat dieselbe Nomenklaturnummer, dieselbe Produktnummer und dieselbe Referenzmenge.
+BomsCreated = Nomenklaturen erstellt
+ErrorFetching = %s nicht gefunden
+Worstations = Arbeitsstationen
+
+NomenclatureMenuCaByDetailNomenclature=Nach Nomenklatur fakturierter Umsatz
+
+# MassAction
+MajPmpWithBomPriceLabel=gewichteten Durchschnittspreis (GDP) durch den empfohlenen Verkaufspreis ersetzen
+ConfirmMajPmp=Bestätigung der gewichteten Durchschnittspreis-Aktualisierung
+ConfirmMajPmpQuestion=Sind Sie sicher, dass Sie die gewichteten Durchschnittspreise der Produkte, die von den ausgewählten Datensätzen betroffen sind, aktualisieren wollen?
+PmpCorrectlyUpdated=Die gewichteten Durchschnittspreise wurden aktualisiert.
+PmpNotCorrectlyUpdated=Die gewichteten Durchschnittspreise wurden nicht korrekt aktualisiert
+NomenclatureUseSubBom=Untergeordnete Nomenklaturen einbeziehen

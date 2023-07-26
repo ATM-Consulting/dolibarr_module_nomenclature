@@ -382,8 +382,8 @@ class TNomenclature extends TObjetStd
 
 		}
 
-		$this->totalPR = $totalPR;
-		$this->totalPRC = $totalPRC;
+		$this->totalPR = floatval($totalPR);
+		$this->totalPRC = floatval($totalPRC);
 
 		$this->totalPR_PMP = $totalPR_PMP;
 		$this->totalPRC_PMP = $totalPRC_PMP;
@@ -410,13 +410,13 @@ class TNomenclature extends TObjetStd
 
 
 		}
-		$this->totalMO = $total_mo;
+		$this->totalMO = floatval($total_mo);
 		$this->totalMO_OF = $total_mo_of;
 
 		$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $this, $object_type);
 //		$this->marge_object = $marge;
 		$this->marge = $marge->tx_object;
-
+        if(is_nan($this->totalPRC)) $this->totalPRC = 0;
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 
 		$this->totalPV = ($this->totalMO + $totalPV);
@@ -456,9 +456,10 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureDetOriginal = $n->TNomenclatureDet;
         $this->TNomenclatureWorkstationOriginal = $n->TNomenclatureWorkstation;
 
-        if( (count($this->TNomenclatureDet)+count($this->TNomenclatureWorkstation) )==0 && (count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
+		if((count($this->TNomenclatureDetOriginal) + count($this->TNomenclatureWorkstationOriginal))>0)
 		{
-      	    $this->qty_reference = $n->qty_reference ;
+
+			$this->qty_reference = $n->qty_reference ;
 
             foreach($this->TNomenclatureDetOriginal as $k => &$det) {
                 $this->TNomenclatureDet[$k] = new TNomenclatureDet;
@@ -809,10 +810,25 @@ class TNomenclature extends TObjetStd
         $res = false;
         if($obj = $PDOdb->Get_line()) {
             $res = $this->load($PDOdb, $obj->rowid, $loadProductWSifEmpty, 0, 1, $object_type, $fk_origin);
+		}
+        $this->load_original($PDOdb, $fk_product, $qty);
+
+		$this->setAll();
+
+        // DA023030
+		// Cas où un produit a été ajouté à une ligne avant la création d'une nomenclature pour ce produit
+		// La modale ne doit pas prendre les infos de la nomenclature ulterieurement créée. Elle a été créée à vide et doit le rester jusqu'à ce qu'une opération soit effectue depuis la modale
+
+        $sql2 = "SELECT fk_nomenclature_parent FROM ".MAIN_DB_PREFIX."nomenclature WHERE rowid =".$this->rowid;
+        $PDOdb->Execute($sql2);
+        $obj2 = $PDOdb->Get_line();
+
+        //DA023411 : J'ai ajouté le test sur l'object type car on allait pas chercher les nomenclatures enfants sur les fiches produits, or l'anomalie de DA023030 n'est présente que lorsqu'on crée une nomenclature depuis un document client
+        if(empty($obj2->fk_nomenclature_parent) && $this->object_type != 'product') {
+            $this->TNomenclatureDet = array();
+            return $res;
         }
 
-        $this->load_original($PDOdb, $fk_product, $qty);
-		$this->setAll();
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_origin);
 
@@ -1257,7 +1273,7 @@ class TNomenclature extends TObjetStd
 			// Get margins infos for lines which have no nomenclature
 			$formmargin = new FormMargin($object->db);
 			$marginInfoForLinesWithoutNomenclature = $formmargin->getMarginInfosArray($object);
-			foreach ($marginInfo as $k=>$v) $marginInfo[$k] += $marginInfoForLinesWithoutNomenclature[$k];
+			foreach ($marginInfo as $k=>$v) $marginInfo[$k] += floatval($marginInfoForLinesWithoutNomenclature[$k]);
 
 			$marginInfo['pv_total'] = $marginInfo['pv_products'] + $marginInfo['pv_services'];
 			$marginInfo['pa_total'] = $marginInfo['pa_products'] + $marginInfo['pa_services'];

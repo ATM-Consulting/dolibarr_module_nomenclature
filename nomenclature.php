@@ -165,7 +165,6 @@ if (empty($reshook))
 		        foreach($tab as $k=>$TDetValues) {
                     if(empty($n->TNomenclatureDet[$k])) $n->TNomenclatureDet[$k] = new TNomenclatureDet;
 		            $n->TNomenclatureDet[$k]->set_values($TDetValues);
-
 		            if(isset($_POST['TNomenclature_'.$k.'_workstations'])) {
 		            	$n->TNomenclatureDet[$k]->workstations = implode(',', $_POST['TNomenclature_'.$k.'_workstations']);
 		            }
@@ -173,9 +172,10 @@ if (empty($reshook))
 		        }
 		    }
 
+
 		    if(!empty($_POST['TNomenclatureWorkstation'])) {
 		        foreach($_POST['TNomenclatureWorkstation'] as $k=>$TDetValues) {
-		            $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
+                    if(!empty($n->TNomenclatureWorkstation[$k])) $n->TNomenclatureWorkstation[$k]->set_values($TDetValues);
 		        }
 		    }
 
@@ -185,7 +185,7 @@ if (empty($reshook))
 		    if(GETPOST('add_nomenclature', 'none') && $fk_new_product>0) {
 
 				$last_det = end($n->TNomenclatureDet);
-                if(empty($last_det->rowid))$last_det->rowid = 0;
+                if(!empty($last_det) && empty($last_det->rowid))$last_det->rowid = 0;
 				$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 				$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
 
@@ -715,6 +715,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									if ($readonly) echo '<div class="note_private">';
 									echo $formCore->zonetexte('', 'TNomenclature['.$k.'][note_private]', $det->note_private, 80, 1,' style="width:95%;"');
 									if ($readonly) echo '</div>';
+
+								   if($det->fk_product > 0) print '<input type="hidden" name="TNomenclature['.$k.'][fk_product]" value="'.$det->fk_product.'"/>';
 
 									if(!empty($conf->global->NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION)) {
 
@@ -1552,7 +1554,6 @@ function _draw_child_arbo(&$PDOdb, $id_product, $qty = 1, $level = 1) {
     $n->loadByObjectId($PDOdb, $id_product, 'product', false);
 
     if ($n->non_secable) print ' <i class="fas fa-unlink" title="'.$langs->trans('nomenclatureNonSecable').'"></i>';
-
     foreach($n->TNomenclatureDet as &$det) {
 
         $p_child = new Product($db);
