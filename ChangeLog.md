@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : DA023653 - Erreur d'arrondi lors de calculs *26/07/2023* 4.9.16
 - FIX : Fix php8 fatal *05/07/2023* - 4.9.15
 - FIX : Fix php8 fatal *28/06/2023* - 4.9.14
 - FIX : order of inital table creation not correct. TNomenclatureDet checks for table llx_nomenclature_coef which needs to be created first *19/06/2023*  4.9.13
