@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : DA023653 - Erreur d'arrondi lors de calculs *26/07/2023* 4.9.5
 - FIX : Warning:  current() expects parameter 1 to be array, null given *22/09/2022* 4.9.4
 - FIX : ADD test array - *21/09/2022)* - 4.9.3
 - FIX : Ajout de la class objet_std dans nomenclature.class *21/09/2022* 4.9.2
