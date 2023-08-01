@@ -154,7 +154,7 @@ class TNomenclature extends TObjetStd
 		if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) $price_buy =  price2num($this->totalMO + $this->totalPRC, 'MT');
 		else $price_buy =  price2num($this->totalMO + $this->totalPR, 'MT');
 
-		$qty_ref =  ((int)$qty_ref == 0 ) ? 1 : (int)$qty_ref;
+		$qty_ref =  (floatval($qty_ref) == 0 ) ? 1 : floatval($qty_ref);
 		return $price_buy / $qty_ref;
 	}
 
@@ -166,7 +166,7 @@ class TNomenclature extends TObjetStd
 	 */
 	function getSellPrice($qty_ref=1)
 	{
-		$qty_ref =  ((int)$qty_ref == 0 ) ? 1 : (int)$qty_ref;
+		$qty_ref =  (floatval($qty_ref) == 0 ) ? 1 : floatval($qty_ref);
 		return price2num($this->totalPV / $qty_ref, 'MT');
 	}
 
@@ -923,7 +923,7 @@ class TNomenclature extends TObjetStd
         $coef = 1;
         if($qty_ref != $this->qty_reference) {
             // TODO calcul sur le non sécable sans doute pas utile car $qty_ref devrait être un multiple de $this->qty_reference
-			$this->qty_reference =  ((int)$this->qty_reference == 0 ) ? 1 : (int)$this->qty_reference;
+			$this->qty_reference =  (floatval($this->qty_reference) == 0 ) ? 1 : floatval($this->qty_reference);
             if ($this->non_secable) $coef = ceil($qty_ref / $this->qty_reference);
             else $coef = $qty_ref / $this->qty_reference;
         }
@@ -1109,7 +1109,7 @@ class TNomenclature extends TObjetStd
 			if ($qty < 0) $action = 'stockNeeded';
 
 			$qty_abs = abs($qty); // Qté du produit final à déplacer
-			$this->qty_reference =  ((int)$this->qty_reference == 0 ) ? 1 : (int)$this->qty_reference;
+			$this->qty_reference =  (floatval($this->qty_reference) == 0 ) ? 1 : floatval($this->qty_reference);
 			$coef = $qty_abs / $this->qty_reference; // Coef pour les composants (l'attribut qty des lignes équivaut à la fabrication de qty_reference de la nomenclature)
 
 			$mouvS = new MouvementStock($db);
@@ -1188,7 +1188,7 @@ class TNomenclature extends TObjetStd
 		global $db;
 		require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 
-		$this->qty_reference =  ((int)$this->qty_reference == 0 ) ? 1 : (int)$this->qty_reference;
+		$this->qty_reference =  (floatval($this->qty_reference) == 0 ) ? 1 : floatval($this->qty_reference);
 		$coef = 1 / $this->qty_reference;
 
 		$qty_theo = null;
@@ -1638,7 +1638,7 @@ class TNomenclatureDet extends TObjetStd
 
 
 			if($obj = $PDOdb->Get_line()) {
-				$obj->quantity =  ((int)$obj->quantity == 0 ) ? 1 : (int)$obj->quantity;
+				$obj->quantity =  (floatval($obj->quantity) == 0 ) ? 1 : floatval($obj->quantity);
 				$price_supplier = $obj->price / $obj->quantity;
                 $price_supplier = $price_supplier * (1 - $obj->remise_percent / 100);
 			}
@@ -1653,7 +1653,7 @@ class TNomenclatureDet extends TObjetStd
 			    }
 
 				if($obj = $PDOdb->Get_line()) {
-					$obj->quantity =  ((int)$obj->quantity == 0 ) ? 1 : (int)$obj->quantity;
+					$obj->quantity =  (floatval($obj->quantity) == 0 ) ? 1 : floatval($obj->quantity);
 					$price_supplier = $obj->price / $obj->quantity;
                     $price_supplier = $price_supplier * (1 - $obj->remise_percent / 100);
 				}
