@@ -154,7 +154,7 @@ if (empty($reshook))
 
 		    $n->is_default = (int)GETPOST('is_default', 'int');
 
-			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_product);
+			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_object, $n->object_type);
 
             //Cas ou l'on déplace une ligne
 		    if(!empty($_POST['TNomenclature'])) {
