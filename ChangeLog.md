@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## 4.9
 
+- FIX : DA023653 - Nomenclature vide sur les lignes libres + on affichait tous les temps les données de la nomenclature parente *23/08/2023* 4.9.17
 - FIX : DA023653 - Erreur d'arrondi lors de calculs *26/07/2023* 4.9.16
 - FIX : Fix php8 fatal *05/07/2023* - 4.9.15
 - FIX : Fix php8 fatal *28/06/2023* - 4.9.14
