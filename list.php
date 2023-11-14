@@ -182,7 +182,7 @@ $TParam['search'] = array (
 );
 
 $TParam['operator'] = array(
-  'pmp' => '= '.round('nomenclature_getPMP(@rowid@)', 2, PHP_ROUND_HALF_UP)
+  'pmp' => '= '.round(floatval('nomenclature_getPMP(@rowid@)'), 2, PHP_ROUND_HALF_UP)
 );
 
 $TParam['eval'] = array(
