@@ -139,7 +139,7 @@ if ($object->thirdparty->id > 0)
 $morehtmlref.='</div>';
 
 // Define a complementary filter for search of next/prev ref.
-if (! $user->rights->projet->all->lire)
+if (! $user->hasRight('projet', 'all', 'lire'))
 {
 	$objectsListId = $object->getProjectsAuthorizedForUser($user,0,0);
 	$object->next_prev_filter=" rowid in (".(count($objectsListId)?join(',',array_keys($objectsListId)):'0').")";

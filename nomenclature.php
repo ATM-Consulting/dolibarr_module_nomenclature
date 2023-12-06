@@ -665,7 +665,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                   <?php } ?>
                            <th class="liste_titre col_qty" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                            <?php if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) { ?> <th class="liste_titre col_buy_price" width="5%"><?php echo $langs->trans('BuyingPriceCustom'); ?></th> <?php } ?>
-                           <?php if($user->rights->nomenclature->showPrice) { ?>
+                           <?php if($user->hasRight('nomenclature', 'showPrice')) { ?>
                                <th class="liste_titre col_amountCostUnit" align="right" width="5%"><?php echo $langs->trans('AmountCostUnit'); ?></th>
                                <th class="liste_titre col_amountCost" align="right" width="5%"><?php echo $langs->trans('AmountCost'); ?></th>
 							   <th class="liste_titre col_type" width="5%"><?php echo $langs->trans('CoefCharge'); ?></th>
@@ -849,7 +849,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 							       }
 
 							   }
-	                            if($user->rights->nomenclature->showPrice) {
+	                            if($user->hasRight('nomenclature', 'showPrice')) {
 	                            	$price = $det->calculate_price; //Si on arrondit cette valeur l'affichage de la colonne prix d'achat unitaire est fausse
 									$price_charge = $det->charged_price;
 
@@ -978,7 +978,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 					?></tbody><tfoot><?php
 
-				       if($user->rights->nomenclature->showPrice) {
+				       if($user->hasRight('nomenclature', 'showPrice')) {
 				       		$colspan = 3;
 							if(!empty($conf->global->FOURN_PRODUCT_AVAILABILITY) && $conf->global->FOURN_PRODUCT_AVAILABILITY > 0) $colspan ++;
 							if(empty($conf->stock->enabled)) $colspan -= 2;
@@ -1044,7 +1044,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 		                           <td align="right"></td>
 
 		                       </tr>
-		                       <?php
+<?php
 						   }
 
 					   }
@@ -1115,7 +1115,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                    <?php }?>
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('Qty'); ?></th>
                    <th class="liste_titre" width="5%"><?php echo $langs->trans('Type'); ?></th>
-                 <?php if($user->rights->nomenclature->showPrice) {
+                 <?php if($user->hasRight('nomenclature', 'showPrice')) {
                  	?><th class="liste_titre" align="right" width="5%"><?php echo $langs->trans('AmountCostWithCharge'); ?></th><?php }
 
                  ?>
@@ -1169,7 +1169,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                            <?php
 
-                           if($user->rights->nomenclature->showPrice) {
+                           if($user->hasRight('nomenclature', 'showPrice')) {
 
 								$price_charge = ($ws->price) ? $ws->price : $ws->calculate_price; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
 								$total_mo+=$price_charge;
@@ -1205,7 +1205,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								</td>
                        </tr>
 
-                       <?php
+<?php
 
 
                    }
@@ -1217,7 +1217,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_PREPARE)) $colspan--;
 					if (empty($conf->global->NOMENCLATURE_USE_TIME_DOING)) $colspan--;
 
-					if($user->rights->nomenclature->showPrice) {
+					if($user->hasRight('nomenclature', 'showPrice')) {
 	                    ?><tr class="liste_total">
 	                           <td colspan="2"><?php echo $langs->trans('Total'); ?></td>
 	                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
@@ -1275,11 +1275,11 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                         </div>
                     </td>
                 </tr>
-                <?php
+<?php
         	}
         }
 
-		if($user->rights->nomenclature->showPrice)
+		if($user->hasRight('nomenclature', 'showPrice'))
 		{
 				// La methode setPrice garde maintenant l'objet marge dans un attribut, pas besoin de le reload
 				// pour rien surtout qu'une commande peut avoir une propal d'origine qui possède des coef custom
@@ -1479,7 +1479,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				</div>
 			</td>
         </tr>
-        <?php } ?>
+<?php } ?>
     </table>
     <?php
 

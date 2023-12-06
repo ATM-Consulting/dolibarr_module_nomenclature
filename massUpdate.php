@@ -2,7 +2,7 @@
 
 	require 'config.php';
 
-	if(empty($user->rights->nomenclature->global->massUpdate))accessforbidden();
+	if(!$user->hasRight('nomenclature', 'global', 'massUpdate'))accessforbidden();
 
 	dol_include_once('/product/class/product.class.php');
 	dol_include_once('/nomenclature/class/nomenclature.class.php');

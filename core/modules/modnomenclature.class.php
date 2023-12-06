@@ -166,16 +166,16 @@ class modnomenclature extends DolibarrModules
 		// 'thirdparty'       to add a tab in third party view
 		// 'user'             to add a tab in user view
 		$this->tabs = array(
-		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->rights->nomenclature->read:/nomenclature/nomenclature.php?fk_product=__ID__'
-            ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->tiers->updatecoef:/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
-        	,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->propal->updatecoef:/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
-        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
-        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
-        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
-        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->rights->nomenclature->read && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
-            ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->rights->nomenclature->product->updatecoef:/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
-		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
-		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->rights->nomenclature->read && $conf->global->NOMENCLATURE_FEEDBACK && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
+		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->hasRight(nomenclature,read):/nomenclature/nomenclature.php?fk_product=__ID__'
+            ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","tiers","updatecoef"):/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
+        	,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","propal","updatecoef"):/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
+        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
+        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
+        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
+        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
+            ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","product","updatecoef"):/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
+		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
+		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_FEEDBACK && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
         );
 
         // Dictionaries
@@ -287,7 +287,7 @@ class modnomenclature extends DolibarrModules
 									'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
 									'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-									'perms'=>'$user->rights->nomenclature->global->massUpdate',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+									'perms'=>"\$user->hasRight('nomenclature','global','massUpdate')",			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 									'target'=>'',
 									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
@@ -301,7 +301,7 @@ class modnomenclature extends DolibarrModules
 		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 		     'position'=>100,
 		     'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-		     'perms'=>'$user->rights->nomenclature->read',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+		     'perms'=>"\$user->hasRight('nomenclature','read')",			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 		     'target'=>'',
 		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;

@@ -566,7 +566,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					'table'=>'stock_mouvement',
 					'datefieldname'=>'datem',
 					'disableamount'=>1,
-					'test'=>($conf->stock->enabled && $user->rights->stock->mouvement->lire && $conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)
+					'test'=>($conf->stock->enabled && $user->hasRight('stock','mouvement','lire') && $conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)
 				)
 			);
 
