@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- NEW : Dolibarr compatibility V19 - *04/12/2023* - 1.3.0 
+  	Changed Dolibarr compatibility range to 15 min - 19 max  
+  	Changed PHP compatibility range to 7.0 min - 8.2 max
+
 - FIX: add product was not working because of access to array with zero elements *26/06/2023*
 - FIX: save buttons on nomenclature tab in products not working due to access to wrong nomenclature table fields *23/06/2023*
 
