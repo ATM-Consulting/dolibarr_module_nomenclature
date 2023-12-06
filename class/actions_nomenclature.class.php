@@ -158,7 +158,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 				<script type="text/javascript">
 				$(document).ready(function() {
 
-					var lineColDescriptionPos = <?php echo (! empty($conf->global->MAIN_VIEW_LINE_NUMBER) ? 2 : 1); ?>;
+					var lineColDescriptionPos = <?php echo (getDolGlobalString('MAIN_VIEW_LINE_NUMBER') ? 2 : 1); ?>;
 					var td;
 					<?php
 
@@ -168,7 +168,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					{
 						if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
 
-						if($line->fk_product>0 || !empty($conf->global->NOMENCLATURE_ALLOW_FREELINE))
+						if($line->fk_product>0 || getDolGlobalString('NOMENCLATURE_ALLOW_FREELINE'))
 						{
 							$lineid = empty($line->id) ? $line->rowid : $line->id;
 							$showLineNomenclatureParams = $lineid . ', ' . $line->qty . ', ' . (int) $line->fk_product . ', \\\''.$object->element.'\\\', '.$object->id;
@@ -247,7 +247,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 			}
 
 		}
-		else if (in_array('stockproductcard', $TContext) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
+		else if (in_array('stockproductcard', $TContext) && getDolGlobalString('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN'))
 		{
 			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', 1);
 
@@ -526,7 +526,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
         $PDOdb = new TPDOdb;
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('projectOverview', $TContext) && ! empty($conf->global->DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION)) {
+        if(in_array('projectOverview', $TContext) && getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')) {
             $task = $parameters['task'];
             $Tab = explode('-', $task->ref);
             $fk_nomenclatureDet = substr($Tab[0], strlen($conf->global->DOC2PROJECT_TASK_REF_PREFIX));
@@ -553,7 +553,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('projectOverview', $TContext) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)) {
+        if(in_array('projectOverview', $TContext) && getDolGlobalString('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')) {
 
 			$langs->load('nomenclature@nomenclature');
 
@@ -591,7 +591,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 		$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 		$TContext = explode(':', $parameters['context']);
 
-		if(in_array('projectOverview', $TContext) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)) {
+		if(in_array('projectOverview', $TContext) && getDolGlobalString('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')) {
 
 
 			$name = $langs->trans($parameters['value']['name']);
@@ -608,7 +608,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 			if ($type == 'stock_feedback' && !empty($parameters['value']['test']))
 			{
 
-				if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
+				if(getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK')){
 					// Dans le cas ou les affectations/retours de chantier utilise les mouvement de stock alors le calcul se base sur les mouvements de stock
 
 
@@ -618,13 +618,13 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					// Par defaut on se base sur le PMP actuel du produit
 					$stockPriceCol = 'p.pmp';
 					$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_pmp');
-					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)) {
-						if($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED == 'cost_price') {
+					if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED')) {
+						if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED') == 'cost_price') {
 							// On se base sur le prix de revient actuel du produit
 							$stockPriceCol = 'p.cost_price';
 							$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_cost_price');
 						}
-						elseif($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED == 'stock_price') {
+						elseif(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED') == 'stock_price') {
 							// On se base sur le prix du mouvement de stock
 							$stockPriceCol = 'sm.price';
 							$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp');
@@ -662,8 +662,8 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					// Par defaut on se base sur le PMP actuel du produit
 					$stockPriceCol = 'p.pmp';
 					$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_pmp');
-					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)) {
-						if($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED == 'cost_price') {
+					if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED')) {
+						if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED') == 'cost_price') {
 							// On se base sur le prix de revient actuel du produit
 							$stockPriceCol = 'p.cost_price';
 							$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_cost_price');
@@ -707,7 +707,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 
 					// Element label
 					$this->resprints.= '<td class="left">'.$name;
-					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)) {
+					if(getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK')) {
 						$this->resprints .= ' <small><a href="' . $tabHistoryUrl . '&token='. $newToken .'" >(' . $langs->trans('ShowFeedBackHistoryDetails') . ')</a></small>';
 					}
 					$this->resprints.= '</td>';
@@ -840,7 +840,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 		require_once __DIR__ . '/nomenclature.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions.lib.php';
 
-		if(empty($object->lines) || empty($conf->global->BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS) || empty($conf->btp->enabled)) return 0;
+		if(empty($object->lines) || !getDolGlobalString('BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS') || empty($conf->btp->enabled)) return 0;
 
 		$langs->load('btp@btp');
 

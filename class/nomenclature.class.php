@@ -106,7 +106,7 @@ class TNomenclature extends TObjetStd
 
         $res = parent::save($PDOdb);
 
-        if (!empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST) && $this->object_type == 'product'){
+        if (getDolGlobalString('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST') && $this->object_type == 'product'){
             $prod = new Product($db);
             $test = new TNomenclature();
             $prod->fetch($this->fk_object);
@@ -151,7 +151,7 @@ class TNomenclature extends TObjetStd
 	{
 		global $conf;
 
-		if (empty($conf->global->NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE)) $price_buy =  price2num($this->totalMO + $this->totalPRC, 'MT');
+		if (!getDolGlobalString('NOMENCLATURE_USE_FLAT_COST_AS_BUYING_PRICE')) $price_buy =  price2num($this->totalMO + $this->totalPRC, 'MT');
 		else $price_buy =  price2num($this->totalMO + $this->totalPR, 'MT');
 
 		$qty_ref =  (floatval($qty_ref) == 0 ) ? 1 : floatval($qty_ref);
@@ -186,7 +186,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
 
-		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+		$max_level = !getDolGlobalString('NOMENCLATURE_MAX_NESTED_LEVEL') ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($this->nested_price_level>$max_level){
 			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
 
@@ -293,7 +293,7 @@ class TNomenclature extends TObjetStd
 
             $n = new TNomenclature;
             if (
-                !empty($conf->global->NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE)
+                getDolGlobalString('NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE')
                 && $n->loadByObjectId($PDOdb, $det->fk_product, 'product', false)
                 && $n->getId() > 0
                 && $n->non_secable
@@ -303,8 +303,8 @@ class TNomenclature extends TObjetStd
                 $n->setPrice($PDOdb, $det->qty, $n->fk_object, $n->object_type);
                 $det->calculate_price = $n->totalPRC * $coef_qty_price;
             }
-			elseif(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED) && !empty($perso_price)) {
-				if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_APPLY_QTY)) {
+			elseif(getDolGlobalString('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED') && !empty($perso_price)) {
+				if(getDolGlobalString('NOMENCLATURE_PERSO_PRICE_APPLY_QTY')) {
 					$det->calculate_price = $perso_price * $det->qty * $coef_qty_price;
 				}
 				else{
@@ -314,17 +314,17 @@ class TNomenclature extends TObjetStd
 				$perso_price = 0;
 			}
 			else{
-				if(!empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE) && !empty($det->buying_price)) $det->calculate_price = $det->buying_price * $det->qty * $coef_qty_price;
-			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == '1') {
+				if(getDolGlobalString('NOMENCLATURE_USE_CUSTOM_BUYPRICE') && !empty($det->buying_price)) $det->calculate_price = $det->buying_price * $det->qty * $coef_qty_price;
+			    elseif(getDolGlobalString('NOMENCLATURE_COST_TYPE') == '1') {
 			        // sélectionne le meilleur prix fournisseur
 			        $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
 			    }
-			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'pmp'){
+			    elseif(getDolGlobalString('NOMENCLATURE_COST_TYPE') == 'pmp'){
 			        //sélectionne le pmp si renseigné
 			        $det->calculate_price = $det->getPMPPrice() * $det->qty * $coef_qty_price;
 			        if(empty($det->calculate_price)) $det->calculate_price = $det->getSupplierPrice($PDOdb, $det->qty * $coef_qty_price,true,true,false,true) * $det->qty * $coef_qty_price;
 			    }
-			    elseif(!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE == 'costprice'){
+			    elseif(getDolGlobalString('NOMENCLATURE_COST_TYPE') == 'costprice'){
 			        // sélectionne le prix de revient renseigné sur la fiche produit
 			        $det->calculate_price = $det->getCostPrice() * $det->qty * $coef_qty_price;
 			        if(empty($det->calculate_price)) $det->calculate_price = $det->getPMPPrice() * $det->qty * $coef_qty_price;
@@ -339,7 +339,7 @@ class TNomenclature extends TObjetStd
 			$totalPR+= $det->calculate_price ;
 
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
-			if(!empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
+			if(getDolGlobalString('NOMENCLATURE_ALLOW_USE_MANUAL_COEF') && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
@@ -347,8 +347,8 @@ class TNomenclature extends TObjetStd
 
 			// Coefficient appliqué sur le coût de revient (coeff de marge par ligne)
 			$coef2 = 1;
-			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
-				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
+			if(getDolGlobalString('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) {
+				if(!getDolGlobalString('NOMENCLATURE_ALLOW_USE_MANUAL_COEF')) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
 				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
 			}
 
@@ -358,7 +358,7 @@ class TNomenclature extends TObjetStd
 			$totalPRC+= $det->charged_price;
 			$totalPV += $det->pv;
 
-			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+			if(getDolGlobalString('NOMENCLATURE_ACTIVATE_DETAILS_COSTS')) {
 				$det->calculate_price_pmp = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'PMP') * $det->qty * $coef_qty_price;
 				$totalPR_PMP+= $det->calculate_price_pmp ;
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
@@ -402,7 +402,7 @@ class TNomenclature extends TObjetStd
 
 			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
 
-			if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS) && !empty($conf->of->enabled)) {
+			if(getDolGlobalString('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && !empty($conf->of->enabled)) {
 			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF'); // [FIXME] - dois je prendre en compte le coef dans ce cas pour être appliqué ?
 				$total_mo_of+=empty($ws->price) ? $ws->calculate_price_of : $ws->price;
 			}
@@ -420,9 +420,9 @@ class TNomenclature extends TObjetStd
 		$this->totalPRCMO = $this->totalMO + $this->totalPRC;
 
 		$this->totalPV = ($this->totalMO + $totalPV);
-		if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->totalPV *= $marge->tx_object;
+		if(!getDolGlobalString('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) $this->totalPV *= $marge->tx_object;
 
-		if(!empty($conf->global->NOMENCLATURE_ACTIVATE_DETAILS_COSTS)) {
+		if(getDolGlobalString('NOMENCLATURE_ACTIVATE_DETAILS_COSTS')) {
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
 			$this->totalPRCMO_OF = $this->totalMO_OF + $this->totalPRC_OF;
 
@@ -529,7 +529,7 @@ class TNomenclature extends TObjetStd
         $det->fk_product = $fk_new_product;
         $det->qty = $fk_new_product_qty;
 
-        if(!empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)){
+        if(getDolGlobalString('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST')){
             $nome = new TNomenclature();
             if ($nome->loadByObjectId($PDOdb, $fk_new_product, 'product')){
                 $nome->setPrice($PDOdb,1,$fk_new_product,'product');
@@ -559,7 +559,7 @@ class TNomenclature extends TObjetStd
 	function infinitLoop(&$PDOdb, $level = 1) {
 		global $conf;
 
-		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+		$max_level = !getDolGlobalString('NOMENCLATURE_MAX_NESTED_LEVEL') ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($level > $max_level) return true;
 
 		foreach($this->TNomenclatureDet as &$det) {
@@ -652,7 +652,7 @@ class TNomenclature extends TObjetStd
 				}
 				else
 				{
-					if (!empty($conf->global->NOMENCLATURE_GROUP_DETAIL_BY_LABEL))
+					if (getDolGlobalString('NOMENCLATURE_GROUP_DETAIL_BY_LABEL'))
 					{
 						if (empty($det->note_private)) $det->note_private = 'empty';
 						if($this->TNomenclatureDetCombined[$det->fk_product][$det->note_private]) {
@@ -840,7 +840,7 @@ class TNomenclature extends TObjetStd
 	{
 		global $db,$conf,$TNomenclatureWorkstationThmObject;
 
-		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
+		if (getDolGlobalString('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS') && $fk_object_parent > 0 && $object_type == 'propal')
 		{
 			// 1 : on charge le coef custom (si existant) des TNomenclatureWorkstation
 			foreach ($this->TNomenclatureWorkstation as &$nomenclatureWs)
@@ -1265,7 +1265,7 @@ class TNomenclature extends TObjetStd
 			}
 
 			// Calcul marge finale (si conf marge par ligne non activée
-			if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+			if(!getDolGlobalString('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) {
 				$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $object, $object->element);
 				$marginInfo['pv_products'] *= $marge->tx_object;
 				$marginInfo['pv_services'] *= $marge->tx_object;
@@ -1351,7 +1351,7 @@ class TNomenclature extends TObjetStd
 				}
 
 				// Pour la marge par ligne (si activée), on applique une seule fois le coefficient de la ligne de la nomenclature la plus haute (celle de la ligne du document)
-				if(empty($has_parent_nomenclature) && !empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+				if(empty($has_parent_nomenclature) && getDolGlobalString('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) {
 					$obj_coef2 = new TNomenclatureCoef;
 					$obj_coef2->loadBy($PDOdb, $det->code_type2, 'code_type');
 					$coef_code_type2 = $obj_coef2->tx;
@@ -1398,7 +1398,7 @@ class TNomenclature extends TObjetStd
 					if($line_remise_percent > 0) $pv *= 1 - $line_remise_percent / 100;
 
 					// Si la configuration indique qu'il y a un coefficient de marge global et non ligne à ligne de nomenclature, on l'applique sur produit / service ici
-					if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+					if(!getDolGlobalString('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) {
 						global $marge_finale_module_nomenclature;
 
 						if(empty($marge_finale_module_nomenclature)) {
@@ -1524,7 +1524,7 @@ class TNomenclatureDet extends TObjetStd
 
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
-        if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->code_type2 = $this->code_type;
+        if(getDolGlobalString('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) $this->code_type2 = $this->code_type;
 
     }
 
@@ -1533,7 +1533,7 @@ class TNomenclatureDet extends TObjetStd
     	global $db, $conf;
 
     	// Enregistrement de l'unité du produit dans la ligne de nomclature
-    	if(!empty($conf->global->PRODUCT_USE_UNITS) && empty($this->fk_unit) && !empty($this->fk_product)) {
+    	if(getDolGlobalString('PRODUCT_USE_UNITS') && empty($this->fk_unit) && !empty($this->fk_product)) {
     		require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
     		$prod = new Product($db);
     		if($prod->fetch($this->fk_product) > 0) {
@@ -1619,7 +1619,7 @@ class TNomenclatureDet extends TObjetStd
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false, $best_one = false) {
         global $db,$conf;
 
-        if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
+        if (getDolGlobalString('NOMENCLATURE_USE_QTYREF_TO_ONE')) {
         	$qty=1;
         }
 
@@ -1670,7 +1670,7 @@ class TNomenclatureDet extends TObjetStd
 
 		if (!$force_cost_price)
 		{
-			if($search_child_price && (empty($price_supplier) || !empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST))) {
+			if($search_child_price && (empty($price_supplier) || getDolGlobalString('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST'))) {
 
 				$n = self::getArboNomenclatureDet($PDOdb, $this,$this->qty,false);
 				if($n!==false) {
@@ -1685,7 +1685,7 @@ class TNomenclatureDet extends TObjetStd
 		}
 
 
-		if(empty($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)) return empty($price_supplier) ? $child_price : $price_supplier;
+		if(!getDolGlobalString('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST')) return empty($price_supplier) ? $child_price : $price_supplier;
 		else  return empty($child_price) ? $price_supplier : $child_price;
 
     }
@@ -1752,17 +1752,17 @@ class TNomenclatureDet extends TObjetStd
     				/* setup of margin calculation */
     	      		var defaultbuyprice = '<?php
 
-    	      		if (!empty($conf->global->NOMENCLATURE_COST_TYPE))
+    	      		if (getDolGlobalString('NOMENCLATURE_COST_TYPE'))
     	      		{
-    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == '1')   print 'bestsupplierprice';
-    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == 'pmp') print 'pmp';
-    	      		    if ($conf->global->NOMENCLATURE_COST_TYPE == 'costprice') print 'costprice';
+    	      		    if (getDolGlobalString('NOMENCLATURE_COST_TYPE') == '1')   print 'bestsupplierprice';
+    	      		    if (getDolGlobalString('NOMENCLATURE_COST_TYPE') == 'pmp') print 'pmp';
+    	      		    if (getDolGlobalString('NOMENCLATURE_COST_TYPE') == 'costprice') print 'costprice';
     	      		}
     	      		elseif (isset($conf->global->MARGIN_TYPE))
     	      		{
-    	      		    if ($conf->global->MARGIN_TYPE == '1')   print 'bestsupplierprice';
-    	      		    if ($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
-    	      		    if ($conf->global->MARGIN_TYPE == 'costprice') print 'costprice';
+    	      		    if (getDolGlobalString('MARGIN_TYPE') == '1')   print 'bestsupplierprice';
+    	      		    if (getDolGlobalString('MARGIN_TYPE') == 'pmp') print 'pmp';
+    	      		    if (getDolGlobalString('MARGIN_TYPE') == 'costprice') print 'costprice';
     	      		} ?>';
     	      		console.log("we will set the field for margin. defaultbuyprice="+defaultbuyprice);
 

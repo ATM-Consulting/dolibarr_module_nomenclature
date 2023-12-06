@@ -168,9 +168,9 @@ $ajaxConstantOnOffInput = array(
 		'del' => array(
 			'content'=>$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeState')
 				."<ul>"
-				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCK')."</li>":'')
-				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')."</li>":'')
-				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')."</li>":'')
+				.(getDolGlobalString('NOMENCLATURE_FEEDBACK_INIT_STOCK')?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCK')."</li>":'')
+				.(getDolGlobalString('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')."</li>":'')
+				.(getDolGlobalString('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')."</li>":'')
 				."</ul>",
 			'title'=>$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeStateTitle')
 		)
@@ -221,12 +221,12 @@ if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
 		'pmp' => $langs->trans('BasedOnPMP')
 	);
 
-	if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
+	if(getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK')){
 		$available['stock_price'] = $langs->trans('BasedOnStockMovementPrice');
 	}
 
 
-	if(empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)){ $selected = 'pmp'; }
+	if(!getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED')){ $selected = 'pmp'; }
 	else $selected = $conf->global->NOMENCLATURE_FEEDBACK_COST_BASED;
 
 	$input = $form->selectArray('NOMENCLATURE_FEEDBACK_COST_BASED', $available, $selected);
@@ -236,7 +236,7 @@ if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
 
 
 
-if(empty($conf->global->NOMENCLATURE_FEEDBACK_OBJECT)){
+if(!getDolGlobalString('NOMENCLATURE_FEEDBACK_OBJECT')){
     dolibarr_set_const($db, 'NOMENCLATURE_FEEDBACK_OBJECT', 'propal', 'chaine', 0, '', $conf->entity);
 }
 

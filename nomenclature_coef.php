@@ -16,7 +16,7 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 
 if(GETPOST('deleteSpecific', 'none')) {
-	if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fiche == 'propal')
+	if (getDolGlobalString('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS') && $fiche == 'propal')
 	{
 		require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
 		$object = new Propal($db);
@@ -54,7 +54,7 @@ switch ($fiche) {
 
 		if ($action == 'updatecoef')
 		{
-			if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
+			if (getDolGlobalString('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS'))
 			{
 				$object = new Propal($db);
 				$object->fetch((int)GETPOST('id', 'int'));
@@ -158,7 +158,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 		_printCoef($object, $TCoefObject, 'workstation', $background_line);
 	}
 
-	if ($fiche == 'propal' && !empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS))
+	if ($fiche == 'propal' && getDolGlobalString('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS'))
 	{
 		$TNomenclatureWorkstationThmObject = TNomenclatureWorkstationThmObject::loadAllThmObject($PDOdb, $object, $object->element);
 		if (!empty($TNomenclatureWorkstationThmObject))
@@ -323,7 +323,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
     $TCoef = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object->element);
 	foreach ($object->lines as $line)
 	{
-		if ($line->product_type == 9 || (!empty($conf->global->NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE) && !empty($line->array_options['options_pv_force']))) continue;
+		if ($line->product_type == 9 || (getDolGlobalString('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE') && !empty($line->array_options['options_pv_force']))) continue;
 
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);

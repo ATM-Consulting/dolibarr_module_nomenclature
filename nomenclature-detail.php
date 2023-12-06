@@ -118,7 +118,7 @@ if($object_type == 'propal') {
     // Thirdparty
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1, 'customer');
 
-    if(empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) {
+    if(!getDolGlobalString('MAIN_DISABLE_OTHER_LINK') && $object->thirdparty->id > 0) {
         $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/comm/propal/list.php?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'&token=' . $newToken . '">'.$langs->trans("OtherProposals").'</a>)';
     }
 
@@ -158,7 +158,7 @@ else if($object_type == 'commande') {
     // Thirdparty
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1);
 
-    if(empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) {
+    if(!getDolGlobalString('MAIN_DISABLE_OTHER_LINK') && $object->thirdparty->id > 0) {
         $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/commande/list.php?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'&token='.$newToken.'">'.$langs->trans("OtherOrders").'</a>)';
     }
 
@@ -232,7 +232,7 @@ function _getDetails(&$object, $object_type) {
 	$TUnits = getUnits();
 
     foreach($object->lines as $k => &$line) {
-        if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
+        if(!getDolGlobalString('NOMENCLATURE_DETAILS_TAB_REWRITE')) {
             if($line->product_type == 9) continue;
 
             $nomenclature = new TNomenclature;
@@ -251,7 +251,7 @@ function _getDetails(&$object, $object_type) {
 				}
 			}
 
-			if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE) && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
+			if (getDolGlobalString('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE') && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
 			{
 				$tmpline = new stdClass();
 				$tmpline->fk_product = $line->fk_product;
@@ -359,7 +359,7 @@ function _getDetails(&$object, $object_type) {
                 }
 				else{ // Produit simple de la ligne
                     if (empty($TUnits) && !$alreadySearched) getUnits();
-                    if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE)) {
+                    if (getDolGlobalString('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE')) {
                         $tmpline = new stdClass();
                         $tmpline->fk_product = $line->fk_product;
                         $tmpline->qty = $line->qty;
@@ -423,7 +423,7 @@ function _getDetails(&$object, $object_type) {
         }
     }
 
-    if(! empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
+    if(getDolGlobalString('NOMENCLATURE_DETAILS_TAB_REWRITE')) {
         // We set the global total
         $TTotal = array('products' => array(), 'total' => array('unit' => array()));
         foreach($TProduct as $TData) {
@@ -457,7 +457,7 @@ function sortByProductType($a) {
 function print_table($TData, $TWorkstation, $object_type) {
     global $db, $langs, $conf, $id;
 
-    if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
+    if(!getDolGlobalString('NOMENCLATURE_DETAILS_TAB_REWRITE')) {
         ?>
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
@@ -516,7 +516,7 @@ function print_table($TData, $TWorkstation, $object_type) {
         $fk_product_toEdit = GETPOST('fk_product', 'int');
 
 		$showTitleCol = false;
-        if ($conf->global->NOMENCLATURE_SHOW_TITLE_IN_COLUMN && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+        if ($conf->global->NOMENCLATURE_SHOW_TITLE_IN_COLUMN && !getDolGlobalString('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES'))
 		{
 
 			foreach ($TData as $k => $tab)
@@ -532,7 +532,7 @@ function print_table($TData, $TWorkstation, $object_type) {
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
 				<?php if ($showTitleCol) print '<th class="liste_titre" >'.$langs->trans('Title').'</th>'; ?>
-				<?php if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) { ?>
+				<?php if (getDolGlobalString('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL')) { ?>
 			<th class="liste_titre" ><?php echo $langs->trans('Ref'); ?></th>
 			<th class="liste_titre" width="30%" ><?php echo $langs->trans('Product'); ?></th>
 				<?php } else { ?>
@@ -541,7 +541,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 			<th class="liste_titre" align="right"><?php echo $langs->trans('Quantity'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('Unit'); ?></th>
                 <?php
-                if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+                if(getDolGlobalString('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) {
                     print '<th class="liste_titre" align="left">'.$langs->trans('BuyingPriceCustom').'</th>';
                     print '<th class="liste_titre" width="1%" align="left">&nbsp;</th>';
                 }
@@ -558,7 +558,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 
             	foreach($TBlock['products'] as $fk_product => $line) {
 
-                	if (!empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES) && strpos($fk_product, 'T_') !== false) continue;
+                	if (getDolGlobalString('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES') && strpos($fk_product, 'T_') !== false) continue;
 
                     $label = $qty = $unit = $calculate_price = $charged_price = $buying_price = $pv = $color = '';
 
@@ -602,7 +602,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 
                     print '<tr class="oddeven"'.$style.'>';
 					if ($showTitleCol) print '<td>'.$lastTitle.'</td>';
-                    if (empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) print '<td>'.$label.'</td>';
+                    if (!getDolGlobalString('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL')) print '<td>'.$label.'</td>';
                     else{
 						if(get_class($product) == 'PropaleLigne')
 						{
@@ -617,7 +617,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 					}
                     print '<td align="right">'.$qty.'</td>';
                     print '<td align="right">'.$unit.'</td>';
-                    if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+                    if(getDolGlobalString('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) {
                         if($action == 'edit' && $k == $index_block && $fk_product_toEdit == $line->fk_product) {
                             print '<td nowrap colspan="2">';
                             print '<select id="TNomenclature['.$fk_product_toEdit.'][fk_fournprice]" name="TNomenclature['.$fk_product_toEdit.'][fk_fournprice]" class="flat"></select>';
@@ -680,15 +680,15 @@ function print_table($TData, $TWorkstation, $object_type) {
                                                         /* setup of margin calculation */
                                                         var defaultbuyprice = '<?php
 
-                                                            if(! empty($conf->global->NOMENCLATURE_COST_TYPE)) {
-                                                                if($conf->global->NOMENCLATURE_COST_TYPE == '1') print 'bestsupplierprice';
-                                                                if($conf->global->NOMENCLATURE_COST_TYPE == 'pmp') print 'pmp';
-                                                                if($conf->global->NOMENCLATURE_COST_TYPE == 'costprice') print 'costprice';
+                                                            if(getDolGlobalString('NOMENCLATURE_COST_TYPE')) {
+                                                                if(getDolGlobalString('NOMENCLATURE_COST_TYPE') == '1') print 'bestsupplierprice';
+                                                                if(getDolGlobalString('NOMENCLATURE_COST_TYPE') == 'pmp') print 'pmp';
+                                                                if(getDolGlobalString('NOMENCLATURE_COST_TYPE') == 'costprice') print 'costprice';
                                                             }
                                                             else if(isset($conf->global->MARGIN_TYPE)) {
-                                                                if($conf->global->MARGIN_TYPE == '1') print 'bestsupplierprice';
-                                                                if($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
-                                                                if($conf->global->MARGIN_TYPE == 'costprice') print 'costprice';
+                                                                if(getDolGlobalString('MARGIN_TYPE') == '1') print 'bestsupplierprice';
+                                                                if(getDolGlobalString('MARGIN_TYPE') == 'pmp') print 'pmp';
+                                                                if(getDolGlobalString('MARGIN_TYPE') == 'costprice') print 'costprice';
                                                             } ?>';
                                                         console.log('we will set the field for margin. defaultbuyprice=' + defaultbuyprice);
 
@@ -786,12 +786,12 @@ function print_table($TData, $TWorkstation, $object_type) {
                     print '</tr>';
                 }
 
-                if (empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS) && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+                if (!getDolGlobalString('NOMENCLATURE_HIDE_SUBTOTALS') && !getDolGlobalString('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES'))
 				{
 					if($k == 'gl_total') print '<tr style="font-weight: bold;">';
 					else print '<tr class="liste_total">';
 
-					if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) {
+					if (getDolGlobalString('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL')) {
 						if ($k == 'gl_total')
 						{
 							print '<td align="left">'.$langs->trans('Total').' :</td><td></td>';
@@ -814,7 +814,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 					}
 					print '</td>';
 
-					if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+					if(getDolGlobalString('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) {
 						print '<td align="right" colspan="2"></td>';
 					}
 
