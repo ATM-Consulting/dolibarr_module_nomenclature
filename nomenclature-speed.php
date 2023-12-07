@@ -115,7 +115,7 @@ global $db,$langs,$conf,$PDOdb;
 	?><script type="text/javascript">
 		var fk_object=<?php echo $object->id; ?>;
 		var object_type="<?php echo $object_type; ?>";
-		var NOMENCLATURE_SPEED_CLICK_SELECT = <?php echo (int)$conf->global->NOMENCLATURE_SPEED_CLICK_SELECT; ?>;
+		var NOMENCLATURE_SPEED_CLICK_SELECT = <?php echo getDolGlobalInt('NOMENCLATURE_SPEED_CLICK_SELECT'); ?>;
 
 		function editLine(fk_line) {
 
@@ -176,7 +176,7 @@ function _drawlines(&$object, $object_type) {
 	$formCore=new TFormCore;
 	echo '<div id="addto" style="float:right; width:200px;">';
 
-		if(getDolGlobalString('NOMENCLATURE_ALLOW_JUST_MP')) {
+		if(getDolGlobalInt('NOMENCLATURE_ALLOW_JUST_MP')) {
 			print $formDoli->select_produits('', 'fk_product', '', 0,0,-1,0);
 		}
 		else{
@@ -213,7 +213,7 @@ function _drawlines(&$object, $object_type) {
 
 		if($line->product_type == 0 || $line->product_type == 1) {
 			echo '<a href="javascript:editLine('.$line->id.');" class="editline clicable">'.img_edit($langs->trans('EditLine')).'</a>';
-			if(getDolGlobalString('NOMENCLATURE_SPEED_CLICK_SELECT')) {
+			if(getDolGlobalInt('NOMENCLATURE_SPEED_CLICK_SELECT')) {
 
 				echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">'.img_picto('Sélectionner cette ligne','object_opensurvey.png',' class="clicable"').'</a>';
 
@@ -271,7 +271,7 @@ function _drawlines(&$object, $object_type) {
 function _drawnomenclature($fk_object, $object_type,$fk_product,$qty, $level = 1) {
 	global $db,$langs,$conf,$PDOdb,$TProductAlreadyInPage;
 
-	$max_nested_aff_level = !getDolGlobalString('NOMENCLATURE_MAX_NESTED_AFF_LEVEL') ? 7 : $conf->global->NOMENCLATURE_MAX_NESTED_AFF_LEVEL;
+	$max_nested_aff_level = getDolGlobalInt('NOMENCLATURE_MAX_NESTED_AFF_LEVEL',7 );
 	if($level > $max_nested_aff_level) {
 		echo '<div class="error">'.$langs->trans('ThereIsTooLevelHere').'</div>';
 		return false;
@@ -313,7 +313,7 @@ var_dump( $object_type,$fk_product,$qty , $nomenclature->TNomenclatureAll);
 
 					echo '<li class="nomenclature" k="'.$k.'" line-type="nomenclature" id="nomenclature-product-'.$id.'" object_type="product" fk_object="'.$line->fk_product.'">';
 					echo '<div class="clicable" rel="delete">'.img_delete('',' class="clicable"').'</div>';
-					if(getDolGlobalString('NOMENCLATURE_SPEED_CLICK_SELECT')) {
+					if(getDolGlobalInt('NOMENCLATURE_SPEED_CLICK_SELECT')) {
 
 						echo '<a style="float:right;" href="javascript:;" class="clickToSelect clicable">'.img_picto('Sélectionner cette ligne','object_opensurvey.png',' class="clicable"').'</a>';
 

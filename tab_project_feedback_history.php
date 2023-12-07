@@ -59,7 +59,7 @@ if(!empty($button_removefilter_x)){
 ;
 }
 $nbLine = GETPOST('limit', 'int');
-if(empty($nbLine)) $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
+if(empty($nbLine)) $nbLine = getDolUserInt('MAIN_SIZE_LISTE_LIMIT', getDolGlobalInt('MAIN_SIZE_LISTE_LIMIT'));
 
 
 

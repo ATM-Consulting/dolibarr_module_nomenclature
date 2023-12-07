@@ -214,7 +214,7 @@ function feedback_getDetails(&$object, $object_type) {
         $coef_qty_price = $nomenclature->setPrice($PDOdb, $nomenclature->qty_reference, '', $object_type, $object->id,$line->fk_product);
 
 
-		if(getDolGlobalString('NOMENCLATURE_FEEDBACK_ADD_ALSO_PARENT_PRODUCT')){
+		if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_ADD_ALSO_PARENT_PRODUCT')){
 			// Ajoute le produit final de
 			if (!isset($TProduct[$line->fk_product])) {
 				$item = new stdClass();
@@ -360,7 +360,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             }
 
             $class = '';
-            if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && $firstStockMovement && $editMode && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
+            if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK') && $firstStockMovement && $editMode && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
                 $class = 'stockisnotinit';
                 $legende = true; // affiche la légende en bas
             }
@@ -375,7 +375,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
 			if($editMode) {
 				print '   <td data-col="stockAllowed" align="left">';
-				if (getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') && getDolGlobalString('NOMENCLATURE_FEEDBACK_INIT_STOCK')) {
+				if (getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK')) {
 
 					if ($editMode) {
 						print img_picto($langs->trans('ApplyPlanned'), 'rightarrow', 'class="loadAllowed" ' . $dataKey . ' ');
@@ -387,10 +387,10 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 					print '<br/>';
 				}
 
-				if ($editMode && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') && $product->type == 0 && (empty($feedback->fk_warehouse) || !getDolGlobalString('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE'))) {
+				if ($editMode && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && $product->type == 0 && (empty($feedback->fk_warehouse) || !getDolGlobalInt('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE'))) {
 					$formproduct = new FormProduct($db);
 					print $formproduct->selectWarehouses($fk_entrepot, 'entrepot-' . $det->fk_nomenclature . '-' . $det->fk_product, 'warehouseopen', 0, 0, $det->fk_product);
-				} elseif (getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') && $product->type == 0 && !empty($feedback->fk_warehouse)) {
+				} elseif (getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && $product->type == 0 && !empty($feedback->fk_warehouse)) {
 					$entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
 					if ($entrepot) {
 						print '<small>' . $entrepot->libelle . '</small>';
@@ -428,7 +428,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 			// Quantité utilisée
 			print '   <td data-col="qtyUsedImpact" align="center">'.price($feedback->qtyUsed).' <span class="qty-used-impact" id="qty-used-impact'.$domKeySuffix.'" ></span></td>';
 
-			if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
+			if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
 
 				$dispo = $feedback->stockAllowed - $feedback->qtyUsed;
 				$class= '';
@@ -440,7 +440,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 				print '</td>';
 			}
 
-            if(getDolGlobalString('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY'))
+            if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY'))
             {
 
                 $calculate_price = price2num($det->calculate_price,'MT');
@@ -465,7 +465,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
         }
 
-        if(getDolGlobalString('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY'))
+        if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY'))
         {
             // ajout de $TtotalType dans $Ttotal
             foreach( $Ttotal as $key => $value){
@@ -477,7 +477,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
             print '<tr class="liste_total"  >';
 
             $colspan = 6;
-            if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
+            if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
                 $colspan++;
             }
 
@@ -491,7 +491,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
 
 
-        if($editMode && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') && getDolGlobalString('NOMENCLATURE_FEEDBACK_INIT_STOCK') && $fk_product_type === 0)
+        if($editMode && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK') && $fk_product_type === 0)
         {
             //print '<tfooter>';
             print '<tr>';
@@ -557,10 +557,10 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
 
 	if($editMode) {
 		print '<td class="liste_titre" align="left">';
-		if (getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') && getDolGlobalString('NOMENCLATURE_FEEDBACK_INIT_STOCK')) {
+		if (getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK')) {
 			$nbCols++;
 
-			if ($editMode && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK')) {
+			if ($editMode && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK')) {
 				print img_picto($langs->trans('ApplyPlanned'), 'rightarrow', 'class="loadAllAllowed" ');
 			}
 			print $langs->trans('QtyToBeAllocated');
@@ -573,7 +573,7 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
 
 
     print '<td class="liste_titre" align="left">';
-    if($editMode && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK'))
+    if($editMode && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK'))
     {
         print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadAllPlanned" ');
     }
@@ -582,12 +582,12 @@ function print_feedback_drawlines_lineHead($editMode,$fk_product_type){
 
 	print '<td class="liste_titre" align="center">'.$langs->trans('TotalQtyConsume').'</td>';
 
-	if($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK && getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
+	if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') ){
 		print '<td class="liste_titre" align="center">'.$langs->trans('QtyNotUsed').'</td>';
 		$nbCols ++;
 	}
 
-    if(getDolGlobalString('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY'))
+    if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_DISPLAY_RENTABILITY'))
     {
         print '<td class="liste_titre" align="center">'.$langs->trans('AmountCost').'</td>';
         print '<td class="liste_titre" align="center">'.$langs->trans('AmountCostWithCharge').'</td>';
@@ -663,7 +663,7 @@ function saveFeedbackForm(){
                 }
 
 
-                if(getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK') && !empty($conf->stock->enabled) && !empty($feedback->fk_warehouse)){
+                if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && !empty($conf->stock->enabled) && !empty($feedback->fk_warehouse)){
                     $mouvementStock = new MouvementStock($db);
 
                     if(!empty($origin)){
@@ -671,7 +671,7 @@ function saveFeedbackForm(){
                     }
 
 
-                    if(getDolGlobalString('NOMENCLATURE_FEEDBACK_INIT_STOCK') && isset($TStockAllowed[$fk_nomenclature][$fk_product])){
+                    if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK') && isset($TStockAllowed[$fk_nomenclature][$fk_product])){
                         // Affectation du stock au chantier
                         // Modification des mouvements de stock
                         $qtyDelta = doubleval(price2num($TStockAllowed[$fk_nomenclature][$fk_product]));

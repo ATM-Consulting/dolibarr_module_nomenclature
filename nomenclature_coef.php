@@ -323,7 +323,7 @@ function _updateLinePriceObject(&$PDOdb, &$db, &$conf, &$langs, &$user, $object_
     $TCoef = TNomenclatureCoefObject::loadCoefObject($PDOdb, $object, $object->element);
 	foreach ($object->lines as $line)
 	{
-		if ($line->product_type == 9 || (getDolGlobalString('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE') && !empty($line->array_options['options_pv_force']))) continue;
+		if ($line->product_type == 9 || (getDolGlobalInt('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE') && !empty($line->array_options['options_pv_force']))) continue;
 
 		$nomenclature = new TNomenclature;
 		$nomenclature->loadByObjectId($PDOdb, $line->id, 'propal', true, $line->fk_product, $line->qty);

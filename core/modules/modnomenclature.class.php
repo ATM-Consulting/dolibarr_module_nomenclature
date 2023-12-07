@@ -169,17 +169,17 @@ class modnomenclature extends DolibarrModules
 		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->hasRight(nomenclature,read):/nomenclature/nomenclature.php?fk_product=__ID__'
             ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","tiers","updatecoef"):/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
         	,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","propal","updatecoef"):/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
-        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
-        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
-        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
-        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && ! $conf->global->NOMENCLATURE_SPEED_CLICK_SELECT:/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
+        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_SPEED_CLICK_SELECT"):/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'
+        	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && !getDolGlobalInt("NOMENCLATURE_SPEED_CLICK_SELECT"):/nomenclature/nomenclature-detail.php?id=__ID__&object=propal'
+        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_SPEED_CLICK_SELECT"):/nomenclature/nomenclature-speed.php?id=__ID__&object=commande'
+        	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && !getDolGlobalInt("NOMENCLATURE_SPEED_CLICK_SELECT"):/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
             ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","product","updatecoef"):/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
-		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_FEEDBACK:/nomenclature/tab_project_feedback.php?id=__ID__'
-		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && $conf->global->NOMENCLATURE_FEEDBACK && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
+		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_FEEDBACK"):/nomenclature/tab_project_feedback.php?id=__ID__'
+		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_FEEDBACK") && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
         );
 
         // Dictionaries
-	    if (! isset($conf->nomenclature->enabled))
+	    if (!empty($conf->nomenclature->enabled))
         {
         	$conf->nomenclature=new stdClass();
         	$conf->nomenclature->enabled=0;

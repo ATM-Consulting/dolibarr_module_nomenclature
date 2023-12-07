@@ -137,7 +137,8 @@ dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
  */
 
 $TAcceptedType = array('commande', 'propal');
-$object_type=in_array($conf->global->NOMENCLATURE_FEEDBACK_OBJECT,$TAcceptedType)?$conf->global->NOMENCLATURE_FEEDBACK_OBJECT:'commande';
+$nomenclatureFeedbackObject = getDolGlobalString('NOMENCLATURE_FEEDBACK_OBJECT');
+$object_type = in_array($nomenclatureFeedbackObject, $TAcceptedType)? $nomenclatureFeedbackObject : 'commande';
 
 // Get list of order linked to this project
 if($object_type == 'commande'){

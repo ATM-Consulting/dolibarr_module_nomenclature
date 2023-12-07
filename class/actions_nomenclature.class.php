@@ -529,7 +529,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
         if(in_array('projectOverview', $TContext) && getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')) {
             $task = $parameters['task'];
             $Tab = explode('-', $task->ref);
-            $fk_nomenclatureDet = substr($Tab[0], strlen($conf->global->DOC2PROJECT_TASK_REF_PREFIX));
+            $fk_nomenclatureDet = substr($Tab[0], strlen(getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')));
 
             $nd = new TNomenclatureDet;
             $nd->load($PDOdb, $fk_nomenclatureDet);
@@ -566,7 +566,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					'table'=>'stock_mouvement',
 					'datefieldname'=>'datem',
 					'disableamount'=>1,
-					'test'=>($conf->stock->enabled && $user->hasRight('stock','mouvement','lire') && $conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)
+					'test'=>($conf->stock->enabled && $user->hasRight('stock','mouvement','lire') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW'))
 				)
 			);
 
@@ -672,7 +672,8 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 
 
 					$TAcceptedType = array('commande', 'propal');
-					$object_source_type=in_array($conf->global->NOMENCLATURE_FEEDBACK_OBJECT,$TAcceptedType)?$conf->global->NOMENCLATURE_FEEDBACK_OBJECT:'commande';
+					$nomenclatureFeedbackObject = getDolGlobalString('NOMENCLATURE_FEEDBACK_OBJECT');
+                    $object_source_type = in_array($nomenclatureFeedbackObject, $TAcceptedType) ? $nomenclatureFeedbackObject : 'commande';
 
 					$sql = 'SELECT COUNT(DISTINCT f.fk_product) nbMovement';
 					$sql.= ', SUM('.$stockPriceCol.' * f.stockAllowed) as sumPrice ';

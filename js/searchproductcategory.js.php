@@ -97,7 +97,7 @@ function getNomenclatureArboSPC(fk_parent, container,keyword) {
 				NomenclatureSpc_line_class = (NomenclatureSpc_line_class == 'even') ? 'odd' : 'even';
 
 				var TRadioboxMultiPrice = '';
-				<?php if (getDolGlobalString('PRODUIT_MULTIPRICES')) { ?>
+				<?php if (getDolGlobalInt('PRODUIT_MULTIPRICES')) { ?>
 					for (var p in item.multiprices) {
 						if (item.multiprices_base_type[p] == 'TTC') var priceToUse = parseFloat(item.multiprices_ttc[p]);
 						else var priceToUse = parseFloat(item.multiprices[p]);
@@ -112,17 +112,17 @@ function getNomenclatureArboSPC(fk_parent, container,keyword) {
 
 				$li = $('<li class="product '+NomenclatureSpc_line_class+'" productid="'+item.id+'"><input type="checkbox" value="1" name="TProductSPCtoAdd['+item.id+']" fk_product="'+item.id+'" class="checkSPC" /> <a class="checkIt" href="javascript:;" onclick="checkProductSPC('+item.id+')" >'+item.label+'</a> <a class="addToForm" href="javascript:;" onclick="addNomenclatureProductSPC('+item.id+',\''+item.label.replace(/\'/g, "&quot;")+'\', \''+item.ref+'\')"><?php echo img_right($langs->trans('SelectThisProduct')) ?></a> '+TRadioboxMultiPrice+' </li>');
 
-				<?php if (getDolGlobalString('SPC_DISPLAY_DESC_OF_PRODUCT')) { ?>
+				<?php if (getDolGlobalInt('SPC_DISPLAY_DESC_OF_PRODUCT')) { ?>
 					var desc = item.description.replace(/'/g, "\\'");
 
-				<?php 	if(getDolGlobalString('PRODUCT_USE_UNITS')){ ?>
+				<?php 	if(getDolGlobalInt('PRODUCT_USE_UNITS')){ ?>
 						desc = desc + "\n Unit : "+item.unit;
 				<?php } ?>
 					var bubble = $("<?php echo addslashes(img_help()); ?>");
 					bubble.attr('title', desc);
 
 					$li.append(bubble);
-				<?php } else if (getDolGlobalString('PRODUCT_USE_UNITS')) { ?>
+				<?php } else if (getDolGlobalInt('PRODUCT_USE_UNITS')) { ?>
 					var unit = "Unit : "+item.unit;
 					var bubble = $("<?php echo addslashes(img_help()); ?>");
 					bubble.attr('title', unit);
