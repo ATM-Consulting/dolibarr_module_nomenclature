@@ -156,7 +156,7 @@ if (empty($reshook))
 
 			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_object, $n->object_type);
 
-            //Cas ou l'on déplace une ligne
+        //Cas ou l'on déplace une ligne
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
@@ -185,7 +185,7 @@ if (empty($reshook))
 		    if(GETPOST('add_nomenclature', 'none') && $fk_new_product>0) {
 
 				$last_det = end($n->TNomenclatureDet);
-                if(!empty($last_det) && empty($last_det->rowid))$last_det->rowid = 0;
+                if(($last_det === false || $last_det === true) && !empty($last_det) && empty($last_det->rowid)) $last_det->rowid = 0;
 				$url = dol_buildpath('nomenclature/nomenclature.php', 2).'?fk_product='.$n->fk_object.'&fk_nomenclature='.$n->getId().'#line_'.(intval($last_det->rowid));
 				$res = $n->addProduct($PDOdb, $fk_new_product, $fk_new_product_qty);
 

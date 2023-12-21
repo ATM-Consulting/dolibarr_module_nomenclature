@@ -590,7 +590,7 @@ class Interfacenomenclaturetrigger
 			}
 
             if($n->getId() == 0) {
-                $n->non_secable = $n->nomenclature_original->non_secable;
+                $n->non_secable =   (isset($n->nomenclature_original)) ?$n->nomenclature_original->non_secable : false;
 
                 $n->fk_object = $object->id;
                 $n->object_type = $element;

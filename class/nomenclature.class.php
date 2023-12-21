@@ -80,6 +80,7 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureAll = array();
 
         $this->iExist = false;
+        $this->id = $this->rowid;
     }
 
     function reinit() {
@@ -186,7 +187,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
 
-		$max_level = getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL', 50);
+		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
 		if($this->nested_price_level>$max_level){
 			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
 
@@ -840,7 +841,7 @@ class TNomenclature extends TObjetStd
 	{
 		global $db,$conf,$TNomenclatureWorkstationThmObject;
 
-		if (getDolGlobalString('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS') && $fk_object_parent > 0 && $object_type == 'propal')
+		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
 		{
 			// 1 : on charge le coef custom (si existant) des TNomenclatureWorkstation
 			foreach ($this->TNomenclatureWorkstation as &$nomenclatureWs)
@@ -1265,7 +1266,7 @@ class TNomenclature extends TObjetStd
 			}
 
 			// Calcul marge finale (si conf marge par ligne non activée
-			if(!getDolGlobalInt('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) {
+			if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 				$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $object, $object->element);
 				$marginInfo['pv_products'] *= $marge->tx_object;
 				$marginInfo['pv_services'] *= $marge->tx_object;
@@ -1619,7 +1620,7 @@ class TNomenclatureDet extends TObjetStd
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false, $best_one = false) {
         global $db,$conf;
 
-        if (getDolGlobalInt('NOMENCLATURE_USE_QTYREF_TO_ONE')) {
+        if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
         	$qty=1;
         }
 

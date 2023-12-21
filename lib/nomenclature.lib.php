@@ -393,7 +393,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 				} elseif (getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && $product->type == 0 && !empty($feedback->fk_warehouse)) {
 					$entrepot = getEntrepotNomenclatureCache($feedback->fk_warehouse);
 					if ($entrepot) {
-						print '<small>' . $entrepot->label . '</small>';
+						print '<small>' . (isset($entrepot->libelle)) ? $entrepot->libelle : $entrepot->label . '</small>';
 					}
 				}
 

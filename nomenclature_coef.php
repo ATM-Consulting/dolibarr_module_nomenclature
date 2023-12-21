@@ -136,6 +136,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	echo '<input type="hidden" name="id" value="'.$id.'" />';
 	echo '<input type="hidden" name="fiche" value="'.$fiche.'" />';
 	echo '<input type="hidden" name="action" value="updatecoef" />';
+    echo '<input type="hidden" name="token" value="'.newToken().'" />';
     echo '<table class="border" width="100%">';
 
     // Name
