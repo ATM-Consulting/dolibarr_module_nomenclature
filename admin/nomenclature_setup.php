@@ -180,6 +180,7 @@ setup_print_on_off('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST', '', '', 'NOMENCLA
 // Note : hidden by JS
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="action" value="recalculate_nomenclature">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<tr class="recalculate_nomenclature" '.$bc[$var].'>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" >';
