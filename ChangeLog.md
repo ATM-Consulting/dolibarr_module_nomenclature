@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- NEW : compat V18 / PHP8 - *21/12/2023* - 4.10.0
 
 ## 4.9
 
