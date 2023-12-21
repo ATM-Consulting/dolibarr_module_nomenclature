@@ -1015,9 +1015,9 @@ class TNomenclature extends TObjetStd
 		return false;
 	}
 
-    static function resetDefaultNomenclature(&$PDOdb, $fk_product)
+    static function resetDefaultNomenclature(&$PDOdb, ?int $fk_product)
 	{
-		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_product = '.(int) $fk_product);
+		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_object = '.(int) $fk_product);
 	}
 
 	/**
