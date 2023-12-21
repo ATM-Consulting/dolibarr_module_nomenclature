@@ -350,7 +350,7 @@ class TNomenclature extends TObjetStd
 			$coef2 = 1;
 			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
-				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
+				else $coef2 = (empty($det->tx_custom2)&&!empty($det->code_type2)) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
 			}
 
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
@@ -365,6 +365,8 @@ class TNomenclature extends TObjetStd
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$det->pv_pmp = empty($perso_price) ? $det->charged_price_pmp * $coef2 : $perso_price * $coef_qty_price;
 
+                if(!isset($totalPV_PMP)) $totalPV_PMP = 0;
+                if(!isset($totalPRC_PMP)) $totalPRC_PMP = 0;
 				$totalPRC_PMP+= $det->charged_price_pmp;
 				$totalPV_PMP+= $det->pv_pmp;
 
