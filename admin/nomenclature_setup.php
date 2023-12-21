@@ -146,7 +146,6 @@ print '<table class="noborder" width="100%">';
 setup_print_title('ParamLinkedToOrdersAndPropal');
 
 setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', 'nomenclatureAllowFreeLineHelp');
-setup_print_on_off('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS', '', '', 'NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP');
 
 if(!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE) && empty($conf->global->PRODUCT_USE_UNITS)){
 	// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
@@ -181,6 +180,7 @@ setup_print_on_off('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST', '', '', 'NOMENCLA
 // Note : hidden by JS
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="action" value="recalculate_nomenclature">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<tr class="recalculate_nomenclature" '.$bc[$var].'>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" >';
@@ -210,7 +210,7 @@ setup_print_on_off('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE');
 // Prix d'achat/revient suggéré par défaut
 $var=!$var;
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
 print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE\">";
 print '<tr '.$bc[$var].'>';
 print '<td>';
@@ -241,16 +241,6 @@ print '</form>';
 setup_print_on_off('NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE');
 
 
-
-// ***************************************************
-// CONFIGURATION EN LIEN AVEC LA GESTION DE PRODUCTION
-// ***************************************************
-setup_print_title('ParamLinkedToGPAO');
-
-setup_print_on_off('NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION');
-setup_print_on_off('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH');
-setup_print_on_off('NOMENCLATURE_USE_TIME_PREPARE');
-setup_print_on_off('NOMENCLATURE_USE_TIME_DOING');
 
 // *************************
 // CONFIGURATION D'ERGONOMIE

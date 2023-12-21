@@ -80,6 +80,7 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureAll = array();
 
         $this->iExist = false;
+        $this->id = $this->rowid;
     }
 
     function reinit() {
@@ -349,7 +350,7 @@ class TNomenclature extends TObjetStd
 			$coef2 = 1;
 			if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
 				if(empty($conf->global->NOMENCLATURE_ALLOW_USE_MANUAL_COEF)) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
-				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
+				else $coef2 = (empty($det->tx_custom2)&&!empty($det->code_type2)) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
 			}
 
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
@@ -364,6 +365,8 @@ class TNomenclature extends TObjetStd
 				$det->charged_price_pmp = empty($perso_price) ? $det->calculate_price_pmp * $coef : $perso_price * $coef_qty_price;
 				$det->pv_pmp = empty($perso_price) ? $det->charged_price_pmp * $coef2 : $perso_price * $coef_qty_price;
 
+                if(!isset($totalPV_PMP)) $totalPV_PMP = 0;
+                if(!isset($totalPRC_PMP)) $totalPRC_PMP = 0;
 				$totalPRC_PMP+= $det->charged_price_pmp;
 				$totalPV_PMP+= $det->pv_pmp;
 
@@ -426,11 +429,12 @@ class TNomenclature extends TObjetStd
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
 			$this->totalPRCMO_OF = $this->totalMO_OF + $this->totalPRC_OF;
 
+            if(!isset($totalPV_PMP)) $totalPV_PMP = 0;
+            if(!isset($totalPV_OF)) $totalPV_OF = 0;
 			$this->totalPV_PMP = ($this->totalMO + $totalPV_PMP) * $marge->tx_object;
 			$this->totalPV_OF = ($this->totalMO_OF + $totalPV_OF) * $marge->tx_object;
 
 		}
-
 		return $coef_qty_price;
 	}
 
@@ -578,7 +582,7 @@ class TNomenclature extends TObjetStd
 		return false;
 	}
 
-	function sortTNomenclatureWorkstation(&$objA, &$objB)
+	function sortTNomenclatureWorkstation($objA, $objB)
 	{
 		$r = $objA->rang > $objB->rang;
 
@@ -1015,11 +1019,11 @@ class TNomenclature extends TObjetStd
 		return false;
 	}
 
-    static function resetDefaultNomenclature(&$PDOdb, $fk_object, $object_type = 'product')
-	{
+    static function resetDefaultNomenclature(&$PDOdb, ?int $fk_object, $object_type = 'product')
+  	{
 		global $db;
 		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_object = '.(int) $fk_object.' AND object_type = "'.$db->escape($object_type).'"');
-	}
+	   }
 
 	/**
 	 * @return array : retourne un tableau contenant en clef le fk_product et en valeur le type de ce produit dans la nomenclature
@@ -1525,6 +1529,7 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
         if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->code_type2 = $this->code_type;
+        $this->special_code = '';
 
     }
 
