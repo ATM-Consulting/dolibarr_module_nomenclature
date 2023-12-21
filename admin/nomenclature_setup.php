@@ -146,7 +146,6 @@ print '<table class="noborder" width="100%">';
 setup_print_title('ParamLinkedToOrdersAndPropal');
 
 setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', 'nomenclatureAllowFreeLineHelp');
-setup_print_on_off('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS', '', '', 'NOMENCLATURE_USE_CUSTOM_THM_FOR_WS_HELP');
 
 if(!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE) && empty($conf->global->PRODUCT_USE_UNITS)){
 	// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
@@ -241,16 +240,6 @@ print '</form>';
 setup_print_on_off('NOMENCLATURE_APPLY_FULL_COST_NON_SECABLE');
 
 
-
-// ***************************************************
-// CONFIGURATION EN LIEN AVEC LA GESTION DE PRODUCTION
-// ***************************************************
-setup_print_title('ParamLinkedToGPAO');
-
-setup_print_on_off('NOMENCLATURE_ALLOW_TO_LINK_PRODUCT_TO_WORKSTATION');
-setup_print_on_off('NOMENCLATURE_USE_TIME_BEFORE_LAUNCH');
-setup_print_on_off('NOMENCLATURE_USE_TIME_PREPARE');
-setup_print_on_off('NOMENCLATURE_USE_TIME_DOING');
 
 // *************************
 // CONFIGURATION D'ERGONOMIE
