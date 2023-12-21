@@ -80,6 +80,7 @@ class TNomenclature extends TObjetStd
         $this->TNomenclatureAll = array();
 
         $this->iExist = false;
+        $this->id = $this->rowid;
     }
 
     function reinit() {
@@ -430,7 +431,6 @@ class TNomenclature extends TObjetStd
 			$this->totalPV_OF = ($this->totalMO_OF + $totalPV_OF) * $marge->tx_object;
 
 		}
-
 		return $coef_qty_price;
 	}
 
@@ -578,7 +578,7 @@ class TNomenclature extends TObjetStd
 		return false;
 	}
 
-	function sortTNomenclatureWorkstation(&$objA, &$objB)
+	function sortTNomenclatureWorkstation($objA, $objB)
 	{
 		$r = $objA->rang > $objB->rang;
 

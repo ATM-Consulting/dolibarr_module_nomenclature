@@ -90,7 +90,7 @@ llxHeader('', $title, '', '', 0, 0, $arrayofjs);
 
 
 $shownav = 1;
-if ($user->societe_id && ! in_array('nomenclature', explode(',',$conf->global->MAIN_MODULES_FOR_EXTERNAL))) $shownav=0;
+if (!empty($user->societe_id) && ! in_array('nomenclature', explode(',',$conf->global->MAIN_MODULES_FOR_EXTERNAL))) $shownav=0;
 
 
 // CONFIGURATION DU LISTVIEW
