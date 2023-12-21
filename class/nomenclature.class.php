@@ -1019,10 +1019,11 @@ class TNomenclature extends TObjetStd
 		return false;
 	}
 
-    static function resetDefaultNomenclature(&$PDOdb, ?int $fk_product)
-	{
-		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_object = '.(int) $fk_product);
-	}
+    static function resetDefaultNomenclature(&$PDOdb, ?int $fk_object, $object_type = 'product')
+  	{
+		global $db;
+		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_object = '.(int) $fk_object.' AND object_type = "'.$db->escape($object_type).'"');
+	   }
 
 	/**
 	 * @return array : retourne un tableau contenant en clef le fk_product et en valeur le type de ce produit dans la nomenclature

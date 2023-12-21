@@ -154,9 +154,9 @@ if (empty($reshook))
 
 		    $n->is_default = (int)GETPOST('is_default', 'int');
 
-			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_object);
+			if($n->is_default>0) TNomenclature::resetDefaultNomenclature($PDOdb, $n->fk_object, $n->object_type);
 
-            //Cas ou l'on déplace une ligne
+        //Cas ou l'on déplace une ligne
 		    if(!empty($_POST['TNomenclature'])) {
 		    	// Réorganisation des clefs du tableau au cas où l'odre a été changé par déplacement des lignes
 				$tab = array();
