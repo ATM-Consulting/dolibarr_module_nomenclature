@@ -1524,6 +1524,7 @@ class TNomenclatureDet extends TObjetStd
         $this->qty=1;
         $this->code_type = TNomenclatureCoef::getFirstCodeType();
         if(!empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) $this->code_type2 = $this->code_type;
+        $this->special_code = '';
 
     }
 
