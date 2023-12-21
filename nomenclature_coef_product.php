@@ -238,6 +238,7 @@ foreach ($TCoef as $coef)
     print '<input type="hidden" name="type_object" value="'.$type_object.'">';
     print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
     print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
+    echo '<input type="hidden" name="token" value="'.newToken().'" />';
 
     print '</td>';
     print '<td align="right" >';
