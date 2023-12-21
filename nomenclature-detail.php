@@ -239,7 +239,7 @@ function _getDetails(&$object, $object_type) {
             $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
             $nomenclature->fetchCombinedDetails($PDOdb, true, $line->qty);
 
-			if (is_array($nomenclature->TNomenclatureDetCombined)){
+			if (isset($nomenclature->TNomenclatureDetCombined) && is_array($nomenclature->TNomenclatureDetCombined)){
 				foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
 
 					if(! isset($TProduct[$fk_product])) {
