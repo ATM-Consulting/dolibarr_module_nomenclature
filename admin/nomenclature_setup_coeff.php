@@ -183,7 +183,7 @@ print '<td align="center" width="100">'.$langs->trans("Value").'</td>'."\n";
 $var=!$var;
 print '<tr '.$bc[$var].'>';
 print '<td><strong>'.$langs->trans("CreateCoef").'</strong></br>';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
 print '<input type="hidden" name="action" value="add">';
 print '<label>'.$langs->trans('NomenclatureLineType').'</label>&nbsp;';
 print $form->selectarray('line_type', array('nomenclature'=>'Nomenclature', 'workstation'=>$langs->trans('MO'), 'pricefinal'=>$langs->trans('PriceFinal'))).'&nbsp;&nbsp;';

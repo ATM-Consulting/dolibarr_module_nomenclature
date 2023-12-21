@@ -210,7 +210,7 @@ setup_print_on_off('NOMENCLATURE_DONT_RECALCUL_IF_PV_FORCE');
 // Prix d'achat/revient suggéré par défaut
 $var=!$var;
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
 print "<input type=\"hidden\" name=\"action\" value=\"set_NOMENCLATURE_COST_TYPE\">";
 print '<tr '.$bc[$var].'>';
 print '<td>';
