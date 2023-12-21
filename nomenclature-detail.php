@@ -366,7 +366,8 @@ function _getDetails(&$object, $object_type) {
                         $tmpline->calculate_price = $line->total_ht;
                         $tmpline->charged_price = $line->total_ht;
                         $tmpline->pv = $line->total_ht;
-                        $tmpline->unit = $TUnits[$line->fk_unit];
+                        if(isset($line->fk_unit)) { $tmpline->unit = $TUnits[$line->fk_unit]; }
+                        else { $tmpline->unit = null; }
 
 						$p = new Product($db);
 						$p->fetch($line->fk_product);
@@ -377,7 +378,7 @@ function _getDetails(&$object, $object_type) {
 							$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
 						}
 
-						$tmpline->warningUnitNotTheSameAsProduct = ($tmpline->fk_unit != $p->fk_unit);
+						if(!is_null($tmpline->unit)) $tmpline->warningUnitNotTheSameAsProduct = ($tmpline->fk_unit != $p->fk_unit);
 
 						if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
                         else {
@@ -516,7 +517,7 @@ function print_table($TData, $TWorkstation, $object_type) {
         $fk_product_toEdit = GETPOST('fk_product', 'int');
 
 		$showTitleCol = false;
-        if ($conf->global->NOMENCLATURE_SHOW_TITLE_IN_COLUMN && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+        if (!empty($conf->global->NOMENCLATURE_SHOW_TITLE_IN_COLUMN) && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
 		{
 
 			foreach ($TData as $k => $tab)
@@ -585,14 +586,14 @@ function print_table($TData, $TWorkstation, $object_type) {
                         $unit = $langs->trans($line->unit);
 
 
-                        if($line->warningUnitNotTheSameAsProduct){
+                        if(isset($line->warningUnitNotTheSameAsProduct) && $line->warningUnitNotTheSameAsProduct === true){
                         	$unitTitle = $langs->trans('WarningUnitOfBomIsNotTheSameAsProduct', $langs->trans($line->productCurrentUnit));
                         	$unit = '<span class="badge badge-danger classfortooltip" title="'.$unitTitle.'" >'.$langs->trans($line->unit).'</span>';
 						}
 
                         $calculate_price = price(price2num($line->calculate_price, 'MT'));
                         $charged_price = price(price2num($line->charged_price, 'MT'));
-                        $buying_price = price(price2num($line->buying_price, 'MT')); // TODO En mode edit de ligne, le transformer en input type text comme sur les nomenclatures
+                        $buying_price = price(price2num($line->buying_price ?? '', 'MT')); // TODO En mode edit de ligne, le transformer en input type text comme sur les nomenclatures
                         $pv = price(price2num($line->pv, 'MT'));
                     }
 

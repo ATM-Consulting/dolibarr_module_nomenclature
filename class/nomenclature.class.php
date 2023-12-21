@@ -427,6 +427,8 @@ class TNomenclature extends TObjetStd
 			$this->totalPRCMO_PMP = $this->totalMO + $this->totalPRC_PMP;
 			$this->totalPRCMO_OF = $this->totalMO_OF + $this->totalPRC_OF;
 
+            if(!isset($totalPV_PMP)) $totalPV_PMP = 0;
+            if(!isset($totalPV_OF)) $totalPV_OF = 0;
 			$this->totalPV_PMP = ($this->totalMO + $totalPV_PMP) * $marge->tx_object;
 			$this->totalPV_OF = ($this->totalMO_OF + $totalPV_OF) * $marge->tx_object;
 
