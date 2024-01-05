@@ -166,7 +166,7 @@ class modnomenclature extends DolibarrModules
 		// 'thirdparty'       to add a tab in third party view
 		// 'user'             to add a tab in user view
 		$this->tabs = array(
-		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->hasRight(nomenclature,read):/nomenclature/nomenclature.php?fk_product=__ID__'
+		    'product:+nomenclature:Nomenclature:nomenclature@nomenclature:$user->hasRight("nomenclature","read"):/nomenclature/nomenclature.php?fk_product=__ID__'
             ,'thirdparty:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","tiers","updatecoef"):/nomenclature/nomenclature_coef.php?socid=__ID__&fiche=tiers'
         	,'propal:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","propal","updatecoef"):/nomenclature/nomenclature_coef.php?id=__ID__&fiche=propal'
         	,'propal:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_SPEED_CLICK_SELECT"):/nomenclature/nomenclature-speed.php?id=__ID__&object=propal'

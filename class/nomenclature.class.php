@@ -502,8 +502,8 @@ class TNomenclature extends TObjetStd
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
 
-		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
-		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		@usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		@usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 
 		return $res;
 
@@ -511,7 +511,7 @@ class TNomenclature extends TObjetStd
 
 	private function setAll() {
 		$this->TNomenclatureAll = array_merge($this->TNomenclatureDet,$this->TNomenclatureWorkstation);
-		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
+		@usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 
 	/**
@@ -1907,7 +1907,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		}
 		else{
-			$price = ($this->workstation->thm + $this->workstation->thm_machine) * $nb_hour * $coef;
+			$price = (($this->workstation->thm ??0) + ($this->workstation->thm_machine ?? 0)) * $nb_hour * $coef;
 		}
 
 		return array( $nb_hour , $price );

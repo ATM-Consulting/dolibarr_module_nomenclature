@@ -191,7 +191,7 @@ dol_fiche_head($head, 'nomenclature', $title, -1, $picto);
 
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '&object='.$object_type);
 
-print_barre_liste($langs->transnoentities('ListRequired'), 0, $_SERVER['PHP_SELF']);
+print_barre_liste($langs->transnoentities('ListRequired'), 0, $_SERVER['PHP_SELF'], '', '', '', '', -1, '', 'generic', 0, '', '', -1, 0, 1);
 
 list($TProduct, $TWorkstation) = _getDetails($object, $object_type);
 print_table($TProduct, $TWorkstation, $object_type);
@@ -239,7 +239,7 @@ function _getDetails(&$object, $object_type) {
             $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
             $nomenclature->fetchCombinedDetails($PDOdb, true, $line->qty);
 
-			if (is_array($nomenclature->TNomenclatureDetCombined)){
+			if (!empty($nomenclature->TNomenclatureDetCombined) && is_array($nomenclature->TNomenclatureDetCombined)){
 				foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
 
 					if(! isset($TProduct[$fk_product])) {

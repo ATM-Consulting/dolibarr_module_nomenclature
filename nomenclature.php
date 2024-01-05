@@ -1130,7 +1130,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                $TNomenclatureWorkstation = &$n->TNomenclatureWorkstation;
 
                if(!empty($TNomenclatureWorkstation)) {
-
+                    $class = 'impair';
+                    $coldisplay = 0;
                    foreach($TNomenclatureWorkstation as $k=>&$ws) {
 //var_dump($ws);exit;
 //					   var_dump($ws->getId(), $ws);
@@ -1171,8 +1172,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                            if($user->hasRight('nomenclature', 'showPrice')) {
 
-								$price_charge = ($ws->price) ? $ws->price : $ws->calculate_price; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
-								$total_mo+=$price_charge;
+								$price_charge = $ws->price ?? $ws->calculate_price; //$ws->price = à la dernière colonne à droite pour le coût final (perso)
 
 	                           echo '<td align="right" valign="middle">';
                                echo price($price_charge) ;
@@ -1199,7 +1199,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 						</td>
 
                                <td align="center" class="linecolmove tdlineupdown"><?php $coldisplay++; ?>
-									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.$ws->id; ?>&token=<?php echo $newToken; ?>">
+									<a class="lineupdown handler" href="<?php echo $_SERVER["PHP_SELF"].'?fk_product='.$product->id.'&amp;action=up&amp;rowid='.($ws->id ?? 0); ?>&token=<?php echo $newToken; ?>">
 									<?php echo img_picto('Move','grip'); ?>
 									</a>
 								</td>
