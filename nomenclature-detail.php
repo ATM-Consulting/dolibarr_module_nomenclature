@@ -366,7 +366,7 @@ function _getDetails(&$object, $object_type) {
                         $tmpline->calculate_price = $line->total_ht;
                         $tmpline->charged_price = $line->total_ht;
                         $tmpline->pv = $line->total_ht;
-                        $tmpline->unit = $TUnits[$line->fk_unit];
+                        $tmpline->unit = $TUnits[$line->fk_unit] ?? 0;
 
 						$p = new Product($db);
 						$p->fetch($line->fk_product);
@@ -377,7 +377,7 @@ function _getDetails(&$object, $object_type) {
 							$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
 						}
 
-						$tmpline->warningUnitNotTheSameAsProduct = ($tmpline->fk_unit != $p->fk_unit);
+						$tmpline->warningUnitNotTheSameAsProduct = (($tmpline->fk_unit ?? 0) != $p->fk_unit);
 
 						if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
                         else {
@@ -448,6 +448,7 @@ function _getDetails(&$object, $object_type) {
 
 // Product first then Services
 function sortByProductType($a) {
+    if(!isset($a->type)) $a->type = null;
     if($a->type == Product::TYPE_PRODUCT) return -1;
     else if($a->type == Product::TYPE_SERVICE) return 1;
 

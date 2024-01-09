@@ -760,7 +760,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 		if(in_array('projectdao', $TContext)) {
 
 
-			$name = $langs->trans($parameters['value']['name']);
+			$name = $langs->trans($parameters['value']['name']?? '') ;
 
 			$datefieldname = $parameters['datefieldname'];
 			$type = $parameters['type'];

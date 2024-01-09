@@ -917,7 +917,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 										<td nowrap><?php echo $formCore->combo('', 'TNomenclature['.$k.'][code_type2]', TNomenclatureDet::getTType($PDOdb), $det->code_type2, 1, '', '', 'select_coef'); ?>
 
 			                               <?php if(getDolGlobalInt('NOMENCLATURE_ALLOW_USE_MANUAL_COEF')) {
-			                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) ? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 3,100);
+			                               		echo $formCore->texte('', 'TNomenclature['.$k.'][tx_custom2]', empty($det->tx_custom2) && !empty($TCoef[$det->code_type2]->tx)? $TCoef[$det->code_type2]->tx : $det->tx_custom2, 3,100);
 			                               } ?>
 
 		                               	</td>

@@ -271,7 +271,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     dol_include_once('/product/class/product.class.php');
     dol_include_once('product/class/html.formproduct.class.php');
 
-    list($TProduct,$TWorkstation) = feedback_getDetails($object, $object_type);
+    list($TProduct) = feedback_getDetails($object, $object_type);
 
     $langs->load('workstationatm@workstationatm');
     $PDOdb = new TPDOdb;
@@ -284,7 +284,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 
 
     print '<form id="'.$object_type.'-'.$object->id.'" name="'.$object_type.'-'.$object->id.'" action="'.$TParam['action'].'"  method="post" >';
-
+	print '<input type="hidden" name="token" value="'.newToken().'" />';
 
 
 
@@ -320,7 +320,6 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         $TProductsClassed[intval($fk_product_type)][$fk_product] = $det;
     }
     ksort ( $TProductsClassed );
-
     unset($TProduct);
 
     $TtotalDefault = array(
@@ -348,7 +347,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
         foreach($TProduct as $fk_product=> &$det) {
 
             $product = getProductNomenclatureCache($fk_product);
-            //if(empty($product)){continue;}
+            if(empty($product)){continue;}
 
             $feedback = new TNomenclatureFeedback();
             $resfecth = $feedback->loadByProduct($PDOdb, $object_type, $object->id, $det->fk_product, $det->fk_nomenclature);
@@ -381,7 +380,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
 						print img_picto($langs->trans('ApplyPlanned'), 'rightarrow', 'class="loadAllowed" ' . $dataKey . ' ');
 						$qtyConsumeValue = 0;//!empty($qtyConsume[$det->fk_nomenclature][$det->fk_product])?$qtyConsume[$det->fk_nomenclature][$det->fk_product]:0;
 
-						print '<input class="stockAllowed" id="stockAllowed' . $domKeySuffix . '" ' . $dataKey . '  type="number" min="' . - ($feedback->stockAllowed - $feedback->qtyUsed) . '" name="stockAllowed[' . $det->fk_nomenclature . '][' . $det->fk_product . ']" data-id="' . $feedback->id . '" value="0" />';
+						print '<input class="stockAllowed" id="stockAllowed' . $domKeySuffix . '" ' . $dataKey . '  type="number" min="' . - ($feedback->stockAllowed - $feedback->qtyUsed) . '" name="stockAllowed[' . $det->fk_nomenclature . '][' . $det->fk_product . ']" data-id="' . ($feedback->id ?? 0) . '" value="0" />';
 
 					}
 					print '<br/>';
@@ -416,7 +415,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
                 print img_picto($langs->trans('ApplyPlanned'),'rightarrow', 'class="loadPlanned" '.$dataKey.' ');
                 $qtyConsumeValue = 0;//!empty($qtyConsume[$det->fk_nomenclature][$det->fk_product])?$qtyConsume[$det->fk_nomenclature][$det->fk_product]:0;
 
-                print '<input class="qtyConsume" id="qty-consume'.$domKeySuffix.'" '.$dataKey.'  type="number" min="'.(-$feedback->qtyUsed).'" max="'.$det->qtyConsume.'" name="qtyConsume['.$det->fk_nomenclature.']['.$det->fk_product.']" data-id="'.$feedback->id.'" value="'.$qtyConsumeValue.'" />';
+                print '<input class="qtyConsume" id="qty-consume'.$domKeySuffix.'" '.$dataKey.'  type="number" min="'.(-$feedback->qtyUsed).'" max="'.($det->qtyConsume??null).'" name="qtyConsume['.$det->fk_nomenclature.']['.$det->fk_product.']" data-id="'.($feedback->id??0).'" value="'.$qtyConsumeValue.'" />';
 
 
             }

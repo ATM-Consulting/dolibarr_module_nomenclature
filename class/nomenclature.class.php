@@ -113,7 +113,7 @@ class TNomenclature extends TObjetStd
             $prod->fetch($this->fk_object);
             $test->loadByObjectId($PDOdb,$prod->id,'product',false,$prod->id);
             $test->setPrice($PDOdb,$this->qty_reference,$prod->id,'object');
-            $test->updateTotalPR($PDOdb,$prod,$this->totalPR);
+            $test->updateTotalPR($PDOdb,$prod,$this->totalPR ?? 0);
         }
 
         return $res;
@@ -285,7 +285,7 @@ class TNomenclature extends TObjetStd
 		}
 
 
-		$totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = $totalPV = 0;
+		$totalPV_OF = $totalPV_PMP = $totalPR = $totalPRC = $totalPR_PMP = $totalPRC_PMP = $totalPR_OF = $totalPRC_OF = $totalPV = 0;
 		foreach($this->TNomenclatureDet as &$det ) {
 
 			$det->nested_price_level = $this->nested_price_level;
@@ -340,7 +340,7 @@ class TNomenclature extends TObjetStd
 			$totalPR+= $det->calculate_price ;
 
 			// Premier cas : taux renseigné manuellement utilisé en priorité (si aucun taux spécifique sur la propal)
-			if(getDolGlobalInt('NOMENCLATURE_ALLOW_USE_MANUAL_COEF') && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
+			if(getDolGlobalInt('NOMENCLATURE_ALLOW_USE_MANUAL_COEF') && !empty($this->TCoefStandard[$det->code_type]) && !empty($det->tx_custom) && $det->tx_custom != $this->TCoefStandard[$det->code_type]->tx && empty($this->TCoefObject[$det->code_type]->rowid)) $coef = $det->tx_custom;
 			elseif (!empty($this->TCoefObject[$det->code_type])) $coef = $this->TCoefObject[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefProduct[$det->code_type])) $coef = $this->TCoefProduct[$det->code_type]->tx_object;
 			elseif (!empty($this->TCoefStandard[$det->code_type])) $coef = $this->TCoefStandard[$det->code_type]->tx;
@@ -350,7 +350,7 @@ class TNomenclature extends TObjetStd
 			$coef2 = 1;
 			if(getDolGlobalInt('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT')) {
 				if(!getDolGlobalInt('NOMENCLATURE_ALLOW_USE_MANUAL_COEF')) $coef2 = $this->TCoefStandard[$det->code_type2]->tx;
-				else $coef2 = empty($det->tx_custom2) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
+				else $coef2 = empty($det->tx_custom2) && !empty($this->TCoefStandard[$det->code_type2]) ? $this->TCoefStandard[$det->code_type2]->tx : $det->tx_custom2;
 			}
 
 			$det->charged_price = empty($perso_price) ? $det->calculate_price * $coef : $perso_price * $coef_qty_price;
@@ -600,7 +600,7 @@ class TNomenclature extends TObjetStd
 		$this->TNomenclatureDetCombined = $this->TNomenclatureWorkstationCombined = array();
 
 		foreach($this->TNomenclatureDet as $det) {
-			if($this->TNomenclatureDetCombined[$det->fk_product]) {
+			if(!empty($this->TNomenclatureDetCombined[$det->fk_product])) {
 				$this->TNomenclatureDetCombined[$det->fk_product]->qty+=$det->qty;
 			}
 			else{
@@ -609,7 +609,7 @@ class TNomenclature extends TObjetStd
 		}
 
 		foreach($this->TNomenclatureWorkstation as $ws) {
-			if($this->TNomenclatureWorkstationCombined[$ws->fk_workstation]) {
+			if(!empty($this->TNomenclatureWorkstationCombined[$ws->fk_workstation])) {
 				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation]->nb_hour+=$ws->nb_hour;
 				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation]->nb_hour_prepare+=$ws->nb_hour_prepare;
 				$this->TNomenclatureWorkstationCombined[$ws->fk_workstation]->nb_hour_manufacture+=$ws->nb_hour_manufacture;
@@ -1138,7 +1138,6 @@ class TNomenclature extends TObjetStd
 						if($result < 0 || ($result == 0 && empty($det->fk_product))) $error++;
 					}
 				}
-
 				// Then STOCK the parent (to_make)
 				$result=$mouvS->reception($user, $this->fk_object, $fk_warehouse_to_make, $qty_abs, $this->totalPRCMO, $langs->trans('NomenclatureStockProductFrom', $this->getId()));
 				if ($result <= 0) $error++;
@@ -2012,9 +2011,9 @@ class TNomenclatureCoef extends TObjetStd
 		if ($this->code_type == 'coef_final') return false;
 
 		//Vérification que le coef ne soit pas utilisé - si utilisé alors on interdit la suppression
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE code_type = '.$this->code_type.'
+		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE code_type = '.$PDOdb->quote($this->code_type).'
 				UNION
-				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE code_type = '.$this->code_type;
+				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE code_type = '.$PDOdb->quote($this->code_type);
 
 		$res = $PDOdb->ExecuteAsArray($sql);
 
