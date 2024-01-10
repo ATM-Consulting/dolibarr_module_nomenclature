@@ -1,7 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## UNRELEASED
+
 
 - NEW : Dolibarr compatibility V19 - *04/12/2023* - 4.11.0  
   	Changed Dolibarr compatibility range to 15 min - 19 max  
@@ -13,7 +14,7 @@ All notable changes to this project will be documented in this file.
   + FIX: add product was not working because of access to array with zero elements *26/06/2023*
   + FIX: save buttons on nomenclature tab in products not working due to access to wrong nomenclature table fields *23/06/2023*
 
-## 4.9
+## RELEASE 4.9
 
 - FIX : DA024062 - Fatal sur list.php en php8 *13/11/2023*  4.9.18
 - FIX : DA023653 - Nomenclature vide sur les lignes libres + on affichait tous les temps les données de la nomenclature parente *23/08/2023* 4.9.17
@@ -35,7 +36,7 @@ All notable changes to this project will be documented in this file.
 - FIX : Module icon - *30/09/2022* - 4.9.1
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 4.9.0
 
-## 4.8
+## RELEASE 4.8
 
 - FIX : PHP8 - *05/08/2022* - 4.8.3
 - FIX : V16 COMPAT - *27/06/2022* - 4.8.2
@@ -44,7 +45,7 @@ All notable changes to this project will be documented in this file.
 - FIX : Calcul JS *18/02/2022* - 4.7.1
 - NEW : Improve save performance save only necessary lines *15/12/2021* - 4.7.0
 
-## 4.6 
+## RELEASE 4.6 
 - FIX : Compatibility with quickcustomerprice causes bug due to parsing a formatted value for qty - *12/09/2022* - 4.6.9
 - FIX : Devided by zero  - *23/06/2022* - 4.6.8
 - FIX : retrocompatibilité des nomenclatures non-locales présente (fatal PHP sur enregistrement en nomenclature locale)  - *12/04/2022* - 4.6.7
@@ -56,15 +57,15 @@ All notable changes to this project will be documented in this file.
 - FIX : Le filtre PMP sur la liste des nomenclatures ne fonctionnait pas. Le calcul du prix de vente conseillé n'était pas correct - *09/02/2022* - 4.6.1
 - NEW : Ajout d'une action de masse permettant de remplacer le pmp des produits des nomenclatures sélectionnées par le prix des nomenclatures - *04/02/2022* - 4.6.0
 
-## 4.5
+## RELEASE 4.5
 
 - NEW : Rapport chiffre d'affaires par détail nomenclature / ouvrage - *07/01/2022* - 4.5.0
 
-## 4.4
+## RELEASE 4.4
 
 - NEW : Ajout nomenclatures sur les lignes de factures - *24/12/2021* - 4.4.0
 
-## 4.3
+## RELEASE 4.3
 
 - FIX : Suppression de l'option "Désactivé" de la conf "Prix d'achat/revient suggéré par défaut" - *06/01/2022* - 4.3.4
 - FIX : Gestion des remises lignes pour la fonction recursive qui tient compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes - *06/01/2022* - 4.3.3
@@ -73,7 +74,7 @@ All notable changes to this project will be documented in this file.
 - NEW : Fonction récursive (visible dans le module BTP) pour que les marges présentes dans le tableau des cmd, propal, factures
 	tiennent compte de la part de produits / services disponibles dans les ouvrages et sous ouvrages des lignes
 
-## 4.2
+## RELEASE 4.2
 - FIX : Nouvelle quantité en fonction du pourcentage de perte - Adapter l'arrondi en fonction de la conf MAIN_MAX_DECIMALS_UNIT - *8/12/2022* - 4.2.3
 - FIX : Erreurs Ajax : exceptions manquantes à la protection CSRF sur
         `prod_ajax.php` - *24/06/2022* - 4.2.2
@@ -84,14 +85,14 @@ All notable changes to this project will be documented in this file.
   défaut : `,`) *25/08/2021* - 4.1.1
 - NEW/FIX : Refonte de l'interface des retours chantiers *13/07/2021* - 4.1.0
 
-## 4.0
+## RELEASE 4.0
 
 - FIX : NOSCRFCHECK compatibilty v14 *2021-09-15* - 4.0.1
 - NEW : Compatibility with Workstation ATM for Dolibarr v14 *28/06/2021* - 4.0.0  
   **requires WorkstationAtm 2.0**
 - FIX : missing en_US translations. *2021-04-21* - 3.2.3
 
-### 3.2
+## RELEASE 3.2
 
 - FIX : add createfromclone context for product clone creation to clone nomenclature in the same time *17/12/2021* - 3.2.6
 - FIX : Separator parameter nomenclature import => IMPORT NEW DE MAIN SUITE A ERREUR *30/08/2021* - 3.2.6
@@ -103,7 +104,7 @@ All notable changes to this project will be documented in this file.
 - NEW : Project feedback resume. *2020-12-16*
   Ajoute sur l'onglet vue d’ensemble du projet, une ligne dans la partie Bénéfice concernant les affectations de chantier calculé sur le PMP des mouvements de stock.
 
-### 3.0
+## RELEASE 3.0
 - FIX : add createfromclone context for product clone creation to clone nomenclature in the same time
 
 
