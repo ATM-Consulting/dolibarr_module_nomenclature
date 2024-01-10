@@ -256,9 +256,7 @@ function feedback_getDetails(&$object, $object_type) {
 
     }
 
-    return array($TProduct);
-
-
+    return $TProduct;
 }
 
 function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode = false) {
@@ -271,7 +269,7 @@ function feedback_drawlines(&$object, $object_type, $TParam = array(), $editMode
     dol_include_once('/product/class/product.class.php');
     dol_include_once('product/class/html.formproduct.class.php');
 
-    list($TProduct) = feedback_getDetails($object, $object_type);
+    $TProduct = feedback_getDetails($object, $object_type);
 
     $langs->load('workstationatm@workstationatm');
     $PDOdb = new TPDOdb;
