@@ -61,7 +61,7 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	{
 		setEventMessage($langs->trans("ParamSaved"));
 
-		if($code == 'NOMENCLATURE_DETAILS_TAB_REWRITE' && empty($conf->global->PRODUCT_USE_UNITS)){
+		if($code == 'NOMENCLATURE_DETAILS_TAB_REWRITE' && !getDolGlobalInt('PRODUCT_USE_UNITS')){
 			// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
 			// activer également la conf cachée "PRODUCT_USE_UNITS" si elle ne l'est pas déjà.
 			if (dolibarr_set_const($db, 'PRODUCT_USE_UNITS', 1, 'chaine', 0, '', $conf->entity) > 0)
@@ -147,7 +147,7 @@ setup_print_title('ParamLinkedToOrdersAndPropal');
 
 setup_print_on_off('NOMENCLATURE_ALLOW_FREELINE', $langs->trans('nomenclatureAllowFreeLine'), '', 'nomenclatureAllowFreeLineHelp');
 
-if(!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE) && empty($conf->global->PRODUCT_USE_UNITS)){
+if(getDolGlobalInt('NOMENCLATURE_DETAILS_TAB_REWRITE') && !getDolGlobalInt('PRODUCT_USE_UNITS')){
 	// Lorsque la configuration "Séparer les produits des services dans l'onglet de détail des ouvrages" est activée dans nomenclature,
 	// activer également la conf cachée "PRODUCT_USE_UNITS" si elle ne l'est pas déjà.
 	// /!\ Voir aussi la partie action
@@ -192,7 +192,7 @@ print '</form>';
 
 
 setup_print_on_off('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED', '', '', 'NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED_HELP');
-if(!empty($conf->global->NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED)) {
+if(getDolGlobalInt('NOMENCLATURE_PERSO_PRICE_HAS_TO_BE_CHARGED')) {
 	setup_print_on_off('NOMENCLATURE_PERSO_PRICE_APPLY_QTY', '', '', 'NOMENCLATURE_PERSO_PRICE_APPLY_QTY_HELP');
 }
 
@@ -219,17 +219,17 @@ print '</td>';
 print '<td width="600">';
 
 print '<input id="input_nomenclature_cost_type_1" type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
-if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === '1') print 'checked ';
+if (getDolGlobalInt('NOMENCLATURE_COST_TYPE')  === '1') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_1" >'.$langs->trans('CostType1').'</label>';
 
 print '<br><input id="input_nomenclature_cost_type_pmp" type="radio" name="NOMENCLATURE_COST_TYPE" value="pmp" ';
-if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'pmp') print 'checked ';
+if (getDolGlobalInt('NOMENCLATURE_COST_TYPE') === 'pmp') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_pmp" >'.$langs->trans('CostType2').'</label>';
 
 print '<br><input id="input_nomenclature_cost_type_costprice" type="radio" name="NOMENCLATURE_COST_TYPE" value="costprice" ';
-if (!empty($conf->global->NOMENCLATURE_COST_TYPE) && $conf->global->NOMENCLATURE_COST_TYPE === 'costprice') print 'checked ';
+if (getDolGlobalString('NOMENCLATURE_COST_TYPE') === 'costprice') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_costprice" >'.$langs->trans('CostType3').'</label>';
 
@@ -262,7 +262,7 @@ setup_print_on_off('NOMENCLATURE_UNIQUE_TITLE', '', '', $langs->trans('NOMENCLAT
 
 
 
-if (!empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE))
+if (getDolGlobalInt('NOMENCLATURE_DETAILS_TAB_REWRITE'))
 {
 	setup_print_on_off('NOMENCLATURE_SHOW_TITLE_IN_COLUMN');
 	setup_print_on_off('NOMENCLATURE_HIDE_SUBTOTALS');
@@ -275,7 +275,7 @@ setup_print_title('DeprecatedParameters');
 
 setup_print_on_off('NOMENCLATURE_SPEED_CLICK_SELECT', $langs->trans('nomenclatureSpeedSelectClick'), '', $langs->trans('nomenclatureSpeedSelectClickHelp'));
 
-if(!empty($conf->global->PRODUCT_USE_UNITS)) {
+if(getDolGlobalInt('PRODUCT_USE_UNITS')) {
 	setup_print_on_off('NOMENCLATURE_ALLOW_SELECT_FOR_PRODUCT_UNIT');
 }
 
@@ -285,7 +285,7 @@ print '</table>';
 <script type="text/javascript">
     $(document).ready(function () {
         <?php
-            if ($conf->global->NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST)
+            if (getDolGlobalInt('NOMENCLATURE_TAKE_PRICE_FROM_CHILD_FIRST'))
                 {
                     print '$(".recalculate_nomenclature").show();';
                 }

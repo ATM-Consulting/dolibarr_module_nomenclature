@@ -59,7 +59,7 @@ if(!empty($button_removefilter_x)){
 ;
 }
 $nbLine = GETPOST('limit', 'int');
-if(empty($nbLine)) $nbLine = !empty($user->conf->MAIN_SIZE_LISTE_LIMIT) ? $user->conf->MAIN_SIZE_LISTE_LIMIT : $conf->global->MAIN_SIZE_LISTE_LIMIT;
+if(empty($nbLine)) $nbLine = getDolUserInt('MAIN_SIZE_LISTE_LIMIT', getDolGlobalInt('MAIN_SIZE_LISTE_LIMIT'));
 
 
 
@@ -139,7 +139,7 @@ if ($object->thirdparty->id > 0)
 $morehtmlref.='</div>';
 
 // Define a complementary filter for search of next/prev ref.
-if (! $user->rights->projet->all->lire)
+if (! $user->hasRight('projet', 'all', 'lire'))
 {
 	$objectsListId = $object->getProjectsAuthorizedForUser($user,0,0);
 	$object->next_prev_filter=" rowid in (".(count($objectsListId)?join(',',array_keys($objectsListId)):'0').")";

@@ -118,7 +118,7 @@ if($object_type == 'propal') {
     // Thirdparty
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1, 'customer');
 
-    if(empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) {
+    if(!getDolGlobalInt('MAIN_DISABLE_OTHER_LINK') && $object->thirdparty->id > 0) {
         $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/comm/propal/list.php?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'&token=' . $newToken . '">'.$langs->trans("OtherProposals").'</a>)';
     }
 
@@ -153,12 +153,12 @@ else if($object_type == 'commande') {
 
     $morehtmlref = '<div class="refidno">';
     // Ref customer
-    $morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object->ref_client, $object, $user->rights->commande->creer, 'string', '', 0, 1);
-    $morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $object->ref_client, $object, $user->rights->commande->creer, 'string', '', null, null, '', 1);
+    $morehtmlref .= $form->editfieldkey("RefCustomer", 'ref_client', $object->ref_client, $object, $user->hasRight('commande', 'creer'), 'string', '', 0, 1);
+    $morehtmlref .= $form->editfieldval("RefCustomer", 'ref_client', $object->ref_client, $object, $user->hasRight('commande', 'creer'), 'string', '', null, null, '', 1);
     // Thirdparty
     $morehtmlref .= '<br>'.$langs->trans('ThirdParty').' : '.$object->thirdparty->getNomUrl(1);
 
-    if(empty($conf->global->MAIN_DISABLE_OTHER_LINK) && $object->thirdparty->id > 0) {
+    if(!getDolGlobalInt('MAIN_DISABLE_OTHER_LINK') && $object->thirdparty->id > 0) {
         $morehtmlref .= ' (<a href="'.DOL_URL_ROOT.'/commande/list.php?socid='.$object->thirdparty->id.'&search_societe='.urlencode($object->thirdparty->name).'&token='.$newToken.'">'.$langs->trans("OtherOrders").'</a>)';
     }
 
@@ -191,7 +191,7 @@ dol_fiche_head($head, 'nomenclature', $title, -1, $picto);
 
 dol_banner_tab($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref, '&object='.$object_type);
 
-print_barre_liste($langs->transnoentities('ListRequired'), 0, $_SERVER['PHP_SELF']);
+print_barre_liste($langs->transnoentities('ListRequired'), 0, $_SERVER['PHP_SELF'], '', '', '', '', -1, '', 'generic', 0, '', '', -1, 0, 1);
 
 list($TProduct, $TWorkstation) = _getDetails($object, $object_type);
 print_table($TProduct, $TWorkstation, $object_type);
@@ -239,7 +239,7 @@ function _getDetails(&$object, $object_type) {
             $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
             $nomenclature->fetchCombinedDetails($PDOdb, true, $line->qty);
 
-			if (isset($nomenclature->TNomenclatureDetCombined) && is_array($nomenclature->TNomenclatureDetCombined)){
+			if (!empty($nomenclature->TNomenclatureDetCombined) && is_array($nomenclature->TNomenclatureDetCombined)){
 				foreach($nomenclature->TNomenclatureDetCombined as $fk_product => $det) {
 
 					if(! isset($TProduct[$fk_product])) {
@@ -251,7 +251,7 @@ function _getDetails(&$object, $object_type) {
 				}
 			}
 
-			if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE) && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
+			if (getDolGlobalInt('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE') && empty($nomenclature->TNomenclatureDetCombined) && !empty($line->fk_product))
 			{
 				$tmpline = new stdClass();
 				$tmpline->fk_product = $line->fk_product;
@@ -359,15 +359,14 @@ function _getDetails(&$object, $object_type) {
                 }
 				else{ // Produit simple de la ligne
                     if (empty($TUnits) && !$alreadySearched) getUnits();
-                    if (!empty($conf->global->NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE)) {
+                    if (getDolGlobalInt('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE')) {
                         $tmpline = new stdClass();
                         $tmpline->fk_product = $line->fk_product;
                         $tmpline->qty = $line->qty;
                         $tmpline->calculate_price = $line->total_ht;
                         $tmpline->charged_price = $line->total_ht;
                         $tmpline->pv = $line->total_ht;
-                        if(isset($line->fk_unit)) { $tmpline->unit = $TUnits[$line->fk_unit]; }
-                        else { $tmpline->unit = null; }
+                        $tmpline->unit = $TUnits[$line->fk_unit] ?? 0;
 
 						$p = new Product($db);
 						$p->fetch($line->fk_product);
@@ -378,7 +377,7 @@ function _getDetails(&$object, $object_type) {
 							$det->productCurrentUnit = $object->getValueFrom('c_units', $p->fk_unit, 'label');
 						}
 
-						if(!is_null($tmpline->unit)) $tmpline->warningUnitNotTheSameAsProduct = ($tmpline->fk_unit != $p->fk_unit);
+						$tmpline->warningUnitNotTheSameAsProduct = (($tmpline->fk_unit ?? 0) != $p->fk_unit);
 
 						if(! isset($TProduct[$firstParentTitleId]['products'][$line->fk_product])) $TProduct[$firstParentTitleId]['products'][$line->fk_product] = $tmpline;
                         else {
@@ -424,7 +423,7 @@ function _getDetails(&$object, $object_type) {
         }
     }
 
-    if(! empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
+    if(getDolGlobalInt('NOMENCLATURE_DETAILS_TAB_REWRITE')) {
         // We set the global total
         $TTotal = array('products' => array(), 'total' => array('unit' => array()));
         foreach($TProduct as $TData) {
@@ -449,6 +448,7 @@ function _getDetails(&$object, $object_type) {
 
 // Product first then Services
 function sortByProductType($a) {
+    if(!isset($a->type)) $a->type = null;
     if($a->type == Product::TYPE_PRODUCT) return -1;
     else if($a->type == Product::TYPE_SERVICE) return 1;
 
@@ -458,7 +458,7 @@ function sortByProductType($a) {
 function print_table($TData, $TWorkstation, $object_type) {
     global $db, $langs, $conf, $id;
 
-    if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
+    if(!getDolGlobalInt('NOMENCLATURE_DETAILS_TAB_REWRITE')) {
         ?>
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
@@ -517,7 +517,7 @@ function print_table($TData, $TWorkstation, $object_type) {
         $fk_product_toEdit = GETPOST('fk_product', 'int');
 
 		$showTitleCol = false;
-        if (!empty($conf->global->NOMENCLATURE_SHOW_TITLE_IN_COLUMN) && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+        if (getDolGlobalInt('NOMENCLATURE_SHOW_TITLE_IN_COLUMN') && !getDolGlobalInt('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES'))
 		{
 
 			foreach ($TData as $k => $tab)
@@ -542,7 +542,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 			<th class="liste_titre" align="right"><?php echo $langs->trans('Quantity'); ?></th>
                 <th class="liste_titre" align="right"><?php echo $langs->trans('Unit'); ?></th>
                 <?php
-                if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+                if(getDolGlobalInt('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) {
                     print '<th class="liste_titre" align="left">'.$langs->trans('BuyingPriceCustom').'</th>';
                     print '<th class="liste_titre" width="1%" align="left">&nbsp;</th>';
                 }
@@ -559,7 +559,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 
             	foreach($TBlock['products'] as $fk_product => $line) {
 
-                	if (!empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES) && strpos($fk_product, 'T_') !== false) continue;
+                	if (getDolGlobalInt('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES') && strpos($fk_product, 'T_') !== false) continue;
 
                     $label = $qty = $unit = $calculate_price = $charged_price = $buying_price = $pv = $color = '';
 
@@ -603,7 +603,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 
                     print '<tr class="oddeven"'.$style.'>';
 					if ($showTitleCol) print '<td>'.$lastTitle.'</td>';
-                    if (empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) print '<td>'.$label.'</td>';
+                    if (!getDolGlobalInt('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL')) print '<td>'.$label.'</td>';
                     else{
 						if(get_class($product) == 'PropaleLigne')
 						{
@@ -618,7 +618,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 					}
                     print '<td align="right">'.$qty.'</td>';
                     print '<td align="right">'.$unit.'</td>';
-                    if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+                    if(getDolGlobalInt('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) {
                         if($action == 'edit' && $k == $index_block && $fk_product_toEdit == $line->fk_product) {
                             print '<td nowrap colspan="2">';
                             print '<select id="TNomenclature['.$fk_product_toEdit.'][fk_fournprice]" name="TNomenclature['.$fk_product_toEdit.'][fk_fournprice]" class="flat"></select>';
@@ -787,12 +787,12 @@ function print_table($TData, $TWorkstation, $object_type) {
                     print '</tr>';
                 }
 
-                if (empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS) && empty($conf->global->NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES))
+                if (!getDolGlobalInt('NOMENCLATURE_HIDE_SUBTOTALS') && !getDolGlobalInt('NOMENCLATURE_HIDE_SUBTOTALS_AND_TITLES'))
 				{
 					if($k == 'gl_total') print '<tr style="font-weight: bold;">';
 					else print '<tr class="liste_total">';
 
-					if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) {
+					if (getDolGlobalInt('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL')) {
 						if ($k == 'gl_total')
 						{
 							print '<td align="left">'.$langs->trans('Total').' :</td><td></td>';
@@ -815,7 +815,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 					}
 					print '</td>';
 
-					if(! empty($conf->global->NOMENCLATURE_USE_CUSTOM_BUYPRICE)) {
+					if(getDolGlobalInt('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) {
 						print '<td align="right" colspan="2"></td>';
 					}
 

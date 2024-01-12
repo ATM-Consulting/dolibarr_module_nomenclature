@@ -113,12 +113,12 @@ function _products($fk_parent=0) {
     $parent->fetch($fk_parent);
     $TProd = $parent->getObjectsInCateg('product');
 
-    if (!empty($conf->global->SPC_DISPLAY_DESC_OF_PRODUCT))
+    if (getDolGlobalInt('SPC_DISPLAY_DESC_OF_PRODUCT'))
     {
         require_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
         foreach ($TProd as &$o) $o->description = dol_html_entity_decode($o->description, ENT_QUOTES);
     }
-    if(!empty($conf->global->PRODUCT_USE_UNITS)){
+    if(getDolGlobalInt('PRODUCT_USE_UNITS')){
         foreach ($TProd as &$o){
             $unit = $o->getLabelOfUnit();
             $o->unit = $langs->trans($unit);
@@ -275,7 +275,7 @@ function _categories($fk_parent=0, $keyword='') {
     else {
         $parent = new Categorie($db);
         if(empty($fk_parent)) {
-            if(empty($conf->global->SPC_DO_NOT_LOAD_PARENT_CAT)) {
+            if(!getDolGlobalInt('SPC_DO_NOT_LOAD_PARENT_CAT')) {
                 $TFille = $parent->get_all_categories(0,true);
             }
 

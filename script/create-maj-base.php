@@ -15,7 +15,7 @@ global $db;
 dol_include_once('/nomenclature/class/nomenclature.class.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
-if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE) || isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
+if (!empty(getDolGlobalString('NOMENCLATURE_COEF_FOURNITURE')) || !empty(getDolGlobalString('NOMENCLATURE_COEF_CONSOMMABLE')))
 {
 	$sql = 'ALTER TABLE '.MAIN_DB_PREFIX.'nomenclaturedet CHANGE product_type code_type VARCHAR(30)';
 	$db->query($sql);
@@ -38,13 +38,13 @@ $o->init_db_by_vars($PDOdb);
 /*
  * Récupération des anciennes valeurs pour les utiliser avec le nouveau système
  */
-if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE))
+if (!empty(getDolGlobalString('NOMENCLATURE_COEF_FOURNITURE')))
 {
 	$o=new TNomenclatureCoef;
 	$o->label = 'Fourniture';
 	$o->description = "Coef. de frais généraux (stockage, appro, ...) sur Fourniture";
 	$o->code_type = "coef_fourniture";
-	$o->tx = $conf->global->NOMENCLATURE_COEF_FOURNITURE;
+	$o->tx = getDolGlobalString('NOMENCLATURE_COEF_FOURNITURE');
 	$o->save($PDOdb);
 
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_FOURNITURE', $conf->entity);
@@ -53,13 +53,13 @@ if (isset($conf->global->NOMENCLATURE_COEF_FOURNITURE))
 	$db->query($sql);
 }
 
-if (isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
+if (!empty(getDolGlobalString('NOMENCLATURE_COEF_CONSOMMABLE')))
 {
 	$o=new TNomenclatureCoef;
 	$o->label = 'Consommable';
 	$o->description = "Coef. de frais généraux (stockage, appro, ...) sur consommable";
 	$o->code_type = "coef_consommable";
-	$o->tx = $conf->global->NOMENCLATURE_COEF_CONSOMMABLE;
+	$o->tx = getDolGlobalString('NOMENCLATURE_COEF_CONSOMMABLE');
 	$o->save($PDOdb);
 
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_CONSOMMABLE', $conf->entity);
@@ -68,13 +68,13 @@ if (isset($conf->global->NOMENCLATURE_COEF_CONSOMMABLE))
 	$db->query($sql);
 }
 
-if (isset($conf->global->NOMENCLATURE_COEF_MARGE))
+if (!empty(getDolGlobalString('NOMENCLATURE_COEF_MARGE')))
 {
 	$o=new TNomenclatureCoef;
 	$o->label = 'Marge';
 	$o->description = "Coef. de marge";
 	$o->code_type = "coef_final";
-	$o->tx = $conf->global->NOMENCLATURE_COEF_MARGE;
+	$o->tx = getDolGlobalString('NOMENCLATURE_COEF_MARGE');
 	$o->save($PDOdb);
 
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_MARGE', $conf->entity);

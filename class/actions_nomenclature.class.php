@@ -26,7 +26,8 @@
 /**
  * Class Actionsnomenclature
  */
-class Actionsnomenclature
+require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php';
+class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 {
 	/**
 	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
@@ -157,7 +158,7 @@ class Actionsnomenclature
 				<script type="text/javascript">
 				$(document).ready(function() {
 
-					var lineColDescriptionPos = <?php echo (! empty($conf->global->MAIN_VIEW_LINE_NUMBER) ? 2 : 1); ?>;
+					var lineColDescriptionPos = <?php echo (getDolGlobalString('MAIN_VIEW_LINE_NUMBER') ? 2 : 1); ?>;
 					var td;
 					<?php
 
@@ -167,7 +168,7 @@ class Actionsnomenclature
 					{
 						if ($line->product_type == 9) continue; //Filtre sur les lignes de subtotal
 
-						if($line->fk_product>0 || !empty($conf->global->NOMENCLATURE_ALLOW_FREELINE))
+						if($line->fk_product>0 || getDolGlobalString('NOMENCLATURE_ALLOW_FREELINE'))
 						{
 							$lineid = empty($line->id) ? $line->rowid : $line->id;
 							$showLineNomenclatureParams = $lineid . ', ' . $line->qty . ', ' . (int) $line->fk_product . ', \\\''.$object->element.'\\\', '.$object->id;
@@ -246,7 +247,7 @@ class Actionsnomenclature
 			}
 
 		}
-		else if (in_array('stockproductcard', $TContext) && !empty($conf->global->NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN))
+		else if (in_array('stockproductcard', $TContext) && getDolGlobalString('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN'))
 		{
 			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', 1);
 
@@ -525,10 +526,10 @@ class Actionsnomenclature
         $PDOdb = new TPDOdb;
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('projectOverview', $TContext) && ! empty($conf->global->DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION)) {
+        if(in_array('projectOverview', $TContext) && getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')) {
             $task = $parameters['task'];
             $Tab = explode('-', $task->ref);
-            $fk_nomenclatureDet = substr($Tab[0], strlen($conf->global->DOC2PROJECT_TASK_REF_PREFIX));
+            $fk_nomenclatureDet = substr($Tab[0], strlen(getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')));
 
             $nd = new TNomenclatureDet;
             $nd->load($PDOdb, $fk_nomenclatureDet);
@@ -552,7 +553,7 @@ class Actionsnomenclature
 
         $TContext = explode(':', $parameters['context']);
 
-        if(in_array('projectOverview', $TContext) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)) {
+        if(in_array('projectOverview', $TContext) && getDolGlobalString('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')) {
 
 			$langs->load('nomenclature@nomenclature');
 
@@ -565,7 +566,7 @@ class Actionsnomenclature
 					'table'=>'stock_mouvement',
 					'datefieldname'=>'datem',
 					'disableamount'=>1,
-					'test'=>($conf->stock->enabled && $user->rights->stock->mouvement->lire && $conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)
+					'test'=>($conf->stock->enabled && $user->hasRight('stock','mouvement','lire') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW'))
 				)
 			);
 
@@ -590,7 +591,7 @@ class Actionsnomenclature
 		$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 		$TContext = explode(':', $parameters['context']);
 
-		if(in_array('projectOverview', $TContext) && !empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)) {
+		if(in_array('projectOverview', $TContext) && getDolGlobalString('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')) {
 
 
 			$name = $langs->trans($parameters['value']['name']);
@@ -607,7 +608,7 @@ class Actionsnomenclature
 			if ($type == 'stock_feedback' && !empty($parameters['value']['test']))
 			{
 
-				if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
+				if(getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK')){
 					// Dans le cas ou les affectations/retours de chantier utilise les mouvement de stock alors le calcul se base sur les mouvements de stock
 
 
@@ -617,13 +618,13 @@ class Actionsnomenclature
 					// Par defaut on se base sur le PMP actuel du produit
 					$stockPriceCol = 'p.pmp';
 					$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_pmp');
-					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)) {
-						if($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED == 'cost_price') {
+					if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED')) {
+						if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED') == 'cost_price') {
 							// On se base sur le prix de revient actuel du produit
 							$stockPriceCol = 'p.cost_price';
 							$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_cost_price');
 						}
-						elseif($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED == 'stock_price') {
+						elseif(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED') == 'stock_price') {
 							// On se base sur le prix du mouvement de stock
 							$stockPriceCol = 'sm.price';
 							$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp');
@@ -661,8 +662,8 @@ class Actionsnomenclature
 					// Par defaut on se base sur le PMP actuel du produit
 					$stockPriceCol = 'p.pmp';
 					$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_pmp');
-					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)) {
-						if($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED == 'cost_price') {
+					if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED')) {
+						if(getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED') == 'cost_price') {
 							// On se base sur le prix de revient actuel du produit
 							$stockPriceCol = 'p.cost_price';
 							$ProjectfeedbackResumeStockCostHTHelp = $langs->trans('ProjectfeedbackResumeStockCostHTHelp_cost_price');
@@ -671,7 +672,8 @@ class Actionsnomenclature
 
 
 					$TAcceptedType = array('commande', 'propal');
-					$object_source_type=in_array($conf->global->NOMENCLATURE_FEEDBACK_OBJECT,$TAcceptedType)?$conf->global->NOMENCLATURE_FEEDBACK_OBJECT:'commande';
+					$nomenclatureFeedbackObject = getDolGlobalString('NOMENCLATURE_FEEDBACK_OBJECT');
+                    $object_source_type = in_array($nomenclatureFeedbackObject, $TAcceptedType) ? $nomenclatureFeedbackObject : 'commande';
 
 					$sql = 'SELECT COUNT(DISTINCT f.fk_product) nbMovement';
 					$sql.= ', SUM('.$stockPriceCol.' * f.stockAllowed) as sumPrice ';
@@ -706,7 +708,7 @@ class Actionsnomenclature
 
 					// Element label
 					$this->resprints.= '<td class="left">'.$name;
-					if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)) {
+					if(getDolGlobalString('NOMENCLATURE_FEEDBACK_USE_STOCK')) {
 						$this->resprints .= ' <small><a href="' . $tabHistoryUrl . '&token='. $newToken .'" >(' . $langs->trans('ShowFeedBackHistoryDetails') . ')</a></small>';
 					}
 					$this->resprints.= '</td>';
@@ -758,7 +760,7 @@ class Actionsnomenclature
 		if(in_array('projectdao', $TContext)) {
 
 
-			$name = $langs->trans($parameters['value']['name']);
+			$name = $langs->trans($parameters['value']['name']?? '') ;
 
 			$datefieldname = $parameters['datefieldname'];
 			$type = $parameters['type'];
@@ -839,7 +841,7 @@ class Actionsnomenclature
 		require_once __DIR__ . '/nomenclature.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions.lib.php';
 
-		if(empty($object->lines) || empty($conf->global->BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS) || empty($conf->btp->enabled)) return 0;
+		if(empty($object->lines) || !getDolGlobalString('BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS') || empty($conf->btp->enabled)) return 0;
 
 		$langs->load('btp@btp');
 

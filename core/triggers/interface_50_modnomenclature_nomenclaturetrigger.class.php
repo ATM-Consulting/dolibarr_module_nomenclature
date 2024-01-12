@@ -426,7 +426,7 @@ class Interfacenomenclaturetrigger
             $n->updateTotalPR($PDOdb, $object, $price, 1);
         }
 
-		if($action == 'PRODUCT_CREATE' && in_array('createfromclone', $object->context) && !empty($conf->global->NOMENCLATURE_CLONE_ON_PRODUCT_CLONE)) {
+		if($action == 'PRODUCT_CREATE' && in_array('createfromclone', $object->context) && getDolGlobalInt('NOMENCLATURE_CLONE_ON_PRODUCT_CLONE')) {
 			$origin_id = (!empty($object->origin_id) && $object->origin == 'product')?$object->origin_id:GETPOST('id', 'int');
 			$TNomenclature = TNomenclature::get($PDOdb, $origin_id);
 			if(!empty($TNomenclature)) {
@@ -441,7 +441,7 @@ class Interfacenomenclaturetrigger
 	private function _setPrice(&$PDOdb, &$object,$fk_parent,$object_type) {
 		global $db,$conf,$user,$langs;
 
-		if ($object->product_type > 1 || (empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC) && $object->subprice>0)) return 0; //si on ne prends systématique le PV mais que ce dernier est défini, alors il prend le pas. Pour que le prix calculé soit utilisé, il faut un PV = 0
+		if ($object->product_type > 1 || (!getDolGlobalInt('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC') && $object->subprice>0)) return 0; //si on ne prends systématique le PV mais que ce dernier est défini, alors il prend le pas. Pour que le prix calculé soit utilisé, il faut un PV = 0
 
 		$n = new TNomenclature;
 	    $n->loadByObjectId($PDOdb, $object->id , $object_type, true,$object->fk_product,$object->qty);
@@ -452,10 +452,10 @@ class Interfacenomenclaturetrigger
 		$n->setPrice($PDOdb, $object->qty, $object->id, $object_type, $fk_parent);
 
 
-		if (!empty($conf->global->NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC)) {
+		if (getDolGlobalInt('NOMENCLATURE_USE_SELL_PRICE_INSTEADOF_CALC')) {
 			$sell_price_to_use=$object->subprice;
 		}
-		else if (!empty($conf->global->NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE)){
+		else if (getDolGlobalInt('NOMENCLATURE_DONT_USE_NOMENCLATURE_SELL_PRICE')){
 		    $sell_price_to_use = 0;
 		}
 		else {
@@ -574,7 +574,7 @@ class Interfacenomenclaturetrigger
 				&& in_array('createfromclone', $object->context)
 				&& !empty($object->origin) && !empty($object->origin_id)
 				&& (
-					$conf->global->NOMENCLATURE_CLONE_AS_IS_FOR_LINES  // Currently an hidden conf
+					getDolGlobalInt('NOMENCLATURE_CLONE_AS_IS_FOR_LINES')  // Currently an hidden conf
 					|| ( empty($object->fk_product) && in_array($object->fk_product_type, array(0,1)) && !empty($object->NOMENCLATURE_ALLOW_FREELINE) ) // for free lines
 				)
 			){

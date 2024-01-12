@@ -168,9 +168,9 @@ $ajaxConstantOnOffInput = array(
 		'del' => array(
 			'content'=>$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeState')
 				."<ul>"
-				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INIT_STOCK)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCK')."</li>":'')
-				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')."</li>":'')
-				.(!empty($conf->global->NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW)?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')."</li>":'')
+				.(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INIT_STOCK')?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCK')."</li>":'')
+				.(getDolGlobalInt('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE')."</li>":'')
+				.(getDolGlobalInt('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')?"<li>".$langs->transnoentities('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW')."</li>":'')
 				."</ul>",
 			'title'=>$langs->transnoentities('NOMENCLATURE_FEEDBACK_INIT_STOCKConfirmChangeStateTitle')
 		)
@@ -221,14 +221,12 @@ if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
 		'pmp' => $langs->trans('BasedOnPMP')
 	);
 
-	if(!empty($conf->global->NOMENCLATURE_FEEDBACK_USE_STOCK)){
+	if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK')){
 		$available['stock_price'] = $langs->trans('BasedOnStockMovementPrice');
 	}
 
 
-	if(empty($conf->global->NOMENCLATURE_FEEDBACK_COST_BASED)){ $selected = 'pmp'; }
-	else $selected = $conf->global->NOMENCLATURE_FEEDBACK_COST_BASED;
-
+    $selected = getDolGlobalString('NOMENCLATURE_FEEDBACK_COST_BASED', 'pmp');
 	$input = $form->selectArray('NOMENCLATURE_FEEDBACK_COST_BASED', $available, $selected);
 	setup_print_input_form_part('NOMENCLATURE_FEEDBACK_COST_BASED', '', $backPortDesc, array(), $input, 'NOMENCLATURE_FEEDBACK_COST_BASED_HELP', 400);
 
@@ -236,7 +234,7 @@ if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
 
 
 
-if(empty($conf->global->NOMENCLATURE_FEEDBACK_OBJECT)){
+if(!getDolGlobalInt('NOMENCLATURE_FEEDBACK_OBJECT')){
     dolibarr_set_const($db, 'NOMENCLATURE_FEEDBACK_OBJECT', 'propal', 'chaine', 0, '', $conf->entity);
 }
 
@@ -244,7 +242,7 @@ $array = array(
     'propal' => $langs->trans('Proposal'),
     'commande' => $langs->trans('Commande'),
 );
-$input =$form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, $conf->global->NOMENCLATURE_FEEDBACK_OBJECT);
+$input =$form->selectarray('NOMENCLATURE_FEEDBACK_OBJECT', $array, getDolGlobalString('NOMENCLATURE_FEEDBACK_OBJECT'));
 setup_print_input_form_part('NOMENCLATURE_FEEDBACK_OBJECT', '', '', array(), $input);
 
 

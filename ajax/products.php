@@ -80,7 +80,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 		$found = false;
 
 		// Price by qty
-		if (! empty($price_by_qty_rowid) && $price_by_qty_rowid >= 1 && (! empty($conf->global->PRODUIT_CUSTOMER_PRICES_BY_QTY))) 		// If we need a particular price related to qty
+		if (! empty($price_by_qty_rowid) && $price_by_qty_rowid >= 1 && (getDolGlobalInt('PRODUIT_CUSTOMER_PRICES_BY_QTY'))) 		// If we need a particular price related to qty
 		{
 			$sql = "SELECT price, unitprice, quantity, remise_percent";
 			$sql .= " FROM " . MAIN_DB_PREFIX . "product_price_by_qty ";
@@ -102,7 +102,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 		}
 
 		// Multiprice
-		if (! $found && isset($price_level) && $price_level >= 1 && (! empty($conf->global->PRODUIT_MULTIPRICES))) 		// If we need a particular price
+		if (! $found && isset($price_level) && $price_level >= 1 && (getDolGlobalInt('PRODUIT_MULTIPRICES'))) 		// If we need a particular price
 		                                                                                                           // level (from 1 to 6)
 		{
 			$sql = "SELECT price, price_ttc, price_base_type, tva_tx";
@@ -127,7 +127,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 		}
 
 		// Price by customer
-		if (! empty($conf->global->PRODUIT_CUSTOMER_PRICES) && ! empty($socid)) {
+		if (getDolGlobalInt('PRODUIT_CUSTOMER_PRICES') && ! empty($socid)) {
 
 			require_once DOL_DOCUMENT_ROOT . '/product/class/productcustomerprice.class.php';
 

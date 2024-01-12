@@ -90,7 +90,7 @@ function _card(&$PDOdb) {
 	print '<legend><strong>'.$langs->trans('NomenclatureImportTitle').'</strong></legend>';
 
 	//déterminer le séparateur du fichier d'import
-	if(empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR)) $conf->global->NOMENCLATURE_IMPORT_SEPARATOR = ',';
+	if(empty(getDolGlobalString('NOMENCLATURE_IMPORT_SEPARATOR'))) $conf->global->NOMENCLATURE_IMPORT_SEPARATOR = ',';
 	setup_print_input_form_part('NOMENCLATURE_IMPORT_SEPARATOR');
 
 	$formCore=new TFormCore('auto','formImport','post',true);
@@ -342,7 +342,7 @@ function _import_to_session() {
 		while(!feof($f1)) {
 
 
-            $row = fgetcsv($f1, 4096, !empty($conf->global->NOMENCLATURE_IMPORT_SEPARATOR) ? $conf->global->NOMENCLATURE_IMPORT_SEPARATOR : ',', '"');
+            $row = fgetcsv($f1, 4096, getDolGlobalString('NOMENCLATURE_IMPORT_SEPARATOR', ','), '"');
 
 			$num_nomenclature = (int)$row[0];
 			if(empty($num_nomenclature)) $num_nomenclature = 1;
