@@ -502,8 +502,8 @@ class TNomenclature extends TObjetStd
 
 		$this->loadThmObject($PDOdb, $object_type, $fk_object_parent);
 
-		@usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
-		@usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		usort($this->TNomenclatureWorkstation, array('TNomenclature', 'sortTNomenclatureWorkstation'));
+		usort($this->TNomenclatureDet, array('TNomenclature', 'sortTNomenclatureWorkstation'));
 
 		return $res;
 
@@ -511,7 +511,7 @@ class TNomenclature extends TObjetStd
 
 	private function setAll() {
 		$this->TNomenclatureAll = array_merge($this->TNomenclatureDet,$this->TNomenclatureWorkstation);
-		@usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
+		usort($this->TNomenclatureAll, array('TNomenclature', 'sortTNomenclatureAll'));
 	}
 
 	/**
@@ -579,7 +579,7 @@ class TNomenclature extends TObjetStd
 		return false;
 	}
 
-	function sortTNomenclatureWorkstation(&$objA, &$objB)
+	public static function sortTNomenclatureWorkstation($objA, $objB)
 	{
 		$r = $objA->rang > $objB->rang;
 
@@ -587,7 +587,7 @@ class TNomenclature extends TObjetStd
 		else return -1;
 	}
 
-	function sortTNomenclatureAll(&$objA, &$objB)
+	public static function sortTNomenclatureAll($objA, $objB)
 	{
 		$r = $objA->unifyRang > $objB->unifyRang;
 
