@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 
+
+## RELEASE 4.11
+
 - NEW : Dolibarr compatibility V19 - *04/12/2023* - 4.11.0  
   	Changed Dolibarr compatibility range to 15 min - 19 max  
   	Changed PHP compatibility range to 7.0 min - 8.2 max
 - FIX: add product was not working because of access to array with zero elements *26/06/2023*
 - FIX: save buttons on nomenclature tab in products not working due to access to wrong nomenclature table fields *23/06/2023*
+
 ## RELEASE 4.10
+
 - NEW : Compat V18 / PHP8 - *21/12/2023* - 4.10.0  
   + FIX: add product was not working because of access to array with zero elements *26/06/2023*
   + FIX: save buttons on nomenclature tab in products not working due to access to wrong nomenclature table fields *23/06/2023*
@@ -46,6 +51,7 @@ All notable changes to this project will be documented in this file.
 - NEW : Improve save performance save only necessary lines *15/12/2021* - 4.7.0
 
 ## RELEASE 4.6 
+
 - FIX : Compatibility with quickcustomerprice causes bug due to parsing a formatted value for qty - *12/09/2022* - 4.6.9
 - FIX : Devided by zero  - *23/06/2022* - 4.6.8
 - FIX : retrocompatibilité des nomenclatures non-locales présente (fatal PHP sur enregistrement en nomenclature locale)  - *12/04/2022* - 4.6.7
@@ -105,6 +111,7 @@ All notable changes to this project will be documented in this file.
   Ajoute sur l'onglet vue d’ensemble du projet, une ligne dans la partie Bénéfice concernant les affectations de chantier calculé sur le PMP des mouvements de stock.
 
 ## RELEASE 3.0
+
 - FIX : add createfromclone context for product clone creation to clone nomenclature in the same time
 
 
