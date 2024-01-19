@@ -479,7 +479,7 @@ class Interfacenomenclaturetrigger
 		else if($object_type=='propal') {
 			$propal = new Propal($db);
 			$propal->fetch($fk_parent);
-			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice, $n->totalPRCMO / $object->qty, $object->label, $object->type, $object->date_start, $object->date_end, 0, $object->fk_unit);
+			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice, $n->totalPRCMO / $object->qty, $object->label, $object->product_type, $object->date_start, $object->date_end, 0, $object->fk_unit);
 
 
 		}else if ($object_type == 'facture') {
