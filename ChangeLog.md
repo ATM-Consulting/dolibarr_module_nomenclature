@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## RELEASE 4.11
 
+- FIX : Le champ d'ajout des produits sur la popin des ouvrages depuis une Propal fonctionne mais remonte en haut du page pour aucune raison tandisque la popin reste en bas - *10/04/2024* - 4.11.1 
 - NEW : Dolibarr compatibility V19 - *04/12/2023* - 4.11.0  
   	Changed Dolibarr compatibility range to 15 min - 19 max  
   	Changed PHP compatibility range to 7.0 min - 8.2 max
