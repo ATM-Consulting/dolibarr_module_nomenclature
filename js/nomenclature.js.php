@@ -108,27 +108,36 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 
        }
 
-       var openDialog = function(data) {
+	var openDialog = function (data) {
 
-               $("#dialog-nomenclature").remove();
+		$("#dialog-nomenclature").remove();
 
-               $('body').append('<div id="dialog-nomenclature"></div>');
+		$('body').append('<div id="dialog-nomenclature"></div>');
 
-               $div = $("#dialog-nomenclature");
-               $div.html(data);
-               bindItem();
+		$div = $("#dialog-nomenclature");
+		$div.html(data);
+		bindItem();
 
-               $("#dialog-nomenclature").dialog({
-                  resizable: true,
-                  modal: true,
-                  dialogClass: "dialogSouldBeZindexed",
-                  width:'90%',
-                  title:"<?php echo $langs->trans('Nomenclature'); ?>",
-                  buttons: {
-
-                  }
-               });
-       };
+		$("#dialog-nomenclature").dialog({
+			resizable: true,
+			modal: true,
+			dialogClass: "dialogSouldBeZindexed",
+			width: '90%',
+			title: "<?php echo $langs->trans('Nomenclature'); ?>",
+			top: 0,
+			open: function (event, ui) {
+				// Positionnement du dialogue en haut de la page
+				$(this).closest('.ui-dialog').css({
+					'top': '10px'
+				});
+				// Remonter en haut de page
+				$('html, body').animate({
+					scrollTop: 0
+				}, 0);
+			},
+			buttons: {}
+		});
+	};
 
 /* nomenclature/nomenclature.php?fk_product=2&lineid=4&object_type=commande&qty=1 */
        $.ajax({
