@@ -50,3 +50,6 @@ fieldset{
 	    font-weight: bold;
 }
 
+.dialogSouldBeZindexed{
+	position : fixed;
+}

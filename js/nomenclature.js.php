@@ -122,9 +122,10 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 			resizable: true,
 			modal: true,
 			dialogClass: "dialogSouldBeZindexed",
-			width: '90%',
 			title: "<?php echo $langs->trans('Nomenclature'); ?>",
 			top: 0,
+			width: '98%',
+			height : $(window).height() - 20,
 			open: function (event, ui) {
 				// Positionnement du dialogue en haut de la page
 				$(this).closest('.ui-dialog').css({
@@ -134,6 +135,14 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 				$('html, body').animate({
 					scrollTop: 0
 				}, 0);
+
+				setTimeout(() => {
+					let targetSelect2 = $('#dialog-nomenclature [id^=fk_new_product_]');
+					targetSelect2.select2('open');
+					targetSelect2.on('select2:select', function (e) {
+						targetSelect2.select2('focus');
+					});
+				}, 150);
 			},
 			buttons: {}
 		});
