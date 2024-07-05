@@ -157,7 +157,7 @@ class Interfacenomenclaturetrigger
             $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 		} elseif ($action == 'LINEBILL_INSERT') {
 
-			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
+			if (!isModEnabled('nomenclature') || $object->product_type == 9)	return 0;
 
 			// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
 			$origin = GETPOST('origin', 'none');
@@ -218,7 +218,7 @@ class Interfacenomenclaturetrigger
 
 		} elseif ($action == 'LINEORDER_INSERT') {
 
-			if (empty($conf->nomenclature->enabled) || $object->product_type == 9)	return 0;
+			if (!isModEnabled('nomenclature') || $object->product_type == 9)	return 0;
 
 			// Si on vient d'une propal on vérifie s'il existe une nomenclature associée à la propal :
 			$origin = GETPOST('origin', 'none');
