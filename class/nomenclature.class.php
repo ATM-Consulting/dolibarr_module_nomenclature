@@ -702,7 +702,7 @@ class TNomenclature extends TObjetStd
 
 				foreach($n->TNomenclatureDetCombined as &$n_det) {
 
-					if($this->TNomenclatureDetCombined[$n_det->fk_product]) {
+					if(!empty($this->TNomenclatureDetCombined[$n_det->fk_product])) {
 						$this->TNomenclatureDetCombined[$n_det->fk_product]->qty+=$n_det->qty * $det->qty;
 						$this->TNomenclatureDetCombined[$n_det->fk_product]->calculate_price+=$n_det->calculate_price * $det->qty;
 						$this->TNomenclatureDetCombined[$n_det->fk_product]->pv+=$n_det->pv * $det->qty;
