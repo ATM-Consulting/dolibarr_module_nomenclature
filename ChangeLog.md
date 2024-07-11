@@ -3,8 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 
-- NEW : Compatibilité V20 - *05/07/2024* - 4.12.0
+## RELEASE 4.12
 
+- NEW : Compatibilité V20 - *05/07/2024* - 4.12.0
 
 ## RELEASE 4.11
 
