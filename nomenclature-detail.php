@@ -123,7 +123,7 @@ if($object_type == 'propal') {
     }
 
     // Project
-    if(! empty($conf->projet->enabled)) {
+    if(isModEnabled('projet')) {
         $langs->load("projects");
         $morehtmlref .= '<br>'.$langs->trans('Project').' : ';
 
@@ -163,7 +163,7 @@ else if($object_type == 'commande') {
     }
 
     // Project
-    if(! empty($conf->projet->enabled)) {
+    if(isModEnabled('projet')) {
         $langs->load("projects");
         $morehtmlref .= '<br>'.$langs->trans('Project').' : ';
 

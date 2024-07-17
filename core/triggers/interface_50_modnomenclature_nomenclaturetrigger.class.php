@@ -123,7 +123,7 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/abricot/includes/class/class.pdo.db.php');
 		$PDOdb = new TPDOdb();
 
-		if(!empty($conf->subtotal->enabled)) {
+		if(isModEnabled('subtotal')) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
 			if (isset($object->element) && strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
 		}

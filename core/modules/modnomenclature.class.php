@@ -94,7 +94,7 @@ class modnomenclature extends DolibarrModules
 	 	//							'js' => array('/nomenclature/js/nomenclature.js'),          // Set this to relative path of js file if module must load a js on all pages
 		//							'hooks' => array('hookcontext1','hookcontext2')  	// Set here all hooks context managed by module
 		//							'dir' => array('output' => 'othermodulename'),      // To force the default directories names
-		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'! empty($conf->module1->enabled) && ! empty($conf->module2->enabled)', 'picto'=>'yourpicto@nomenclature')) // Set here all workflow context managed by module
+		//							'workflow' => array('WORKFLOW_MODULE1_YOURACTIONTYPE_MODULE2'=>array('enabled'=>'isModEnabled('module1') && isModEnabled('module2')', 'picto'=>'yourpicto@nomenclature')) // Set here all workflow context managed by module
 		//                        );
 		$this->module_parts = array(
 			'hooks'=>array(
@@ -142,8 +142,8 @@ class modnomenclature extends DolibarrModules
 			//array('NOMENCLATURE_COEF_MARGE','chaine','20','Coef. de marge sur prix de vente (en %)',1),
 
 		// Array to add new pages in new tabs
-		// Example: $this->tabs = array('objecttype:+tabname1:Title1:mylangfile@nomenclature:$user->rights->nomenclature->read:/nomenclature/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1
-        //                              'objecttype:+tabname2:Title2:mylangfile@nomenclature:$user->rights->othermodule->read:/nomenclature/mynewtab2.php?id=__ID__',  	// To add another new tab identified by code tabname2
+		// Example: $this->tabs = array('objecttype:+tabname1:Title1:mylangfile@nomenclature:$user->hasRight('nomenclature', 'read'):/nomenclature/mynewtab1.php?id=__ID__',  	// To add a new tab identified by code tabname1
+        //                              'objecttype:+tabname2:Title2:mylangfile@nomenclature:$user->hasRight('othermodule', 'read'):/nomenclature/mynewtab2.php?id=__ID__',  	// To add another new tab identified by code tabname2
         //                              'objecttype:-tabname:NU:conditiontoremove');                                                     						// To remove an existing tab identified by code tabname
 		// where objecttype can be
 		// 'categories_x'	  to add a tab in category view (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
@@ -175,7 +175,7 @@ class modnomenclature extends DolibarrModules
         	,'order:+nomenclature:Nomenclatures:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && !getDolGlobalInt("NOMENCLATURE_SPEED_CLICK_SELECT"):/nomenclature/nomenclature-detail.php?id=__ID__&object=commande'
             ,'product:+nomenclaturecoef:Coefficient:nomenclature@nomenclature:$user->hasRight("nomenclature","product","updatecoef"):/nomenclature/nomenclature_coef_product.php?id=__ID__&fiche=product'
 		    ,'project:+projectfeedback:Projectfeedback:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_FEEDBACK"):/nomenclature/tab_project_feedback.php?id=__ID__'
-		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_FEEDBACK") && intval(DOL_VERSION) >= 11 && $conf->stock->enabled:/nomenclature/tab_project_feedback_history.php?id=__ID__'
+		    ,'project:+projectfeedbackhistory:Projectfeedbackhistory:nomenclature@nomenclature:$user->hasRight("nomenclature","read") && getDolGlobalInt("NOMENCLATURE_FEEDBACK") && intval(DOL_VERSION) >= 11 && isModEnabled('stock'):/nomenclature/tab_project_feedback_history.php?id=__ID__'
         );
 
         // Dictionaries
@@ -186,7 +186,7 @@ class modnomenclature extends DolibarrModules
         }
 		$this->dictionaries=array();
         /* Example:
-        if (! isset($conf->nomenclature->enabled)) $conf->nomenclature->enabled=0;	// This is to avoid warnings
+        if (! isModEnabled('nomenclature')) $conf->nomenclature->enabled=0;	// This is to avoid warnings
         $this->dictionaries=array(
             'langs'=>'mylangfile@nomenclature',
             'tabname'=>array(MAIN_DB_PREFIX."table1",MAIN_DB_PREFIX."table2",MAIN_DB_PREFIX."table3"),		// List of tables we want to see into dictonnary editor
@@ -197,7 +197,7 @@ class modnomenclature extends DolibarrModules
             'tabfieldvalue'=>array("code,label","code,label","code,label"),																				// List of fields (list of fields to edit a record)
             'tabfieldinsert'=>array("code,label","code,label","code,label"),																			// List of fields (list of fields for insert)
             'tabrowid'=>array("rowid","rowid","rowid"),																									// Name of columns with primary key (try to always name it 'rowid')
-            'tabcond'=>array($conf->nomenclature->enabled,$conf->nomenclature->enabled,$conf->nomenclature->enabled)												// Condition to show each dictionary
+            'tabcond'=>array(isModEnabled('nomenclature'),isModEnabled('nomenclature'),isModEnabled('nomenclature'))												// Condition to show each dictionary
         );
         */
 
@@ -216,27 +216,27 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'nomenclatureRead';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'read';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][4] = 'read';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
         $r++;
 
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'nomenclatureWrite';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'write';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][4] = 'write';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
         $r++;
 
 
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'nomenclatureShowPrice';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'showPrice';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][4] = 'showPrice';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
         $r++;
 
 
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'Personnaliser les coefficients d\'un tiers';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'tiers';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][4] = 'tiers';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
         $this->rights[$r][5] = 'updatecoef';
         $r++;
 
@@ -244,15 +244,15 @@ class modnomenclature extends DolibarrModules
         $this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'Personnaliser les coefficients d\'une propal';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'propal';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][4] = 'propal';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
         $this->rights[$r][5] = 'updatecoef';
         $r++;
 
        	$this->rights[$r][0] = $this->numero + $r;  // Permission id (must not be already used)
         $this->rights[$r][1] = 'massUpdate';  // Permission label
         $this->rights[$r][3] = 0;                   // Permission by default for new user (0/1)
-        $this->rights[$r][4] = 'global';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
-        $this->rights[$r][5] = 'massUpdate';              // In php code, permission will be checked by test if ($user->rights->permkey->level1->level2)
+        $this->rights[$r][4] = 'global';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
+        $this->rights[$r][5] = 'massUpdate';              // In php code, permission will be checked by test if ($user->hasRight('permkey', 'level1', 'level2'))
         $r++;
 
 
@@ -271,8 +271,8 @@ class modnomenclature extends DolibarrModules
 		//							'url'=>'/nomenclature/pagetop.php',
 		//							'langs'=>'mylangfile@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 		//							'position'=>100,
-		//							'enabled'=>'$conf->nomenclature->enabled',	// Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled.
-		//							'perms'=>'1',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+		//							'enabled'=>'isModEnabled('nomenclature')',	// Define condition to show or hide menu entry. Use 'isModEnabled('nomenclature')' if entry must be visible if module is enabled.
+		//							'perms'=>'1',			                // Use 'perms'=>'$user->hasRight('nomenclature', 'level1', 'level2')' if you want your menu with a permission rules
 		//							'target'=>'',
 		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		// $r++;
@@ -286,8 +286,8 @@ class modnomenclature extends DolibarrModules
 									'url'=>'/nomenclature/massUpdate.php',
 									'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
-									'enabled'=>'isModEnabled("nomenclature")',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-									'perms'=>'$user->hasRight("nomenclature","global","massUpdate")',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+									'enabled'=>'isModEnabled("nomenclature")',  // Define condition to show or hide menu entry. Use 'isModEnabled('nomenclature')' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+									'perms'=>'$user->hasRight("nomenclature","global","massUpdate")',			                // Use 'perms'=>'$user->hasRight('nomenclature', 'level1', 'level2')' if you want your menu with a permission rules
 									'target'=>'',
 									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;
@@ -300,8 +300,8 @@ class modnomenclature extends DolibarrModules
 		     'url'=>'/nomenclature/list.php',
 		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 		     'position'=>100,
-		     'enabled'=>'isModEnabled("nomenclature")',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-		     'perms'=>'$user->hasRight("nomenclature","read")',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
+		     'enabled'=>'isModEnabled("nomenclature")',  // Define condition to show or hide menu entry. Use 'isModEnabled('nomenclature')' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+		     'perms'=>'$user->hasRight("nomenclature","read")',			                // Use 'perms'=>'$user->hasRight('nomenclature', 'level1', 'level2')' if you want your menu with a permission rules
 		     'target'=>'',
 		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
 		 $r++;

@@ -153,7 +153,7 @@ function _print_list_coef(&$PDOdb, &$db, &$langs, &$object, &$TCoefObject, $labe
 	echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefList") . '</b></td></tr>';
 	_printCoef($object, $TCoefObject, 'nomenclature', $background_line);
 
-	if(!empty($conf->workstationatm->enabled))
+	if(isModEnabled('workstationatm'))
 	{
 		echo '<tr style="background:'.$background_title.';"><td colspan="3"><b>' . $langs->trans("CoefListWorkstation") . '</b></td></tr>';
 		_printCoef($object, $TCoefObject, 'workstation', $background_line);
