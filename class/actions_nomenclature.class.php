@@ -529,8 +529,8 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
         if(in_array('projectOverview', $TContext) && getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')) {
             $task = $parameters['task'];
             $Tab = explode('-', $task->ref);
-            $fk_nomenclatureDet = substr($Tab[0], strlen(getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION')));
-
+            $fk_nomenclatureDet = substr($Tab[0], strlen(getDolGlobalString('DOC2PROJECT_TASK_REF_PREFIX')));
+//	var_dump($fk_nomenclatureDet,getDolGlobalString('DOC2PROJECT_USE_NOMENCLATURE_AND_WORKSTATION'));exit;
             $nd = new TNomenclatureDet;
             $nd->load($PDOdb, $fk_nomenclatureDet);
 
