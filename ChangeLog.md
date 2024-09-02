@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## RELEASE 4.12
 
+- FIX : Fix bug Conf "Lors d'un clic sur le bouton "Appliquer le prix de vente" fermer la fenêtre une fois l'action effectuée"  - *02/09/2024* - 4.12.1
 - NEW : Compatibilité V20 - *05/07/2024* - 4.12.0
 
 ## RELEASE 4.11

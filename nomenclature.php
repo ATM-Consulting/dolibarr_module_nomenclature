@@ -224,6 +224,19 @@ if (empty($reshook))
 		    if(empty($_SESSION['dol_events']['mesgs']) || (!empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])) )
 		    {
 		        setEventMessage($langs->trans('NomenclatureSaved'));
+				if (getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
+					print '<script type="text/javascript">
+					let dialog = document.getElementById("dialog-nomenclature");
+					if (dialog) {
+						 $("#dialog-nomenclature").dialog("close");
+						let url = new URL(window.location.href);
+						url.searchParams.set("cache", new Date().getTime());
+						window.location.href = url.toString();
+					} else {
+						console.error("Dialog element not found");
+					}
+        			</script>';
+				}
 		    }
 
 
