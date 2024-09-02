@@ -221,7 +221,6 @@ if (empty($reshook))
 		    }
 
 		    // prevent multiple event from ajax call
-		    // prevent multiple event from ajax call
 			if (	getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE') &&
 					GETPOST('apply_nomenclature_price', 'alphanohtml')){
 						print '<script type="text/javascript">
@@ -237,8 +236,7 @@ if (empty($reshook))
         			</script>';
 				setEventMessage($langs->trans('NomenclatureSaved'));
 			}
-			if(empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])
-				&& !getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
+			if(empty($_SESSION['dol_events']['mesgs']) && !getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
 				setEventMessage($langs->trans('NomenclatureSaved'));
 			}
 
