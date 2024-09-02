@@ -89,19 +89,12 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
 											// Add hash (#) to URL when done scrolling (default click behavior)
 											window.location.hash = hash;
 										});
-<?php  	                                if(getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE'))
-										{
-
-										    print "\n".'$("#dialog-nomenclature").dialog(\'close\'); '."\n";
-										}
-?>
 									}
 								});
 							}
 
                        }
                    });
-
                     return false;
                });
 
