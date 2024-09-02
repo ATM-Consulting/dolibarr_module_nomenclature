@@ -224,7 +224,7 @@ if (empty($reshook))
 		    if(empty($_SESSION['dol_events']['mesgs']) || (!empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])) )
 		    {
 		        setEventMessage($langs->trans('NomenclatureSaved'));
-				if (getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
+				if (getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE') && $action == 'apply_nomenclature_price') {
 					print '<script type="text/javascript">
 					let dialog = document.getElementById("dialog-nomenclature");
 					if (dialog) {
