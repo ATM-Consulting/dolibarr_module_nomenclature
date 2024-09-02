@@ -221,6 +221,7 @@ if (empty($reshook))
 		    }
 
 		    // prevent multiple event from ajax call
+		    // prevent multiple event from ajax call
 			if (	getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE') &&
 					GETPOST('apply_nomenclature_price', 'alphanohtml')){
 						print '<script type="text/javascript">
@@ -240,6 +241,7 @@ if (empty($reshook))
 				&& !getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
 				setEventMessage($langs->trans('NomenclatureSaved'));
 			}
+
 
 
             //Mise à jour des prix de la nomenclature
