@@ -221,23 +221,27 @@ if (empty($reshook))
 		    }
 
 		    // prevent multiple event from ajax call
-		    if(empty($_SESSION['dol_events']['mesgs']) || (!empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])) )
-		    {
-		        setEventMessage($langs->trans('NomenclatureSaved'));
-				if (getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE') && $action == 'apply_nomenclature_price') {
-					print '<script type="text/javascript">
-					let dialog = document.getElementById("dialog-nomenclature");
-					if (dialog) {
+		    // prevent multiple event from ajax call
+			if (	getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE') &&
+					GETPOST('apply_nomenclature_price', 'alphanohtml')){
+						print '<script type="text/javascript">
+						let dialog = document.getElementById("dialog-nomenclature");
+						if (dialog) {
 						 $("#dialog-nomenclature").dialog("close");
 						let url = new URL(window.location.href);
 						url.searchParams.set("cache", new Date().getTime());
 						window.location.href = url.toString();
-					} else {
-						console.error("Dialog element not found");
-					}
+						} else {
+							console.error("Dialog element not found");
+						}
         			</script>';
-				}
-		    }
+				setEventMessage($langs->trans('NomenclatureSaved'));
+			}
+			if(empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])
+				&& !getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
+				setEventMessage($langs->trans('NomenclatureSaved'));
+			}
+
 
 
             //Mise à jour des prix de la nomenclature
