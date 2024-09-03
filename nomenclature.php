@@ -236,10 +236,10 @@ if (empty($reshook))
         			</script>';
 				setEventMessage($langs->trans('NomenclatureSaved'));
 			}
-			if(empty($_SESSION['dol_events']['mesgs']) && !in_array($langs->trans('NomenclatureSaved'), $_SESSION['dol_events']['mesgs'])
-				&& !getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
+			if(empty($_SESSION['dol_events']['mesgs']) && !getDolGlobalInt('NOMENCLATURE_CLOSE_ON_APPLY_NOMENCLATURE_PRICE')) {
 				setEventMessage($langs->trans('NomenclatureSaved'));
 			}
+
 
 
             //Mise à jour des prix de la nomenclature
