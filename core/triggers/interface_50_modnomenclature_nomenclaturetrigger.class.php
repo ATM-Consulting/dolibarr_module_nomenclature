@@ -459,7 +459,7 @@ class Interfacenomenclaturetrigger
 		    $sell_price_to_use = 0;
 		}
 		else {
-			if ($object->qty == 0) {
+			if (empty($object->qty)) {
 				$sell_price_to_use = 0;
 			} else {
 				$sell_price_to_use = $n->totalPV / $object->qty; // ça doit rester un prix unitaire
@@ -471,7 +471,6 @@ class Interfacenomenclaturetrigger
 		$sell_price_to_use = price2num($sell_price_to_use,'MT'); //round value
 
 		if($object_type=='commande') {
-//		var_dump($n->totalPV, $object_type,$object);exit;
 
 			$commande = new Commande($db);
 			$commande->fetch($fk_parent);
