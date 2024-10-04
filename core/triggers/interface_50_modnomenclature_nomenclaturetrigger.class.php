@@ -459,7 +459,11 @@ class Interfacenomenclaturetrigger
 		    $sell_price_to_use = 0;
 		}
 		else {
-			$sell_price_to_use=$n->totalPV / $object->qty; // ça doit rester un prix unitaire
+			if ($object->qty == 0) {
+				$sell_price_to_use = 0;
+			} else {
+				$sell_price_to_use = $n->totalPV / $object->qty; // ça doit rester un prix unitaire
+			}
 		}
 
 		if(empty($sell_price_to_use)) return 0;
