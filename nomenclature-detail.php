@@ -215,7 +215,7 @@ function getUnits(){
         {
             $unitLabel = $obj->label;
 
-            $TUnits[$obj->rowid] = strtolower($unitLabel);
+            $TUnits[$obj->rowid] = $unitLabel;
         }
     }
     return $TUnits;
@@ -285,7 +285,7 @@ function _getDetails(&$object, $object_type) {
 			}
         }
         else {
-            if(TSubtotal::isTitle($line)) {
+            if(isModEnabled('subtotal') && TSubtotal::isTitle($line)) {
                 $TProduct[$line->id] = array(
                     'products' => array(
                         'T_'.$line->id => $line,
@@ -296,14 +296,16 @@ function _getDetails(&$object, $object_type) {
                 );
             }
             else {
-                if(TSubtotal::isModSubtotalLine($line)) continue;   // Prevent from subtotal and free text lines
-
-                $TTitle = TSubtotal::getAllTitleFromLine($line);
 				$firstParentTitleId = 0;
-                if(!empty($TTitle)){
-					$TTitleKeys = array_keys($TTitle);
-					$firstParentTitleId = intval($TTitleKeys[0]);
-                }
+
+				if (isModEnabled('subtotal')) {
+					if(TSubtotal::isModSubtotalLine($line)) continue;   // Prevent from subtotal and free text lines
+					$TTitle = TSubtotal::getAllTitleFromLine($line);
+					if(!empty($TTitle)){
+						$TTitleKeys = array_keys($TTitle);
+						$firstParentTitleId = intval($TTitleKeys[0]);
+					}
+				}
 
                 $nomenclature = new TNomenclature;
                 $nomenclature->loadByObjectId($PDOdb, $line->id, $object_type, true, $line->fk_product, $line->qty);
@@ -358,7 +360,7 @@ function _getDetails(&$object, $object_type) {
                     }
                 }
 				else{ // Produit simple de la ligne
-                    if (empty($TUnits) && !$alreadySearched) getUnits();
+                    if (empty($TUnits) && !$alreadySearched) $TUnits = getUnits();
                     if (getDolGlobalInt('NOMENCLATURE_INCLUDE_PRODUCTS_WITHOUT_NOMENCLATURE')) {
                         $tmpline = new stdClass();
                         $tmpline->fk_product = $line->fk_product;
@@ -587,7 +589,8 @@ function print_table($TData, $TWorkstation, $object_type) {
 
 
                         if(isset($line->warningUnitNotTheSameAsProduct) && $line->warningUnitNotTheSameAsProduct === true){
-                        	$unitTitle = $langs->trans('WarningUnitOfBomIsNotTheSameAsProduct', $langs->trans($line->productCurrentUnit));
+							$line->productCurrentUnit = $product->getValueFrom('c_units', $product->fk_unit, 'label');
+							$unitTitle = $langs->trans('WarningUnitOfBomIsNotTheSameAsProduct', $langs->trans($line->productCurrentUnit));
                         	$unit = '<span class="badge badge-danger classfortooltip" title="'.$unitTitle.'" >'.$langs->trans($line->unit).'</span>';
 						}
 

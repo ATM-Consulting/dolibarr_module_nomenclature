@@ -61,7 +61,7 @@ class modnomenclature extends DolibarrModules
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
 
-		$this->version = '4.11.3';
+		$this->version = '4.12.3';
 
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
@@ -124,7 +124,7 @@ class modnomenclature extends DolibarrModules
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->conflictwith = array();	// List of modules id this module is in conflict with
 		$this->phpmin = array(7,0);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(15,0);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(16,0);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array("nomenclature@nomenclature");
 
 		// Constants
@@ -179,7 +179,7 @@ class modnomenclature extends DolibarrModules
         );
 
         // Dictionaries
-	    if (!empty($conf->nomenclature->enabled))
+	    if (isModEnabled('nomenclature'))
         {
         	$conf->nomenclature=new stdClass();
         	$conf->nomenclature->enabled=0;
@@ -286,7 +286,7 @@ class modnomenclature extends DolibarrModules
 									'url'=>'/nomenclature/massUpdate.php',
 									'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
-									'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+									'enabled'=>'isModEnabled("nomenclature")',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 									'perms'=>'$user->hasRight("nomenclature","global","massUpdate")',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 									'target'=>'',
 									'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
@@ -300,7 +300,7 @@ class modnomenclature extends DolibarrModules
 		     'url'=>'/nomenclature/list.php',
 		     'langs'=>'nomenclature@nomenclature',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 		     'position'=>100,
-		     'enabled'=>'$conf->nomenclature->enabled',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+		     'enabled'=>'isModEnabled("nomenclature")',  // Define condition to show or hide menu entry. Use '$conf->nomenclature->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 		     'perms'=>'$user->hasRight("nomenclature","read")',			                // Use 'perms'=>'$user->rights->nomenclature->level1->level2' if you want your menu with a permission rules
 		     'target'=>'',
 		     'user'=>0);				                // 0=Menu for internal users, 1=external users, 2=both
