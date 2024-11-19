@@ -474,15 +474,18 @@ class Interfacenomenclaturetrigger
 
 			$commande = new Commande($db);
 			$commande->fetch($fk_parent);
+			$commandeBuyPrice = !empty($n->totalPRCMO / $object->qty) ? $n->totalPRCMO / $object->qty : $object->pa_ht;
 
-			$commande->updateline($object->id,$object->desc,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$n->totalPRCMO / $object->qty,$object->label, $object->special_code, 0, $object->fk_unit, $object->multicurrency_subprice); // Le prix de revient doit aussi rester unitaire
+			$commande->updateline($object->id,$object->desc,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,'HT',0,$object->date_start,$object->date_end,$object->product_type,0,0,$object->fk_fournprice,$commandeBuyPrice, $object->label, $object->special_code, 0, $object->fk_unit, $object->multicurrency_subprice); // Le prix de revient doit aussi rester unitaire
 
 		}
 
 		else if($object_type=='propal') {
 			$propal = new Propal($db);
 			$propal->fetch($fk_parent);
-			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice, $n->totalPRCMO / $object->qty, $object->label, $object->product_type, $object->date_start, $object->date_end, 0, $object->fk_unit);
+			$propalBuyPrice = !empty($n->totalPRCMO / $object->qty) ? $n->totalPRCMO / $object->qty : $object->pa_ht;
+			
+			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice, $propalBuyPrice, $object->label, $object->product_type, $object->date_start, $object->date_end, 0, $object->fk_unit);
 
 
 		}else if ($object_type == 'facture') {
@@ -492,7 +495,8 @@ class Interfacenomenclaturetrigger
 			// on update pas la ligne sur les avoirs. Aucun sens de recalculer un prix qui peut-être différent du prix qu'on a saisi
 			if ($facture->type != Facture::TYPE_CREDIT_NOTE)
 			{
-				$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', 0, $object->product_type, 0, 0, $object->fk_fournprice, $n->totalPRC / $object->qty,$object->label, $object->special_code, 0, $object->situation_percent, $object->fk_unit);
+				$factureBuyPrice = !empty($n->totalPRC / $object->qty) ? $n->totalPRC / $object->qty : $object->pa_ht;
+				$facture->updateline($object->id, $object->desc, $sell_price_to_use, $object->qty, $object->remise_percent, $object->date_start, $object->date_end, $object->tva_tx, $object->localtax1_tx, $object->localtax2_tx, 'HT', 0, $object->product_type, 0, 0, $object->fk_fournprice, $factureBuyPrice, $object->label, $object->special_code, 0, $object->situation_percent, $object->fk_unit);
 			}
 
 		}
