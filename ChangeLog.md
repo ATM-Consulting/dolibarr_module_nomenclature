@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## RELEASE 4.12
 
+- FIX : retours DA025848 - **09/12/2024** - 4.12.4
 - FIX : retour DA025391_2  - *02/09/2024* - 4.12.3
 - FIX : retour DA025391  - *02/09/2024* - 4.12.2
 - FIX : DA025391 Fix bug Conf "Lors d'un clic sur le bouton "Appliquer le prix de vente" fermer la fenêtre une fois l'action effectuée"  - *02/09/2024* - 4.12.1
