@@ -67,7 +67,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 
         if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
             if($action == 'nomenclatureUpdateCoeff' && $object->statut == 0) {
-                if(! $conf->subtotal->enabled) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+                if(! isModEnabled("subtotal")) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
 
                 if(! function_exists('_updateObjectLine')) dol_include_once('/nomenclature/lib/nomenclature.lib.php');
                 if(! class_exists('TNomenclatureCoefObject')) dol_include_once('/nomenclature/class/nomenclature.class.php');
@@ -129,13 +129,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
                 }
                 $titleLine->insertExtraFields();
             }
-        } elseif(in_array('productcard', $TContext)) {
-
-			if ($action == "confirm_clone" && GETPOST('confirm', 'alpha') == 'yes' && version_compare(DOL_VERSION, "10.0.0") < 0)
-			{
-				$object->context['createfromclone'] = 'createfromclone';
-			}
-		}
+        }
 
     }
 
@@ -183,7 +177,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					}
 
 					// si l'un de ces modules est activé, on a potentiellement des modifs de qty qui ne sont pas reportées dans l'appel initial, il faut rebuild l'appel de la popin
-					if (!empty($conf->quickcustomerprice->enabled) || !empty($conf->quickeditline->enabled))
+					if (isModEnabled("quickcustomerprice") || isModEnabled("quickeditline"))
 					{
 					?>
 						$('.openPopin').on('click', function (e) {
@@ -276,7 +270,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
         $line = &$parameters['line'];
 
         if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
-            if(empty($conf->subtotal->enabled)) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+            if(!isModEnabled("subtotal")) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
             ?>
             <script type="text/javascript">
@@ -368,7 +362,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
         $TContext = explode(':', $parameters['context']);
 
         if(in_array('propalcard', $TContext) || in_array('ordercard', $TContext) || in_array('invoicecard', $TContext)) {
-            if(empty($conf->subtotal->enabled)) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
+            if(!isModEnabled("subtotal")) return 0;    // Inutile de faire quoi que ce soit vu qu'on a besoin d'un titre...
             dol_include_once('/nomenclature/class/nomenclature.class.php');
 
             $PDOdb = new TPDOdb;
@@ -566,7 +560,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					'table'=>'stock_mouvement',
 					'datefieldname'=>'datem',
 					'disableamount'=>1,
-					'test'=>($conf->stock->enabled && $user->hasRight('stock','mouvement','lire') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW'))
+					'test'=>(isModEnabled("stock") && $user->hasRight('stock','mouvement','lire') && getDolGlobalInt('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW'))
 				)
 			);
 
@@ -841,7 +835,7 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 		require_once __DIR__ . '/nomenclature.class.php';
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions.lib.php';
 
-		if(empty($object->lines) || !getDolGlobalString('BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS') || empty($conf->btp->enabled)) return 0;
+		if(empty($object->lines) || !getDolGlobalString('BTP_USE_MARGINS_WITH_NOMENCLATURE_DETAILS') || !isModEnabled("btp")) return 0;
 
 		$langs->load('btp@btp');
 
