@@ -202,18 +202,8 @@ setup_print_on_off('NOMENCLATURE_FEEDBACK_LOCK_WAREHOUSE', '', '', '', 300, fals
  */
 $projectOverviewHookExist = false;
 $backPortDesc = '';
-if(intval(DOL_VERSION) < 13 && file_exists(DOL_DOCUMENT_ROOT.'/projet/element.php')){
- 	$stringToFind = 'printOverviewProfit';
-	// get the file contents, assuming the file to be readable (and exist)
-	$contents = file_get_contents(DOL_DOCUMENT_ROOT.'/projet/element.php');
-	if(strpos($contents, $stringToFind) !== false)
-	{
-		$projectOverviewHookExist = true;
-		$backPortDesc = $langs->trans('BackportVxDetectedSoFeatureReady', 'V13');
-	}
-}
 
-if(intval(DOL_VERSION) > 13 || $projectOverviewHookExist ){
+if($projectOverviewHookExist){
 	setup_print_on_off('NOMENCLATURE_FEEDBACK_INTO_PROJECT_OVERVIEW', '', $backPortDesc);
 
 	$available = array (

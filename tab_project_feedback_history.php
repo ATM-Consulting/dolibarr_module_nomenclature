@@ -52,7 +52,7 @@ if(!in_array($granularity, array('DAY', 'MONTH', 'YEAR'))) $granularity = 'MONTH
 $massaction = GETPOST('massaction', 'alpha');
 $confirmmassaction = GETPOST('confirmmassaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
-$sall = GETPOST('sall');
+$sall = !empty(GETPOST('search_all', 'alphanohtml')) ?: GETPOST('sall');
 $button_removefilter_x = GETPOST('button_removefilter_x');
 if(!empty($button_removefilter_x)){
 	$sall = $search_date_start = $search_date_end = '';
@@ -240,7 +240,7 @@ $searchMovement.=   '</div>';
 
 // Pour les tries
 $paramUrl = '&id='.$object->id;
-if (!empty($sall))			$paramUrl .= '&sall='.urldecode($sall);
+if (!empty($sall))			$paramUrl .= '&search_all='.urldecode($sall);
 if (!empty($granularity)) 	$paramUrl .= '&granularity='.$granularity;
 if ($search_date_start)		$paramUrl .= '&search_date_start='.urlencode($search_date_start);
 if ($search_date_end)   	$paramUrl .= '&search_date_end='.urlencode($search_date_end);

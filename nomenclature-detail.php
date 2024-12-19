@@ -123,7 +123,7 @@ if($object_type == 'propal') {
     }
 
     // Project
-    if(! empty($conf->projet->enabled)) {
+    if(isModEnabled("projet")) {
         $langs->load("projects");
         $morehtmlref .= '<br>'.$langs->trans('Project').' : ';
 
@@ -163,7 +163,7 @@ else if($object_type == 'commande') {
     }
 
     // Project
-    if(! empty($conf->projet->enabled)) {
+    if(isModEnabled("projet")) {
         $langs->load("projects");
         $morehtmlref .= '<br>'.$langs->trans('Project').' : ';
 
@@ -232,7 +232,7 @@ function _getDetails(&$object, $object_type) {
 	$TUnits = getUnits();
 
     foreach($object->lines as $k => &$line) {
-        if(empty($conf->global->NOMENCLATURE_DETAILS_TAB_REWRITE)) {
+        if(!getDolGlobalInt('NOMENCLATURE_DETAILS_TAB_REWRITE')) {
             if($line->product_type == 9) continue;
 
             $nomenclature = new TNomenclature;
@@ -535,7 +535,7 @@ function print_table($TData, $TWorkstation, $object_type) {
         <table class="noorder tagtable liste" width="100%">
             <tr class="liste_titre">
 				<?php if ($showTitleCol) print '<th class="liste_titre" >'.$langs->trans('Title').'</th>'; ?>
-				<?php if (!empty($conf->global->NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL)) { ?>
+				<?php if (getDolGlobalInt('NOMENCLATURE_SEPARATE_PRODUCT_REF_AND_LABEL')) { ?>
 			<th class="liste_titre" ><?php echo $langs->trans('Ref'); ?></th>
 			<th class="liste_titre" width="30%" ><?php echo $langs->trans('Product'); ?></th>
 				<?php } else { ?>
@@ -684,15 +684,15 @@ function print_table($TData, $TWorkstation, $object_type) {
                                                         /* setup of margin calculation */
                                                         var defaultbuyprice = '<?php
 
-                                                            if(! empty($conf->global->NOMENCLATURE_COST_TYPE)) {
-                                                                if($conf->global->NOMENCLATURE_COST_TYPE == '1') print 'bestsupplierprice';
-                                                                if($conf->global->NOMENCLATURE_COST_TYPE == 'pmp') print 'pmp';
-                                                                if($conf->global->NOMENCLATURE_COST_TYPE == 'costprice') print 'costprice';
+                                                            if(getDolGlobalInt('NOMENCLATURE_COST_TYPE')) {
+                                                                if(getDolGlobalInt('NOMENCLATURE_COST_TYPE') == '1') print 'bestsupplierprice';
+                                                                if(getDolGlobalInt('NOMENCLATURE_COST_TYPE') == 'pmp') print 'pmp';
+                                                                if(getDolGlobalInt('NOMENCLATURE_COST_TYPE') == 'costprice') print 'costprice';
                                                             }
-                                                            else if(isset($conf->global->MARGIN_TYPE)) {
-                                                                if($conf->global->MARGIN_TYPE == '1') print 'bestsupplierprice';
-                                                                if($conf->global->MARGIN_TYPE == 'pmp') print 'pmp';
-                                                                if($conf->global->MARGIN_TYPE == 'costprice') print 'costprice';
+                                                            else if(getDolGlobalString('MARGIN_TYPE')) {
+                                                                if(getDolGlobalString('MARGIN_TYPE') == '1') print 'bestsupplierprice';
+                                                                if(getDolGlobalString('MARGIN_TYPE') == 'pmp') print 'pmp';
+                                                                if(getDolGlobalString('MARGIN_TYPE') == 'costprice') print 'costprice';
                                                             } ?>';
                                                         console.log('we will set the field for margin. defaultbuyprice=' + defaultbuyprice);
 

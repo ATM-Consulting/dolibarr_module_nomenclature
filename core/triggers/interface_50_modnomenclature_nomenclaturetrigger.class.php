@@ -123,7 +123,7 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/abricot/includes/class/class.pdo.db.php');
 		$PDOdb = new TPDOdb();
 
-		if(!empty($conf->subtotal->enabled)) {
+		if(isModEnabled("subtotal")) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
 			if (isset($object->element) && strpos($object->element, 'det') !== false && TSubtotal::isModSubtotalLine($object)) return 0;
 		}
@@ -153,9 +153,9 @@ class Interfacenomenclaturetrigger
             /** @var TAssetOFLine $object */
             $object->saveQty($PDOdb);
         }
-		elseif ($action == 'LINEPROPAL_INSERT') {
+		elseif ($action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_CREATE') {
             $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
-		} elseif ($action == 'LINEBILL_INSERT') {
+		} elseif ($action == 'LINEBILL_INSERT' || $action == 'LINEBILL_CREATE') {
 
 			if (!isModEnabled('nomenclature') || $object->product_type == 9)	return 0;
 
@@ -216,7 +216,7 @@ class Interfacenomenclaturetrigger
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 
-		} elseif ($action == 'LINEORDER_INSERT') {
+		} elseif ($action == 'LINEORDER_INSERT' || $action == 'LINEORDER_CREATE') {
 
 			if (!isModEnabled('nomenclature') || $object->product_type == 9)	return 0;
 
@@ -273,8 +273,7 @@ class Interfacenomenclaturetrigger
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 		}
-		elseif ((floatval(DOL_VERSION) <= 7.0 && in_array($action, array('PROPAL_CLONE', 'ORDER_CLONE'))) ||
-                (floatval(DOL_VERSION) >= 8.0 && ! empty($object->context) && in_array('createfromclone', $object->context) && in_array($action, array('PROPAL_CREATE', 'ORDER_CREATE')))) {
+		elseif (!empty($object->context) && in_array('createfromclone', $object->context) && in_array($action, array('PROPAL_CREATE', 'ORDER_CREATE'))) {
             /**
              * A partir de la version 8.0 de Dolibarr, les Triggers "*_CLONE" ont été supprimés
              * Dans les Triggers "*_CREATE", il faut se fier à $object->context pour savoir si c'est un clone ou pas...
@@ -573,7 +572,7 @@ class Interfacenomenclaturetrigger
                 // S'il y a bien un load depuis ma ligne de propal d'origine
                 if($n->iExist) $n = $this->_duplicateNomenclature($PDOdb, $object, $n);
             }
-			elseif(floatval(DOL_VERSION) >= 8.0 && ! empty($object->context)
+			elseif(! empty($object->context)
 				&& in_array('createfromclone', $object->context)
 				&& !empty($object->origin) && !empty($object->origin_id)
 				&& (

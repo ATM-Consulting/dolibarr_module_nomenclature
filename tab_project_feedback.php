@@ -80,7 +80,7 @@ if ($reshook < 0) setEventMessages($hookmanager->error, $hookmanager->errors, 'e
 
 if (empty($reshook))
 {
-    // TODO: desabling edit mode if $conf->stock->enabled and a corresponding expedition exists
+    // TODO: desabling edit mode if isModEnabled("stock") and a corresponding expedition exists
     if($action=='save'){
 
         saveFeedbackForm();
