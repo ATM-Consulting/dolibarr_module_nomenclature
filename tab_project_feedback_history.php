@@ -52,7 +52,7 @@ if(!in_array($granularity, array('DAY', 'MONTH', 'YEAR'))) $granularity = 'MONTH
 $massaction = GETPOST('massaction', 'alpha');
 $confirmmassaction = GETPOST('confirmmassaction', 'alpha');
 $toselect = GETPOST('toselect', 'array');
-$sall = GETPOST('search_all', 'alphanohtml');
+$sall = !empty(GETPOST('search_all', 'alphanohtml')) ?: GETPOST('sall');
 $button_removefilter_x = GETPOST('button_removefilter_x');
 if(!empty($button_removefilter_x)){
 	$sall = $search_date_start = $search_date_end = '';

@@ -187,7 +187,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
 
-		$max_level = !getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL') ? 50 : getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL');
+		$max_level = !getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL', 50);
 		if($this->nested_price_level>$max_level){
 			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
 
@@ -1265,7 +1265,7 @@ class TNomenclature extends TObjetStd
 			}
 
 			// Calcul marge finale (si conf marge par ligne non activée
-			if(empty(getDolGlobalInt('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT'))) {
+			if(!(getDolGlobalInt('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT'))) {
 				$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $object, $object->element);
 				$marginInfo['pv_products'] *= $marge->tx_object;
 				$marginInfo['pv_services'] *= $marge->tx_object;
@@ -1619,7 +1619,7 @@ class TNomenclatureDet extends TObjetStd
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false, $best_one = false) {
         global $db,$conf;
 
-        if (!empty(getDolGlobalInt('NOMENCLATURE_USE_QTYREF_TO_ONE'))) {
+        if (getDolGlobalInt('NOMENCLATURE_USE_QTYREF_TO_ONE')) {
         	$qty=1;
         }
 
