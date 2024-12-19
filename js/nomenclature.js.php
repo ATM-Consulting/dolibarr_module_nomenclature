@@ -61,11 +61,7 @@ function showLineNomenclature(fk_line, qty, fk_product, object_type, fk_origin) 
                        		var url = false;
                        		switch(object_type) {
 							    case 'propal':
-							    <?php if((float) DOL_VERSION >= 4.0){ ?>
 									url = "<?php echo dol_buildpath('/comm/propal/card.php?id=', 1); ?>"+fk_origin;
-							    <?php }else{ ?>
-									url = "<?php echo dol_buildpath('/comm/propal.php?id=', 1); ?>"+fk_origin;
-							    <?php } ?>
 							        break;
 								case 'commande':
 									url = "<?php echo dol_buildpath('/commande/card.php?id=', 1); ?>"+fk_origin;

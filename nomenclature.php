@@ -13,7 +13,7 @@ dol_include_once('/nomenclature/lib/nomenclature.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT . '/compta/facture/class/facture.class.php';
 
-if(!empty($conf->workstationatm->enabled)) {
+if(isModEnabled("workstationatm")) {
     dol_include_once('/workstationatm/class/workstation.class.php');
 }
 
@@ -318,8 +318,7 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 	$picto=($product->type==1?'service':'product');
 	dol_fiche_head($head, 'nomenclature', $titre, 0, $picto);
 
-	if ((float) DOL_VERSION >= 4.0) dol_banner_tab($product, 'ref', '', (!empty($user->societe_id)?0:1), 'ref');
-	else headerProduct($product);
+	dol_banner_tab($product, 'ref', '', (!empty($user->societe_id)?0:1), 'ref');
 
 	?><script type="text/javascript">
 		function uncheckOther(obj)
@@ -668,7 +667,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									print '<th class="liste_titre" width="5%">'.$langs->trans('Availability').'</th>';
 								}
 
-								if(!empty($conf->stock->enabled) && !getDolGlobalInt('NOMENCLATURE_HIDE_STOCK_COLUMNS')) {
+								if(isModEnabled("stock") && !getDolGlobalInt('NOMENCLATURE_HIDE_STOCK_COLUMNS')) {
 								   ?>
 
 		                           <th class="liste_titre col_physicalStock" width="5%"><?php echo $langs->trans('PhysicalStock'); ?></th>
@@ -802,14 +801,14 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									}
 
 
-								if(!empty($conf->stock->enabled) && !getDolGlobalInt('NOMENCLATURE_HIDE_STOCK_COLUMNS')) {
+								if(isModEnabled("stock") && !getDolGlobalInt('NOMENCLATURE_HIDE_STOCK_COLUMNS')) {
 	                               ?>
 	                               <td>
 	                               	<?php echo $det->fk_product>0 ? price($p_nomdet->stock_reel,'',0,1,1,2) : '-'; ?>
 	                               </td>
 	                               <td class="ligne_col_virtualStock">
 	                               	<?php
-	                               		if(!empty($conf->of->enabled) && $p_nomdet->id>0){
+	                               		if(isModEnabled("of") && $p_nomdet->id>0){
 
 	                               			// On récupère les quantités dans les OF
 	                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
@@ -888,7 +887,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS')) {
 										echo price( $price ).img_help(1,$langs->trans('PricePA'));
 										echo '<span class="pricePMP"><br />'.price(price2num($det->calculate_price_pmp,'MT')).img_help(1,$langs->trans('PricePMP')).'</span>';
-										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->calculate_price_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
+										if(isModEnabled("of")) echo '<span class="priceOF"><br />'.price(price2num($det->calculate_price_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
 									}
 									else{
 										echo price($price);
@@ -920,7 +919,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 									if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS')) {
 										echo price($price_charge);
 										echo '<span class="pricePMP"><br />'.price(price2num($det->charged_price_pmp,'MT')).'</span>';
-										if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->charged_price_of,'MT')).'</span>';
+										if(isModEnabled("of")) echo '<span class="priceOF"><br />'.price(price2num($det->charged_price_of,'MT')).'</span>';
 									}
 									else{
                                     	echo price($price_charge);
@@ -944,7 +943,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 											if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS')) {
 												echo price( $pv).img_help(1,$langs->trans('PricePA'));
 												echo '<span class="pricePMP"><br />'.price(price2num($det->pv_pmp,'MT')).img_help(1,$langs->trans('PricePMP')).'</span>';
-												if(!empty($conf->of->enabled)) echo '<span class="priceOF"><br />'.price(price2num($det->pv_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
+												if(isModEnabled("of")) echo '<span class="priceOF"><br />'.price(price2num($det->pv_of,'MT')).img_help(1,$langs->trans('PriceOF')).'</span>';
 											}
 											else{
 												echo price($pv);
@@ -996,7 +995,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 				       if($user->hasRight('nomenclature', 'showPrice')) {
 				       		$colspan = 3;
 							if(getDolGlobalInt('FOURN_PRODUCT_AVAILABILITY') && getDolGlobalInt('FOURN_PRODUCT_AVAILABILITY') > 0) $colspan ++;
-							if(empty($conf->stock->enabled)) $colspan -= 2;
+							if(!isModEnabled("stock")) $colspan -= 2;
 							if(getDolGlobalInt('PRODUCT_USE_UNITS')) $colspan ++;
 							if(getDolGlobalInt('NOMENCLATURE_USE_LOSS_PERCENT')) $colspan += 2;
 							if(getDolGlobalInt('NOMENCLATURE_USE_CUSTOM_BUYPRICE')) $colspan ++;
@@ -1040,7 +1039,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	                       </tr><?php
 
-	                       if(!empty($conf->of->enabled)) {
+	                       if(isModEnabled("of")) {
 
 		                       ?><tr class="liste_total">
 		                           <td ><?php echo $langs->trans('TotalPriceOF'); ?></td>
@@ -1107,7 +1106,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
         <?php } ?>
 
         <?php
-       if(!empty($conf->workstationatm->enabled)) {
+       if(isModEnabled("workstationatm")) {
 
        ?>
         <tr>
@@ -1192,7 +1191,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	                           echo '<td align="right" valign="middle">';
                                echo price($price_charge) ;
 
-							   if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && !empty($conf->of->enabled)) {
+							   if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && isModEnabled("of")) {
 							   		  echo '<span class="priceOF"><br />'.price($ws->calculate_price_of,'','',1,1,2).img_help(1, $langs->trans('priceMO_OF')).'</span>' ;
 							   }
 
@@ -1241,7 +1240,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								<td></td>
 								<td></td>
 	                    </tr><?php
-	                     if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && !empty($conf->of->enabled)) {
+	                     if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && isModEnabled("of")) {
 		                    ?><tr class="liste_total">
 		                           <td colspan="2"><?php echo $langs->trans('TotalMO_OF'); ?></td>
 		                           <td colspan="<?php echo $colspan; ?>">&nbsp;</td>
@@ -1274,7 +1273,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
                         <div class="tabsAction">
                             <div>
                                 <?php
-                                if ( $conf->workstationatm->enabled && ! $readonly ) {
+                                if ( isModEnabled("workstationatm") && ! $readonly ) {
                                     echo $formCore->combo( '', 'fk_new_workstation', TWorkstation::getWorstations( $PDOdb, false, boolval(getDolGlobalInt('NOMENCLATURE_PRESELECT_FIRST_WS'))), - 1 );
                                     ?>
                                     <div class="inline-block divButAction">
@@ -1412,9 +1411,9 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 <!--                <div class="tabsAction">-->
 <!--                    --><?php
 //
-//                    if($conf->workstationatm->enabled && !$readonly) {
+//                    if(isModEnabled("workstationatm") && !$readonly) {
 //
-//                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty($conf->global->NOMENCLATURE_PRESELECT_FIRST_WS) ? false : true), -1);
+//                           echo $formCore->combo('', 'fk_new_workstation',TWorkstation::getWorstations($PDOdb, false, !empty(getDolGlobalInt('NOMENCLATURE_PRESELECT_FIRST_WS')) ? false : true), -1);
 //                        ?>
 <!--                        <div class="inline-block divButAction">-->
 <!--                        <input type="submit" name="add_workstation" class="butAction" value="--><?php //echo $langs->trans('AddWorkstation'); ?><!--" />-->
@@ -1471,7 +1470,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
                         <?php }
 
-                        if (!$json && !empty($conf->stock->enabled) && getDolGlobalInt('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN')) {
+                        if (!$json && isModEnabled("stock") && getDolGlobalInt('NOMENCLATURE_ALLOW_MVT_STOCK_FROM_NOMEN')) {
                             print '<div class="inline-block divButAction">';
                             print '<a id="nomenclaturecreateqty-' . $n->getId() . '" class="butAction" href="' . dol_buildpath('/nomenclature/nomenclature.php', 1) . '?fk_product=' . $product->id . '&fk_nomenclature_used=' . $n->getId() . '&qty_reference=' . $n->qty_reference . '&action=create_stock&token='.$newToken.'">' . $langs->trans('NomenclatureCreateXQty') . '</a>';
                             print '</div>';
