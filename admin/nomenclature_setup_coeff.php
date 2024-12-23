@@ -223,7 +223,7 @@ foreach ($TCoef as $coef)
 	print '<input type="hidden" name="action" value="edit">';
 	print '<input type="hidden" name="rowid" value="'.$coef->rowid.'">';
 	print '<label>'.$langs->trans('NomenclatureCreateCode').'</label>&nbsp;';
-	print '<input placeholder="'.$langs->trans('NomenclatureCoeffCodeType').'"  readonly="readonly" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
+	print '<input placeholder="'.$langs->trans('NomenclatureCoeffCodeType').'" type="text" name="code_type" value="'.$coef->code_type.'"  size="15" />&nbsp;&nbsp;';
 	print '<label>'.$langs->trans('NomenclatureCreateTx').'</label>&nbsp;';
 	print '<input type="text" name="tx" value="'.$coef->tx.'"  size="5" />&nbsp;&nbsp;';
 	print '<input type="submit" class="butAction" name="edit" value="'.$langs->trans("Modify").'">&nbsp;';
@@ -237,7 +237,7 @@ print '</table>';
 
 
 // Coef lignes msin d'oeuvre (module workstation)
-if(isModEnabled("workstationatm")) {
+if(isModEnabled('workstation')) {
 
 	$var=false;
 	print '<table class="noborder" width="100%">';
