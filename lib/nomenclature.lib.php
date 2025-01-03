@@ -609,7 +609,7 @@ function saveFeedbackForm(){
     $countSave  = 0;
     $countInit  = 0;
 
-    if($conf->stock->enabled){
+    if(isModEnabled("stock")){
         dol_include_once('product/stock/class/mouvementstock.class.php');
     }
 
@@ -660,7 +660,7 @@ function saveFeedbackForm(){
                 }
 
 
-                if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && !empty($conf->stock->enabled) && !empty($feedback->fk_warehouse)){
+                if(getDolGlobalInt('NOMENCLATURE_FEEDBACK_USE_STOCK') && isModEnabled("stock") && !empty($feedback->fk_warehouse)){
                     $mouvementStock = new MouvementStock($db);
 
                     if(!empty($origin)){
