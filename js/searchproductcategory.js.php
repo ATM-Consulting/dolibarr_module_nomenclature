@@ -77,7 +77,7 @@ function getNomenclatureArboSPC(fk_parent, container,keyword) {
 			//$ul.append('<li class="none '+NomenclatureSpc_line_class+'">
 			<?php
 			/**
-                if(!empty($conf->global->SPC_DO_NOT_LOAD_PARENT_CAT)) {
+                if(!empty(getDolGlobalInt('SPC_DO_NOT_LOAD_PARENT_CAT'))) {
 					echo $langs->trans('DoASearch');
 				}
 				else {

@@ -70,7 +70,7 @@ class TNomenclature extends TObjetStd
         $this->setChild('TNomenclatureFeedback', 'fk_nomenclature');
 
 
-        if(!empty($conf->workstationatm->enabled)) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
+        if(isModEnabled("workstationatm")) $this->setChild('TNomenclatureWorkstation', 'fk_nomenclature');
 
         $this->qty_reference = 1;
         $this->object_type = 'product';
@@ -187,7 +187,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
 
-		$max_level = empty($conf->global->NOMENCLATURE_MAX_NESTED_LEVEL) ? 50 : $conf->global->NOMENCLATURE_MAX_NESTED_LEVEL;
+		$max_level = getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL', 50);
 		if($this->nested_price_level>$max_level){
 			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
 
@@ -368,7 +368,7 @@ class TNomenclature extends TObjetStd
 				$totalPRC_PMP+= $det->charged_price_pmp;
 				$totalPV_PMP+= $det->pv_pmp;
 
-				if(!empty($conf->of->enabled)) {
+				if(isModEnabled("of")) {
 					$det->calculate_price_of = $det->getPrice($PDOdb, $det->qty * $coef_qty_price,'OF') * $det->qty * $coef_qty_price;
 					$totalPR_OF+= $det->calculate_price_of ;
 					$det->charged_price_of = empty($perso_price) ? $det->calculate_price_of * $coef : $perso_price * $coef_qty_price;
@@ -403,7 +403,7 @@ class TNomenclature extends TObjetStd
 
 			$total_mo+=empty($ws->price) ? $ws->calculate_price : $ws->price;
 
-			if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && !empty($conf->of->enabled)) {
+			if(getDolGlobalInt('NOMENCLATURE_ACTIVATE_DETAILS_COSTS') && isModEnabled("of")) {
 			 	list($ws->nb_hour_calculate_of, $ws->calculate_price_of) = $ws->getPrice($PDOdb, $coef_qty_price, 'OF'); // [FIXME] - dois je prendre en compte le coef dans ce cas pour être appliqué ?
 				$total_mo_of+=empty($ws->price) ? $ws->calculate_price_of : $ws->price;
 			}
@@ -496,7 +496,7 @@ class TNomenclature extends TObjetStd
 			$this->iExist = true;
 		}
 
-		if($loadProductWSifEmpty && !empty($conf->workstationatm->enabled) && empty($this->TNomenclatureWorkstation)) {
+		if($loadProductWSifEmpty && isModEnabled("workstationatm") && empty($this->TNomenclatureWorkstation)) {
 			$this->load_product_ws($PDOdb);
 		}
 
@@ -841,7 +841,7 @@ class TNomenclature extends TObjetStd
 	{
 		global $db,$conf,$TNomenclatureWorkstationThmObject;
 
-		if (!empty($conf->global->NOMENCLATURE_USE_CUSTOM_THM_FOR_WS) && $fk_object_parent > 0 && $object_type == 'propal')
+		if (getDolGlobalInt('NOMENCLATURE_USE_CUSTOM_THM_FOR_WS') && $fk_object_parent > 0 && $object_type == 'propal')
 		{
 			// 1 : on charge le coef custom (si existant) des TNomenclatureWorkstation
 			foreach ($this->TNomenclatureWorkstation as &$nomenclatureWs)
@@ -1093,7 +1093,7 @@ class TNomenclature extends TObjetStd
 	{
 		global $db,$langs,$user,$conf;
 
-		if (empty($conf->stock->enabled)) return 1;
+		if (!isModEnabled("stock")) return 1;
 
 		require_once DOL_DOCUMENT_ROOT.'/product/stock/class/mouvementstock.class.php';
 
@@ -1265,7 +1265,7 @@ class TNomenclature extends TObjetStd
 			}
 
 			// Calcul marge finale (si conf marge par ligne non activée
-			if(empty($conf->global->NOMENCLATURE_USE_COEF_ON_COUT_REVIENT)) {
+			if(!(getDolGlobalInt('NOMENCLATURE_USE_COEF_ON_COUT_REVIENT'))) {
 				$marge = TNomenclatureCoefObject::getMargeFinal($PDOdb, $object, $object->element);
 				$marginInfo['pv_products'] *= $marge->tx_object;
 				$marginInfo['pv_services'] *= $marge->tx_object;
@@ -1569,7 +1569,7 @@ class TNomenclatureDet extends TObjetStd
 
 	function getOFPrice(&$PDOdb) {
 		global $conf;
-		if(empty($conf->of->enabled)) return 0;
+		if(!isModEnabled("of")) return 0;
 
 
 		$PDOdb->Execute("SELECT AVG(pmp) as pmp
@@ -1619,7 +1619,7 @@ class TNomenclatureDet extends TObjetStd
     function getSupplierPrice(&$PDOdb, $qty = 1, $searchforhigherqtyifnone=false, $search_child_price=true, $force_cost_price=false, $best_one = false) {
         global $db,$conf;
 
-        if (!empty($conf->global->NOMENCLATURE_USE_QTYREF_TO_ONE)) {
+        if (getDolGlobalInt('NOMENCLATURE_USE_QTYREF_TO_ONE')) {
         	$qty=1;
         }
 
@@ -1662,7 +1662,7 @@ class TNomenclatureDet extends TObjetStd
 
 
 		// Si aucun prix fournisseur de disponible
-		if ((empty($price_supplier) && (double) DOL_VERSION >= 3.9) || $force_cost_price)
+		if (empty($price_supplier) || $force_cost_price)
 		{
 			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
 			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
@@ -1894,7 +1894,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
 		$nb_hour = $this->nb_hour_prepare + ($this->nb_hour_manufacture * $coef_qty_price);
 
-		if($type == 'OF' && !empty($conf->of->enabled)) {
+		if($type == 'OF' && isModEnabled("of")) {
 
 			$PDOdb->Execute("SELECT SUM(thm * nb_hour) / SUM(nb_hour) as thm
 	                FROM ".MAIN_DB_PREFIX."asset_workstation_of
