@@ -187,7 +187,7 @@ class TNomenclature extends TObjetStd
 
 		if(empty($this->nested_price_level)) $this->nested_price_level = 0;
 
-		$max_level = !getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL', 50);
+		$max_level = getDolGlobalInt('NOMENCLATURE_MAX_NESTED_LEVEL', 50);
 		if($this->nested_price_level>$max_level){
 			setEventMessage($langs->trans('SetPriceInfiniteLoop'), 'errors');
 
