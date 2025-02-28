@@ -501,7 +501,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 	print ' - '.$langs->trans('TotalAmountCostWithCharge').' '. price($price_buy);
 
 	$price_to_sell =  $n->getSellPrice($qty_ref); // prix de vente conseillé total
-//	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell*$qty_ref);
+	print ' - '.$langs->trans('PriceConseil').' '. price($price_to_sell*$qty_ref);
     if (GETPOST('json', 'none') == 1 && $n->non_secable) print ' ('.$langs->trans('nomenclatureNonSecableForQty', $n->qty_reference).')';
 
 	print '</h3>';
