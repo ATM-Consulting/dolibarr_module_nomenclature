@@ -219,12 +219,12 @@ print '</td>';
 print '<td width="600">';
 
 print '<input id="input_nomenclature_cost_type_1" type="radio" name="NOMENCLATURE_COST_TYPE" value="1" ';
-if (getDolGlobalInt('NOMENCLATURE_COST_TYPE')  === '1') print 'checked ';
+if (getDolGlobalString('NOMENCLATURE_COST_TYPE')  === '1') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_1" >'.$langs->trans('CostType1').'</label>';
 
 print '<br><input id="input_nomenclature_cost_type_pmp" type="radio" name="NOMENCLATURE_COST_TYPE" value="pmp" ';
-if (getDolGlobalInt('NOMENCLATURE_COST_TYPE') === 'pmp') print 'checked ';
+if (getDolGlobalString('NOMENCLATURE_COST_TYPE') === 'pmp') print 'checked ';
 print '/> ';
 print '<label for="input_nomenclature_cost_type_pmp" >'.$langs->trans('CostType2').'</label>';
 

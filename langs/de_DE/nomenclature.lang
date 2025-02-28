@@ -76,7 +76,6 @@ TotalAmountCostWithChargeOF = Ist Selbstkosten
 TotalAmountCostWithChargeOFForX = Ist Selbstkosten für %s Exemplar(e)
 TotalAmountCostWithChargeOFQty = Ist Selbstkosten für Referenzmenge
 AmountCostWithChargeCustom = Individuelle Kosten mit Gebühr
-//PriceConseil = Empfohlener Verkaufspreis (Marge %s %%)
 PriceConseil = Empfohlener Verkaufspreis
 PriceConseilForX = Empfohlener Verkaufspreis (Marge %s %%) für %s Exemplar(e)
 PriceConseilUnit = Empfohlener Verkaufspreis (Marge %s %%) für 1 Exemplar

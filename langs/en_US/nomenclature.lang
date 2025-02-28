@@ -181,7 +181,6 @@ TotalAmountCostWithChargeOF=Actual cost price
 TotalAmountCostWithChargeOFForX=Actual cost price for %s item(s)
 TotalAmountCostWithChargeOFQty=Actual cost price for the reference qty
 AmountCostWithChargeCustom=Custom cost with fee
-//PriceConseil=Recommended selling price (margin: %s%%)
 PriceConseil=Recommended selling price
 PriceConseilForX=Recommended selling price (margin: %s%%) for %s item(s)
 PriceConseilUnit=Recommended selling price (margin: %s%%) for 1 item
