@@ -1091,6 +1091,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 								$finished = 0;
 							}
 							print $form->select_produits('', 'fk_new_product_'.$n->getId(), '', 0,0,-1,$finished);
+							// permettre le défilement dans le select si la liste est trop longue
+							print '<style>.ui-autocomplete { max-height: 200px; overflow-y: auto; overflow-x: hidden; z-index: 10000; }</style>';
 							print '</label>';
                             ?>
                             <span id="nomenclature-searchbycat-<?php echo $n->getId(); ?>" class="nomenclature-searchbycat" data-nomenclature="<?php echo $n->getId(); ?>"  ></span>

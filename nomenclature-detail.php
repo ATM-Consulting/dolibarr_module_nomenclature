@@ -806,7 +806,7 @@ function print_table($TData, $TWorkstation, $object_type) {
 						}
 					} else print '<td align="'.(($k == 'gl_total') ? 'left' : 'right').'" >'.$langs->trans('Total').' :</td>';
 
-					print '<td align="right">';
+					print "<td class='price-cell'>";
 					foreach($TBlock['total']['unit'] as $unit => $total_unit) {
 						print "<div>".price(price2num($total_unit, 'MT'))."</div>\n";
 					}
