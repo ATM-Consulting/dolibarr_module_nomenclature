@@ -53,3 +53,10 @@ fieldset{
 .dialogSouldBeZindexed{
 	position : fixed;
 }
+
+.price-cell {
+	width: auto;
+	white-space: nowrap; /* Tout reste sur une ligne */
+	text-align: right;
+}
+
