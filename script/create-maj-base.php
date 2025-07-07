@@ -17,7 +17,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
 if (!empty(getDolGlobalString('NOMENCLATURE_COEF_FOURNITURE')) || !empty(getDolGlobalString('NOMENCLATURE_COEF_CONSOMMABLE')))
 {
-	$sql = 'ALTER TABLE '.MAIN_DB_PREFIX.'nomenclaturedet CHANGE product_type code_type VARCHAR(30)';
+	$sql = 'ALTER TABLE '.$db->prefix().'nomenclaturedet CHANGE product_type code_type VARCHAR(30)';
 	$db->query($sql);
 }
 
@@ -49,7 +49,7 @@ if (!empty(getDolGlobalString('NOMENCLATURE_COEF_FOURNITURE')))
 
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_FOURNITURE', $conf->entity);
 
-	$sql = 'UPDATE '.MAIN_DB_PREFIX.'nomenclaturedet SET code_type = "coef_fourniture" WHERE code_type IN ("1", "2")';
+	$sql = 'UPDATE '.$db->prefix().'nomenclaturedet SET code_type = "coef_fourniture" WHERE code_type IN ("1", "2")';
 	$db->query($sql);
 }
 
@@ -64,7 +64,7 @@ if (!empty(getDolGlobalString('NOMENCLATURE_COEF_CONSOMMABLE')))
 
 	dolibarr_del_const($db, 'NOMENCLATURE_COEF_CONSOMMABLE', $conf->entity);
 
-	$sql = 'UPDATE '.MAIN_DB_PREFIX.'nomenclaturedet SET code_type = "coef_consommable" WHERE code_type = "3"';
+	$sql = 'UPDATE '.$db->prefix().'nomenclaturedet SET code_type = "coef_consommable" WHERE code_type = "3"';
 	$db->query($sql);
 }
 
@@ -137,8 +137,8 @@ $o->init_db_by_vars($PDOdb);
 
 
 // MAJ Champ type de la table llx_nomenclature_coef pour utiliser par défaut la valeur "nomenclature"
-$db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef SET type = "nomenclature" WHERE type IS NULL');
-$db->query('UPDATE '.MAIN_DB_PREFIX.'nomenclature_coef_object SET type = "nomenclature" WHERE type IS NULL');
+$db->query('UPDATE '.$db->prefix().'nomenclature_coef SET type = "nomenclature" WHERE type IS NULL');
+$db->query('UPDATE '.$db->prefix().'nomenclature_coef_object SET type = "nomenclature" WHERE type IS NULL');
 
 // Gestion des PV forcés
 $e = new ExtraFields($db);

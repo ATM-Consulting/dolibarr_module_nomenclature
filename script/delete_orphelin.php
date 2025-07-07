@@ -2,16 +2,16 @@
 
 require '../config.php';
 dol_include_once('/nomenclature/class/nomenclature.class.php');
-
+global $db;
 $PDOdb = new TPDOdb;
 
 echo '<b>------ START ------</b><br /><br />';
 
 // Recherche des nomenclatures liées aux lignes de propal qui n'existent plus
 $sql = '
-	SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature
+	SELECT rowid FROM '.$db->prefix().'nomenclature
 	WHERE object_type = \'propal\'
-	AND fk_object NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'propaldet)
+	AND fk_object NOT IN (SELECT rowid FROM '.$db->prefix().'propaldet)
 ';
 
 echo "<u>Recherche des nomenclatures liées aux lignes de propal qui n'existent plus</u><br />";
@@ -25,11 +25,11 @@ if ($resql)
 		echo 'LOAD '.$obj->rowid;
 		$n = new TNomenclature;
 		$n->load($PDOdb, $obj->rowid, true);
-		
+
 		$n->delete($PDOdb);
 		echo ' => deleted<br />';
 	}
-	
+
 	if ($db->num_rows($resql) == 0)
 	{
 		echo 'RAS<br />';
@@ -39,9 +39,9 @@ if ($resql)
 
 // Recherche des nomenclatures liées aux produits qui n'existent plus
 $sql = '
-	SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature
+	SELECT rowid FROM '.$db->prefix().'nomenclature
 	WHERE object_type = \'product\'
-	AND fk_object NOT IN (SELECT rowid FROM '.MAIN_DB_PREFIX.'product)
+	AND fk_object NOT IN (SELECT rowid FROM '.$db->prefix().'product)
 ';
 
 echo "<br /><u>Recherche des nomenclatures liées aux produits qui n'existent plus</u><br />";
@@ -55,11 +55,11 @@ if ($resql)
 		echo 'LOAD '.$obj->rowid;
 		$n = new TNomenclature;
 		$n->load($PDOdb, $obj->rowid, true);
-		
+
 		$n->delete($PDOdb);
 		echo ' => deleted<br />';
 	}
-	
+
 	if ($db->num_rows($resql) == 0)
 	{
 		echo 'RAS<br />';

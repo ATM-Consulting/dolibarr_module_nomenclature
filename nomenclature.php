@@ -415,8 +415,8 @@ function _show_product_nomenclature(&$PDOdb, &$product, &$object) {
 
 	$sql="SELECT n.fk_object as 'Id', n.fk_object, nd.qty
 
-	FROM ".MAIN_DB_PREFIX."nomenclaturedet nd
-		LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (n.rowid=nd.fk_nomenclature)
+	FROM ".$db->prefix()."nomenclaturedet nd
+		LEFT JOIN ".$db->prefix()."nomenclature n ON (n.rowid=nd.fk_nomenclature)
 	WHERE nd.fk_product=".$product->id." AND n.object_type='product'";
 
 	echo $liste->render($PDOdb, $sql, array(
@@ -778,7 +778,7 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 										// On récupère le dernier tarif fournisseur pour ce produit
 										if( $p_nomdet->id>0) {
 											$q = 'SELECT fk_availability
-												FROM '.MAIN_DB_PREFIX.'product_fournisseur_price
+												FROM '.$db->prefix().'product_fournisseur_price
 												WHERE fk_product = '.(int) $p_nomdet->id.' AND fk_availability > 0 ORDER BY rowid DESC LIMIT 1';
 
 											$resql = $db->query($q);
@@ -812,8 +812,8 @@ function _fiche_nomenclature(&$PDOdb, &$n,&$product, &$object, $fk_object=0, $ob
 
 	                               			// On récupère les quantités dans les OF
 	                               			$q = 'SELECT ofl.qty, ofl.qty_needed, ofl.qty, ofl.type
-	                               					FROM '.MAIN_DB_PREFIX.'assetOf `of`
-	                               					INNER JOIN '.MAIN_DB_PREFIX.'assetOf_line ofl ON(ofl.fk_assetOf = `of`.rowid)
+	                               					FROM '.$db->prefix().'assetOf `of`
+	                               					INNER JOIN '.$db->prefix().'assetOf_line ofl ON(ofl.fk_assetOf = `of`.rowid)
 	                               					WHERE fk_product = '.$p_nomdet->id.' AND `of`.status NOT IN("DRAFT","CLOSE")';
 		                               		$resql = $db->query($q);
 

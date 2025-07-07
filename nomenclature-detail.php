@@ -205,7 +205,7 @@ function getUnits(){
     $TUnits = array();
     $langs->load('products');
 
-    $sql = 'SELECT rowid, label, code from '.MAIN_DB_PREFIX.'c_units';
+    $sql = 'SELECT rowid, label, code from '.$db->prefix().'c_units';
     $sql.= ' WHERE active > 0';
 
     $resql = $db->query($sql);

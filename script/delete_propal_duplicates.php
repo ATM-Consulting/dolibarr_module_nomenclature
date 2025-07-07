@@ -9,16 +9,16 @@ $PDOdb = new TPDOdb();
 
 $sql = '
 	SELECT pd.fk_propal, pd.rowid as fk_propaldet, pd.rang
-	
-	FROM ' . MAIN_DB_PREFIX . 'nomenclature n
-	INNER JOIN ' . MAIN_DB_PREFIX . 'propaldet pd ON pd.rowid = n.fk_object
-	LEFT JOIN ' . MAIN_DB_PREFIX . 'nomenclaturedet nd ON nd.fk_nomenclature = n.rowid
-	
+
+	FROM ' . $this->db->prefix() . 'nomenclature n
+	INNER JOIN ' . $this->db->prefix() . 'propaldet pd ON pd.rowid = n.fk_object
+	LEFT JOIN ' . $this->db->prefix() . 'nomenclaturedet nd ON nd.fk_nomenclature = n.rowid
+
 	WHERE n.object_type = "propal"
-	
+
 	GROUP BY pd.rowid
 	HAVING COUNT(DISTINCT n.rowid) > 1
-	
+
 	ORDER BY pd.fk_propal ASC, pd.rang ASC
 ';
 
@@ -42,8 +42,8 @@ for ($i = 0; $i < $num; $i++)
 	$sqlNomenclature = '
 		SELECT n.rowid as fk_nomenclature, COUNT(DISTINCT nd.rowid) as nbDet, n.date_maj
 
-		FROM ' . MAIN_DB_PREFIX .  'nomenclature n
-		LEFT JOIN ' . MAIN_DB_PREFIX .  'nomenclaturedet nd ON nd.fk_nomenclature = n.rowid
+		FROM ' . $db->prefix() .  'nomenclature n
+		LEFT JOIN ' . $db->prefix() .  'nomenclaturedet nd ON nd.fk_nomenclature = n.rowid
 
 		WHERE n.object_type = "propal"
 		AND n.fk_object = ' . $obj->fk_propaldet . '
@@ -83,7 +83,7 @@ for ($i = 0; $i < $num; $i++)
 		else
 		{
 			echo '<b>Supprimée</b>';
-			
+
 			$nomenclatureToDelete = new TNomenclature();
 			$nomenclatureToDelete->load($PDOdb, $objNomenclature->fk_nomenclature);
 			$nomenclatureToDelete->delete($PDOdb);
@@ -107,7 +107,7 @@ echo '<p>Tout est bien qui finit bien</p>';
 function _gracefullFail(DoliDB &$db)
 {
 	echo '<p>Tout est mal qui finit mal</p>';
-	
+
 	dol_print_error($db);
 
 	$db->close();

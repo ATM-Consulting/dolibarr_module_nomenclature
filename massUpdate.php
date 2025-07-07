@@ -30,12 +30,12 @@
 	flush();
 
 	if($action == 'update' && $fk_product>0) {
-
+		global $db;
 		$TCoef = TNomenclatureCoef::loadCoef($PDOdb);
 
 		$Tab = $PDOdb->ExecuteAsArray("SELECT nd.rowid, n.fk_object, qty, product_type,code_type
-						FROM ".MAIN_DB_PREFIX."nomenclaturedet nd
-							LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (nd.fk_nomenclature = n.rowid)
+						FROM ".$db->prefix()."nomenclaturedet nd
+							LEFT JOIN ".$db->prefix()."nomenclature n ON (nd.fk_nomenclature = n.rowid)
 						WHERE nd.fk_product = ".$fk_product." AND n.object_type='product'");
 
 		if(!empty($Tab)) {
@@ -77,7 +77,7 @@
 			}
 			else{
 
-					$res = $PDOdb->Execute(" UPDATE ".MAIN_DB_PREFIX."nomenclaturedet
+					$res = $PDOdb->Execute(" UPDATE ".$db->prefix()."nomenclaturedet
 								SET qty = qty * ( (100 +  ".$coef.") / 100)
 								WHERE fk_product = ".$fk_product );
 

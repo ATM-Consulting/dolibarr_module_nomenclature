@@ -6,10 +6,10 @@ dol_include_once('/nomenclature/class/nomenclature.class.php');
 
 $PDOdb = new TPDOdb;
 $TCoeff = TNomenclatureCoef::loadCoef($PDOdb);
-
+global $db;
 foreach($TCoeff as $coeff) {
     $sql = 'SELECT rowid';
-    $sql.= ' FROM '.MAIN_DB_PREFIX.'extrafields';
+    $sql.= ' FROM '.$db->prefix().'extrafields';
     $sql.= " WHERE name = '".$db->escape($coeff->code_type)."'";
     $sql.= " AND elementtype IN ('propaldet', 'commandedet')";
 

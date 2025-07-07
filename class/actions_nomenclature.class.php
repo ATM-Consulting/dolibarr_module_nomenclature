@@ -30,7 +30,7 @@ require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php'
 class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 {
 	/**
-	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
+	 * @var array Hook results. Propagated to $this->results for later reuse
 	 */
 	public $results = array();
 
@@ -630,9 +630,9 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -'.$stockPriceCol.' * sm.value ELSE '.$stockPriceCol.' * sm.value END) as sumPrice  ';
 					$sql.= ',  SUM(CASE WHEN sm.type_mouvement = 2 THEN -'.$stockPriceCol.' * sm.value * (1 + p.tva_tx / 100) ELSE '.$stockPriceCol.' * sm.value * (1 + p.tva_tx / 100) END) as sumPriceVAT  '; // j'ai pas mieux que la TVA du produit pour l'instant
 
-					$sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
-					$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
-					$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
+					$sql.= ' FROM ' . $db->prefix() . 'stock_mouvement sm ';
+					$sql.= ' JOIN ' . $db->prefix() . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
+					$sql.= ' JOIN ' . $db->prefix() . 'product p ON (sm.fk_product = p.rowid) ';
 
 					$sql.= 'WHERE ';
 					$sql.= ' e.entity IN ('.getEntity('stock').') ';
@@ -672,9 +672,9 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 					$sql = 'SELECT COUNT(DISTINCT f.fk_product) nbMovement';
 					$sql.= ', SUM('.$stockPriceCol.' * f.stockAllowed) as sumPrice ';
 					$sql.= ', SUM('.$stockPriceCol.' * f.stockAllowed * (1 + p.tva_tx / 100) ) as sumPriceVAT '; // j'ai pas mieux que la TVA du produit pour l'instant
-					$sql.= ' FROM ' . MAIN_DB_PREFIX . $object_source_type.' s ';
-					$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'nomenclature_feedback f ON (s.rowid = f.fk_origin AND f.origin = "'.$db->escape($object_source_type).'") ';
-					$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'product p ON (p.rowid = f.fk_product)';
+					$sql.= ' FROM ' . $db->prefix() . $object_source_type.' s ';
+					$sql.= ' JOIN ' . $db->prefix() . 'nomenclature_feedback f ON (s.rowid = f.fk_origin AND f.origin = "'.$db->escape($object_source_type).'") ';
+					$sql.= ' JOIN ' . $db->prefix() . 'product p ON (p.rowid = f.fk_product)';
 					$sql.= ' WHERE s.fk_projet = '.intval($object->id);
 
 					// En commentaire car pour cette table il n'y a pas de date de "mouvement" il s'agit d'une affectation globale
@@ -770,9 +770,9 @@ class Actionsnomenclature extends nomenclature\RetroCompatCommonHookActions
 				 */
 
 				$sql = 'SELECT sm.rowid';
-				$sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
-				$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
-				$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
+				$sql.= ' FROM ' . $db->prefix() . 'stock_mouvement sm ';
+				$sql.= ' JOIN ' . $db->prefix() . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
+				$sql.= ' LEFT JOIN ' . $db->prefix() . 'product p ON (sm.fk_product = p.rowid) ';
 
 				$sql.= 'WHERE ';
 				$sql.= ' e.entity IN ('.getEntity('stock').') ';

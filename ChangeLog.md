@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
+- NEW : COMPAT V22 - **07/07/2025** - 4.13.0
 
 ## RELEASE 4.12
 - FIX : Résolution de 2 tickets - **09/04/2025** - 4.12.7
