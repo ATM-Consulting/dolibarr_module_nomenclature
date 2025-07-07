@@ -48,7 +48,7 @@ class TNomenclature extends TObjetStd
     {
         global $conf;
 
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature');
+        $this->set_table($this->db->prefix().'nomenclature');
         $this->add_champs('title');
         $this->add_champs('fk_object,fk_nomenclature_parent',array('type'=>'integer', 'index'=>true));
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
@@ -122,7 +122,7 @@ class TNomenclature extends TObjetStd
     function getAllIdsNomenclature(){
         $res = array();
         global  $db;
-        $sql="SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature WHERE object_type='product'";
+        $sql="SELECT rowid FROM ".$db->prefix()."nomenclature WHERE object_type='product'";
         $resql = $db->query($sql);
         if ($resql) {
             while ($obj = $db->fetch_object($resql)){
@@ -744,8 +744,8 @@ class TNomenclature extends TObjetStd
         if (! empty($fk_product)){
 	        global  $db;
             $sql="SELECT n.fk_object
-	            FROM ".MAIN_DB_PREFIX."nomenclaturedet nd
-                LEFT JOIN ".MAIN_DB_PREFIX."nomenclature n ON (n.rowid=nd.fk_nomenclature)
+	            FROM ".$db->prefix()."nomenclaturedet nd
+                LEFT JOIN ".$db->prefix()."nomenclature n ON (n.rowid=nd.fk_nomenclature)
                 WHERE nd.fk_product=".$fk_product." AND n.object_type='product'";
             $resql = $db->query($sql);
             if ($resql) {
@@ -896,7 +896,7 @@ class TNomenclature extends TObjetStd
 		$this->TNomenclatureWorkstation=array();
 
 		$sql = "SELECT fk_workstation, nb_hour,nb_hour_prepare,nb_hour_manufacture";
-		$sql.= " FROM ".MAIN_DB_PREFIX."workstation_product";
+		$sql.= " FROM ".$this->db->prefix()."workstation_product";
 		$sql.= " WHERE fk_product = ".$this->fk_object;
 		$PDOdb->Execute($sql);
 
@@ -959,9 +959,9 @@ class TNomenclature extends TObjetStd
     }
     static function get(&$PDOdb, $fk_object, $forCombo=false, $object_type= 'product')
     {
-    	global $langs;
+    	global $langs, $db;
 
-        $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature
+        $Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".$db->prefix()."nomenclature
 		 WHERE fk_object=".(int) $fk_object." AND object_type='".$object_type."' ORDER BY is_default DESC, rowid ASC ");
         $TNom=array();
 
@@ -988,9 +988,10 @@ class TNomenclature extends TObjetStd
 	 */
 	static function getDefaultNomenclature(&$PDOdb, $fk_product, $qty_ref = 0)
 	{
+		global $db;
 		$TNomenclature = new TNomenclature;
 
-		$PDOdb->Execute('SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature
+		$PDOdb->Execute('SELECT rowid FROM '.$db->prefix().'nomenclature
 		          WHERE (fk_object='.(int)$fk_product.' AND object_type=\'product\')
 		          AND qty_reference<='.$qty_ref.'
 		          ORDER BY is_default DESC, qty_reference DESC
@@ -1019,7 +1020,7 @@ class TNomenclature extends TObjetStd
     static function resetDefaultNomenclature(&$PDOdb, $fk_object, $object_type = 'product')
 	{
 		global $db;
-		return $PDOdb->Execute('UPDATE '.MAIN_DB_PREFIX.'nomenclature SET is_default = 0 WHERE fk_object = '.(int) $fk_object.' AND object_type = "'.$db->escape($object_type).'"');
+		return $PDOdb->Execute('UPDATE '.$db->prefix().'nomenclature SET is_default = 0 WHERE fk_object = '.(int) $fk_object.' AND object_type = "'.$db->escape($object_type).'"');
 	}
 
 	/**
@@ -1219,7 +1220,7 @@ class TNomenclature extends TObjetStd
 
 		global $db;
 
-		$sql = "SELECT rowid FROM ".MAIN_DB_PREFIX."nomenclature ";
+		$sql = "SELECT rowid FROM ".$db->prefix()."nomenclature ";
 		$sql .= " WHERE title = '".$title."'";
 
 		$resql = $db->query($sql);
@@ -1445,7 +1446,7 @@ class TNomenclature extends TObjetStd
             //On parcourt les lignes de nomenclature
 			foreach ($this->TNomenclatureDet as $nom_det) {
 				//Pour chaque ligne, on vérifie si le produit (de la ligne) dispose d'une nomenclature
-				$sql = 'SELECT rowid, fk_object FROM ' . MAIN_DB_PREFIX . 'nomenclature';
+				$sql = 'SELECT rowid, fk_object FROM ' . $db->prefix() . 'nomenclature';
 				$sql .= ' WHERE fk_object=' . $nom_det->fk_product;
 				$sql .= ' AND object_type="product"';
 				$resql = $db->query($sql);
@@ -1469,14 +1470,14 @@ class TNomenclature extends TObjetStd
             $priceToPmp = $this->totalPRCMO;
             if (!empty($this->marge_object)){
                 //Pour le nouveau PMP, on applique le coeff de nomenclature
-                $sql_select_marge = 'SELECT tx FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE code_type = '. $this->marge_object;
+                $sql_select_marge = 'SELECT tx FROM '.$db->prefix().'nomenclature_coef WHERE code_type = '. $this->marge_object;
                 $resql_select_marge = $db->query($sql_select_marge);
                 if($resql_select_marge){
                     $priceToPmp = $priceToPmp * $this->marge_object;
                 }
             }
             $nom_product->pmp = $priceToPmp;
-            $sql_update_pmp =  'UPDATE '.MAIN_DB_PREFIX.'product';
+            $sql_update_pmp =  'UPDATE '.$db->prefix().'product';
             $sql_update_pmp.=  ' SET pmp = '. (float) $priceToPmp;
             $sql_update_pmp.=  ' WHERE rowid = '. (int) $nom_product->id;
             $resql_update_pmp = $db->query($sql_update_pmp);
@@ -1506,9 +1507,9 @@ class TNomenclatureDet extends TObjetStd
 
     function __construct()
     {
-    	global $conf;
+    	global $conf, $db;
 
-        $this->set_table(MAIN_DB_PREFIX.'nomenclaturedet');
+        $this->set_table($db->prefix().'nomenclaturedet');
 		$this->add_champs('title'); //Pour ligne libre
         $this->add_champs('fk_product,fk_nomenclature,is_imported,rang,unifyRang,fk_unit',array('type'=>'integer', 'index'=>true));
         $this->add_champs('code_type,code_type2,fk_fournprice',array('type'=>'varchar', 'length' => 30)); // Got : Je mets fk_fournprice en chaîne car fk_fournprice peut contenir un id ou "costprice" ou "pmpprice"
@@ -1568,12 +1569,12 @@ class TNomenclatureDet extends TObjetStd
 	}
 
 	function getOFPrice(&$PDOdb) {
-		global $conf;
+		global $conf, $db;
 		if(!isModEnabled("of")) return 0;
 
 
 		$PDOdb->Execute("SELECT AVG(pmp) as pmp
-                FROM ".MAIN_DB_PREFIX."assetOf_line
+                FROM ".$db->prefix()."assetOf_line
                 WHERE type='NEEDED' AND fk_product=".$this->fk_product." AND date_maj>=DATE_SUB(NOW(), INTERVAL 6 MONTH) AND pmp>0");
 
 		if($obj = $PDOdb->Get_line()) {
@@ -1628,10 +1629,10 @@ class TNomenclatureDet extends TObjetStd
 		if (!$force_cost_price)
 		{
 		    if(!$best_one){
-		        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+		        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent FROM ".$db->prefix()."product_fournisseur_price
 					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY quantity DESC LIMIT 1 ");
 		    } else {
-		        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent, ((price / quantity) * (1 -  remise_percent / 100 )) as unitfinalprice  FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+		        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent, ((price / quantity) * (1 -  remise_percent / 100 )) as unitfinalprice  FROM ".$db->prefix()."product_fournisseur_price
 					WHERE fk_product = ". $this->fk_product." AND quantity<=".$qty." ORDER BY unitfinalprice ASC LIMIT 1 ");
 		    }
 
@@ -1645,10 +1646,10 @@ class TNomenclatureDet extends TObjetStd
 
 			if($searchforhigherqtyifnone && empty($price_supplier)) {
 			    if(!$best_one){
-			        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+			        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent FROM ".$db->prefix()."product_fournisseur_price
 						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY quantity ASC LIMIT 1 ");
 			    } else {
-			        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent, ((price / quantity) * (1 -  remise_percent / 100 )) as unitfinalprice FROM ".MAIN_DB_PREFIX."product_fournisseur_price
+			        $PDOdb->Execute("SELECT rowid, price, quantity, remise_percent, ((price / quantity) * (1 -  remise_percent / 100 )) as unitfinalprice FROM ".$db->prefix()."product_fournisseur_price
 						WHERE fk_product = ". $this->fk_product." AND quantity>".$qty." ORDER BY unitfinalprice ASC LIMIT 1 ");
 			    }
 
@@ -1664,7 +1665,7 @@ class TNomenclatureDet extends TObjetStd
 		// Si aucun prix fournisseur de disponible
 		if (empty($price_supplier) || $force_cost_price)
 		{
-			$PDOdb->Execute('SELECT cost_price FROM '.MAIN_DB_PREFIX.'product WHERE rowid = '.$this->fk_product);
+			$PDOdb->Execute('SELECT cost_price FROM '.$db->prefix().'product WHERE rowid = '.$this->fk_product);
 			if($obj = $PDOdb->Get_line()) $price_supplier = $obj->cost_price; // Si une quantité de conditionnement existe alors il faut l'utiliser comme diviseur [v4.0 : n'existe pas encore]
 		}
 
@@ -1715,7 +1716,7 @@ class TNomenclatureDet extends TObjetStd
 		$res = array();
 		if ($blankRow) $res = array('' => '');
 
-		$sql = 'SELECT * FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND type = "'.$type.'" ORDER BY rowid';
+		$sql = 'SELECT * FROM '.$db->prefix().'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND type = "'.$type.'" ORDER BY rowid';
 		$resql = $PDOdb->Execute($sql);
 
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
@@ -1864,7 +1865,7 @@ class TNomenclatureWorkstation extends TObjetStd
 
     function __construct()
     {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation');
+        $this->set_table($this->db->prefix().'nomenclature_workstation');
         $this->add_champs('fk_workstation,fk_nomenclature,rang,unifyRang',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture,nb_days_before_beginning',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
@@ -1897,7 +1898,7 @@ class TNomenclatureWorkstation extends TObjetStd
 		if($type == 'OF' && isModEnabled("of")) {
 
 			$PDOdb->Execute("SELECT SUM(thm * nb_hour) / SUM(nb_hour) as thm
-	                FROM ".MAIN_DB_PREFIX."asset_workstation_of
+	                FROM ".$this->db->prefix()."asset_workstation_of
 	                WHERE fk_asset_workstation=".$this->fk_workstation." AND date_maj>=DATE_SUB(NOW(), INTERVAL 6 MONTH) AND thm>0");
 
 			if($obj = $PDOdb->Get_line()) {
@@ -1934,7 +1935,7 @@ class TNomenclatureCoef extends TObjetStd
 {
     function __construct()
     {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef');
+        $this->set_table($this->db->prefix().'nomenclature_coef');
         $this->add_champs('label,description',array('type'=>'varchar', 'length'=>255));
 		$this->add_champs('code_type,type',array('type'=>'varchar', 'length'=>30, 'index'=>true)); // type = nomenclature ou workstation
         $this->add_champs('tx',array('type'=>'float'));
@@ -1953,9 +1954,9 @@ class TNomenclatureCoef extends TObjetStd
 
 	static function loadCoef(&$PDOdb, $type='nomenclature')
 	{
-		global $conf;
+		global $conf,$db;
 
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND type = "'.$type.'" ORDER BY rowid';
+		$sql = 'SELECT rowid FROM '.$db->prefix().'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND type = "'.$type.'" ORDER BY rowid';
 		$TRes = $PDOdb->ExecuteAsArray($sql);
 		$TResult = array();
 
@@ -1972,13 +1973,13 @@ class TNomenclatureCoef extends TObjetStd
 
 	static function getFirstCodeType(&$PDOdb = false)
 	{
-		global $conf,$cacheFirstCodeType;
+		global $conf,$cacheFirstCodeType, $db;
 
 		if(isset($cacheFirstCodeType))return $cacheFirstCodeType;
 
 		if (!$PDOdb) $PDOdb = new TPDOdb;
 
-		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0)');
+		$resql = $PDOdb->Execute('SELECT MIN(rowid) AS rowid, code_type FROM '.$db->prefix().'nomenclature_coef WHERE entity IN ('.$conf->entity.',0)');
 		if ($resql && $PDOdb->Get_Recordcount() > 0)
 		{
 			$row = $PDOdb->Get_line();
@@ -1993,7 +1994,7 @@ class TNomenclatureCoef extends TObjetStd
     {
     	global $conf;
 
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
+		$sql = 'SELECT rowid FROM '.$this->db->prefix().'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
 		$res = $PDOdb->Execute($sql);
 
 		if ($res && $PDOdb->Get_Recordcount() > 0)
@@ -2011,9 +2012,9 @@ class TNomenclatureCoef extends TObjetStd
 		if ($this->code_type == 'coef_final') return false;
 
 		//Vérification que le coef ne soit pas utilisé - si utilisé alors on interdit la suppression
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE code_type = '.$PDOdb->quote($this->code_type).'
+		$sql = 'SELECT rowid FROM '.$this->db->prefix().'nomenclaturedet WHERE code_type = '.$PDOdb->quote($this->code_type).'
 				UNION
-				SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object WHERE code_type = '.$PDOdb->quote($this->code_type);
+				SELECT rowid FROM '.$this->db->prefix().'nomenclature_coef_object WHERE code_type = '.$PDOdb->quote($this->code_type);
 
 		$res = $PDOdb->ExecuteAsArray($sql);
 
@@ -2032,7 +2033,7 @@ class TNomenclatureCoefObject extends TObjetStd
 {
 	function __construct()
     {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_coef_object');
+        $this->set_table($this->db->prefix().'nomenclature_coef_object');
 
 		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true)); /*,entity*/
         $this->add_champs('type_object',array('type'=>'varchar', 'length'=>50, 'index'=>true));
@@ -2088,8 +2089,9 @@ class TNomenclatureCoefObject extends TObjetStd
 
 	static function deleteCoefsObject(&$PDOdb, $fk_object, $type_object) {
 
+		global $db;
 		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid
-				FROM ".MAIN_DB_PREFIX."nomenclature_coef_object
+				FROM ".$db->prefix()."nomenclature_coef_object
 				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
 				");
 
@@ -2113,10 +2115,11 @@ class TNomenclatureCoefObject extends TObjetStd
      */
 	static function loadCoefObject(&$PDOdb, &$object, $type_object, $fk_origin=0)
 	{
+		global $db;
 		$Tab = array();
         if(empty($object)) $object = new stdClass();
         if(empty($object->id)) $object->id = 0;
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_coef_object
+		$sql = 'SELECT rowid FROM '.$db->prefix().'nomenclature_coef_object
 				WHERE fk_object = '.(int)$object->id.'
 				AND type_object = "'.$type_object.'"';
 /*				AND entity IN('.getEntity('nomenclature').')';*/
@@ -2175,7 +2178,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 {
 	function __construct()
     {
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_workstation_thm_object');
+        $this->set_table($this->db->prefix().'nomenclature_workstation_thm_object');
 
 		$this->add_champs('fk_workstation',array('type'=>'integer'));
 		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true));
@@ -2209,8 +2212,9 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 	 */
 	static function deleteAllThmObject(&$PDOdb, $fk_object, $type_object)
 	{
+		global $db;
 		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid
-				FROM ".MAIN_DB_PREFIX."nomenclature_workstation_thm_object
+				FROM ".$db->prefix()."nomenclature_workstation_thm_object
 				WHERE type_object='".$type_object."' AND fk_object=".(int)$fk_object."
 				");
 
@@ -2232,6 +2236,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 	 */
 	static function loadAllThmObject(&$PDOdb, &$object, $type_object)
 	{
+		global $db;
 		$TThmObject = array();
 
 		// 1 : on récupère tous les Poste de travail existants
@@ -2239,7 +2244,7 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 		$TWorkstation = TWorkstation::getAllWorkstationObject($PDOdb);
 
 		// 2 : on va chercher les coef custom
-		$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature_workstation_thm_object
+		$sql = 'SELECT rowid FROM '.$db->prefix().'nomenclature_workstation_thm_object
 				WHERE fk_object = '.(int)$object->id.'
 				AND type_object = "'.$type_object.'"';
 /*				AND entity IN('.getEntity('nomenclature').')';*/
@@ -2319,7 +2324,7 @@ class TNomenclatureFeedback extends TObjetStd
     {
         $this->element          = 'nomenclaturefeedback';
 
-        $this->set_table(MAIN_DB_PREFIX.'nomenclature_feedback');
+        $this->set_table($this->db->prefix().'nomenclature_feedback');
         $this->add_champs('fk_origin,fk_nomenclature,fk_product',array('type'=>'integer', 'index'=>true));
         $this->add_champs('fk_warehouse',array('type'=>'integer'));
         $this->add_champs('origin' , array('type'=>'string'));

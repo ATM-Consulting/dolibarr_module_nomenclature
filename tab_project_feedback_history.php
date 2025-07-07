@@ -62,7 +62,7 @@ $nbLine = GETPOST('limit', 'int');
 if(empty($nbLine)) $nbLine = getDolUserInt('MAIN_SIZE_LISTE_LIMIT', getDolGlobalInt('MAIN_SIZE_LISTE_LIMIT'));
 
 
-
+global $langs, $db, $hookmanager, $user, $form;
 
 // Load translation files required by the page
 $langs->loadLangs(array('projects', 'companies', 'nomenclature@nomenclature'));
@@ -193,9 +193,9 @@ $sql.=$hookmanager->resPrint;
 //
 $sql.= !empty($TOptionalGroupBy)?', '.implode(', ',$TOptionalGroupBy):'';
 
-$sql.= ' FROM ' . MAIN_DB_PREFIX . 'stock_mouvement sm ';
-$sql.= ' JOIN ' . MAIN_DB_PREFIX . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
-$sql.= ' LEFT JOIN ' . MAIN_DB_PREFIX . 'product p ON (sm.fk_product = p.rowid) ';
+$sql.= ' FROM ' . $db->prefix() . 'stock_mouvement sm ';
+$sql.= ' JOIN ' . $db->prefix() . 'entrepot e ON (sm.fk_entrepot = e.rowid) ';
+$sql.= ' LEFT JOIN ' . $db->prefix() . 'product p ON (sm.fk_product = p.rowid) ';
 
 $sql.= 'WHERE sm.fk_projet = '.$object->id;
 $sql.= ' AND sm.type_mouvement IN (2,3) ';

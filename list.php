@@ -215,8 +215,8 @@ $TParam['eval'] = array(
 
 // Query MYSQL
 $sql = "SELECT p.ref, n.rowid, n.is_default, n.title, n.date_maj, n.date_cre, n.fk_object, n.object_type, n.totalPRCMO_PMP, n.totalPRCMO_OF, n.totalPRCMO, n.qty_reference, p.pmp";
-$sql.= " FROM `" . MAIN_DB_PREFIX . "nomenclature` n   ";
-$sql.= " JOIN `" . MAIN_DB_PREFIX . "product` p ON (p.rowid = n.fk_object)   ";
+$sql.= " FROM `" . $db->prefix() . "nomenclature` n   ";
+$sql.= " JOIN `" . $db->prefix() . "product` p ON (p.rowid = n.fk_object)   ";
 $sql.= " WHERE  n.object_type = 'product' AND n.fk_nomenclature_parent = 0 ";
 
 
@@ -271,7 +271,7 @@ $db->close();
 function _objectTypeList(){
     global $db;
 
-    $sql = "SELECT DISTINCT object_type FROM `" . MAIN_DB_PREFIX . "nomenclature`";
+    $sql = "SELECT DISTINCT object_type FROM `" . $db->prefix() . "nomenclature`";
     $TResult = array();
     $res = $db->query($sql);
     if ($res)
@@ -366,8 +366,8 @@ function nomenclature_getPMP($id=0){
 
 	global $db;
 
-	$sql = 'SELECT pmp FROM '.MAIN_DB_PREFIX.'product p';
-	$sql.= ' JOIN '.MAIN_DB_PREFIX.'nomenclature n ON p.rowid = n.fk_object';
+	$sql = 'SELECT pmp FROM '.$db->prefix().'product p';
+	$sql.= ' JOIN '.$db->prefix().'nomenclature n ON p.rowid = n.fk_object';
 	$sql.= ' WHERE n.rowid='.$id;
 	$resql = $db->query($sql);
 	if($resql){

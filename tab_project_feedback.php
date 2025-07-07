@@ -142,10 +142,10 @@ $object_type = in_array($nomenclatureFeedbackObject, $TAcceptedType)? $nomenclat
 
 // Get list of order linked to this project
 if($object_type == 'commande'){
-    $res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'commande c WHERE c.fk_projet = '.$object->id);
+    $res = $db->query('SELECT rowid FROM ' . $db->prefix() . 'commande c WHERE c.fk_projet = '.$object->id);
 }
 elseif($object_type == 'propal'){
-    $res = $db->query('SELECT rowid FROM ' . MAIN_DB_PREFIX . 'propal p WHERE p.fk_projet = '.$object->id);
+    $res = $db->query('SELECT rowid FROM ' . $db->prefix() . 'propal p WHERE p.fk_projet = '.$object->id);
 }
 
 if($res && $res->num_rows>0)
