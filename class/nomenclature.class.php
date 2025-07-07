@@ -46,9 +46,9 @@ class TNomenclature extends TObjetStd
 
     function __construct()
     {
-        global $conf;
+        global $conf, $db;
 
-        $this->set_table($this->db->prefix().'nomenclature');
+        $this->set_table($db->prefix().'nomenclature');
         $this->add_champs('title');
         $this->add_champs('fk_object,fk_nomenclature_parent',array('type'=>'integer', 'index'=>true));
         $this->add_champs('is_default',array('type'=>'integer', 'index'=>true));
@@ -1711,7 +1711,7 @@ class TNomenclatureDet extends TObjetStd
 
     static function getTType(&$PDOdb, $blankRow = false, $type='nomenclature')
 	{
-		global $conf;
+		global $conf,$db;
 
 		$res = array();
 		if ($blankRow) $res = array('' => '');
@@ -1865,7 +1865,9 @@ class TNomenclatureWorkstation extends TObjetStd
 
     function __construct()
     {
-        $this->set_table($this->db->prefix().'nomenclature_workstation');
+		global $db;
+
+        $this->set_table($db->prefix().'nomenclature_workstation');
         $this->add_champs('fk_workstation,fk_nomenclature,rang,unifyRang',array('type'=>'integer', 'index'=>true));
         $this->add_champs('nb_hour,nb_hour_prepare,nb_hour_manufacture,nb_days_before_beginning',array('type'=>'float'));
         $this->add_champs('note_private',array('type'=>'text'));
@@ -1935,7 +1937,9 @@ class TNomenclatureCoef extends TObjetStd
 {
     function __construct()
     {
-        $this->set_table($this->db->prefix().'nomenclature_coef');
+		global $db;
+
+        $this->set_table($db->prefix().'nomenclature_coef');
         $this->add_champs('label,description',array('type'=>'varchar', 'length'=>255));
 		$this->add_champs('code_type,type',array('type'=>'varchar', 'length'=>30, 'index'=>true)); // type = nomenclature ou workstation
         $this->add_champs('tx',array('type'=>'float'));
@@ -1992,9 +1996,9 @@ class TNomenclatureCoef extends TObjetStd
 
     function save(&$PDOdb)
     {
-    	global $conf;
+    	global $conf,$db;
 
-		$sql = 'SELECT rowid FROM '.$this->db->prefix().'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
+		$sql = 'SELECT rowid FROM '.$db->prefix().'nomenclature_coef WHERE entity IN ('.$conf->entity.',0) AND code_type = '.$PDOdb->quote($this->code_type).' AND rowid <> '.(int)$this->getId();
 		$res = $PDOdb->Execute($sql);
 
 		if ($res && $PDOdb->Get_Recordcount() > 0)
@@ -2033,7 +2037,9 @@ class TNomenclatureCoefObject extends TObjetStd
 {
 	function __construct()
     {
-        $this->set_table($this->db->prefix().'nomenclature_coef_object');
+		global $db;
+
+        $this->set_table($db->prefix().'nomenclature_coef_object');
 
 		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true)); /*,entity*/
         $this->add_champs('type_object',array('type'=>'varchar', 'length'=>50, 'index'=>true));
@@ -2178,7 +2184,9 @@ class TNomenclatureWorkstationThmObject extends TObjetStd
 {
 	function __construct()
     {
-        $this->set_table($this->db->prefix().'nomenclature_workstation_thm_object');
+		global $db;
+
+        $this->set_table($db->prefix().'nomenclature_workstation_thm_object');
 
 		$this->add_champs('fk_workstation',array('type'=>'integer'));
 		$this->add_champs('fk_object',array('type'=>'integer', 'index'=>true));
@@ -2322,9 +2330,11 @@ class TNomenclatureFeedback extends TObjetStd
 
     function __construct()
     {
+		global $db;
+
         $this->element          = 'nomenclaturefeedback';
 
-        $this->set_table($this->db->prefix().'nomenclature_feedback');
+        $this->set_table($db->prefix().'nomenclature_feedback');
         $this->add_champs('fk_origin,fk_nomenclature,fk_product',array('type'=>'integer', 'index'=>true));
         $this->add_champs('fk_warehouse',array('type'=>'integer'));
         $this->add_champs('origin' , array('type'=>'string'));
