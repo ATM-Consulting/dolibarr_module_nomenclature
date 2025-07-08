@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 ## RELEASE 4.12
+- FIX : Autofocus when opening product select on ouvrage page - **08/07/2025** - 4.12.8
 - FIX : Résolution de 2 tickets - **09/04/2025** - 4.12.7
    + DA026349 - Fix du select d'ajout d'un produit dans un ouvrage depuis une ligne d'object 
    + DA026351 - Centrer les totaux dans leurs div sur l'onglet ouvrage 
