@@ -121,7 +121,7 @@ class Interfacenomenclaturetrigger
 		dol_include_once('/nomenclature/config.php');
 		dol_include_once('/nomenclature/class/nomenclature.class.php');
 		dol_include_once('/abricot/includes/class/class.pdo.db.php');
-		$PDOdb = new TPDOdb();
+		$PDOdb = null;
 
 		if(isModEnabled("subtotal")) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
@@ -130,6 +130,10 @@ class Interfacenomenclaturetrigger
 		// MAJ de la quantité de fabrication si issue d'une nomenclature non sécable
         if ($action === 'ASSET_LINE_OF_SAVE' && $object->type === 'TO_MAKE')
         {
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
             if (!empty($object->fk_commandedet)) $object_type = 'commande';
             else $object_type = 'product';
 
@@ -154,6 +158,11 @@ class Interfacenomenclaturetrigger
             $object->saveQty($PDOdb);
         }
 		elseif ($action == 'LINEPROPAL_INSERT' || $action == 'LINEPROPAL_CREATE') {
+
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
             $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 		} elseif ($action == 'LINEBILL_INSERT' || $action == 'LINEBILL_CREATE') {
 
@@ -170,8 +179,16 @@ class Interfacenomenclaturetrigger
 			}
 
 			if (($origin !== 'propal' && $origin !== 'commande') || empty($origin_id)) {
+				if (is_null($PDOdb)) {
+					$PDOdb = new TPDOdb();
+				}
+
 				$this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 			} else {
+
+				if (is_null($PDOdb)) {
+					$PDOdb = new TPDOdb();
+				}
 
 				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 				require_once DOL_DOCUMENT_ROOT . '/commande/class/commande.class.php';
@@ -231,8 +248,16 @@ class Interfacenomenclaturetrigger
 			}
 
 			if ($origin !== 'propal' || empty($origin_id)) {
+				if (is_null($PDOdb)) {
+					$PDOdb = new TPDOdb();
+				}
+
                 $this->_insertNomenclatureAndSetPrice($PDOdb, $object);
 			} else {
+
+				if (is_null($PDOdb)) {
+					$PDOdb = new TPDOdb();
+				}
 
 				require_once DOL_DOCUMENT_ROOT . '/comm/propal/class/propal.class.php';
 
@@ -292,6 +317,11 @@ class Interfacenomenclaturetrigger
 			$object->fetch($object->id); // Pour recharger les bonnes lignes qui sinon sont celles de l'objet de départ
 
 			if ($origin == 'propal') {
+
+				if (is_null($PDOdb)) {
+					$PDOdb = new TPDOdb();
+				}
+
 				$TCoeffPropal = TNomenclatureCoefObject::loadCoefObject($PDOdb, $o, 'propal');
 
 				foreach ($TCoeffPropal as &$coeffObject) {
@@ -306,6 +336,9 @@ class Interfacenomenclaturetrigger
 			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
 			$db->query($sql);
 		} elseif ($action == 'PROPAL_DELETE') {
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
 
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'propal');
 
@@ -314,24 +347,41 @@ class Interfacenomenclaturetrigger
 			TNomenclatureCoefObject::deleteCoefsObject($PDOdb, $object->id, $object->element);
 
 		} elseif ($action == 'ORDER_DELETE') {
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
 			$this->_deleteNomenclature($PDOdb, $db, $object, 'commande');
 		} elseif ($action == 'PRODUCT_DELETE') {
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
 			$n = new TNomenclature();
 			$n->loadByObjectId($PDOdb, $object->id, $object->element);
 			$n->delete($PDOdb);
 		} elseif ($action == 'LINEPROPAL_DELETE' && $object->element == 'propaldet') {
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
 			$n = new TNomenclature();
 			$n->loadByObjectId($PDOdb, $object->id, 'propal');
 			$n->delete($PDOdb);
 		}
 		elseif ($action == 'LINEORDER_DELETE' && $object->element == 'commandedet')
 		{
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
 			$n = new TNomenclature();
 			$n->loadByObjectId($PDOdb, $object->id, 'commande');
 			$n->delete($PDOdb);
 		}
 		elseif ($action == 'LINEBILL_DELETE' && $object->element == 'facturedet')
 		{
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
 			$n = new TNomenclature();
 			$n->loadByObjectId($PDOdb, $object->id, 'facture');
 			$n->delete($PDOdb);
@@ -340,6 +390,9 @@ class Interfacenomenclaturetrigger
 
 			if ($object->line_from->product_type != 9)
 			{
+				if (is_null($PDOdb)) {
+					$PDOdb = new TPDOdb();
+				}
 				$n = new TNomenclature;
 				$n->loadByObjectId($PDOdb, $object->line_from->id, $object->element, true, $object->line_from->fk_product, $object->line_from->qty);
 
@@ -380,6 +433,11 @@ class Interfacenomenclaturetrigger
 			}
 
 		} elseif($action == 'LINEPROPAL_UPDATE') {
+
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
 			// récupération du prix calculé :
 			$pv_force = false;
 			$n = new TNomenclature;
@@ -402,13 +460,14 @@ class Interfacenomenclaturetrigger
 		}
         elseif ($action === 'ORDER_VALIDATE' || $action === 'PROPAL_VALIDATE')
         {
-            $PDOdb = new TPDOdb();
-
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
             foreach ($object->lines as $line)
             {
                 $n = new TNomenclature;
                 $n->loadByObjectId($PDOdb, $line->id, $object->element, true, $line->fk_product, $line->qty, $object->id); // si pas de fk_nomenclature, alors on provient d'un document, donc $qty_ref tjr passé en param
-//
+
                 if ($n->getId() == 0)
                 {
                     $n->fk_object = $line->id;
@@ -420,12 +479,21 @@ class Interfacenomenclaturetrigger
 
         }
 		elseif ($action == 'SUPPLIER_PRODUCT_BUYPRICE_UPDATE'){
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
             $price = $_REQUEST['price'];
             $n = new TNomenclature;
             $n->updateTotalPR($PDOdb, $object, $price, 1);
         }
 
 		if($action == 'PRODUCT_CREATE' && in_array('createfromclone', $object->context) && getDolGlobalInt('NOMENCLATURE_CLONE_ON_PRODUCT_CLONE')) {
+
+			if (is_null($PDOdb)) {
+				$PDOdb = new TPDOdb();
+			}
+
 			$origin_id = (!empty($object->origin_id) && $object->origin == 'product')?$object->origin_id:GETPOST('id', 'int');
 			$TNomenclature = TNomenclature::get($PDOdb, $origin_id);
 			if(!empty($TNomenclature)) {
