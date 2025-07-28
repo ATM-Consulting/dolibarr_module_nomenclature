@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 ## RELEASE 4.12
-
+- FIX : DA026620 : instanciate TPDODb only when we need it, to avoid error bdd connexion when we used call api - *28/07/2025* - 4.12.6
 - FIX : COMPAT V21 - *13/12/2024* - 4.12.5
 - FIX : retours DA025848 - **09/12/2024** - 4.12.4
 - FIX : retour DA025391_2  - *02/09/2024* - 4.12.3
