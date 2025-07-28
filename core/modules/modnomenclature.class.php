@@ -60,9 +60,7 @@ class modnomenclature extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module nomenclature";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-
-		$this->version = '4.12.5';
-
+		$this->version = '4.12.9';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \nomenclature\TechATM::getLastModuleVersionUrl($this);

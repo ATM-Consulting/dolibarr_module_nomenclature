@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 
 ## RELEASE 4.12
-- FIX : DA026620 : instanciate TPDODb only when we need it, to avoid error bdd connexion when we used call api - *28/07/2025* - 4.12.6
+- FIX : DA026620 : instanciate TPDODb only when we need it, to avoid error bdd connexion when we used call api - *28/07/2025* - 4.12.9
+- FIX : Autofocus when opening product select on ouvrage page - **08/07/2025** - 4.12.8
+- FIX : Résolution de 2 tickets - **09/04/2025** - 4.12.7
+   + DA026349 - Fix du select d'ajout d'un produit dans un ouvrage depuis une ligne d'object 
+   + DA026351 - Centrer les totaux dans leurs div sur l'onglet ouvrage 
+- FIX : DA026131 - getDolGlobalInt remplacé par getDolGlobalString - **28/02/2025** - 4.12.6
 - FIX : COMPAT V21 - *13/12/2024* - 4.12.5
 - FIX : retours DA025848 - **09/12/2024** - 4.12.4
 - FIX : retour DA025391_2  - *02/09/2024* - 4.12.3
