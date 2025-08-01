@@ -135,7 +135,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 
 			$filter = array('t.fk_product' => $object->id,'t.fk_soc' => $socid);
 
-			if(version_compare(DOL_VERSION, '17.0.0', '>=')) $result = $prodcustprice->fetchAll('', '', 0, 0, $filter);
+			$result = $prodcustprice->fetchAll('', '', 0, 0, $filter);
 
 			if ($result) {
 				if (count($prodcustprice->lines) > 0) {

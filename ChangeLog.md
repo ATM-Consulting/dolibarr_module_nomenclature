@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
-- NEW : COMPAT V22 - **07/07/2025** - 4.13.0
+- NEW : COMPAT V22 change min compatibility to 17.0 - **07/07/2025** - 4.13.0
 
 ## RELEASE 4.12
 - FIX : DA026620 : instanciate TPDODb only when we need it, to avoid error bdd connexion when we used call api - *28/07/2025* - 4.12.9
