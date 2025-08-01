@@ -333,7 +333,7 @@ class Interfacenomenclaturetrigger
 
 			dol_syslog("Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id);
 		} elseif ($action == 'COMPANY_DELETE') {
-			$sql = 'DELETE FROM ' . MAIN_DB_PREFIX . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
+			$sql = 'DELETE FROM ' . $this->db->prefix() . 'nomenclature_coef_object WHERE fk_object = ' . $object->id . ' AND type_object = "tiers"';
 			$db->query($sql);
 		} elseif ($action == 'PROPAL_DELETE') {
 			if (is_null($PDOdb)) {
@@ -577,7 +577,7 @@ class Interfacenomenclaturetrigger
 			if ($line->product_type == 9) continue;
 
 			$line_id = (!empty($line->id)?$line->id:$line->rowid);
-			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'nomenclature WHERE object_type = "'.$object_type.'" AND fk_object = '.$line_id;
+			$sql = 'SELECT rowid FROM '.$this->db->prefix().'nomenclature WHERE object_type = "'.$object_type.'" AND fk_object = '.$line_id;
 
 			$PDOdb->Execute($sql);
 
@@ -585,9 +585,9 @@ class Interfacenomenclaturetrigger
 			{
 				$obj = $PDOdb->Get_line();
 
-                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
-                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
-                $PDOdb->Execute('DELETE FROM '.MAIN_DB_PREFIX.'nomenclature WHERE rowid = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.$this->db->prefix().'nomenclature_workstation WHERE fk_nomenclature = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.$this->db->prefix().'nomenclaturedet WHERE fk_nomenclature = '.$obj->rowid);
+                $PDOdb->Execute('DELETE FROM '.$this->db->prefix().'nomenclature WHERE rowid = '.$obj->rowid);
 			}
 		}
 

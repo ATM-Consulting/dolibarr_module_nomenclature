@@ -32,6 +32,7 @@ require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require __DIR__ . '/class/nomenclature.class.php';
 
+global $langs,$user,$db;
 // Load translation files required by the page
 $langs->loadLangs(array("products", "categories", "errors", 'accountancy'));
 $newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
@@ -290,14 +291,14 @@ if ($modecompta == 'CREANCES-DETTES') {
 	$hookmanager->executeHooks('printFieldListSelect', $parameters);
 	$sql .= $hookmanager->resPrint;
 
-	$sql .= " FROM ".MAIN_DB_PREFIX."facture as f";
+	$sql .= " FROM ".$db->prefix()."facture as f";
 	if ($selected_soc > 0) {
-		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe as soc ON (soc.rowid = f.fk_soc)";
+		$sql .= " LEFT JOIN ".$db->prefix()."societe as soc ON (soc.rowid = f.fk_soc)";
 	}
-	$sql .= ",".MAIN_DB_PREFIX."facturedet as l";
-	$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."product as p ON l.fk_product = p.rowid";
+	$sql .= ",".$db->prefix()."facturedet as l";
+	$sql .= " LEFT JOIN ".$db->prefix()."product as p ON l.fk_product = p.rowid";
 	if ($selected_cat === -2) {	// Without any category
-		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."categorie_product as cp ON p.rowid = cp.fk_product";
+		$sql .= " LEFT JOIN ".$db->prefix()."categorie_product as cp ON p.rowid = cp.fk_product";
 	}
 
 	$parameters = array();

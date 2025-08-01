@@ -83,7 +83,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 		if (! empty($price_by_qty_rowid) && $price_by_qty_rowid >= 1 && (getDolGlobalInt('PRODUIT_CUSTOMER_PRICES_BY_QTY'))) 		// If we need a particular price related to qty
 		{
 			$sql = "SELECT price, unitprice, quantity, remise_percent";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "product_price_by_qty ";
+			$sql .= " FROM " . $db->prefix() . "product_price_by_qty ";
 			$sql .= " WHERE rowid=" . $price_by_qty_rowid . "";
 
 			$result = $db->query($sql);
@@ -106,7 +106,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 		                                                                                                           // level (from 1 to 6)
 		{
 			$sql = "SELECT price, price_ttc, price_base_type, tva_tx";
-			$sql .= " FROM " . MAIN_DB_PREFIX . "product_price ";
+			$sql .= " FROM " . $db->prefix() . "product_price ";
 			$sql .= " WHERE fk_product='" . $id . "'";
 			$sql .= " AND entity IN (" . getEntity('productprice', 1) . ")";
 			$sql .= " AND price_level=" . $price_level;
@@ -135,8 +135,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 
 			$filter = array('t.fk_product' => $object->id,'t.fk_soc' => $socid);
 
-			if(version_compare(DOL_VERSION, '17.0.0', '>=')) $result = $prodcustprice->fetchAll('', '', 0, 0, $filter);
-			else $result = $prodcustprice->fetch_all('', '', 0, 0, $filter);
+			$result = $prodcustprice->fetchAll('', '', 0, 0, $filter);
 
 			if ($result) {
 				if (count($prodcustprice->lines) > 0) {
@@ -194,7 +193,7 @@ if (! empty($action) && $action == 'fetch' && ! empty($id))
 	}
 
 	/* CUSTOM CODE */
-	$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.'product WHERE rowid IN (SELECT DISTINCT fk_object FROM '.MAIN_DB_PREFIX.'nomenclature WHERE object_type = "product")';
+	$sql = 'SELECT rowid FROM '.$db->prefix().'product WHERE rowid IN (SELECT DISTINCT fk_object FROM '.$db->prefix().'nomenclature WHERE object_type = "product")';
 	$resql = $db->query($sql);
 
 	if ($resql && $db->num_rows($resql) > 0 && count($arrayresult) > 0)

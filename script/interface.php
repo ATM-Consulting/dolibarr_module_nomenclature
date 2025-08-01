@@ -265,7 +265,7 @@ function _categories($fk_parent=0, $keyword='') {
     global $db,$conf;
     $TFille=array();
     if(!empty($keyword)) {
-        $resultset = $db->query("SELECT rowid FROM ".MAIN_DB_PREFIX."categorie WHERE label LIKE '%".addslashes($keyword)."%' ORDER BY label");
+        $resultset = $db->query("SELECT rowid FROM ".$db->prefix()."categorie WHERE label LIKE '%".addslashes($keyword)."%' ORDER BY label");
         while($obj = $db->fetch_object($resultset)) {
             $cat = new Categorie($db);
             $cat->fetch($obj->rowid);
@@ -304,8 +304,8 @@ function getAllCoefs($fk_line, $element = 'propal') {
 
     $TRes = array();
     $sql = 'SELECT '.implode(', ', $TCoefCodeType);
-    if($element == 'propal') $sql .= ' FROM '.MAIN_DB_PREFIX.'propaldet_extrafields';
-    else $sql .= ' FROM '.MAIN_DB_PREFIX.'commandedet_extrafields'; // Order
+    if($element == 'propal') $sql .= ' FROM '.$db->prefix().'propaldet_extrafields';
+    else $sql .= ' FROM '.$db->prefix().'commandedet_extrafields'; // Order
     $sql .= ' WHERE fk_object = '.$fk_line;
 
     $resql = $db->query($sql);
