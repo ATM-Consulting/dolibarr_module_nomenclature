@@ -148,7 +148,7 @@ class TechATM
 
 
 	/**
-	 * @param $url
+	 * @param type $url Description
 	 * @return false|object
 	 */
 	public function getJsonData($url){
@@ -170,7 +170,7 @@ class TechATM
 	}
 
 	/**
-	 * @param $url
+	 * @param type $url Description
 	 * @return false|string
 	 */
 	public function getContents($url){
