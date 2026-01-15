@@ -48,13 +48,13 @@ class Interfacenomenclaturetrigger
         $this->db = $db;
 
         $this->name = preg_replace('/^Interface/i', '', get_class($this));
-        $this->family = "demo";
+        $this->family = "ATM Consulting - GPAO";
         $this->description = "Triggers of this module are empty functions."
             . "They have no effect."
             . "They are provided for tutorial purpose only.";
         // 'development', 'experimental', 'dolibarr' or version
         $this->version = 'development';
-        $this->picto = 'nomenclature@nomenclature';
+        $this->picto = 'nomenclature@nomenclature.png';
     }
 
     /**
@@ -101,17 +101,16 @@ class Interfacenomenclaturetrigger
 
 	/**
 	 * Function called when a Dolibarrr business event is done.
-	 * All functions "run_trigger" are triggered if file
-	 * is inside directory core/triggers
+	 * All functions "run_trigger" are triggered if file is inside directory core/triggers.
 	 *
-	 * @param string $action Event action code
-	 * @param Object $object Object
-	 * @param User $user Object user
-	 * @param Translate $langs Object langs
-	 * @param conf $conf Object conf
-	 * @return int <0 if KO, 0 if no triggered ran, >0 if OK
+	 * @param string    $action Event action code
+	 * @param Object    $object Target object of the event
+	 * @param User      $user   Current user
+	 * @param Translate $langs  Translation handler
+	 * @param Conf      $conf   Global conf object
+	 * @return int               <0 if KO, 0 if no trigger ran, >0 if OK
 	 */
-	public function run_trigger($action, $object, $user, $langs, $conf) {
+	public function runTrigger($action, $object, $user, $langs, $conf) {
 		// Put here code you want to execute when a Dolibarr business events occurs.
 		// Data and type of action are stored into $object and $action
 		// Users
@@ -551,7 +550,7 @@ class Interfacenomenclaturetrigger
 			$propal = new Propal($db);
 			$propal->fetch($fk_parent);
 			$propalBuyPrice = !empty($n->totalPRCMO / $object->qty) ? $n->totalPRCMO / $object->qty : $object->pa_ht;
-			
+
 			$propal->updateline($object->id,$sell_price_to_use,$object->qty,$object->remise_percent,$object->tva_tx,$object->localtax1_tx,$object->localtax2_tx,$object->desc,'HT',0,0,0,0,$object->fk_fournprice, $propalBuyPrice, $object->label, $object->product_type, $object->date_start, $object->date_end, 0, $object->fk_unit);
 
 
